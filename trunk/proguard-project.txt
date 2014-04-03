@@ -45,30 +45,13 @@
    	<methods>;
 }
 
--keepclassmembers class cn.koolcloud.pos.JavaScriptEngine {
-   	<methods>;
-}
+#-keepclassmembers class cn.koolcloud.pos.JavaScriptEngine {
+#   	<methods>;
+#}
 
--keepclassmembers class cn.koolcloud.pos.controller.BaseHomeController {
-   	<methods>;
-   	
+-keepclassmembers class * {
+   public void *(android.view.View);
 }
-
--keepclassmembers class cn.koolcloud.pos.controller.HomeController {
-   	<methods>;
-}
-
--keepclassmembers class cn.koolcloud.pos.controller.BaseController {
-	<methods>;
-}
-
--keepclassmembers class * extends BaseController {
-	<methods>;
-}
-
--keepclassmembers class * extends BaseHomeController {
-	<methods>;
-}	
 
 -assumenosideeffects class android.util.Log {
     public static *** i(...);
@@ -77,8 +60,8 @@
 }
 
 -keep public class cn.koolcloud.pos.JavaScriptEngine$JSResponser
--keep public class cn.koolcloud.pos.JavaScriptEngine
--keep public class cn.koolcloud.pos.ClientEngine
+#-keep public class cn.koolcloud.pos.JavaScriptEngine
+#-keep public class cn.koolcloud.pos.ClientEngine
 -keep public class * extends android.app.Activity
 -keep public class * extends BaseController
 -keep public class * extends BaseHomeController
@@ -90,6 +73,7 @@
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
 -keep public class com.android.vending.licensing.ILicensingService
+-keep public class * implements android.content.ServiceConnection
 
 -keep public class org.**{
 	public *;
@@ -149,6 +133,6 @@
 
 # Don't keep the local variables attributes (LocalVariableTable and LocalVariableTypeTable are dropped).
 # -keepattributes Exceptions,Signature,Deprecated,SourceFile,SourceDir,LineNumberTable,Synthetic,EnclosingMethod,RuntimeVisibleAnnotations,RuntimeInvisibleAnnotations,RuntimeVisibleParameterAnnotations,RuntimeInvisibleParameterAnnotations,AnnotationDefault,InnerClasses,*Annotation*
--keepattributes ServiceConnection
+# -keepattributes InnerClasses
 
 -ignorewarnings 
