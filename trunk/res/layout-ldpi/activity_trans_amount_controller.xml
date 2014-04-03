@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+   	android:layout_height="match_parent"
+    android:orientation="horizontal"
+   	android:gravity="center"
+    >
+ <!--     
+    <ImageView 
+        android:id="@+id/input_money_iv_logo"
+        android:layout_width="232dp"
+        android:layout_height="307dp"
+        android:layout_marginRight="80dp"
+        android:src="@drawable/input_money_logo_neworder"
+        android:visibility="gone"
+        android:contentDescription="@string/desc_image"
+        />
+ -->      
+    <LinearLayout 
+        android:layout_width="702dp"
+        android:layout_height="466dp"
+        android:orientation="vertical"
+        android:background="@drawable/calculator_num_key_bg">
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:gravity="center"
+			android:layout_gravity="center"
+			style="@style/calculator_num_key_display_style" >         
+	    	<EditText 
+	    	    android:id="@+id/input_money_et_money"
+		        android:background="@drawable/number_input_edittext_bg"
+		        android:textSize="80sp"
+		       	style="@style/calculator_display_screen_style"
+		        android:hint="@string/input_money_et_money_hint"
+		        android:gravity="right|center_vertical"
+		        android:paddingRight="20dp"
+		        android:textColor="@android:color/white"
+		        android:maxLength="8"
+		        />
+	    	
+	        <include 
+	            layout="@layout/table_number_input"
+	            />
+        </LinearLayout>
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal" 
+   >
+
+    <LinearLayout style="@style/module_layout" >
+
+        <ImageView
+            style="@style/module_method_logo"
+            android:background="@null"  />
+
+        <TextView style="@style/module_method_title" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/module_layout" >
+
+        <ImageView
+            style="@style/module_method_logo"
+            android:background="@null" />
+
+        <TextView style="@style/module_method_title" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/module_layout" >
+
+        <ImageView
+            style="@style/module_method_logo"
+            android:background="@null" />
+
+        <TextView style="@style/module_method_title" />
+    </LinearLayout>
+    
+    <LinearLayout style="@style/module_layout" >
+
+        <ImageView
+            style="@style/module_method_logo"
+            android:background="@null" />
+
+        <TextView style="@style/module_method_title" />
+    </LinearLayout>
+
+</LinearLayout>

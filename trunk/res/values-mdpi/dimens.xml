@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">128dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    
+    <!-- dialog width and height -->
+    <dimen name="about_dialog_width">630.0dp</dimen>
+	<dimen name="about_dialog_height">360.0dp</dimen>
+	<dimen name="dialog_soft_update_ok_button_width">200dp</dimen>
+	<dimen name="dialog_soft_update_cancel_button_width">200dp</dimen>
+	<dimen name="dialog_title_height">80.0dp</dimen>
+	<dimen name="dialog_title_other_text_height">75.0dp</dimen>
+	<dimen name="dialog_title_other_text_size">30.0px</dimen>
+	<dimen name="dialog_content_text_size">22px</dimen>
+</resources>

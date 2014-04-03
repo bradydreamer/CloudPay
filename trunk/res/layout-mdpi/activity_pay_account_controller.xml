@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center">
+
+
+    <LinearLayout
+        android:id="@+id/money_amount_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="25dp"
+        android:orientation="horizontal"
+       	 >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_account_tv_amount"
+            android:textColor="@android:color/black"
+            android:textSize="25sp"/>
+
+        <TextView
+            android:id="@+id/pay_account_tv_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:gravity="right"
+            android:text="@string/pay_account_tv_amount"
+            android:textColor="@color/lv_row_highlight_bg_blue"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/pay_method_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/money_amount_view"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        android:layout_centerVertical="true"
+        android:background="@drawable/pay_method_bg">
+	    <Button
+			android:id="@+id/pay_account_btn_swiper"
+			style="@style/account_btn_style_common"
+			android:background="@drawable/btn_account_sc"
+			android:drawableLeft="@drawable/icon_swiper"
+			android:onClick="onSwitchAccount"
+			android:tag="@string/pay_account_tag_swiper"
+			android:text="@string/pay_account_btn_swiper" />
+
+		<Button
+		    android:id="@+id/pay_account_btn_keyboard"
+		    style="@style/account_btn_style_common"
+		    android:drawableLeft="@drawable/icon_keyboard"
+		    android:background="@drawable/btn_account_kb"
+		    android:onClick="onSwitchAccount"
+		    android:tag="@string/pay_account_tag_keyboard"
+		    android:text="@string/pay_account_btn_keyboard"
+		    android:layout_below="@+id/pay_account_btn_swiper" />
+
+		<Button
+		    android:id="@+id/pay_account_btn_qrcode"
+		    style="@style/account_btn_style_common"
+		    android:background="@drawable/btn_account_qr"
+		    android:drawableLeft="@drawable/icon_qrcode"
+		    android:onClick="onSwitchAccount"
+		    android:tag="@string/pay_account_tag_qrcode"
+		    android:text="@string/pay_account_btn_qrcode"
+		    android:layout_below="@+id/pay_account_btn_keyboard" />
+
+		<Button
+		    android:id="@+id/pay_account_btn_sound"
+		    style="@style/account_btn_style_common"
+		    android:background="@drawable/btn_account_sd"
+		    android:drawableLeft="@drawable/icon_sound"
+		    android:onClick="onSwitchAccount"
+		    android:tag="@string/pay_account_tag_sound"
+		    android:text="@string/pay_account_btn_sound"
+		    android:layout_below="@+id/pay_account_btn_qrcode" />
+	</RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/pay_method_view"
+        android:gravity="center">
+
+        <LinearLayout
+            android:id="@+id/pay_account_layout_swiper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/desc_image"
+                android:src="@drawable/start_swiper" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pay_account_layout_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/desc_image"
+                android:src="@drawable/start_sound" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pay_account_layout_qrcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/qrcode_background"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <com.google.zxing.client.android.ScannerRelativeLayout
+                android:id="@+id/scanner"
+                android:layout_width="336dp"
+                android:layout_height="336dp"/>
+        </LinearLayout>        
+    </RelativeLayout>
+	<LinearLayout
+            android:id="@+id/pay_account_layout_keyboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/pay_method_view"
+            android:layout_alignBottom="@id/pay_method_view"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/calculator_num_key_bg"
+            android:visibility="visible" >
+
+             <LinearLayout
+		        android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:orientation="vertical"
+		   		android:gravity="center"
+		   		android:layout_gravity="center"
+		   		style="@style/calculator_num_key_display_style" >
+	            <EditText
+	                android:id="@+id/pay_account_et_id"
+	                style="@style/calculator_display_screen_style"
+	                android:background="@drawable/number_input_edittext_bg"
+	                android:gravity="right|center_vertical"
+	                android:hint="@string/input_money_et_money_hint"
+	                android:maxLength="15"
+	                android:paddingRight="20dp"
+	                android:textColor="@color/lv_row_highlight_bg_blue"
+	                android:textSize="58sp"/>
+
+	            <include layout="@layout/table_number_input" />
+
+	    	</LinearLayout>
+        </LinearLayout>
+</RelativeLayout>

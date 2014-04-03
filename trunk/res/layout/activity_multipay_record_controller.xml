@@ -1,0 +1,141 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:background="@drawable/shape_frame_rectangle"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/lv_row_bg_white"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" >
+
+        <LinearLayout
+            android:id="@+id/multipay_record_layout_amount"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <TextView
+                style="@style/consumption_record_paidAmountInfo"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_paidAmount" />
+
+            <TextView
+                android:id="@+id/multipay_record_tv_paidAmount"
+                style="@style/consumption_record_paidAmountData"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_paidAmount" />
+
+            <TextView
+                style="@style/consumption_record_paidAmountInfo"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_balance" />
+
+            <TextView
+                android:id="@+id/multipay_record_tv_balance"
+                style="@style/consumption_record_paidAmountData"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_balance" />
+
+            <TextView
+                style="@style/consumption_record_paidAmountInfo"
+                android:layout_weight="1" />
+
+            <TextView
+                style="@style/consumption_record_paidAmountInfo"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_totalAmount" />
+
+            <TextView
+                android:id="@+id/multipay_record_tv_totalAmount"
+                style="@style/consumption_record_paidAmountData"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_totalAmount" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/multipay_record_layout_title"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/multipay_record_layout_amount"
+            android:background="@drawable/listview_title_background"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <TextView
+                style="@style/consumption_record_listTitle"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_no" />
+
+            <TextView
+                style="@style/consumption_record_listTitle"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_transType" />
+
+            <TextView
+                style="@style/consumption_record_listTitle"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_rrn" />
+
+            <TextView
+                style="@style/consumption_record_listTitle"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_transAmount" />
+
+            <TextView
+                style="@style/consumption_record_listTitle"
+                android:layout_weight="1"
+                android:text="@string/multipay_record_tv_orderStatus" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/multipay_record_layout_btns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="right"
+            android:orientation="horizontal"
+             >
+
+            <Button
+                android:layout_width="240dp"
+                android:layout_height="60dp"
+                android:background="@drawable/button_next_background"
+                android:onClick="onPay"
+                android:text="@string/multipay_record_btn_text_pay"
+                android:textColor="@android:color/white"
+                android:textSize="25sp"
+                android:layout_margin="20dp" />
+
+            <Button
+                android:layout_width="240dp"
+                android:layout_height="60dp"
+                android:background="@drawable/button_confirm_background"
+                android:onClick="onComplete"
+                android:text="@string/multipay_record_btn_text_confirm"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" 
+                android:layout_margin="20dp"/>
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/multipay_record_lv_record"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/multipay_record_layout_title"
+            android:layout_above="@+id/multipay_record_layout_btns" >
+        </ListView>
+    </RelativeLayout>
+
+</LinearLayout>

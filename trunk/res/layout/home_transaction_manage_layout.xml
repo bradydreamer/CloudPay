@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/transactionmanageindexcontroller"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone" >
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout style="@style/module_layout" >
+
+            <ImageButton
+                style="@style/module_logo"
+                android:onClick="gotoConsumptionRecord"
+                android:src="@drawable/logo_consumption_record_today" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/transaction_manage_module_title_consumption_record_today" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/module_layout" >
+
+            <ImageButton
+                style="@style/module_logo"
+                android:onClick="gotoConsumptionRecordSearch"
+                android:src="@drawable/logo_consumption_record_old" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/transaction_manage_module_title_consumption_record_old" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/module_layout" >
+
+            <ImageButton
+                style="@style/module_logo"
+                android:onClick="gotoSingleRecordSearch"
+                android:src="@drawable/logo_trade_statistics_today" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/transaction_manage_module_title_single_record_search" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/module_layout" >
+
+            <ImageButton
+                style="@style/module_logo"
+                android:onClick="gotoDelVoucherRecordSearch"
+                android:src="@drawable/logo_delivery_voucher_record" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/transaction_manage_module_title_delivery_voucher_record" />
+        </LinearLayout>
+    </TableRow>
+
+</TableLayout>

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.koolcloud.postest"
+    android:versionCode="8"
+    android:versionName="1.0.8" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="15" />
+    <supports-screens 
+        android:largeScreens="true"
+        android:normalScreens="true" 
+        android:anyDensity="true"
+        android:smallScreens="true">
+        
+ 	</supports-screens>
+    <permission
+        android:name="cn.koolcloud.pos.SERVICE"
+        android:protectionLevel="normal" >
+    </permission>
+    <uses-permission android:name="cn.koolcloud.pos.SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_MSR" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PRINTER" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_SMARTCARD" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_CONTACTLESS_CARD" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PINPAD" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PIN_GET_PIN_BLOCK" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PIN_MAC" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PIN_ENCRYPT_DATA" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PIN_UPDATE_MASTER_KEY" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_PIN_UPDATE_USER_KEY" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_LED" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_SAFE_MODULE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.autofocus" />
+
+    <application
+        android:name="cn.koolcloud.pos.MyApplication"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/CustomTheme"
+        android:persistent="true" >
+        <activity
+            android:name="cn.koolcloud.pos.WelcomeScreen"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.PayExScreen"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/ExTheme" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.PayExScreen" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.HomeController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cn.koolcloud.AllinpayClient.Controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.LoginController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.TransactionManageIndexController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.SettingsIndexController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.OthersIndexController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.SettingsDownloadController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.SetMerchIdController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.MerchantInfoController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.SetMachineIdController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.SetTransIdController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.delivery_voucher.DelVoucherInfoController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.BalanceResultController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.delivery_voucher.InputDelVoucherNumController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.pay.TransAmountController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.pay.PayAccountController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.pay.PayMethodController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.PinPadController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.delivery_voucher.DelVoucherIdController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.multipay.MultiPayIndex"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.multipay.MultiPayRecord"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.AboutDialog" android:theme="@style/dialog"/>
+        
+        <!-- receiver -->
+        <receiver android:name="cn.koolcloud.pos.receiver.LanchReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver  
+		    android:name="cn.koolcloud.pos.receiver.ConnectionChangeReceiver"
+		    android:label="NetworkConnection">
+		    <intent-filter>
+		        <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+		    </intent-filter>
+		</receiver>
+        
+        <!-- service -->
+        <service
+            android:name="cn.koolcloud.pos.service.MerchService"
+            android:exported="true"
+            android:permission="cn.koolcloud.pos.SERVICE"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.service.IMerchService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="cn.koolcloud.pos.service.SecureService"
+            android:exported="true"
+            android:permission="cn.koolcloud.pos.SERVICE"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.service.ISecureService" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

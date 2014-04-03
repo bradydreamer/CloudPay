@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical" >
+    
+    <TextView 
+        android:id="@+id/lv_trade_statistics_tv_payType"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        android:gravity="center"
+        />
+    
+    <TextView 
+        android:id="@+id/lv_trade_statistics_tv_payCount"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        android:gravity="center"
+        />
+    
+    <TextView 
+        android:id="@+id/lv_trade_statistics_tv_payAmount"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        android:gravity="center"
+        />
+
+</LinearLayout>

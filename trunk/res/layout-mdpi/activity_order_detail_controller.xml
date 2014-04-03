@@ -1,0 +1,186 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginTop="16dp"
+    android:background="@drawable/shape_frame_rectangle"
+    android:paddingBottom="20dp"
+    android:paddingLeft="40dp"
+    android:paddingRight="40dp"
+    android:paddingTop="20dp"
+    tools:context=".DelVoucherInfoController" >
+
+    <Button
+        android:id="@+id/order_detail_btn_confirm"
+        android:layout_width="240dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_confirm_background"
+        android:onClick="onConfirm"
+        android:text="@string/order_detail_btn_operation_text_confirm"
+        android:textColor="@android:color/white"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/order_detail_btn_refund"
+        android:layout_width="240dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/button_refund_background"
+        android:onClick="onRefund"
+        android:text="@string/order_detail_btn_operation_text_refund"
+        android:textColor="@android:color/white"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/order_detail_btn_cancel"
+        android:layout_width="240dp"
+        android:layout_height="60dp"
+        android:layout_alignTop="@id/order_detail_btn_refund"
+        android:layout_marginLeft="22dp"
+        android:layout_toRightOf="@id/order_detail_btn_refund"
+        android:background="@drawable/button_cancel_background"
+        android:onClick="onCancel"
+        android:text="@string/order_detail_btn_operation_text_cancel"
+        android:textColor="@android:color/white"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/order_detail_btn_print"
+        android:layout_width="240dp"
+        android:layout_height="60dp"
+        android:layout_alignTop="@id/order_detail_btn_cancel"
+        android:layout_marginLeft="22dp"
+        android:layout_toRightOf="@id/order_detail_btn_cancel"
+        android:background="@drawable/button_print_background"
+        android:onClick="onPrint"
+        android:text="@string/order_detail_btn_operation_text_print"
+        android:textColor="@android:color/white"
+        android:textSize="25sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/order_detail_btn_confirm"
+        android:layout_marginLeft="100dp" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/order_detail_tv_transAmount_mark"
+                style="@style/order_detail_mark_style"
+                android:layout_marginRight="60dp"
+                android:layout_marginTop="40dp"
+                android:text="@string/order_detail_tv_transAmount"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_transAmount"
+                style="@style/order_detail_mark_style"
+                android:layout_marginTop="40dp"
+                android:layout_toRightOf="@id/order_detail_tv_transAmount_mark"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_transData_mark"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount_mark"
+                android:layout_below="@id/order_detail_tv_transAmount_mark"
+                android:layout_marginTop="40dp"
+                android:text="@string/order_detail_tv_transDate"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_transDate"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount"
+                android:layout_alignTop="@id/order_detail_tv_transData_mark"
+                android:layout_toRightOf="@id/order_detail_tv_transData_mark"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_transType_mark"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount_mark"
+                android:layout_below="@id/order_detail_tv_transData_mark"
+                android:layout_marginTop="40dp"
+                android:text="@string/order_detail_tv_transType"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_transType"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount"
+                android:layout_alignTop="@id/order_detail_tv_transType_mark"
+                android:layout_toRightOf="@id/order_detail_tv_transType_mark"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_payType_mark"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount_mark"
+                android:layout_below="@id/order_detail_tv_transType_mark"
+                android:layout_marginTop="40dp"
+                android:text="@string/order_detail_tv_payType"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_payType"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount"
+                android:layout_alignTop="@id/order_detail_tv_payType_mark"
+                android:layout_toRightOf="@id/order_detail_tv_payType_mark"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_orderId_mark"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount_mark"
+                android:layout_below="@id/order_detail_tv_payType_mark"
+                android:layout_marginTop="40dp"
+                android:text="@string/order_detail_tv_orderId"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_orderId"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount"
+                android:layout_alignTop="@id/order_detail_tv_orderId_mark"
+                android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_orderStatus_mark"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount_mark"
+                android:layout_below="@id/order_detail_tv_orderId_mark"
+                android:layout_marginTop="40dp"
+                android:text="@string/order_detail_tv_orderStatus"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/order_detail_tv_orderStatus"
+                style="@style/order_detail_mark_style"
+                android:layout_alignLeft="@id/order_detail_tv_transAmount"
+                android:layout_alignTop="@id/order_detail_tv_orderStatus_mark"
+                android:layout_toRightOf="@id/order_detail_tv_orderStatus_mark"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="25sp" />
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

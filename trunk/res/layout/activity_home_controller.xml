@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="horizontal" >
+	<ScrollView style="@style/broadside_bg_style">
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                android:id="@+id/home_button"
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_home"
+                android:onClick="onClickHome"
+                android:text="@string/home_activity_home" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_setting"
+                android:onClick="onClickSetting"
+                android:text="@string/home_activity_setting" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_transaction_inquiries"
+                android:onClick="onClickTransactionInquiries"
+                android:text="@string/home_activity_transaction_inquiries" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_multi_pay"
+                android:onClick="onClickMultiPay"
+                android:text="@string/home_activity_multi_pay" />
+        </LinearLayout>
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:id="@+id/abountBtn"
+                android:drawableTop="@drawable/btn_about_selector"
+                android:text="@string/str_about" />
+        </LinearLayout>
+    </LinearLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <!-- 主页 -->
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/base_home_layout" />
+
+        <!-- 设置 -->
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/home_setting_layout" />
+
+        <!-- 交易查询 -->
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/home_transaction_manage_layout" />
+
+        <!-- 组合支付 -->
+
+    </FrameLayout>
+
+</LinearLayout>

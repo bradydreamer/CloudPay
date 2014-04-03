@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        style="@style/broadside_bg_style"
+        android:gravity="center|top"
+        android:paddingTop="70dp" >
+
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                android:id="@+id/home_button"
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_close"
+                android:onClick="onClickClose"
+                android:text="@string/multi_pay_btn_close" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_multipay_record"
+                android:onClick="onClickRecord"
+                android:text="@string/multi_pay_btn_record" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <!-- 主页 -->
+
+        <include
+            android:id="@+id/home_layout_ref"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/base_home_layout" />
+
+
+    </FrameLayout>
+
+</LinearLayout>

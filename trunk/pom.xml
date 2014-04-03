@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>cn.koolcloud.ipos</groupId>
+	<artifactId>allinpay-android-ipos</artifactId>
+	<version>1.1-SNAPSHOT</version>
+	<name>${project.artifactId}</name>
+	<packaging>apk</packaging>
+
+	<organization>
+		<name>All-In-Pay</name>
+		<url>http://www.allinpay.com/</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>Teddy</id>
+			<name>Teddy</name>
+			<email>ljm3@allinpay.com</email>
+			<url>http://www.allinpay.com/</url>
+			<organization>All-In-Pay</organization>
+			<organizationUrl>http://www.allinpay.com/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>UTC+08:00</timezone>
+			<properties>
+				<picUrl>http://www.allinpay.com/templates/default/images/logo.gif</picUrl>
+			</properties>
+		</developer>
+	</developers>
+
+	<properties>
+		<android-platform>14</android-platform>
+		<android-maven-plugin-version>3.7.0</android-maven-plugin-version>
+		<!-- Available android-maven-plugin-version 3.4.0, 3.8.0, 3.7.0, 3.6.1 -->
+		<maven-compiler-plugin-version>2.5.1</maven-compiler-plugin-version>
+		<java-version>1.6</java-version>
+		<maven-eclipse-plugin-version>2.8</maven-eclipse-plugin-version>
+		<com.google.android-version>4.0.1.2</com.google.android-version>
+		<!-- Available Android versions: 1.5_r3, 1.5_r4, 1.6_r2, 2.1.2, 2.1_r1, 
+			2.2.1, 2.3.1, 2.3.3, 4.0_r3, 4.0.3_r3, 4.0.1.2, 4.1_r2, 4.1.1.4, 4.2.2_r2, 
+			4.3_r2, 4.4, 4.4_r1 -->
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- timestamp -->
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd-HH_mm</maven.build.timestamp.format>
+		<!-- product key -->
+		<!-- <key-file-path>${basedir}/ipos.keystore</key-file-path> <store-password>cooltool</store-password> 
+			<key-password>cooltool</key-password> <key-alias>iposkey</key-alias> -->
+		<!-- development key -->
+		<key-file-path>${basedir}/ipos.keystore</key-file-path>
+		<store-password>cooltool</store-password>
+		<key-password>cooltool</key-password>
+		<key-alias>iposkey</key-alias>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>${com.google.android-version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>support-v4</artifactId>
+			<version>r7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing.capturelib</groupId>
+			<artifactId>capturelib</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nostra13.universalimageloader</groupId>
+			<artifactId>universal-image-loader</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>1.46</version>
+		</dependency>
+		<dependency>
+			<groupId>com.wsn.sscl</groupId>
+			<artifactId>wsn-sscl</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+	</repositories>
+
+	<build>
+		<finalName>${project.artifactId}-${timestamp}-${project.version}</finalName>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>.</directory>
+				<filtering>true</filtering>
+				<targetPath>../filtered-resources</targetPath>
+				<includes>
+					<include>AndroidManifest.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<excludes>
+					<exclude>**/env-*.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>${android-maven-plugin-version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<sdk>
+						<platform>${android-platform}</platform>
+					</sdk>
+					<deleteConflictingFiles>true</deleteConflictingFiles>
+					<undeployBeforeDeploy>true</undeployBeforeDeploy>
+					<proguard>
+						<skip>false</skip>
+					</proguard>
+					<zipalign>
+						<skip>false</skip>
+						<verbose>true</verbose>
+						<inputApk>${project.build.directory}/${project.artifactId}-${timestamp}-${project.version}.apk</inputApk>
+						<outputApk>${project.build.directory}/${project.artifactId}-${timestamp}-${project.version}-aligned.apk</outputApk>
+					</zipalign>
+				</configuration>
+				<executions>
+					<execution>
+						<id>alignApk</id>
+						<phase>package</phase>
+						<goals>
+							<goal>zipalign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin-version}</version>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+					<!-- <encoding>Cp1252</encoding> -->
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<projectnatures>
+						<projectnature>org.eclipse.m2e.core.maven2Nature</projectnature>
+						<projectnature>com.android.ide.eclipse.adt.AndroidNature</projectnature>
+						<projectnature>org.eclipse.jdt.core.javanature</projectnature>
+					</projectnatures>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+					<artifactId>android-maven-plugin</artifactId>
+					<version>${android-maven-plugin-version}</version>
+					<extensions>true</extensions>
+					<executions>
+						<execution>
+							<id>run</id>
+							<goals>
+								<goal>deploy</goal>
+								<goal>run</goal>
+							</goals>
+							<phase>install</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<proguardConfig>proguard-project.txt</proguardConfig>
+						<proguardSkip>false</proguardSkip>
+						<manifestDebuggable>false</manifestDebuggable>
+						<androidManifestFile>AndroidManifest.xml</androidManifestFile>
+						<release>true</release>
+						<run>
+							<debug>false</debug>
+						</run>
+						<runDebug>false</runDebug>
+						<sign>
+							<debug>false</debug>
+						</sign>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.4</version>
+					<executions>
+						<execution>
+							<id>sign-artifacts</id>
+							<phase>package</phase>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<!-- run sign with command: mvn clean install -Psign more information please 
+		reference to the site: https://code.google.com/p/maven-android-plugin/wiki/SigningAPKWithMavenJarsigner -->
+	<profiles>
+		<profile>
+			<id>sign</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jarsigner-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>signing</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<phase>package</phase>
+								<inherited>true</inherited>
+								<configuration>
+									<archiveDirectory></archiveDirectory>
+									<includes>
+										<include>target/*.apk</include>
+									</includes>
+									<keystore>${key-file-path}</keystore>
+									<storepass>${store-password}</storepass>
+									<keypass>${key-password}</keypass>
+									<alias>${key-alias}</alias>
+									<arguments>
+										<argument>-sigalg</argument>
+										<argument>MD5withRSA</argument>
+										<argument>-digestalg</argument>
+										<argument>SHA1</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<inherited>true</inherited>
+						<configuration>
+							<sign>
+								<debug>false</debug>
+							</sign>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>development</id>
+			<!-- using this since activeByDefault does not work well with multiple 
+				profiles -->
+			<activation>
+				<property>
+					<name>environment</name>
+					<value>!production</value>
+				</property>
+			</activation>
+			<properties>
+				<deployment.stage>In Development</deployment.stage>
+			</properties>
+		</profile>
+		<profile>
+			<id>production</id>
+			<properties>
+				<deployment.stage>In Production</deployment.stage>
+			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<!-- via this activation the profile is automatically used when the release 
+				is done with the maven release plugin -->
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jarsigner-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>signing</id>
+								<goals>
+									<goal>sign</goal>
+									<goal>verify</goal>
+								</goals>
+								<phase>package</phase>
+								<inherited>true</inherited>
+								<configuration>
+									<removeExistingSignatures>true</removeExistingSignatures>
+									<archiveDirectory />
+									<includes>
+										<include>${project.build.directory}/*.apk</include>
+									</includes>
+									<!--<key-file-path>${key-file-path}</key-file-path> <alias>${key-alias}</alias> 
+										<storepass>${store-password}</storepass> <keypass>${key-password}</keypass> -->
+									<keystore>${key-file-path}</keystore>
+									<storepass>${store-password}</storepass>
+									<keypass>${key-password}</keypass>
+									<alias>${key-alias}</alias>
+									<arguments>
+										<argument>-sigalg</argument>
+										<argument>MD5withRSA</argument>
+										<argument>-digestalg</argument>
+										<argument>SHA1</argument>
+									</arguments>
+									<verbose>true</verbose>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- the signed apk then needs to be zipaligned and we activate proguard 
+						and we run the manifest update -->
+					<!-- <plugin> <groupId>com.jayway.maven.plugins.android.generation2</groupId> 
+						<artifactId>android-maven-plugin</artifactId> <inherited>true</inherited> 
+						<configuration> <sign> <debug>false</debug> </sign> <zipalign> <skip>true</skip> 
+						<verbose>true</verbose> <inputApk>${project.build.directory}/${project.artifactId}.apk</inputApk> 
+						<outputApk>${project.build.directory}/${project.artifactId}-signed-aligned.apk 
+						</outputApk> </zipalign> <manifest> <debuggable>false</debuggable> <versionCodeAutoIncrement>false</versionCodeAutoIncrement> 
+						</manifest> <proguard> <skip>false</skip> </proguard> </configuration> <executions> 
+						<execution> <id>manifestUpdate</id> <phase>process-resources</phase> <goals> 
+						<goal>manifest-update</goal> </goals> </execution> <execution> <id>alignApk</id> 
+						<phase>package</phase> <goals> <goal>zipalign</goal> </goals> </execution> 
+						</executions> </plugin> -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>${project.build.directory}/${project.artifactId}-signed-aligned.apk</file>
+									<type>apk</type>
+									<classifier>signed-aligned</classifier>
+								</artifact>
+								<artifact>
+									<file>${project.build.directory}/proguard/mapping.txt</file>
+									<type>map</type>
+									<classifier>release</classifier>
+								</artifact>
+							</artifacts>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-signed-aligned</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Channel profiles -->
+		<profile>
+			<id>channel-test</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<manifest.metadata.id>test</manifest.metadata.id>
+				<manifest.metadata.channel>test</manifest.metadata.channel>
+			</properties>
+		</profile>
+	</profiles>
+</project>
