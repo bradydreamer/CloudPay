@@ -51,11 +51,17 @@
   }
 
   function clear () {
-    if (currentStep == null) {
-      return;
-    }
+		if (currentStep == null) {
+			if(Pay.cacheData.step > 0){
+				Pay.cacheData.step--;
+			}
+	    return;
+	  }
     Pay.cacheData[currentTag] = null;
     Pay.cacheData.step = currentStep;
+		if(Pay.cacheData.step > 0){
+			Pay.cacheData.step--;
+		}
 
     Pay.cacheData.track2 = null;
     Pay.cacheData.track3 = null;    

@@ -162,9 +162,12 @@ Pay.restart = function(params) {
 			"orderList" : ConsumptionData.dataForMultiPay.orderList,
 		};
 		Scene.goBack("MultiPayRecord", formData);
+		if (ConsumptionData.dataForPayment.isExternalOrder == true) {
+			return;
+		}
 	} else {
 		if (ConsumptionData.dataForPayment.isExternalOrder) {
-			if (ConsumptionData.dataForMultiPay.completed = true) {
+			if (ConsumptionData.dataForMultiPay.completed == true) {
 				Scene.goBack("first", ConsumptionData.dataForMultiPay);
 				ConsumptionData.resetMultiData();
 			} else {

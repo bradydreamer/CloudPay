@@ -94,6 +94,12 @@ Pay.gotoFlow = function() {
 	} else if (method == "00" || method == "01" || method == "02" || method == "03") {
 		sceneName = "PayAccount";
 		initPayAccountData();
+	} else if(method == "04"){
+		sceneName = "Login"	
+		formData = {"Login":"LoginIndex.refundConfirmLogin"};
+	} else if(method == "05"){
+		sceneName = "Login"		
+		formData = {"Login":"LoginIndex.voidConfirmLogin"};
 	} else if (method == "10") {
 		sceneName = "InputAmount";
 		initAmountData();

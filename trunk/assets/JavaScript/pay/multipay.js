@@ -13,7 +13,11 @@
   }
   
   function onClickPay () {
-    ConsumptionData.resetConsumptionData();
+  	
+	if (ConsumptionData.dataForPayment.isExternalOrder == true){
+    	ConsumptionData.resetConsumptionData();
+		ConsumptionData.dataForPayment.isExternalOrder = true
+	}
     Scene.showScene("MultiPayIndex");
   }
   

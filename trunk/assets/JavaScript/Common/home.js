@@ -139,6 +139,7 @@
 			if (ConsumptionData.dataForPayment.isExternalOrder == true) {
 				ConsumptionData.dataForMultiPay.totalAmount = ConsumptionData.dataForPayment.transAmount;
 				ConsumptionData.resetConsumptionData();
+				ConsumptionData.dataForPayment.isExternalOrder = true;
 			}
 			
 			Pay.gotoMultiPayFlow();

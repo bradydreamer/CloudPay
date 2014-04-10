@@ -31,12 +31,12 @@
 			recordList : recordDisplayedList
 		};
 		if (1 == pageNo) {
-			if (recordDisplayedList.length == 1) {
+			/*if (recordDisplayedList.length == 1) {
 				recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
 				Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
-			} else {
+			} else {*/
 				Scene.showScene("ConsumptionRecord", "", params);
-			};
+			//};
 		} else {
 			var propertyList = [{
 				name : "lv_record",
