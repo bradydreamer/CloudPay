@@ -17,12 +17,12 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <com.allinpay.allinpaymerch.widget.ViewPagerIndicator
+    <cn.koolcloud.pos.widget.ViewPagerIndicator
         android:id="@+id/pay_method_indicator"
         android:layout_width="match_parent"
         android:layout_height="15dp"
         android:gravity="center"
         android:orientation="horizontal" >
-    </com.allinpay.allinpaymerch.widget.ViewPagerIndicator>
+    </cn.koolcloud.pos.widget.ViewPagerIndicator>
 
 </LinearLayout>
