@@ -3,12 +3,12 @@ package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.postest.R;
-import cn.koolcloud.pos.controller.BaseController;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.postest.R;
 
 public class OrderDetailController extends BaseController {
 	private boolean cancelEnable;
@@ -40,7 +40,7 @@ public class OrderDetailController extends BaseController {
 		transTime = data.optString("transTime");
 		transAmount = data.optString("transAmount");
 		func_confirm = data.optString("confirm");
-		
+
 		openBrh = data.optString("openBrh");
 		paymentId = data.optString("paymentId");
 	}
@@ -57,7 +57,7 @@ public class OrderDetailController extends BaseController {
 			((ViewGroup) textView.getParent()).setVisibility(View.GONE);
 		}
 	}
-	
+
 	public void onCancel(View view) {
 		JSONObject msg = new JSONObject();
 		try {
@@ -83,7 +83,7 @@ public class OrderDetailController extends BaseController {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		onCall("OrderDetail.onRefund", msg);
 	}
 
@@ -94,8 +94,7 @@ public class OrderDetailController extends BaseController {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		onCall("OrderDetail.onPrint", msg);		
-//		onCall("Pay.reverseOrder", null);
+		onCall("OrderDetail.onPrint", msg);
 	}
 
 	public void onConfirm(View view) {
@@ -106,6 +105,7 @@ public class OrderDetailController extends BaseController {
 	public void onBackPressed() {
 		onCall(func_confirm, null);
 	}
+
 	@Override
 	protected View viewForIdentifier(String name) {
 		if (null == name) {

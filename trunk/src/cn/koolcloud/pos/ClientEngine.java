@@ -30,7 +30,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
-
+import cn.koolcloud.control.ISO8583Controller;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.HomeController;
 import cn.koolcloud.pos.controller.PinPadController;
@@ -68,7 +68,6 @@ import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
 import cn.koolcloud.pos.util.UtilForThread;
 import cn.koolcloud.pos.widget.CustomAnimDialog;
-import cn.koolcloud.control.ISO8583Controller;
 import cn.koolcloud.postest.R;
 
 public class ClientEngine {
@@ -157,11 +156,11 @@ public class ClientEngine {
 	}
 
 	private IMerchService mMerchService;
-	
-	public IMerchService getMerchService(){
+
+	public IMerchService getMerchService() {
 		return mMerchService;
 	}
-	
+
 	private ServiceConnection merchConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
@@ -218,7 +217,7 @@ public class ClientEngine {
 		return null;
 	}
 
-	public void setMerchInfo(MerchInfo mi){
+	public void setMerchInfo(MerchInfo mi) {
 		if (mMerchService != null) {
 			try {
 				mMerchService.setMerchInfo(mi);
@@ -227,7 +226,7 @@ public class ClientEngine {
 			}
 		}
 	}
-	
+
 	private SecureInfo mSecureInfo;
 
 	public SecureInfo getSecureInfo() {
@@ -238,8 +237,7 @@ public class ClientEngine {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-		} 
-		else {
+		} else {
 			if (mSecureInfo == null) {
 				mSecureInfo = new SecureInfo("00000000", "1", null, "");
 			}
@@ -247,7 +245,7 @@ public class ClientEngine {
 		}
 		return si;
 	}
-	
+
 	public void setSecureInfo(SecureInfo si) {
 		if (mSecureService != null) {
 			try {
@@ -255,7 +253,7 @@ public class ClientEngine {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-		} 
+		}
 	}
 
 	private void initJSengine() {
@@ -315,7 +313,7 @@ public class ClientEngine {
 		if (mSecureService != null) {
 			try {
 				String ui = mSecureService.getUserInfo();
-				if (ui!= null && !ui.isEmpty()) {
+				if (ui != null && !ui.isEmpty()) {
 					msgObj = new JSONObject(ui);
 				}
 			} catch (RemoteException e) {
@@ -357,16 +355,21 @@ public class ClientEngine {
 	}
 
 	void showAlert(final JSONObject data, final String identifier) {
-		if (UtilForThread.isCurrentInMainThread(Thread.currentThread())) {
-			showAlertInMainThread(data, identifier);
+		String msg = data.optString("msg");
+		if (msg.startsWith("JSLOG")) {
+			Log.i(TAG, msg);
 		} else {
-			mainHandler.post(new Runnable() {
+			if (UtilForThread.isCurrentInMainThread(Thread.currentThread())) {
+				showAlertInMainThread(data, identifier);
+			} else {
+				mainHandler.post(new Runnable() {
 
-				@Override
-				public void run() {
-					showAlertInMainThread(data, identifier);
-				}
-			});
+					@Override
+					public void run() {
+						showAlertInMainThread(data, identifier);
+					}
+				});
+			}
 		}
 	}
 
@@ -569,7 +572,8 @@ public class ClientEngine {
 
 	public void showWaitingDialog(Context context, String message,
 			Runnable runnable) {
-//		dw_dialogProgress = context.getResources().getDrawable(R.drawable.animation_dialog_progress);
+		// dw_dialogProgress =
+		// context.getResources().getDrawable(R.drawable.animation_dialog_progress);
 		dw_dialogProgress = null;
 		waitingDialog = new CustomAnimDialog(context);
 		waitingDialog.setAnimDrawable(dw_dialogProgress, 60, 60);
@@ -755,8 +759,9 @@ public class ClientEngine {
 			});
 		}
 	}
-	
-	public void showWaitingDialogWhenRun(final Runnable runnable, final String message){
+
+	public void showWaitingDialogWhenRun(final Runnable runnable,
+			final String message) {
 		mainHandler.post(new Runnable() {
 
 			@Override
@@ -786,11 +791,13 @@ public class ClientEngine {
 			} else if (typeOf8583.equals("cheXiao")) {
 				String data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.cheXiao(Utility.hex2byte(data8583), jsonObject);
+				iso8583Controller.cheXiao(Utility.hex2byte(data8583),
+						jsonObject);
 			} else if (typeOf8583.equals("refund")) {
 				String data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.refund(Utility.hex2byte(data8583), jsonObject);
+				iso8583Controller
+						.refund(Utility.hex2byte(data8583), jsonObject);
 			} else if (typeOf8583.equals("chaxunyue")) {
 				String cardID = jsonObject.optString("cardID");
 				String track2 = jsonObject.optString("track2");
@@ -818,26 +825,24 @@ public class ClientEngine {
 		}
 	}
 
-	void convert8583(final JSONObject jsonObjData, final String callBackId) {		
+	void convert8583(final JSONObject jsonObjData, final String callBackId) {
 		JSONObject data8583JsonObject = new JSONObject();
 		try {
 			String data8583 = jsonObjData.optString("data8583");
 
-			ISO8583Controller iso8583Controller = ISO8583Engine
-					.getInstance().generateISO8583Controller();
+			ISO8583Controller iso8583Controller = ISO8583Engine.getInstance()
+					.generateISO8583Controller();
 			Log.d(TAG, "load8583 data8583 : " + data8583);
-			boolean load8583Result = iso8583Controller
-					.load(Utility.hex2byte(data8583));
-			Log.d(TAG, "load8583 load8583Result : "
-					+ load8583Result);
+			boolean load8583Result = iso8583Controller.load(Utility
+					.hex2byte(data8583));
+			Log.d(TAG, "load8583 load8583Result : " + load8583Result);
 			String resCode = iso8583Controller.getResCode();
 			Log.d(TAG, "load8583 resCode : " + resCode);
 			String resMessage = HostMessage.getMessage(resCode);
 			Log.d(TAG, "load8583 resMessage : " + resMessage);
 			data8583JsonObject.put("resCode", resCode);
 			data8583JsonObject.put("resMessage", resMessage);
-			data8583JsonObject.put("rrn",
-					iso8583Controller.getRRN());
+			data8583JsonObject.put("rrn", iso8583Controller.getRRN());
 			data8583JsonObject.put("apOrderId",
 					iso8583Controller.getApOrderId());
 			data8583JsonObject.put("payOrderBatch",

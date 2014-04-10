@@ -95,17 +95,18 @@ public final class HttpConn {
 
 			SchemeRegistry schemeRegistry = new SchemeRegistry();
 			schemeRegistry.register(new Scheme("http", PlainSocketFactory
-					.getSocketFactory(), 80));
-			schemeRegistry.register(new Scheme("http", PlainSocketFactory
 					.getSocketFactory(), 8080));
-			schemeRegistry.register(new Scheme("https",
-					new EasySSLSocketFactory(), 443));
+			schemeRegistry.register(new Scheme("http", PlainSocketFactory
+					.getSocketFactory(), 80));
+			
 			schemeRegistry.register(new Scheme("https",
 					new EasySSLSocketFactory(), 9025));
 			schemeRegistry.register(new Scheme("https",
 					new EasySSLSocketFactory(), 8443));
 			schemeRegistry.register(new Scheme("https",
 					new EasySSLSocketFactory(), 10080));
+			schemeRegistry.register(new Scheme("https",
+					new EasySSLSocketFactory(), 443));
 			connManager = new ThreadSafeClientConnManager(params,
 					schemeRegistry);
 			httpClient = new DefaultHttpClient(connManager, params);

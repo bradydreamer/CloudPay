@@ -91,6 +91,7 @@ public class PayAccountController extends BaseController implements
 		switch (status) {
 		case -1:
 			view.setEnabled(false);
+			view.setBackgroundResource(R.drawable.unable_button);
 			break;
 		case 0:
 			view.setEnabled(true);
