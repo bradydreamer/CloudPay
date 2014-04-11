@@ -131,7 +131,7 @@ Pay.payResult = function(params) {
 
 Pay.succRestart = function() {
 	window.RMS.clear("savedTransData");
-	ConsumptionData.dataForPayment.result = 0;
+	ConsumptionData.dataForPayment.result = "success";
 	Pay.restart();
 };
 
@@ -140,7 +140,7 @@ Pay.restart = function(params) {
 	var order = {
 		"ref" : ConsumptionData.dataForPayment.rrn,
 		"result" : ConsumptionData.dataForPayment.result,
-		"orderStateDesc" : ConsumptionData.dataForPayment.result == 0 ? "完成" : "失败",
+		"orderStateDesc" : ConsumptionData.dataForPayment.result == "success" ? "完成" : "失败",
 		"payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
 		"transAmount" : ConsumptionData.dataForPayment.transAmount,
 		"showAmount" : util.formatAmountStr(ConsumptionData.dataForPayment.transAmount),
@@ -148,7 +148,7 @@ Pay.restart = function(params) {
 
 	if (ConsumptionData.isMultiPay == true) {
 		var orderStateDesc = "完成";
-		if (ConsumptionData.dataForPayment.result == 0) {
+		if (ConsumptionData.dataForPayment.result == "success") {
 			var paidAmount = 0 + ConsumptionData.dataForMultiPay.paidAmount;
 			paidAmount += ConsumptionData.dataForPayment.transAmount;
 			ConsumptionData.dataForMultiPay.paidAmount = "" + paidAmount;

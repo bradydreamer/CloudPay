@@ -6,21 +6,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.control.ISO8583Controller;
-import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.service.IMerchService;
-import cn.koolcloud.pos.service.MerchInfo;
-import cn.koolcloud.pos.service.MerchService;
-import cn.koolcloud.pos.util.UtilForDataStorage;
-import cn.koolcloud.postest.R;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.webkit.ValueCallback;
-import android.widget.BaseAdapter;
+import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.service.IMerchService;
+import cn.koolcloud.pos.service.MerchInfo;
+import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.postest.R;
 
 public class PayExScreen extends WelcomeScreen {
 	private PayInfo payInfo;
@@ -191,25 +186,29 @@ public class PayExScreen extends WelcomeScreen {
 	private void endPay(JSONObject result) {
 		Log.d(TAG, "endPay");
 
+		JSONArray resultArray = result.optJSONArray("orderList");
+		JSONObject resultData = null;
+		try {
+			if (resultArray.length() > 0) {
+				resultData = resultArray
+						.getJSONObject(resultArray.length() - 1);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Intent i = new Intent();
 		i.putExtra(ACTION, action);
-		
-//		{
-//			"totalAmount" : ConsumptionData.dataForPayment.transAmount,
-//			"paidAmount" : ConsumptionData.dataForPayment.transAmount,
-//			"orderList" : [order],
-//		})
-//		
-//		order = {
-//				"ref" : ConsumptionData.dataForPayment.rrn,
-//				"result" : ConsumptionData.dataForPayment.result,
-//				"orderStateDesc" : ConsumptionData.dataForPayment.result == 0 ? "完成" : "失败",
-//				"payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
-//				"transAmount" : ConsumptionData.dataForPayment.transAmount,
-//				"showAmount" : util.formatAmountStr(ConsumptionData.dataForPayment.transAmount),
-//			};
-
-		i.putExtra("orderInfo", result.toString());		
+		i.putExtra("ref", resultData.optString("ref"));
+		if (resultData.optString("result").equals("success")) {
+			i.putExtra("result", "success");
+		} else {
+			i.putExtra("result", "fail");
+		}
+		i.putExtra("orderStateDesc", resultData.optString("orderStateDesc"));
+		i.putExtra("payTypeDesc", resultData.optString("payTypeDesc"));
+		i.putExtra("transAmount", resultData.optString("transAmount"));
+		i.putExtra("showAmount", resultData.optString("showAmount"));
 		setResult(RESULT_CODE, i);
 	}
 
@@ -223,8 +222,8 @@ public class PayExScreen extends WelcomeScreen {
 		Log.d(TAG, "endGetMerchInfo");
 		IMerchService ms = ClientEngine.engineInstance().getMerchService();
 		Map<String, ?> map = UtilForDataStorage
-				.readPropertyBySharedPreferences(
-						MyApplication.getContext(), "merchant");
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
 		String mId = (String) map.get("merchId");
 		String tID = (String) map.get("machineId");
 		ms.setMerchInfo(new MerchInfo(mId, tID));
