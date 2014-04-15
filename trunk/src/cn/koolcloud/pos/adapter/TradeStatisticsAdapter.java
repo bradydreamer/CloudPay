@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.util.UtilForMoney;
 
 import android.content.Context;

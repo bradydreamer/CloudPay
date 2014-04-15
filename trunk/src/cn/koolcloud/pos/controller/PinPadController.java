@@ -9,7 +9,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.widget.TextView;
 
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.jni.PinPadInterface;

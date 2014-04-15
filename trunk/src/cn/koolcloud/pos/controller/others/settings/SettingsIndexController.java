@@ -1,6 +1,6 @@
 package cn.koolcloud.pos.controller.others.settings;
 
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
 import android.os.Bundle;

@@ -3,7 +3,7 @@ package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
 import android.os.Bundle;

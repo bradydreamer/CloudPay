@@ -2,6 +2,7 @@ package cn.koolcloud.pos;
 
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.os.Handler;
 
 public class AndroidHandler {
@@ -11,7 +12,7 @@ public class AndroidHandler {
 		return mainHandler;
 	}
 
-	public static void handle(final String androidHandlerName, final Object data, final String callBackId) {
+	public static void handle(final String androidHandlerName, final Object data, final String callBackId, final Context context) {
 		final ClientEngine clientEngine = ClientEngine.engineInstance();
 		Thread androidHandlerThread = new Thread(new Runnable() {
 			
@@ -69,7 +70,7 @@ public class AndroidHandler {
 						}
 					}, "正在组织数据");
 				} else if ("printTrans".equals(androidHandlerName)) {
-					clientEngine.print(jsonObjData);
+					clientEngine.print(jsonObjData, context);
 				} else if ("insertTransData8583".equals(androidHandlerName)) {
 					clientEngine.insertTransData8583(jsonObjData, callBackId);
 				} else if ("updateTransData8583".equals(androidHandlerName)) {

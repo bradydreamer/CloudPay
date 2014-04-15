@@ -6,8 +6,8 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.postest.R;
 
 public class LoginController extends BaseController {
 	private EditText et_userName;

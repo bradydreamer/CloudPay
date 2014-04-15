@@ -15,7 +15,6 @@ import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.util.UtilForDataStorage;
-import cn.koolcloud.postest.R;
 
 public class PayExScreen extends WelcomeScreen {
 	private PayInfo payInfo;
@@ -201,9 +200,9 @@ public class PayExScreen extends WelcomeScreen {
 		i.putExtra(ACTION, action);
 		i.putExtra("ref", resultData.optString("ref"));
 		if (resultData.optString("result").equals("success")) {
-			i.putExtra("result", "success");
+			i.putExtra("result", true);
 		} else {
-			i.putExtra("result", "fail");
+			i.putExtra("result", false);
 		}
 		i.putExtra("orderStateDesc", resultData.optString("orderStateDesc"));
 		i.putExtra("payTypeDesc", resultData.optString("payTypeDesc"));

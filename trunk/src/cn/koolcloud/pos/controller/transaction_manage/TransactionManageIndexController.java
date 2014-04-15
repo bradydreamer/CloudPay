@@ -1,6 +1,6 @@
 package cn.koolcloud.pos.controller.transaction_manage;
 
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
 import android.os.Bundle;

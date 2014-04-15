@@ -6,7 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.util.UtilForJSON;

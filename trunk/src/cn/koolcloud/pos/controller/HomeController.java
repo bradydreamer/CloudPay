@@ -7,8 +7,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
-import cn.koolcloud.postest.R;
 
 public class HomeController extends BaseHomeController implements View.OnClickListener {
 	private LinearLayout settingsIndexController;

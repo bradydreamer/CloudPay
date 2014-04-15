@@ -1,28 +1,23 @@
 package cn.koolcloud.printer;
 
-public class PrinterException extends Exception 
-{
+public class PrinterException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public PrinterException()
-    {
-    	super();
-    }
+	public PrinterException() {
+		super();
+	}
 
-    public PrinterException(String message)
-    {
-    	super(message);
-    }
+	public PrinterException(String message) {
+		super(message);
+	}
 
-    public PrinterException(String message, Throwable throwable)
-    {
-    	super(message, throwable);
-    }
+	public PrinterException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 
-    public PrinterException(Throwable throwable)
-    {
-    	super(throwable);
-    }
+	public PrinterException(Throwable throwable) {
+		super(throwable);
+	}
 
 }

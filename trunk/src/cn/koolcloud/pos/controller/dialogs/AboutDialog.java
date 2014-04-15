@@ -16,9 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import cn.koolcloud.ipos.appstore.service.aidl.IMSCService;
 import cn.koolcloud.ipos.appstore.service.aidl.ParcelableApp;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.Logger;
-import cn.koolcloud.postest.R;
 
 public class AboutDialog extends Activity implements View.OnClickListener {
 

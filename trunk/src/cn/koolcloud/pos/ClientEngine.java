@@ -68,7 +68,6 @@ import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
 import cn.koolcloud.pos.util.UtilForThread;
 import cn.koolcloud.pos.widget.CustomAnimDialog;
-import cn.koolcloud.postest.R;
 
 public class ClientEngine {
 
@@ -506,6 +505,7 @@ public class ClientEngine {
 		String preferencesName = data.optString("key", null);
 		Map<String, ?> map = UtilForDataStorage
 				.readPropertyBySharedPreferences(context, preferencesName);
+
 		callBack(identifier, new JSONObject(map));
 	}
 
@@ -882,7 +882,7 @@ public class ClientEngine {
 		});
 	}
 
-	public void print(final JSONObject jsonObjData) {
+	public void print(final JSONObject jsonObjData, final Context context) {
 		Thread printThread = new Thread(new Runnable() {
 
 			@Override
@@ -897,7 +897,7 @@ public class ClientEngine {
 					Log.d(TAG, "print res8583 : " + res8583);
 					if (!"".equals(req8583) && !"".equals(res8583)) {
 						iso8583Controller.printer(Utility.hex2byte(req8583),
-								Utility.hex2byte(res8583), userName);
+								Utility.hex2byte(res8583), userName, context);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -1,8 +1,8 @@
 package cn.koolcloud.pos.controller.multipay;
 
 import android.view.View;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
-import cn.koolcloud.postest.R;
 
 public class MultiPayIndex extends BaseHomeController {
 	

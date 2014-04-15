@@ -1,7 +1,7 @@
 package cn.koolcloud.pos;
 
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.HomeController;
-import cn.koolcloud.postest.R;
 
 import android.os.Bundle;
 import android.os.Handler;

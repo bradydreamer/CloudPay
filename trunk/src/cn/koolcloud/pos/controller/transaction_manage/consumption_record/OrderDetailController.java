@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.postest.R;
 
 public class OrderDetailController extends BaseController {
 	private boolean cancelEnable;

@@ -3,7 +3,7 @@ package cn.koolcloud.pos.widget;
 import cn.koolcloud.pos.util.UtilForDensity;
 import cn.koolcloud.pos.util.UtilForGraghic;
 import cn.koolcloud.pos.AndroidHandler;
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 
 import android.app.Dialog;
 import android.content.Context;

@@ -19,11 +19,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.pos.JavaScriptEngine;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
-import cn.koolcloud.postest.R;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -205,7 +203,7 @@ public abstract class BaseHomeController extends BaseController {
 						iv.setImageResource(R.drawable.logo_quickpay);
 					}
 					iv.setBackgroundResource(R.drawable.icon_bg);
-				}				 
+				}
 			} else {
 				TextView tv = (TextView) v;
 				tv.setText(data.optString("paymentName"));

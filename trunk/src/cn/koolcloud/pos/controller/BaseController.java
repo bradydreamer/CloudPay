@@ -22,10 +22,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.others.settings.LoginController;
 import cn.koolcloud.pos.controller.others.settings.SetMachineIdController;
 import cn.koolcloud.pos.controller.others.settings.SetMerchIdController;
-import cn.koolcloud.postest.R;
 
 public abstract class BaseController extends Activity {
 

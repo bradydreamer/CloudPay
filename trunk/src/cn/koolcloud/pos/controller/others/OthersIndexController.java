@@ -1,7 +1,7 @@
 package cn.koolcloud.pos.controller.others;
 
 import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.postest.R;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.others.settings.SettingsIndexController;
 

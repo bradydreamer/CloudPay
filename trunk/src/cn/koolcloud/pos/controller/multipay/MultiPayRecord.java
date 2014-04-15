@@ -11,10 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.MultiPayRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.util.UtilForJSON;
-import cn.koolcloud.postest.R;
 
 public class MultiPayRecord extends BaseController {
 

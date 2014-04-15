@@ -181,4 +181,36 @@ public interface Constant
 	final byte PARAM_IC        = 2;
 	final byte PARAM_BLACKLIST = 3;
 	
+	/**
+	 * Printer Constants
+	 */
+	public static final String TAG_DTITAL = "e-Buy电子凭证";
+
+	public static final String TAG_LINE = "******************************";
+	
+	public static final String TAG_LINE2 = "------------------------------";
+	
+	public static final String TAG_MERCHANT = "商户名称：";
+	
+	public static final String TAG_TERMINAL = "终端编号：";
+
+	public static final String TAG_REF = "参考号  ：";
+	
+	public static final String TAG_DATE = "日  期  ：";
+
+	public static final String TAG_TIME = "时  间  ：";
+	
+	public static final String TAG_PAYTYPE = "交易类型：";
+
+	public static final String TAG_TRACE = "流水号  ：";
+	
+	public static final String TAG_ACCOUNT = "支付账户：";
+
+	public static final String TAG_CHANNEL = "支付渠道：";
+	
+	public static final String TAG_AMOUNT = "支付金额：";
+	
+	public static final String TAG_TELLERNO = "柜员号  ：";
+	
+	public static final String TAG_SIGNATURE = "用户签名：";
 }

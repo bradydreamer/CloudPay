@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.util.Log;
 
 import cn.koolcloud.pos.ISO8583Engine;
@@ -748,7 +749,7 @@ public class ISO8583Controller implements Constant {
 		return true;
 	}
 
-	public void printer(byte[] request, byte[] respons, String operator)
+	public void printer(byte[] request, byte[] respons, String operator, Context context)
 			throws PrinterException {
 
 		byte[] data = new byte[request.length - 2];
@@ -766,7 +767,8 @@ public class ISO8583Controller implements Constant {
 		}
 		oldTrans.setOper(operator);
 		Log.d(APP_TAG, "oldTrans : " + oldTrans.toString());
-		PrinterHelper.getInstance().printReceipt(oldTrans);
+//		PrinterHelper.getInstance(context).printReceipt(oldTrans);
+		PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
 	}
 
 	public String getResCode() {

@@ -42,7 +42,7 @@ public class JavaScriptEngine {
 		webView = new WebView(context.getApplicationContext());
 		webView.getSettings().setJavaScriptEnabled(true);
 		// webView.setw
-		webView.addJavascriptInterface(new JSResponser(), "JSResponser");
+		webView.addJavascriptInterface(new JSResponser(context), "JSResponser");
 		loadJSWaitUntilDone(
 				"file:///android_asset/JavaScript/platform/android.html", null);
 	}
@@ -130,6 +130,11 @@ public class JavaScriptEngine {
 
 	private class JSResponser {
 		private String messageJSON;
+		private Context ctx;
+
+		public JSResponser(Context context) {
+			this.ctx = context;
+		}
 
 		@SuppressWarnings("unused")
 		public void flushMessage(String messageJSONFromJs) {
@@ -145,7 +150,7 @@ public class JavaScriptEngine {
 				if (null != message.optString("handler")) {
 					String androidHandlerName = message.optString("handler");
 					AndroidHandler.handle(androidHandlerName,
-							message.opt("params"), callBackHandler);
+							message.opt("params"), callBackHandler, ctx);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
