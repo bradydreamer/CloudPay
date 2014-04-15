@@ -7,6 +7,8 @@
 	var _templateList_void = {};
 	var _templateList_refund = {};
 	var _settingParams = [];
+	var _printTypeList = {};
+	var _prdtListLength = 0;
 	var _currentStep, _currentType, _totalSteps;
 
 	var TYPE_reqInfo = 1;
@@ -15,6 +17,9 @@
 	var TYPE_download_refund = 4;
 	var TYPE_save = 5;
 	var TYPE_end = 6;
+
+	var INDEX_PRINTTYPE = 0;
+	var INDEX_SALETEMPLATE = 1;
 
 	function start() {
 		_currentType = TYPE_reqInfo;
@@ -29,7 +34,8 @@
 				reqInfo();
 				break;
 			case TYPE_download_sale:
-				downloadTemplate(_templateList_sale);
+				//downloadTemplate(_templateList_sale);
+				downloadSaleTemplate(_templateList_sale);
 				break;
 			case TYPE_download_void:
 				downloadTemplate(_templateList_void);
@@ -82,7 +88,8 @@
 		_templateList_void = {};
 		_templateList_refund = {};
 		_settingParams = [];
-
+		_printTypeList = {};
+		_prdtListLength = prdtList.length;
 		for (var i = 0; i < prdtList.length; i++) {
 			var saleTemplate = prdtList[i]["trans_template"];
 
@@ -106,8 +113,11 @@
 					"openBrh" : _settingParams[i].openBrh,
 					"templateName" : saleTemplate,
 				};
+				_printTypeList[_settingParams[i].paymentId] = {
+					"paymentId" : _settingParams[i].paymentId,
+				};
 			};
-
+			
 			if (voidTemplate != null) {
 				_settingParams[i]["voidTemplate"] = voidTemplate;
 				_templateList_void[voidTemplate] = {
@@ -143,10 +153,10 @@
 	}
 
 	var _downloasStep = 0;
-
 	function downloadTemplate(templateList) {
 		var template;
 		var count = 0;
+
 		for (var t in templateList) {
 			if (count == _downloasStep) {
 				template = templateList[t];
@@ -185,6 +195,62 @@
 
 	}
 
+
+	/**
+			For loading SaleTemplate
+
+	*/
+	function downloadSaleTemplate(templateList) {
+		var template;
+		var count = 0;
+		for (var t in templateList) {
+			if (count == _downloasStep) {
+				template = templateList[t];
+				break;
+			};
+			count++;
+		};
+		if (template == null) {
+			callBack_Saledowload();
+		} else {
+			var req = {
+				//"paymentId" : template.paymentId,
+				//"openBrh" : template.openBrh,
+				"templateName" : template.templateName,
+			};
+			Net.asynConnect("merchant/payprocQuery", req, callBack_Saledowload);
+
+			// var name = "js_" + req.templateName.replace(".js", "");
+			// callBack_dowload(window[name]);
+		}
+
+		function callBack_Saledowload(params){
+
+			if (params != null) {
+				//Scene.alert("JSLOG,callBack_Saledowload,templateList["+params.templateName+"]="+JSON.stringify(params.templateContent[1].saleTemp));
+				//Scene.alert("JSLOG,callBack_Saledowload,_printTypeList["+templateList[params.templateName].paymentId+"]="+JSON.stringify(params.templateContent[0].printType));
+				templateList[params.templateName] = JSON.stringify(params.templateContent[INDEX_SALETEMPLATE].saleTemp);
+				//Scene.alert("JSLOG,callBack_Saledowload,_prdListLen="+_prdtListLength);
+				for (var i = 0; i < _prdtListLength; i++) {
+					if(_settingParams[i]["saleTemplate"]==params.templateName){
+						_printTypeList[_settingParams[i].paymentId]=JSON.stringify(params.templateContent[INDEX_PRINTTYPE].printType);
+					}
+				}
+				
+				_currentStep++;
+			};
+
+			_downloasStep++;
+			if (_downloasStep >= objLength(templateList)) {
+				_currentType++;
+				_downloasStep = 0;
+			};
+			run();
+			
+		}
+
+	}
+
 	var _saveStep = 0;
 
 	function save() {
@@ -198,6 +264,13 @@
 				RMS.clear("saleTemplates", function() {
 					RMS.save("saleTemplates", _templateList_sale);
 				});
+				RMS.clear("printType",function(){
+					RMS.save("printType",_printTypeList);
+				});
+				//Scene.alert("JSLOG,save,_printTypeList['0001']="+_printTypeList["0001"]);
+				//Scene.alert("JSLOG,save,_printTypeList['7702']="+_printTypeList["7702"]);
+				//Scene.alert("JSLOG,save,_printTypeList['7730']="+_printTypeList["7730"]);
+				//Scene.alert("JSLOG,save,_printTypeList['7715']="+_printTypeList["7715"]);
 				break;
 			case 2:
 				RMS.clear("voidTemplates", function() {
