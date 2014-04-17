@@ -109,9 +109,10 @@
              >
 
             <Button
+                android:id="@+id/nextpaybutton"
                 android:layout_width="240dp"
                 android:layout_height="60dp"
-                android:background="@drawable/button_next_background"
+                android:background="@drawable/button_nextpay_background"
                 android:onClick="onPay"
                 android:text="@string/multipay_record_btn_text_pay"
                 android:textColor="@android:color/white"

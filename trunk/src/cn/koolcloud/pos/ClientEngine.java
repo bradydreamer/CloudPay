@@ -64,6 +64,7 @@ import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.ISecureService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.SecureInfo;
+import cn.koolcloud.pos.util.Logger;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
 import cn.koolcloud.pos.util.UtilForThread;
@@ -357,6 +358,7 @@ public class ClientEngine {
 		String msg = data.optString("msg");
 		if (msg.startsWith("JSLOG")) {
 			Log.i(TAG, msg);
+			Logger.i(msg);
 		} else {
 			if (UtilForThread.isCurrentInMainThread(Thread.currentThread())) {
 				showAlertInMainThread(data, identifier);
@@ -849,6 +851,8 @@ public class ClientEngine {
 					iso8583Controller.getBatch());
 			data8583JsonObject.put("transTime",
 					iso8583Controller.getTransTime());
+			data8583JsonObject.put("paymentId",
+					iso8583Controller.getPaymentId());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -893,11 +897,13 @@ public class ClientEngine {
 					String req8583 = jsonObjData.optString("req8583");
 					String res8583 = jsonObjData.optString("res8583");
 					String userName = jsonObjData.optString("userName");
+					String paymentId = jsonObjData.optString("paymentId");
+					String paymentName = jsonObjData.optString("paymentName");
 					Log.d(TAG, "print req8583 : " + req8583);
 					Log.d(TAG, "print res8583 : " + res8583);
 					if (!"".equals(req8583) && !"".equals(res8583)) {
 						iso8583Controller.printer(Utility.hex2byte(req8583),
-								Utility.hex2byte(res8583), userName, context);
+								Utility.hex2byte(res8583), userName, paymentId, paymentName, context);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -138,27 +138,38 @@ Pay.succRestart = function() {
 Pay.restart = function(params) {
 
 	var order = {
-		"ref" : ConsumptionData.dataForPayment.rrn,
-		"result" : ConsumptionData.dataForPayment.result,
+		"refNo" : ConsumptionData.dataForPayment.rrn,
+		//"result" : ConsumptionData.dataForPayment.result,
 		"orderStateDesc" : ConsumptionData.dataForPayment.result == "success" ? "完成" : "失败",
+		"payTime" : ConsumptionData.dataForPayment.transTime,
 		"payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
 		"transAmount" : ConsumptionData.dataForPayment.transAmount,
-		"showAmount" : util.formatAmountStr(ConsumptionData.dataForPayment.transAmount),
+		//"showAmount" : ConsumptionData.dataForPayment.transAmount,
 	};
 
 	if (ConsumptionData.isMultiPay == true) {
 		var orderStateDesc = "完成";
 		if (ConsumptionData.dataForPayment.result == "success") {
-			var paidAmount = 0 + ConsumptionData.dataForMultiPay.paidAmount;
-			paidAmount += ConsumptionData.dataForPayment.transAmount;
+			var paidAmount = parseInt(ConsumptionData.dataForMultiPay.paidAmount);
+			paidAmount += parseInt(ConsumptionData.dataForPayment.transAmount);
 			ConsumptionData.dataForMultiPay.paidAmount = "" + paidAmount;
 		} else {
 			orderStateDesc = "失败";
 		}
 		ConsumptionData.dataForMultiPay.orderList.push(order);
+		var balance = parseInt(ConsumptionData.dataForMultiPay.totalAmount)-parseInt(ConsumptionData.dataForMultiPay.paidAmount);
+		var result = "";
+		if(balance == parseInt(ConsumptionData.dataForMultiPay.totalAmount)){
+			ConsumptionData.dataForMultiPay.result = "0";
+		}else if(balance > 0 && balance < parseInt(ConsumptionData.dataForMultiPay.totalAmount)){
+			ConsumptionData.dataForMultiPay.result = "1";
+		}else if(balance == 0){
+			ConsumptionData.dataForMultiPay.result = "2";
+		}
 		var formData = {
-			"totalAmount" : util.formatAmountStr(ConsumptionData.dataForMultiPay.totalAmount),
-			"paidAmount" : util.formatAmountStr(ConsumptionData.dataForMultiPay.paidAmount),
+			"totalAmount" : ConsumptionData.dataForMultiPay.totalAmount,
+			"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount,
+			"result" : ConsumptionData.dataForMultiPay.result,
 			"orderList" : ConsumptionData.dataForMultiPay.orderList,
 		};
 		Scene.goBack("MultiPayRecord", formData);
@@ -166,14 +177,20 @@ Pay.restart = function(params) {
 			return;
 		}
 	} else {
-		if (ConsumptionData.dataForPayment.isExternalOrder) {
+		if (ConsumptionData.dataForPayment.isExternalOrder) {			
 			if (ConsumptionData.dataForMultiPay.completed == true) {
-				Scene.goBack("first", ConsumptionData.dataForMultiPay);
+				Scene.goBack("first", {
+					"totalAmount" : ConsumptionData.dataForMultiPay.totalAmount,
+					"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount,
+					"result" : ConsumptionData.dataForMultiPay.result,
+					"orderList" : ConsumptionData.dataForMultiPay.orderList,
+					});
 				ConsumptionData.resetMultiData();
 			} else {
 				Scene.goBack("first", {
 					"totalAmount" : ConsumptionData.dataForPayment.transAmount,
 					"paidAmount" : ConsumptionData.dataForPayment.transAmount,
+					"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
 					"orderList" : [order],
 				});
 			}

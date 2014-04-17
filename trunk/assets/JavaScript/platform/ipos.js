@@ -35,6 +35,8 @@
   function gotoPrint(data) {
     if (null != data) {
       data.userName = window.user.userName;
+	  data.paymentId =  ConsumptionData.dataForPayment.paymentId;
+	  data.paymentName =  ConsumptionData.dataForPayment.paymentName;
     }
     Global.callObjcHandler("printTrans", data);
   }

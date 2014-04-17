@@ -61,6 +61,32 @@
 		}
 		Scene.showScene("MerchantInfo", "", params)
 	}
+	
+	//Get merchant info after login
+	function getMerchantInfoAfterLogin() {
+		window.util.exeActionWithLoginChecked(getMerchantInfoOnLogin);
+	}
+	
+	//get merchant info from interface
+	function getMerchantInfoOnLogin() {
+		var req = {
+			merchId : window.user.merchId,
+		};
+		Net.asynConnect("merchant/getInfo", req, actionAfterLoginGetMerchantInfo);
+	}
+	
+	//save merchant info
+	function actionAfterLoginGetMerchantInfo(data) {
+		var params = {
+			merchId : window.user.merchId,
+			machineId : window.user.machineId,
+			merchName : data.merchName,
+			merchAccount : data.merchAccount,
+		};
+		Scene.alert("JSLOG MERCH NAME:" + data.merchName);
+		Scene.alert("JSLOG MERCH Acount:" + data.merchAccount);
+		RMS.save("merchant", params);
+	}
 
 	function downloadMerchData() {
 		window.util.showSceneWithLoginChecked("SettingsDownload");
@@ -74,6 +100,7 @@
 		"gotoLogin" : gotoLogin,
 		"gotoLogout" : gotoLogout,
 		"gotoMerchantInfo" : gotoMerchantInfo,
+		"getMerchantInfoAfterLogin" : getMerchantInfoAfterLogin,
 		"gotoSetMerchId" : gotoSetMerchId,
 		"gotoSetMachineId" : gotoSetMachineId,
 		"clearReverseData" : clearReverseData,

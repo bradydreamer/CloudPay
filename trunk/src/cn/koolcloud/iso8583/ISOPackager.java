@@ -63,7 +63,7 @@ public class ISOPackager implements Constant {
 		byte[] tag_4 = "6F12".getBytes();
 		byte[] tag_5 = "6F13".getBytes();
 
-		byte[] tag_6 = "6F10".getBytes();
+//		byte[] tag_6 = "6F10".getBytes();
 
 		byte[] tag_7 = "6F14".getBytes();
 		byte[] tag_8 = "6F20".getBytes();
@@ -142,7 +142,7 @@ public class ISOPackager implements Constant {
 		F40_Length = F40_Length + url.length;
 
 		// 通联商户订单号
-		System.arraycopy(tag_6, 0, tmpBuf, F40_Length, tag_6.length);
+		/*System.arraycopy(tag_6, 0, tmpBuf, F40_Length, tag_6.length);
 		F40_Length = F40_Length + tag_6.length;
 		System.arraycopy(F40_TYPE, 0, tmpBuf, F40_Length, F40_TYPE.length);
 		F40_Length = F40_Length + F40_TYPE.length;
@@ -151,7 +151,7 @@ public class ISOPackager implements Constant {
 		System.arraycopy(order_ID_length, 0, tmpBuf, F40_Length, 4);
 		F40_Length = F40_Length + 4;
 		System.arraycopy(order_ID, 0, tmpBuf, F40_Length, order_ID.length);
-		F40_Length = F40_Length + order_ID.length;
+		F40_Length = F40_Length + order_ID.length;*/
 
 		// 签名
 

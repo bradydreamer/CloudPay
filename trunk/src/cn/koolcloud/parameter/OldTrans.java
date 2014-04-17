@@ -26,6 +26,10 @@ public class OldTrans implements Constant{
     private Integer oldBatch;		//批次号
     private String oldTID;			//
     private String oldMID;			//
+    private String oldMertName;		//Merchant Name
+    private String paymentName;		//payment Name
+    private String paymentId;		//payment ID
+    private String alipayPId;		//alipay PID
 
 	private byte oldEntryMode;
 	private byte oldPinMode;
@@ -42,6 +46,38 @@ public class OldTrans implements Constant{
     
 
     
+	public String getAlipayPId() {
+		return alipayPId;
+	}
+
+	public void setAlipayPId(String alipayPId) {
+		this.alipayPId = alipayPId;
+	}
+
+	public String getPaymentId() {
+		return paymentId;
+	}
+
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
+	}
+
+	public String getPaymentName() {
+		return paymentName;
+	}
+
+	public void setPaymentName(String paymentName) {
+		this.paymentName = paymentName;
+	}
+
+	public String getOldMertName() {
+		return oldMertName;
+	}
+
+	public void setOldMertName(String oldMertName) {
+		this.oldMertName = oldMertName;
+	}
+
 	public int getTransType() {
 		return transType;
 	}

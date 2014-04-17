@@ -1,17 +1,14 @@
 package cn.koolcloud.control;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.util.Log;
-
-import cn.koolcloud.pos.ISO8583Engine;
-import cn.koolcloud.pos.Utility;
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.iso8583.ChongZheng;
 import cn.koolcloud.iso8583.ISOField;
@@ -19,6 +16,10 @@ import cn.koolcloud.iso8583.ISOPackager;
 import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
+import cn.koolcloud.pos.ISO8583Engine;
+import cn.koolcloud.pos.Utility;
+import cn.koolcloud.pos.controller.BaseHomeController;
+import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
 import cn.koolcloud.util.ByteUtil;
@@ -127,17 +128,60 @@ public class ISO8583Controller implements Constant {
 
 	public boolean purchase(JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_SALE);
-
-		int[] bitMap = { 
+		//fix no pin block original start
+		/*int[] bitMap = { 
 				ISOField.F02_PAN, ISOField.F03_PROC,
 				ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
 				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
 				ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-				/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
+				ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40,
 				ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
 				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
 				ISOField.F60, ISOField.F64_MAC 
+			};*/
+		//fix no pin block original end
+		
+		//fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(STR_NULL_PIN)) {
+				paramer.trans.setPinMode(NO_PIN);
+				bitMap = new int[] { 
+						ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						/*ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
+						ISOField.F60, ISOField.F64_MAC 
+				};
+			} else {
+				bitMap = new int[] { 
+						ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+						ISOField.F60, ISOField.F64_MAC 
+				};
+			}
+		} else {
+			bitMap = new int[] { 
+					ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+					/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
+					ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+					ISOField.F60, ISOField.F64_MAC 
 			};
+		}
+		//fix no pin block end
 		return mapAndPack(jsonObject, bitMap);
 	}
 
@@ -311,10 +355,10 @@ public class ISO8583Controller implements Constant {
 			case ISOField.F52_PIN:
 				//PIN F52
 				String pinblock = jsonObject.optString("F52");
-				if(!pinblock.isEmpty()){
+				if (!pinblock.isEmpty()) {
 					paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
 					paramer.trans.setPinMode(HAVE_PIN);
-				}else{
+				} else {
 					save = false;
 				}
 				break;
@@ -749,7 +793,7 @@ public class ISO8583Controller implements Constant {
 		return true;
 	}
 
-	public void printer(byte[] request, byte[] respons, String operator, Context context)
+	public void printer(byte[] request, byte[] respons, String operator, String paymentId, String paymentName, Context context)
 			throws PrinterException {
 
 		byte[] data = new byte[request.length - 2];
@@ -767,8 +811,25 @@ public class ISO8583Controller implements Constant {
 		}
 		oldTrans.setOper(operator);
 		Log.d(APP_TAG, "oldTrans : " + oldTrans.toString());
-//		PrinterHelper.getInstance(context).printReceipt(oldTrans);
-		PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
+		
+		//get print type
+		Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(context, "printType");
+		String printType = (String) map.get(paymentId);
+		
+		//get merchant name
+		Map<String, ?> merchMap = UtilForDataStorage.readPropertyBySharedPreferences(context, "merchant");
+		String merchName = (String) merchMap.get("merchName");
+		oldTrans.setOldMertName(merchName);
+		
+		//set payment name
+		oldTrans.setPaymentName(paymentName);
+		oldTrans.setPaymentId(paymentId);
+		
+		if (printType.equals(Constant.PRINT_TYPE_ALIPAY)) {
+			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
+		} else {
+			PrinterHelper.getInstance(context).printReceipt(oldTrans);
+		} 
 	}
 
 	public String getResCode() {
@@ -793,6 +854,11 @@ public class ISO8583Controller implements Constant {
 		String batch = "";
 		batch = paramer.payOrderBatch;
 		return batch;
+	}
+	
+	public String getPaymentId() {
+		String paymentId = paramer.paymentId;
+		return paymentId;
 	}
 	
 	public String getTransTime(){

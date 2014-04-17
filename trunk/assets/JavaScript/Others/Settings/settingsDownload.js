@@ -34,7 +34,7 @@
 				reqInfo();
 				break;
 			case TYPE_download_sale:
-				//downloadTemplate(_templateList_sale);
+				// downloadTemplate(_templateList_sale);
 				downloadSaleTemplate(_templateList_sale);
 				break;
 			case TYPE_download_void:

@@ -59,7 +59,7 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.setFontBold(1));
 				printerWrite(PrinterCommand.setAlignMode(1));
 
-				printerWrite(("通联POS签购单").getBytes("GB2312"));
+				printerWrite(("Smart POS签购单").getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(PrinterCommand.setFontBold(0));
@@ -86,6 +86,9 @@ public class PrinterHelper implements Constant {
 				printerWrite("--------------------------------".getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
+				printerWrite(("商户名:" + trans.getOldMertName()).getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				
 				printerWrite(("商户号:" + trans.getOldMID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
@@ -257,85 +260,104 @@ public class PrinterHelper implements Constant {
 	// QRCode print
 
 	public void printQRCodeReceipt(OldTrans trans) {
+		PrinterControl control = DeviceManager.getInstance().getPrinterControlEx();
 		try {
-			PrinterControl control = DeviceManager.getInstance().getPrinterControlEx();
 
 			control.open();
-
-			control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
-
-			Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.alipay);
-			Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
-			control.printImage(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
-
-			control.printText(TAG_DTITAL + "\n", FontType.DOUBLE_WH, Align.CENTER);
-
-			control.printText(TAG_LINE2 + "\n");
-
-			control.printText(TAG_MERCHANT + "\n");
-
-			control.printText("万宁测试门店" + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
-
-			control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
-
-			control.printText(TAG_REF + trans.getOldRrn() + "\n");
-
-			control.printText(TAG_DATE + Utils.getCurrentDate() + "\n");
-
-			control.printText(TAG_TIME + Utils.getCurrentTime() + "\n");
-
-			control.printText(TAG_PAYTYPE + "\n");
-
-			String transType = "";
-			if (trans.getTransType() == TRAN_VOID) {
-				transType = "消费撤销";
-			} else if (trans.getTransType() == TRAN_SALE) {
-				transType = "消费";
-			} else {
-				transType = trans.getTransType() + "";
+			
+			for (int i = 0; i < 2; i++) {
+				
+				control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
+				
+				Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.alipay);
+				Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
+				control.printImage(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
+				
+//			control.printText(TAG_DTITAL + "\n", FontType.DOUBLE_WH, Align.CENTER);
+				
+				control.printText(TAG_LINE2 + "\n");
+				
+				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+				control.printText(TAG_MERCHANT + "\n");
+				
+				control.printText(trans.getOldMertName() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
+				
+//				control.printText(TAG_AP_NAME + trans.getPaymentName() + "\n");
+				control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
+				
+				control.printText(TAG_REF + trans.getOldRrn() + "\n");
+				
+				control.printText(TAG_DATE + Utils.getCurrentDate() + "\n");
+				
+				control.printText(TAG_TIME + Utils.getCurrentTime() + "\n");
+				
+				control.printText(TAG_PAYTYPE + "\n");
+				
+				String transType = "";
+				if (trans.getTransType() == TRAN_VOID) {
+					transType = "消费撤销";
+				} else if (trans.getTransType() == TRAN_SALE) {
+					transType = "消费";
+				} else {
+					transType = trans.getTransType() + "";
+				}
+				
+				control.printText(transType + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
+				
+				control.printText(TAG_TRACE
+						+ StringUtil.fillZero(
+								Integer.toString(trans.getOldTrace()), 6) + "\n");
+				
+				control.printText(TAG_LINE2 + "\n");
+				
+				control.printText(TAG_CHANNEL + trans.getPaymentName() + "\n");
+				
+				control.printText(TAG_AMOUNT
+						+ AppUtil.formatAmount(trans.getOldTransAmount()) + "\n");
+				
+				control.printText("PID: " + trans.getAlipayPId() + "\n");
+				
+				String number = trans.getOldApOrderId();
+				
+				control.printText("No." + number + "\n");
+				
+				// not record the setting state, resetting it after finishing
+				control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
+				Bitmap mQrcode = QRcodeBitmap.create(number, 250, 250);
+				control.printImage(mQrcode);
+				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+				
+				control.printText("POS退货时，请扫上方二维码" + "\n");
+				
+				control.printText(TAG_LINE2 + "\n");
+				
+				control.printText(TAG_TELLERNO + trans.getOper() + "\n");
+				
+				if (i == 0) {
+					control.printText(TAG_SIGNATURE + "\n\n\n");
+					control.printText(TAG_LINE2 + "\n");
+					control.printText("\n\n\n\n\n");
+					
+					Thread.currentThread().sleep(8000);
+				} else {
+					control.printText("\n\n\n\n\n");
+				}
+				
 			}
-
-			control.printText(transType + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
-
-			control.printText(TAG_TRACE
-					+ StringUtil.fillZero(
-							Integer.toString(trans.getOldTrace()), 6) + "\n");
-
-			control.printText(TAG_LINE2 + "\n");
-
-			control.printText(TAG_CHANNEL + "支付宝当面付" + "\n");
-
-			control.printText(TAG_ACCOUNT + "imbakn@gmail.com" + "\n");
-
-			control.printText(TAG_AMOUNT
-					+ AppUtil.formatAmount(trans.getOldTransAmount()) + "\n");
-
-			String number = trans.getOldRrn();
-
-			control.printText("No." + number + "\n");
-
-			// not record the setting state, resetting it after finishing
-			control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
-			Bitmap mQrcode = QRcodeBitmap.create(number, 250, 250);
-			control.printImage(mQrcode);
-			control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
-
-			control.printText("POS退货时，请扫上方二维码" + "\n");
-
-			control.printText(TAG_LINE2 + "\n");
-
-			control.printText(TAG_TELLERNO + "0001" + "\n");
-
-			control.printText(TAG_SIGNATURE + "\n\n\n");
-
-			control.printText(TAG_LINE2 + "\n");
-
-			control.printText("\n\n\n");
-			control.close();
+			
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (AccessException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				control.close();
+			} catch (AccessException e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 }

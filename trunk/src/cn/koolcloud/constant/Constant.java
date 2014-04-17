@@ -170,6 +170,7 @@ public interface Constant
     // PIN Mode
     final byte HAVE_PIN      = 0x10;  //有密码
     final byte NO_PIN        = 0x20;  //无密码
+    final String STR_NULL_PIN	= "0000000000000000";//null pin block string
     
 	// Key Algorithm
 	final byte SINGLE_KEY = 0;
@@ -204,13 +205,20 @@ public interface Constant
 
 	public static final String TAG_TRACE = "流水号  ：";
 	
+	public static final String TAG_MERCH_ORG_ORDER = "收单机构流水号  ：";
+	
+	public static final String TAG_AP_NAME = "收单机构名称  ：";
+	
 	public static final String TAG_ACCOUNT = "支付账户：";
 
 	public static final String TAG_CHANNEL = "支付渠道：";
 	
 	public static final String TAG_AMOUNT = "支付金额：";
 	
-	public static final String TAG_TELLERNO = "柜员号  ：";
+	public static final String TAG_TELLERNO = "操作员：";
 	
 	public static final String TAG_SIGNATURE = "用户签名：";
+	
+	public static final String PRINT_TYPE_DEFAULT 	= "1";			//default print type
+	public static final String PRINT_TYPE_ALIPAY 	= "2";			//Alipay print type
 }

@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
@@ -66,6 +68,21 @@ public class LoginController extends BaseController {
 		onCall(loginType, msg);
 		// }
 	}
+	
+	@Override
+	protected void loadRelatedJS() {
+		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
+		super.loadRelatedJS();
+	}
+
+	//call get merchant info start mod by Teddy on 7 April
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		onCall("SettingsIndex.getMerchantInfoAfterLogin", null);
+	}
+	//call get merchant info end mod by Teddy on 7 April
 
 	@Override
 	protected void setControllerContentView() {

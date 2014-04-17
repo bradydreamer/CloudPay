@@ -27,8 +27,10 @@ Pay.gotoMultiPayFlow = function() {
 			ConsumptionData.dataForMultiPay.paidAmount = "0";
 		}
 		var formData = {
-			"totalAmount": util.formatAmountStr(ConsumptionData.dataForMultiPay.totalAmount),
-			"paidAmount": util.formatAmountStr(ConsumptionData.dataForMultiPay.paidAmount),
+			//"totalAmount": util.formatAmountStr(ConsumptionData.dataForMultiPay.totalAmount),
+				"totalAmount": ConsumptionData.dataForMultiPay.totalAmount,
+			//"paidAmount": util.formatAmountStr(ConsumptionData.dataForMultiPay.paidAmount),
+			"paidAmount": ConsumptionData.dataForMultiPay.paidAmount,
 		};
 		if (Pay.cacheData.preScene == "InputAmount") {
 			formData.shouldRemoveCurCtrl = true;
@@ -143,9 +145,14 @@ Pay.gotoFlow = function() {
 		formData = {};
 		
 		if(ConsumptionData.isMultiPay == true && ConsumptionData.dataForMultiPay.totalAmount != null){		
-			var totalAmount = 0 + ConsumptionData.dataForMultiPay.totalAmount;
-			var paidAmount = 0 + ConsumptionData.dataForMultiPay.paidAmount;
+			//var totalAmount = 0 + ConsumptionData.dataForMultiPay.totalAmount;
+			var totalAmount = parseInt(ConsumptionData.dataForMultiPay.totalAmount);
+			//var paidAmount = 0 + ConsumptionData.dataForMultiPay.paidAmount;
+			var paidAmount = parseInt(ConsumptionData.dataForMultiPay.paidAmount);
 			var balance = totalAmount - paidAmount;
+			if(balance < 0){
+				balance = 0.00;
+			}
 			formData.maxAmount = "" + balance;
 		}
 	}

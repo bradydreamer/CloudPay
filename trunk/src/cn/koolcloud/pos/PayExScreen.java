@@ -2,7 +2,6 @@ package cn.koolcloud.pos;
 
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -185,29 +184,18 @@ public class PayExScreen extends WelcomeScreen {
 	private void endPay(JSONObject result) {
 		Log.d(TAG, "endPay");
 
-		JSONArray resultArray = result.optJSONArray("orderList");
-		JSONObject resultData = null;
+		Intent i = new Intent();
 		try {
-			if (resultArray.length() > 0) {
-				resultData = resultArray
-						.getJSONObject(resultArray.length() - 1);
-			}
+			i.putExtra(ACTION, action);
+			i.putExtra("totalAmount", result.getString("totalAmount"));
+			i.putExtra("paidAmount", result.getString("paidAmount"));
+			i.putExtra("result", result.getString("result"));
+			i.putExtra("detailList", result.getJSONArray("orderList")
+					.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Intent i = new Intent();
-		i.putExtra(ACTION, action);
-		i.putExtra("ref", resultData.optString("ref"));
-		if (resultData.optString("result").equals("success")) {
-			i.putExtra("result", true);
-		} else {
-			i.putExtra("result", false);
-		}
-		i.putExtra("orderStateDesc", resultData.optString("orderStateDesc"));
-		i.putExtra("payTypeDesc", resultData.optString("payTypeDesc"));
-		i.putExtra("transAmount", resultData.optString("transAmount"));
-		i.putExtra("showAmount", resultData.optString("showAmount"));
 		setResult(RESULT_CODE, i);
 	}
 

@@ -346,6 +346,11 @@ public class ChongZheng implements Constant {
 				oldTrans.setOldCardId(oldCardId);
 				continue;
 			}
+			if(flag.equals("22")){
+				String alipayPId = s;
+				oldTrans.setAlipayPId(alipayPId);
+				continue;
+			}
 		}
 		
 	}
