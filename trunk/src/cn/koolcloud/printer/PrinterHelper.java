@@ -11,6 +11,7 @@ import cn.koolcloud.constant.Constant;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.printer.command.CharacterSettingCommand;
 import cn.koolcloud.printer.command.FormatSettingCommand;
 import cn.koolcloud.printer.control.Align;
 import cn.koolcloud.printer.control.Depth;
@@ -149,6 +150,9 @@ public class PrinterHelper implements Constant {
 				} else if (trans.getTransType() == TRAN_SALE) {
 					printerWrite("消费".getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
+				} else if (trans.getTransType() == TRAN_REFUND) {
+					printerWrite("退货".getBytes("GB2312"));
+					printerWrite(PrinterCommand.linefeed());
 				} else {
 					String str = "type =" + trans.getTransType();
 					printerWrite(str.getBytes("GB2312"));
@@ -194,7 +198,7 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.setFontEnlarge(0x01));
 
 				String amt = AppUtil.formatAmount(trans.getOldTransAmount()) + " RMB";
-				if (trans.getTransType() == TRAN_VOID) {
+				if (trans.getTransType() == TRAN_VOID || trans.getTransType() == TRAN_REFUND) {
 					amt = " - " + amt;
 				}
 				printerWrite(("金额: " + amt).getBytes("GB2312"));
@@ -236,7 +240,9 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(PrinterCommand.feedLine(2));
-				Thread.currentThread().sleep(8000);
+				if (i == 0) {
+					Thread.currentThread().sleep(8000);
+				}
 			}
 
 		} catch (UnsupportedEncodingException e) {
@@ -275,10 +281,11 @@ public class PrinterHelper implements Constant {
 				
 //			control.printText(TAG_DTITAL + "\n", FontType.DOUBLE_WH, Align.CENTER);
 				
+				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+				
 				control.printText(TAG_LINE2 + "\n");
 				
-				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
-				control.printText(TAG_MERCHANT + "\n");
+				control.printText(TAG_MERCHANT);
 				
 				control.printText(trans.getOldMertName() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
@@ -291,55 +298,66 @@ public class PrinterHelper implements Constant {
 				
 				control.printText(TAG_TIME + Utils.getCurrentTime() + "\n");
 				
-				control.printText(TAG_PAYTYPE + "\n");
+				control.printText(TAG_PAYTYPE);
 				
 				String transType = "";
 				if (trans.getTransType() == TRAN_VOID) {
 					transType = "消费撤销";
 				} else if (trans.getTransType() == TRAN_SALE) {
 					transType = "消费";
+				} else if (trans.getTransType() == TRAN_REFUND) {
+					transType = "退货";
 				} else {
 					transType = trans.getTransType() + "";
 				}
 				
 				control.printText(transType + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
-				control.printText(TAG_TRACE
-						+ StringUtil.fillZero(
-								Integer.toString(trans.getOldTrace()), 6) + "\n");
+				control.printText(TAG_TRACE + StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6) + "\n");
+				
+				control.printText(TAG_TELLERNO + trans.getOper() + "\n");
 				
 				control.printText(TAG_LINE2 + "\n");
 				
 				control.printText(TAG_CHANNEL + trans.getPaymentName() + "\n");
 				
-				control.printText(TAG_AMOUNT
-						+ AppUtil.formatAmount(trans.getOldTransAmount()) + "\n");
+				String amt = AppUtil.formatAmount(trans.getOldTransAmount());
+				if (trans.getTransType() == TRAN_VOID || trans.getTransType() == TRAN_REFUND) {
+					amt = " - " + amt;
+				}
 				
-				control.printText("PID: " + trans.getAlipayPId() + "\n");
+				control.printText(TAG_AMOUNT);
+				
+				control.sendESC(PrinterCommand.setFontEnlarge(0x01));
+				control.printText(amt + "\n");
+				control.sendESC(PrinterCommand.setFontEnlarge(0));
+				
+				control.printText("PID: " + trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
 				String number = trans.getOldApOrderId();
 				
-				control.printText("No." + number + "\n");
+				control.printText("No." + number + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
 				// not record the setting state, resetting it after finishing
 				control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
 				Bitmap mQrcode = QRcodeBitmap.create(number, 250, 250);
 				control.printImage(mQrcode);
+				
 				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
 				
-				control.printText("POS退货时，请扫上方二维码" + "\n");
+//				control.printText("POS退货时，请扫上方二维码" + "\n");
 				
 				control.printText(TAG_LINE2 + "\n");
-				
-				control.printText(TAG_TELLERNO + trans.getOper() + "\n");
 				
 				if (i == 0) {
 					control.printText(TAG_SIGNATURE + "\n\n\n");
 					control.printText(TAG_LINE2 + "\n");
+					control.printText("本人确认以上交易，同意将其记入支付宝账户");
 					control.printText("\n\n\n\n\n");
 					
 					Thread.currentThread().sleep(8000);
 				} else {
+					control.printText("本人确认以上交易，同意将其记入支付宝账户");
 					control.printText("\n\n\n\n\n");
 				}
 				

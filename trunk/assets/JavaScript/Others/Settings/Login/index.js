@@ -86,27 +86,27 @@
 	1.直接传入用户名、密码、商户号、终端号，以及登录类型（比如退货登录和撤销登录），前置直接返回应答，根据responseCode来判断是否有权限做
 		相应的操作，如:0表示有权限，其它表示无权限。
 	2.直接传入用户名、密码、商户号、终端号，前置直接返回应答，根据应答的gradeId来判断是否有权限做相应的操作。
-	目前下面的代码是以第一种方式实现的。
+	目前下面的代码是以第二种方式实现的。
 	*/
-	function refundConfirmLogin(params){
+	function refundConfirmLogin(msg){
 		/*
 		1.这里要组req.登录和查询该用户的退货权限
 		2.连接前置，并传callback->afterConfirmLogin
 		3.callback根据response.gradeId,来判断是否是有权限的等级，如果返回的等级有权限，则继续进行退货流程，否则退回订单详情。
 		*/
-		var loginType = "refundLogin";
-		confirmLogin(params,loginType);
+		var params = JSON.parse(msg);
+		confirmLogin(params);
 		return;
 	}
 
-	function voidConfirmLogin(params){
+	function voidConfirmLogin(msg){
 		/*
 		1.这里要组req.登录和查询该用户的退货权限
 		2.连接前置，并传callback->afterConfirmLogin
 		3.callback根据response.gradeId,来判断是否是有权限的等级，如果返回的等级有权限，则继续进行撤销流程，否则退回订单详情。
 		*/
-		var loginType = "voidLogin";
-		confirmLogin(params,loginType);
+		var params = JSON.parse(msg);
+		confirmLogin(params);
 		return;
 	}
 	
@@ -114,30 +114,28 @@
 		/*根据params.gradeId，查看该用户是否有权限，如果有权限，则继续进行相应的流程，如果没有权限，则退回订单详情*/
 		
 		/*
+		gradeId为："1":高权限，"2":低
     */
-    if(data.responseCode == "0"){
+    if(data.gradeId == "1"){
+    	Scene.alert("权限确认成功！",function(){
     	currentStep = Pay.cacheData.step;
     	currentTag = Pay.cacheData.flowList[currentStep].packTag;
     	Pay.cacheData.step = currentStep + 1;
-    	Pay.gotoFlow();
+    	Pay.gotoFlow();});
     }else{
-    	goback();
+    	Scene.alert("权限确认失败！",goback);
+    	
     }
 	}
 	
-	function confirmLogin(params,loginType){
+	function confirmLogin(params){
 		 var req = {
         merchId: window.user.merchId,
         iposId: window.user.machineId,
         operatorId: params.userName,
-        pwd: params.pwd,       
-        loginType: loginType, 
+        pwd: params.pwd,
       }
-      if(loginType == "refundLogin"){
-      	Net.connect("merchant/refundlogin", req, afterConfirmLogin);
-      }else{
-      	Net.connect("merchant/voidlogin", req, afterConfirmLogin);
-      }
+	Net.connect("merchant/verifyLogin", req, afterConfirmLogin);
 		
 	}
   

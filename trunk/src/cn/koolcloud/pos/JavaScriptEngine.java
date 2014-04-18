@@ -3,8 +3,6 @@ package cn.koolcloud.pos;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.util.UtilForThread;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,11 +14,11 @@ public class JavaScriptEngine {
 
 	private static JavaScriptEngine instance;
 	private WebView webView;
-	
+
 	private String jsResponse;
 	private ValueCallback<String> jsCallBack;
 	private Handler mHandler;
-	
+
 	private boolean hasLoadedGlobal;
 	private static final String TAG = "JavaScriptEngine";
 
@@ -47,7 +45,7 @@ public class JavaScriptEngine {
 				"file:///android_asset/JavaScript/platform/android.html", null);
 	}
 
-	public void loadJs(String fileName) {		
+	public void loadJs(String fileName) {
 		if (!hasLoadedGlobal && fileName.contains("global")) {
 			hasLoadedGlobal = true;
 		}
@@ -66,6 +64,7 @@ public class JavaScriptEngine {
 	public void removeJs(String fileName) {
 		String funcStr = String.format("javascript:%s('%s');",
 				"removeScriptById", fileName);
+		Log.i(TAG, "Warning:--------RemoveJS:" + funcStr);
 		loadJSWaitUntilDone(funcStr, null);
 	}
 
@@ -104,7 +103,7 @@ public class JavaScriptEngine {
 	private void loadJSWaitUntilDone(final String message,
 			final ValueCallback<String> callBack) {
 		mHandler.post(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				jsResponse = null;
@@ -163,7 +162,7 @@ public class JavaScriptEngine {
 			if (jsResponse == null) {
 				jsResponse = "";
 			}
-			if(jsCallBack != null){
+			if (jsCallBack != null) {
 				jsCallBack.onReceiveValue(jsResponse);
 			}
 		}

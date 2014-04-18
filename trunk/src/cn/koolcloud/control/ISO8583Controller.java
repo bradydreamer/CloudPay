@@ -235,7 +235,8 @@ public class ISO8583Controller implements Constant {
 	 */
 	public boolean cheXiao(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_VOID);
-		int[] bitMap = { 
+		//fix no pin block original start
+		/*int[] bitMap = { 
 				ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
 				ISOField.F11_STAN, ISOField.F14_EXP,
 				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
@@ -243,7 +244,48 @@ public class ISO8583Controller implements Constant {
 				ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
 				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
 				ISOField.F60, ISOField.F61, ISOField.F64_MAC 
-			};
+			};*/
+		//fix no pin block original end
+		
+		//fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(STR_NULL_PIN)) {
+				paramer.trans.setPinMode(NO_PIN);
+				bitMap = new int[] { 
+						ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
+						ISOField.F11_STAN, ISOField.F14_EXP,
+						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						/*ISOField.F52_PIN, ISOField.F53_SCI,*/ ISOField.F55_ICC,
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC 
+					};
+			} else {
+				bitMap = new int[] { 
+						ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
+						ISOField.F11_STAN, ISOField.F14_EXP,
+						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC 
+					};
+			}
+		} else {
+			bitMap = new int[] { 
+					ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
+					ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
+					ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
+					ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+					ISOField.F60, ISOField.F61, ISOField.F64_MAC 
+				};
+		}
+		//fix no pin block end
+		
 		
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
 		return mapAndPack(jsonObject, bitMap);

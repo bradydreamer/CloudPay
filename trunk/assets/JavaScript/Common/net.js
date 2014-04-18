@@ -166,9 +166,13 @@
       "header": {},
       "body": [],
     };
-
-    reqData.header.session = _sessionId;
-    if (_sessionId == "") {
+	
+	if(action == "merchant/login")
+	{
+		_sessionId = "-1";
+	}
+	reqData.header.session = _sessionId;
+    if (_sessionId == "" || _sessionId == "-1") {
       _keyExchange = true;
     }
     if (_keyExchange) {
@@ -202,17 +206,17 @@
   function _checkServerErr(data) {
     //服务器重启
     if (data.responseCode == "90") {
-      window.user.init({});
+      
       _sessionId = "-1";
       _keyExchange = true;
+      Scene.alert(data.errorMsg,function(){
+      	window.user.init({});
+		Scene.goBack("Home");
+		setTimeout(window.util.exeActionWithLoginChecked(function() {
+		}),1000);      	
+      });
+			
 
-      function goHome() {
-        Home.needVerifyVersion = true;
-        // Scene.alert(data.errorMsg, function() {
-        Scene.goBack("Home");
-        // })
-      }
-      setTimeout(goHome, 300);
       return true;
     }
     return false;

@@ -13,5 +13,6 @@ public class FontType {
 	public static final byte DOUBLE_H = 0x01;
 	public static final byte DOUBLE_WH = 0x11;
 	public static final byte EXT_BIG = 0x33;
+	public static final byte BOLD = (byte) 0x01;
 	
 }

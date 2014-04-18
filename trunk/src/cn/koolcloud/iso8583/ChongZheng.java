@@ -347,7 +347,7 @@ public class ChongZheng implements Constant {
 				continue;
 			}
 			if(flag.equals("22")){
-				String alipayPId = s;
+				String alipayPId = s.substring(8);
 				oldTrans.setAlipayPId(alipayPId);
 				continue;
 			}

@@ -215,7 +215,7 @@ public interface Constant
 	
 	public static final String TAG_AMOUNT = "支付金额：";
 	
-	public static final String TAG_TELLERNO = "操作员：";
+	public static final String TAG_TELLERNO = "操作员  ：";
 	
 	public static final String TAG_SIGNATURE = "用户签名：";
 	
