@@ -191,13 +191,13 @@ public interface Constant
 	
 	public static final String TAG_LINE2 = "------------------------------";
 	
-	public static final String TAG_MERCHANT = "商户名称：";
+	public static final String TAG_MERCHANT = "商户名  ：";
 	
-	public static final String TAG_TERMINAL = "终端编号：";
+	public static final String TAG_TERMINAL = "终端号  ：";
 
 	public static final String TAG_REF = "参考号  ：";
 	
-	public static final String TAG_DATE = "日  期  ：";
+	public static final String TAG_DATE_TIME = "日期/时间：";
 
 	public static final String TAG_TIME = "时  间  ：";
 	

@@ -212,8 +212,7 @@
       Scene.alert(data.errorMsg,function(){
       	window.user.init({});
 		Scene.goBack("Home");
-		setTimeout(window.util.exeActionWithLoginChecked(function() {
-		}),1000);      	
+		setTimeout(window.util.exeActionWithLoginChecked, 500);      	
       });
 			
 

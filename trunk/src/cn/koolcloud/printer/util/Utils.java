@@ -47,7 +47,7 @@ public class Utils {
 	}
 	
 	public static String getCurrentDate() {
-		return getCurrentDateTime("yyyy-MM-dd");
+		return getCurrentDateTime("yyyy/MM/dd");
 	}
 	
 	public static String getCurrentTime() {

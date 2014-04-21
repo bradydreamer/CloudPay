@@ -85,10 +85,12 @@ public class PrinterControlImpl implements PrinterControl {
 			throw new AccessException(2);
 		}
 
-		int result = PrinterInterface.begin();
+		//fix recalling begin bug on wizzar pos on 21 April start
+		/*int result = PrinterInterface.begin();
 		if (result < 0) {
 			throw new AccessException(2);
-		}
+		}*/
+		//fix recalling begin bug on wizzar pos on 21 April end
 		//PrinterBitmapUtil.printBitmap(bitmap, 0, 0);
 		
 		PrintBitmapNew.printBitMap(bitmap);
@@ -114,10 +116,12 @@ public class PrinterControlImpl implements PrinterControl {
 			throw new IllegalArgumentException(
 					"set Param error, please check !");
 		}
-		int result = PrinterInterface.begin();
+		//fix recalling begin bug on wizzar pos on 21 April start
+		/*int result = PrinterInterface.begin();
 		if (result < 0) {
 			throw new AccessException(2);
-		}
+		}*/
+		//fix recalling begin bug on wizzar pos on 21 April end
 		
 		// Setting bar code width 2-6
 		byte[] cmds = new byte[0];
@@ -148,14 +152,16 @@ public class PrinterControlImpl implements PrinterControl {
 		if (!this.isOpened) {
 			throw new AccessException(2);
 		}
-		int result = PrinterInterface.begin();
+		//fix recalling begin bug on wizzar pos on 21 April start
+		/*int result = PrinterInterface.begin();
 		if (result < 0) {
 			throw new AccessException(2);
 		}
 
 		result = PrinterInterface.end();
 		if (result < 0)
-			throw new AccessException(2);
+			throw new AccessException(2);*/
+		//fix recalling begin bug on wizzar pos on 21 April end
 	}
 
 	public int sendESC(byte[] cmds) throws AccessException {
