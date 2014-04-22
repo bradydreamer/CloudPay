@@ -275,6 +275,7 @@ public abstract class BaseController extends Activity {
 					&& !(this instanceof SetMerchIdController)) {
 				JavaScriptEngine js = ClientEngine.engineInstance()
 						.javaScriptEngine();
+				Log.i(TAG, "Warning:--------onDestroy:" + getControllerJSName());
 				js.removeJs(getControllerJSName());
 			}
 		}

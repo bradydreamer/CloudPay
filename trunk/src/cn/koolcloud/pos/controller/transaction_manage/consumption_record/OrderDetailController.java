@@ -6,11 +6,14 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
 public class OrderDetailController extends BaseController {
+	
+	private final static int PAY_SUCCESS = 1; 
 	private boolean cancelEnable;
 	private String rrn;
 	private String transTime;
@@ -18,6 +21,7 @@ public class OrderDetailController extends BaseController {
 	private String func_confirm;
 	private String openBrh;
 	private String paymentId;
+	private int paymentOrder = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,9 @@ public class OrderDetailController extends BaseController {
 
 		openBrh = data.optString("openBrh");
 		paymentId = data.optString("paymentId");
+		
+		paymentOrder = data.optInt("paymentOrder");
+		initButtons();
 	}
 
 	private void initTextView(int resourceId, JSONObject data, String key) {
@@ -55,6 +62,15 @@ public class OrderDetailController extends BaseController {
 		textView.setText(data.optString(key, ""));
 		if (removeIfNull && textView.getText().equals("")) {
 			((ViewGroup) textView.getParent()).setVisibility(View.GONE);
+		}
+	}
+	
+	private void initButtons() {
+		Button refundBtn = (Button) findViewById(R.id.order_detail_btn_refund);
+		Button reverseBtn = (Button) findViewById(R.id.order_detail_btn_cancel);
+		if (paymentOrder == PAY_SUCCESS) {
+			refundBtn.setVisibility(View.INVISIBLE);
+			reverseBtn.setVisibility(View.INVISIBLE);
 		}
 	}
 

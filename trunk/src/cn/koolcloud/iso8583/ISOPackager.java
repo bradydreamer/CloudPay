@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import android.util.Log;
-
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.util.AppUtil;
@@ -45,14 +44,9 @@ public class ISOPackager implements Constant {
 	}
 
 	/**
-	 * 支付密码： 放在40域6F02标签，加密和转换同52域PIN 
-	 * 短信验证码： 放在40域6F11标签，加密和转换同52域PIN
-	 * 通联商户订单号：放在40域6F10标签 
-	 * 批次号： 放在40域6F08标签 
-	 * 签名： 放在40域6F12标签 
-	 * 是否短信交易： 放到40域6F14标签
-	 * 机构号： 放到40域6F20标签
-	 * 其他类型卡号： 放到40域6F21标签
+	 * 支付密码： 放在40域6F02标签，加密和转换同52域PIN 短信验证码： 放在40域6F11标签，加密和转换同52域PIN
+	 * 通联商户订单号：放在40域6F10标签 批次号： 放在40域6F08标签 签名： 放在40域6F12标签 是否短信交易： 放到40域6F14标签
+	 * 机构号： 放到40域6F20标签 其他类型卡号： 放到40域6F21标签
 	 * */
 	private static void setF40_CUP(UtilFor8583 appState) {
 		int F40_Length = 0;
@@ -171,17 +165,19 @@ public class ISOPackager implements Constant {
 		}
 
 		// 业务码
-//		System.arraycopy(tag_5, 0, tmpBuf, F40_Length, tag_5.length);
-//		F40_Length = F40_Length + tag_5.length;
-//		System.arraycopy(F40_TYPE, 0, tmpBuf, F40_Length, F40_TYPE.length);
-//		F40_Length = F40_Length + F40_TYPE.length;
-//		byte[] productCode = appState.sale_F40_Type.getBytes(); // 6F13
-//		byte[] productCode_length = NumberUtil.longToAscii(productCode.length,
-//				4);
-//		System.arraycopy(productCode_length, 0, tmpBuf, F40_Length, 4);
-//		F40_Length = F40_Length + 4;
-//		System.arraycopy(productCode, 0, tmpBuf, F40_Length, productCode.length);
-//		F40_Length = F40_Length + productCode.length;
+		// System.arraycopy(tag_5, 0, tmpBuf, F40_Length, tag_5.length);
+		// F40_Length = F40_Length + tag_5.length;
+		// System.arraycopy(F40_TYPE, 0, tmpBuf, F40_Length, F40_TYPE.length);
+		// F40_Length = F40_Length + F40_TYPE.length;
+		// byte[] productCode = appState.sale_F40_Type.getBytes(); // 6F13
+		// byte[] productCode_length =
+		// NumberUtil.longToAscii(productCode.length,
+		// 4);
+		// System.arraycopy(productCode_length, 0, tmpBuf, F40_Length, 4);
+		// F40_Length = F40_Length + 4;
+		// System.arraycopy(productCode, 0, tmpBuf, F40_Length,
+		// productCode.length);
+		// F40_Length = F40_Length + productCode.length;
 
 		// 短信交易
 
@@ -192,8 +188,7 @@ public class ISOPackager implements Constant {
 			System.arraycopy(F40_TYPE, 0, tmpBuf, F40_Length, F40_TYPE.length);
 			F40_Length = F40_Length + F40_TYPE.length;
 
-			byte[] sendCode_length = NumberUtil
-					.longToAscii(sendCode.length, 4);
+			byte[] sendCode_length = NumberUtil.longToAscii(sendCode.length, 4);
 			System.arraycopy(sendCode_length, 0, tmpBuf, F40_Length, 4);
 			F40_Length = F40_Length + 4;
 			System.arraycopy(sendCode, 0, tmpBuf, F40_Length, sendCode.length);
@@ -213,7 +208,7 @@ public class ISOPackager implements Constant {
 		F40_Length = F40_Length + 4;
 		System.arraycopy(openBrh, 0, tmpBuf, F40_Length, openBrh.length);
 		F40_Length = F40_Length + openBrh.length;
-		
+
 		if (appState.cardId != null) {
 			byte[] cardId = appState.cardId.getBytes(); // 6F21
 			System.arraycopy(tag_9, 0, tmpBuf, F40_Length, tag_9.length);
@@ -221,8 +216,7 @@ public class ISOPackager implements Constant {
 			System.arraycopy(F40_TYPE, 0, tmpBuf, F40_Length, F40_TYPE.length);
 			F40_Length = F40_Length + F40_TYPE.length;
 
-			byte[] cardId_length = NumberUtil
-					.longToAscii(cardId.length, 4);
+			byte[] cardId_length = NumberUtil.longToAscii(cardId.length, 4);
 			System.arraycopy(cardId_length, 0, tmpBuf, F40_Length, 4);
 			F40_Length = F40_Length + 4;
 			System.arraycopy(cardId, 0, tmpBuf, F40_Length, cardId.length);
@@ -394,8 +388,8 @@ public class ISOPackager implements Constant {
 			tmpBuf[F60_Length / 2] = 0x21;
 			break;
 		case TRAN_SALE:
-		case TRAN_SALE_REVERSAL:		//冲正
-		case TRAN_REVOCATION_REVERSAL: //撤销冲正
+		case TRAN_SALE_REVERSAL: // 冲正
+		case TRAN_REVOCATION_REVERSAL: // 撤销冲正
 		case TRAN_INSTALLMENT_SALE:
 		case TRAN_BONUS_SALE:
 		case TRAN_MOTO_SALE:
@@ -460,22 +454,22 @@ public class ISOPackager implements Constant {
 			break;
 		}
 		F60_Length += 2;
-		
-		System.arraycopy(NumberUtil.intToBcd(appState.trans.getBatchNumber(), 3), 0,tmpBuf, F60_Length / 2, 3);
+
+		System.arraycopy(
+				NumberUtil.intToBcd(appState.trans.getBatchNumber(), 3), 0,
+				tmpBuf, F60_Length / 2, 3);
 		F60_Length += 6;
 
 		switch (appState.trans.getTransType()) {
 		case TRAN_LOGIN:
-			// 交易类型码
-			/**
-			 * 0x50签到-普通POS操作员 0x51签到-联机初始化 0x52签到-密钥更新 0x53签到-密钥更新成功通知POS中心
-			 * */
-			tmpBuf[F60_Length / 2 - 4] = 0x50; // 0x50签到-普通POS操作员
-			tmpBuf[F60_Length / 2 - 3] = 0x60;
-			tmpBuf[F60_Length / 2 - 2] = 0x00;
-			tmpBuf[F60_Length / 2 - 1] = 0x01;
+			// 网络管理信息码
 			tmpBuf[F60_Length / 2] = 0x00;
-			tmpBuf[F60_Length / 2 + 1] = 0x30; //
+			tmpBuf[F60_Length / 2 + 1] = 0x30;
+			// 批次号,默认6个0，每次签到，都会从pos中心获取最新的批次号并保存
+			byte[] space6 = { '0', '0', '0', '0', '0', '0' };
+			byte[] batchNumber = new byte[(space6.length + 1) / 2];
+			ByteUtil.asciiToBCD(space6, 0, batchNumber, 0, space6.length, 0);
+			System.arraycopy(batchNumber, 0, tmpBuf, (F60_Length / 4) / 2, 3);
 
 			F60_Length += 3;
 
@@ -580,13 +574,13 @@ public class ISOPackager implements Constant {
 			tmpBuf[F60_Length / 2 + 1] = 0x05;// TODO 终端读取能力 6.4
 			F60_Length += 4;
 			// 60.5 60.6
-			
+
 			String F60_last = "";
 			int F60_last_index = F60_Length;
-			
+
 			tmpBuf[F60_Length / 2] = 0x00; // 60.5
 			F60_Length += 1;
-			
+
 			if (appState.trans.getTransType() == TRAN_SALE
 					|| appState.trans.getTransType() == TRAN_VOID
 					|| appState.trans.getTransType() == TRAN_VOID_SALE
@@ -604,36 +598,36 @@ public class ISOPackager implements Constant {
 					|| appState.trans.getTransType() == TRAN_REFUND
 					|| appState.trans.getTransType() == TRAN_CHECK_CARDHOLDER
 					|| appState.trans.getTransType() == TRAN_SALE_REVERSAL
-					|| appState.trans.getTransType() ==TRAN_REVOCATION_REVERSAL
+					|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
 					|| appState.trans.getTransType() == TRAN_BALANCE) {
 
 				F60_last += "0"; // 60.5
-				
-				//60.6
-				if(!appState.paymentId.isEmpty())
-				{						
-					F60_last += appState.paymentId;					
+
+				// 60.6
+				if (!appState.paymentId.isEmpty()) {
+					F60_last += appState.paymentId;
 				}
-				
+
 				F60_Length += 4;
 			} else {
-				
+
 			}
-			
+
 			// 60.7
 			if (appState.trans.getTransType() == TRAN_SALE
 					|| appState.trans.getTransType() == TRAN_SALE_REVERSAL
-					|| appState.trans.getTransType() ==TRAN_REVOCATION_REVERSAL
+					|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
 					|| appState.trans.getTransType() == TRAN_VOID
 					|| appState.trans.getTransType() == TRAN_BALANCE) {
-				
+
 				F60_last += "99";
 				F60_Length += 2;
-				
-				byte[] F60LastBytes = F60_last.getBytes();					
-				ByteUtil.asciiToBCD(F60LastBytes, 0, tmpBuf, F60_last_index / 2, F60LastBytes.length, 0);				
+
+				byte[] F60LastBytes = F60_last.getBytes();
+				ByteUtil.asciiToBCD(F60LastBytes, 0, tmpBuf,
+						F60_last_index / 2, F60LastBytes.length, 0);
 			}
-			
+
 			if (appState.trans.getTransType() == TRAN_BONUS_SALE
 					|| appState.trans.getTransType() == TRAN_BONUS_VOID_SALE
 					|| appState.trans.getTransType() == TRAN_BONUS_REFUND
@@ -693,8 +687,8 @@ public class ISOPackager implements Constant {
 				|| appState.trans.getTransType() == TRAN_VOID_COMPLETE
 				|| appState.trans.getTransType() == TRAN_OFFLINE
 				|| appState.trans.getTransType() == TRAN_ADJUST_OFFLINE
-				|| appState.trans.getTransType() == TRAN_SALE_REVERSAL		//冲正
-				|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL		//撤销冲正
+				|| appState.trans.getTransType() == TRAN_SALE_REVERSAL // 冲正
+				|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL // 撤销冲正
 				|| appState.trans.getTransType() == TRAN_ADJUST_SALE) {
 			if (appState.oldTrans.getOldTransDate().length() > 0) {
 				/* Yes; data in field exists */
@@ -1468,11 +1462,13 @@ public class ISOPackager implements Constant {
 	// }
 	// return out;
 	// }
-	
+
 	public static int pack(boolean uploadFlag, UtilFor8583 appState) {
-		return pack(uploadFlag, appState, null);		
+		return pack(uploadFlag, appState, null);
 	}
-	public static int pack(boolean uploadFlag, UtilFor8583 appState, int[] defaultBitMap) {
+
+	public static int pack(boolean uploadFlag, UtilFor8583 appState,
+			int[] defaultBitMap) {
 
 		iso.clearBitFlag();
 
@@ -1481,17 +1477,28 @@ public class ISOPackager implements Constant {
 			F_MessageType[1] = 0x20;
 		} else {
 			// 获取msg type
-			Log.d(APP_TAG,"appState.trans.getTransType() = " + appState.trans.getTransType());
-			ByteUtil.asciiToBCD(MessageType.getReqMsgType(appState.trans.getTransType()), 0 ,  F_MessageType, 0, 4, 0);
+			Log.d(APP_TAG,
+					"appState.trans.getTransType() = "
+							+ appState.trans.getTransType());
+			ByteUtil.asciiToBCD(
+					MessageType.getReqMsgType(appState.trans.getTransType()),
+					0, F_MessageType, 0, 4, 0);
 		}
+		/*
+		 * 设置消息类型
+		 */
 		movGen(ISOField.F00_MSGID, F_MessageType, 0);
 
 		byte[] F_Bitmap = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		/*
+		 * 设置位图
+		 */
 		movGen(ISOField.F01_BITMAP, F_Bitmap, 0);
 
 		appState.trans.setMacFlag(false);
-		
-		int[] bitMap = defaultBitMap != null ? defaultBitMap : ISOField.bitMap[appState.trans.getTransType()];
+
+		int[] bitMap = defaultBitMap != null ? defaultBitMap
+				: ISOField.bitMap[appState.trans.getTransType()];
 
 		for (int i = 0; i < bitMap.length; i++) {
 			if (debug) {
@@ -1502,22 +1509,32 @@ public class ISOPackager implements Constant {
 			case ISOField.F02_PAN:
 				if (appState.trans.getPAN().length() > 0
 						&& appState.trans.getEntryMode() != SWIPE_ENTRY // 读取磁条卡号
-						) {
-					byte[] F2_AccountNumber = new byte[(appState.trans.getPAN().length() + 1) / 2];
-					ByteUtil.asciiToBCD(appState.trans.getPAN().getBytes(), 0,F2_AccountNumber, 0, appState.trans.getPAN().length(), 0);
-					movGen(ISOField.F02_PAN, F2_AccountNumber, appState.trans.getPAN().length());
+				) {
+					byte[] F2_AccountNumber = new byte[(appState.trans.getPAN()
+							.length() + 1) / 2];
+					ByteUtil.asciiToBCD(appState.trans.getPAN().getBytes(), 0,
+							F2_AccountNumber, 0, appState.trans.getPAN()
+									.length(), 0);
+					movGen(ISOField.F02_PAN, F2_AccountNumber, appState.trans
+							.getPAN().length());
 				}
 				break;
 			case ISOField.F03_PROC:
 				F3_ProcessingCode = new byte[3];
-				if(null != appState.oldTrans 
-						&& appState.oldTrans.getOldProcesscode().equals("200000")
-							&& TRAN_SALE_REVERSAL==appState.trans.getTransType()){
-					ByteUtil.asciiToBCD(MessageType.getProcessingCode(Constant.TRAN_VOID), 0,F3_ProcessingCode, 0, 6, 0);
-				}else{
-					ByteUtil.asciiToBCD(MessageType.getProcessingCode(appState.trans.getTransType()), 0,F3_ProcessingCode, 0, 6, 0);
-				} 
-//				ByteUtil.asciiToBCD(MessageType.getProcessingCode(appState.trans.getTransType()), 0,F3_ProcessingCode, 0, 6, 0);
+				if (null != appState.oldTrans
+						&& appState.oldTrans.getOldProcesscode().equals(
+								"200000")
+						&& TRAN_SALE_REVERSAL == appState.trans.getTransType()) {
+					ByteUtil.asciiToBCD(
+							MessageType.getProcessingCode(Constant.TRAN_VOID),
+							0, F3_ProcessingCode, 0, 6, 0);
+				} else {
+					ByteUtil.asciiToBCD(MessageType
+							.getProcessingCode(appState.trans.getTransType()),
+							0, F3_ProcessingCode, 0, 6, 0);
+				}
+				// ByteUtil.asciiToBCD(MessageType.getProcessingCode(appState.trans.getTransType()),
+				// 0,F3_ProcessingCode, 0, 6, 0);
 				movGen(ISOField.F03_PROC, F3_ProcessingCode, 0);
 				break;
 			case ISOField.F04_AMOUNT:
@@ -1528,24 +1545,30 @@ public class ISOPackager implements Constant {
 				movGen(ISOField.F04_AMOUNT, F4_Amount, 0);
 				break;
 			case ISOField.F11_STAN:
-				if(appState.trans.getTransType() == TRAN_SALE_REVERSAL||appState.trans.getTransType() ==TRAN_REVOCATION_REVERSAL){
-					movGen(ISOField.F11_STAN,NumberUtil.intToBcd(appState.oldTrans.getOldTrace(), 3), 0);
-				}else{
-					movGen(ISOField.F11_STAN,NumberUtil.intToBcd(appState.trans.getTrace(), 3), 0);
+				if (appState.trans.getTransType() == TRAN_SALE_REVERSAL
+						|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL) {
+					movGen(ISOField.F11_STAN, NumberUtil.intToBcd(
+							appState.oldTrans.getOldTrace(), 3), 0);
+				} else {
+					movGen(ISOField.F11_STAN,
+							NumberUtil.intToBcd(appState.trans.getTrace(), 3),
+							0);
 				}
-				
+
 				break;
 			case ISOField.F12_TIME:
 				if (appState.trans.getTransTime().length() == 6) {
 					byte[] F12_Time = new byte[3];
-					ByteUtil.asciiToBCD(appState.trans.getTransTime().getBytes(), 0, F12_Time, 0, 6, 0);
+					ByteUtil.asciiToBCD(appState.trans.getTransTime()
+							.getBytes(), 0, F12_Time, 0, 6, 0);
 					movGen(ISOField.F12_TIME, F12_Time, 0);
 				}
 				break;
 			case ISOField.F13_DATE:
 				if (appState.trans.getTransDate().length() == 8) {
 					byte[] F13_Date = new byte[2];
-					ByteUtil.asciiToBCD(appState.trans.getTransDate().getBytes(), 0, F13_Date, 0, 4, 0);
+					ByteUtil.asciiToBCD(appState.trans.getTransDate()
+							.getBytes(), 0, F13_Date, 0, 4, 0);
 					movGen(ISOField.F13_DATE, F13_Date, 0);
 				}
 				break;
@@ -1560,7 +1583,7 @@ public class ISOPackager implements Constant {
 				break;
 			case ISOField.F22_POSE:
 				byte[] F22_Pose = new byte[2];
-				
+
 				if (appState.trans.getTransType() == TRAN_RESERV_SALE
 						|| appState.trans.getTransType() == TRAN_RESERV_VOID_SALE) {
 					F22_Pose[0] = (byte) 0x92;
@@ -1671,27 +1694,28 @@ public class ISOPackager implements Constant {
 			case ISOField.F36_TRACK3:
 				if (appState.trans.getTrack3Data() != null
 						&& appState.trans.getTrack3Data().length() > 0
-//						
-//						&& (
-//							 ( /*
-//							 * appState.getProcessType() == PROCESS_NORMAL &&
-//							 */appState.trans.getEntryMode() == SWIPE_ENTRY
-//							 ) || 
-//							 ( /*
-//																				 * appState
-//																				 * .
-//																				 * getProcessType
-//																				 * (
-//																				 * )
-//																				 * ==
-//																				 * PROCESS_BATCH
-//																				 * &&
-//																				 */
-//									 (appState.trans.getTransType() == TRAN_REFUND || appState.trans
-//									 .getTransType() == TRAN_AUTH_SETTLEMENT)
-//								)
-//							)							
-						) {
+				//
+				// && (
+				// ( /*
+				// * appState.getProcessType() == PROCESS_NORMAL &&
+				// */appState.trans.getEntryMode() == SWIPE_ENTRY
+				// ) ||
+				// ( /*
+				// * appState
+				// * .
+				// * getProcessType
+				// * (
+				// * )
+				// * ==
+				// * PROCESS_BATCH
+				// * &&
+				// */
+				// (appState.trans.getTransType() == TRAN_REFUND ||
+				// appState.trans
+				// .getTransType() == TRAN_AUTH_SETTLEMENT)
+				// )
+				// )
+				) {
 					byte[] track3Data = new byte[(appState.trans
 							.getTrack3Data().length() + 1) / 2];
 					ByteUtil.asciiToBCD(appState.trans.getTrack3Data()
@@ -1712,7 +1736,8 @@ public class ISOPackager implements Constant {
 				break;
 			case ISOField.F37_RRN:
 				if (appState.trans.getRRN().length() > 0) {
-					movGen(ISOField.F37_RRN, appState.trans.getRRN().getBytes(), 0);
+					movGen(ISOField.F37_RRN,
+							appState.trans.getRRN().getBytes(), 0);
 				}
 				break;
 			case ISOField.F38_AUTH:
@@ -1745,18 +1770,23 @@ public class ISOPackager implements Constant {
 				}
 				break;
 			case ISOField.F39_RSP:
-				if (appState.trans.getTransType() == TRAN_SALE_REVERSAL || appState.trans.getTransType() ==TRAN_REVOCATION_REVERSAL) {
+				if (appState.trans.getTransType() == TRAN_SALE_REVERSAL
+						|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL) {
 					appState.trans.setResponseCode(new byte[] { '9', '8' });
-					appState.oldTrans.setOldResponseCode(new byte[] { '9', '8' });
-					//暂时不用
-//					if ((appState.oldTrans.getReversalReason() & 0x20) == 0x20) {
-//						appState.trans.setResponseCode(new byte[] { 'A', '0' });
-//					} else if ((appState.oldTrans.getReversalReason() & 0x10) == 0x10) {
-//						appState.trans.setResponseCode(new byte[] { '0', '6' });
-//					} else {
-//						appState.trans.setResponseCode(new byte[] { '9', '8' });
-//					}
-					movGen(ISOField.F39_RSP, appState.trans.getResponseCode(), 0);
+					appState.oldTrans
+							.setOldResponseCode(new byte[] { '9', '8' });
+					// 暂时不用
+					// if ((appState.oldTrans.getReversalReason() & 0x20) ==
+					// 0x20) {
+					// appState.trans.setResponseCode(new byte[] { 'A', '0' });
+					// } else if ((appState.oldTrans.getReversalReason() & 0x10)
+					// == 0x10) {
+					// appState.trans.setResponseCode(new byte[] { '0', '6' });
+					// } else {
+					// appState.trans.setResponseCode(new byte[] { '9', '8' });
+					// }
+					movGen(ISOField.F39_RSP, appState.trans.getResponseCode(),
+							0);
 				}
 				break;
 			case ISOField.F40:
@@ -1764,26 +1794,28 @@ public class ISOPackager implements Constant {
 				break;
 			case ISOField.F41_TID:
 				if (appState.terminalConfig.getTID().length() > 0) {
-					movGen(ISOField.F41_TID, appState.terminalConfig.getTID().getBytes(), 0);
+					movGen(ISOField.F41_TID, appState.terminalConfig.getTID()
+							.getBytes(), 0);
 				}
 				break;
 			case ISOField.F42_ACCID:
 				if (appState.terminalConfig.getMID().length() > 0) {
-					movGen(ISOField.F42_ACCID, appState.terminalConfig.getMID().getBytes(), 0);
+					movGen(ISOField.F42_ACCID, appState.terminalConfig.getMID()
+							.getBytes(), 0);
 				}
 				break;
 			case ISOField.F48:
 				setF48_CUP(appState, uploadFlag);
 				break;
 			case ISOField.F49_CURRENCY:
-				movGen(ISOField.F49_CURRENCY, appState.trans.getTransCurrency().getBytes(),0);
-/*
-				if (appState.trans.getTransType() == TRAN_SALE_9140) {
-					movGen(ISOField.F49_CURRENCY, new byte[] { '8', '1', '0' },0);
-				} else {
-					movGen(ISOField.F49_CURRENCY, new byte[] { '1', '5', '6' },0);
-				}
-*/
+				movGen(ISOField.F49_CURRENCY, appState.trans.getTransCurrency()
+						.getBytes(), 0);
+				/*
+				 * if (appState.trans.getTransType() == TRAN_SALE_9140) {
+				 * movGen(ISOField.F49_CURRENCY, new byte[] { '8', '1', '0'
+				 * },0); } else { movGen(ISOField.F49_CURRENCY, new byte[] {
+				 * '1', '5', '6' },0); }
+				 */
 				break;
 			case ISOField.F52_PIN:
 				if (appState.trans.getPinBlock() != null
@@ -1969,7 +2001,7 @@ public class ISOPackager implements Constant {
 	}
 
 	public static int movGen(int bit, byte[] pData, int length) {
-		
+
 		ISOTable[] isotable;
 		byte[] llvar = new byte[1];
 		byte[] lllvar = new byte[2];
@@ -1984,7 +2016,7 @@ public class ISOPackager implements Constant {
 			return -1;
 		}
 		if (bit >= 2) {
-			iso.bitFlag[bit - 2] = 1;
+			iso.bitFlag[bit - 2] = 1; // 不太明白为什么要减2.
 		}
 
 		// Switch on the message format
@@ -1995,8 +2027,8 @@ public class ISOPackager implements Constant {
 			break;
 		case FFIX + ATTBIN: // Fixed Binary
 			// Divide by 8
-			length = isotable[bit].fieldLen / 8;//TODO
-			if(bit == 52){
+			length = isotable[bit].fieldLen / 8;// TODO
+			if (bit == 52) {
 				length = isotable[bit].fieldLen;
 			}
 			break;
@@ -2280,46 +2312,48 @@ public class ISOPackager implements Constant {
 		}
 		return ret;
 	}
-	
-	//通联订单号 	F40 6F10
-	//批次号 		F40 6F08
-//	F40_CUP is : 6f101100182013121711280264886f021100006f08110020201312171128020704016f111100006f1
+
+	// 通联订单号 F40 6F10
+	// 批次号 F40 6F08
+	// F40_CUP is :
+	// 6f101100182013121711280264886f021100006f08110020201312171128020704016f111100006f1
 
 	private static void getF40_CUP(byte[] F40_Field, UtilFor8583 appState) {
-		
-		String temp_F40 = StringUtil.toString(F40_Field).toUpperCase(Locale.getDefault());
+
+		String temp_F40 = StringUtil.toString(F40_Field).toUpperCase(
+				Locale.getDefault());
 		Log.d("8583", "F40_CUP is : " + temp_F40);
-		String [] strs = temp_F40.split("6F");
-		for(String s : strs){
-			if(s.length()<2){
+		String[] strs = temp_F40.split("6F");
+		for (String s : strs) {
+			if (s.length() < 2) {
 				continue;
 			}
 			String flag = s.substring(0, 2);
-			if(flag.equals("08")){
+			if (flag.equals("08")) {
 				String payOrderBatch = s.substring(8);
 				appState.payOrderBatch = payOrderBatch;
 				continue;
 			}
-			if(flag.equals("10")){
+			if (flag.equals("10")) {
 				String apOrderId = s.substring(8);
 				appState.apOrderId = apOrderId;
 				continue;
 			}
-			if(flag.equals("13")){
+			if (flag.equals("13")) {
 				String sale_F40_Type = s.substring(8);
 				appState.sale_F40_Type = sale_F40_Type;
 				continue;
 			}
-			if(flag.equals("20")){
+			if (flag.equals("20")) {
 				String openBrh = s.substring(8);
 				appState.openBrh = openBrh;
 				continue;
 			}
-			if(flag.equals("21")){
+			if (flag.equals("21")) {
 				String cardId = s.substring(8);
 				appState.cardId = cardId;
 				continue;
 			}
-		}	
+		}
 	}
 }

@@ -4,11 +4,44 @@
 		return
 	}
 
+  var g_transBatchRes
+  
 	function gotoLogout() {
-		window.user.init({})
-		Scene.alert("签退成功")
+		var data = {
+      typeOf8583: "transBatch"
+    }
+	  if(window.user.userStatus == null){
+	  	Scene.alert("已签退");
+	  	return;
+	  }
+    window.data8583.get8583(data, actionAfterGet)
 	}
+	
+	function actionAfterGet(data) {
+      var req = {      	
+      }
+      req.data = data.data8583
+      Net.connect("merchant/transBatch", req, actionAfterTransBatch)
+  }
 
+	function actionAfterTransBatch(data){
+		g_transBatchRes = data
+		var params = {
+        data8583: data.data
+      }
+      window.data8583.convert8583(params, actionAfterConvertTransBatchRes)		
+	}
+	
+	function actionAfterConvertTransBatchRes(data){
+    if ("00" != data.resCode) {
+	    Scene.alert(data.resMessage)
+	    return
+  	} else {
+    	window.user.init({})
+	    Scene.alert("签退成功")
+  	}	
+	}
+	
 	function clearReverseData() {
 		window.util.exeActionWithLoginChecked(function() {
 			window.RMS.clear("savedTransData", afterClearReverseData)

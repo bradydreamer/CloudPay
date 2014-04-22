@@ -117,6 +117,7 @@ Pay.payResult = function(params) {
 			"transTypeDesc": "消费",
 			"openBrh": ConsumptionData.dataForPayment.openBrh,
 			"paymentId": ConsumptionData.dataForPayment.paymentId,
+			"paymentOrder": 1,
 		};
 		
 		if(ConsumptionData.dataForPayment.preScene == "PayAccount" || ConsumptionData.dataForPayment.preScene == "PinPad"){
@@ -195,6 +196,7 @@ Pay.restart = function(params) {
 				});
 			}
 		} else {
+			ConsumptionData.resetMultiData();
 			Scene.goBack("Home");
 		};
 	}

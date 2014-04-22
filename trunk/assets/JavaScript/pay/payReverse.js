@@ -105,6 +105,7 @@ Pay.cancelOrder = function(params, callBack) {
 		ConsumptionData.dataForCancellingOrder.transDate = params.transTime.substring(4, 8);
 		ConsumptionData.dataForCancellingOrder.transData8583 = params.transData8583;
 		ConsumptionData.dataForCancellingOrder.transAmount = params.transAmount;
+		ConsumptionData.dataForCancellingOrder.paymentId = params.paymentId;
 
 		ConsumptionData.dataForCancellingOrder.typeOf8583 = "cheXiao";
 		ConsumptionData.dataForCancellingOrder.flowList = flowList;

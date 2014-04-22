@@ -18,7 +18,6 @@ import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
 import cn.koolcloud.pos.Utility;
-import cn.koolcloud.pos.controller.BaseHomeController;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
@@ -39,13 +38,13 @@ public class ISO8583Controller implements Constant {
 
 	public ISO8583Controller(String mID, String tID, int transID,
 			int batchNumber) {
-//		paramer.trans.init();
+		// paramer.trans.init();
 		paramer.oldTrans = null;
-		
+
 		this.mId = mID;
 		this.tId = tID;
 		this.transId = transID;
-	
+
 		paramer.terminalConfig.setTrace(transId);// 流水号
 		paramer.trans.setTrace(transId);
 		// 设置商户号 (41域）
@@ -54,11 +53,11 @@ public class ISO8583Controller implements Constant {
 		paramer.terminalConfig.setTID(tId);
 		paramer.trans.setBatchNumber(batchNumber);
 
-//		if (batchNumber != 0) {
-//			
-//		} else {
-//			paramer.trans.setBatchNumber(Integer.parseInt("600001"));
-//		}
+		// if (batchNumber != 0) {
+		//
+		// } else {
+		// paramer.trans.setBatchNumber(Integer.parseInt("600001"));
+		// }
 
 	}
 
@@ -89,6 +88,30 @@ public class ISO8583Controller implements Constant {
 
 	}
 
+	/**
+	 * 批结
+	 * 
+	 * @return
+	 */
+	public boolean transBatch() {
+
+		paramer.trans.setTransType(TRAN_BATCH);
+		// 设置POS终端交易流水 (11域）
+		paramer.terminalConfig.setTrace(transId);// 流水号
+		// 设置商户号 (41域）
+		paramer.terminalConfig.setMID(mId);
+		// 设置终端号 (42域）
+		paramer.terminalConfig.setTID(tId);
+
+		boolean isSuccess = pack8583(paramer);
+		if (isSuccess) {
+			Log.d(APP_TAG, "pack 8583 ok!");
+		} else {
+			Log.e(APP_TAG, "pack 8583 failed!");
+		}
+		return isSuccess;
+	}
+
 	public String getBanlance() {
 		// Log.d(APP_TAG, "balance = " + paramer.trans.getBalance());
 		return "" + paramer.trans.getBalance();
@@ -106,8 +129,8 @@ public class ISO8583Controller implements Constant {
 	 * @return
 	 */
 	public boolean purchaseChaXun(String account, String track2, String track3,
-			byte[] pinBlock, String open_brh,String payment_id) {
-		
+			byte[] pinBlock, String open_brh, String payment_id) {
+
 		paramer.trans.setTransType(TRAN_BALANCE);
 		paramer.trans.setPAN(account); // 设置主帐号
 		paramer.trans.setTrack2Data(track2);
@@ -116,7 +139,7 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setEntryMode(HAVE_PIN);
 		paramer.paymentId = payment_id;
 		paramer.openBrh = open_brh;
-		
+
 		boolean isSuccess = pack8583(paramer);
 		if (isSuccess) {
 			Log.d(APP_TAG, "pack 8583 ok!");
@@ -128,60 +151,67 @@ public class ISO8583Controller implements Constant {
 
 	public boolean purchase(JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_SALE);
-		//fix no pin block original start
-		/*int[] bitMap = { 
-				ISOField.F02_PAN, ISOField.F03_PROC,
-				ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-				ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-				ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40,
-				ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
-				ISOField.F60, ISOField.F64_MAC 
-			};*/
-		//fix no pin block original end
-		
-		//fix no pin block start
+		// fix no pin block original start
+		/*
+		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
+		 * ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+		 * ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+		 * ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
+		 * ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
+		 */
+		// fix no pin block original end
+
+		// fix no pin block start
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
 			if (pinblock.equals(STR_NULL_PIN)) {
 				paramer.trans.setPinMode(NO_PIN);
-				bitMap = new int[] { 
-						ISOField.F02_PAN, ISOField.F03_PROC,
-						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-						/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
-						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-						/*ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
-						ISOField.F60, ISOField.F64_MAC 
-				};
+				bitMap = new int[] {
+						ISOField.F02_PAN,
+						ISOField.F03_PROC,
+						ISOField.F04_AMOUNT,
+						ISOField.F11_STAN,
+						ISOField.F14_EXP,
+						ISOField.F22_POSE,
+						ISOField.F23,
+						ISOField.F25_POCC,
+						ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2,
+						ISOField.F36_TRACK3,
+						/* ISOField.F38_AUTH, */ISOField.F39_RSP,
+						ISOField.F40,
+						ISOField.F41_TID,
+						ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
+						ISOField.F60, ISOField.F64_MAC };
 			} else {
-				bitMap = new int[] { 
-						ISOField.F02_PAN, ISOField.F03_PROC,
-						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-						/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
-						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
-						ISOField.F60, ISOField.F64_MAC 
-				};
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						/* ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F64_MAC };
 			}
 		} else {
-			bitMap = new int[] { 
-					ISOField.F02_PAN, ISOField.F03_PROC,
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
 					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-					ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-					/*ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
-					ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
-					ISOField.F60, ISOField.F64_MAC 
-			};
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3,
+					/* ISOField.F38_AUTH, */ISOField.F39_RSP, ISOField.F40,
+					ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F49_CURRENCY, ISOField.F52_PIN, ISOField.F53_SCI,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
 		}
-		//fix no pin block end
+		// fix no pin block end
 		return mapAndPack(jsonObject, bitMap);
 	}
 
@@ -214,7 +244,7 @@ public class ISO8583Controller implements Constant {
 		paramer.payOrderBatch = oldTrans.getOldPayOrderBatch();
 		paramer.openBrh = oldTrans.getOldOpenBrh();
 		paramer.cardId = oldTrans.getOldCardId();
-		
+
 		boolean isSuccess = pack8583(paramer);
 		if (isSuccess) {
 			Log.d(APP_TAG, "pack 8583 ok!");
@@ -223,7 +253,7 @@ public class ISO8583Controller implements Constant {
 		}
 		return isSuccess;
 	}
-	
+
 	/**
 	 * 刷卡消费撤销
 	 * 
@@ -235,62 +265,74 @@ public class ISO8583Controller implements Constant {
 	 */
 	public boolean cheXiao(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_VOID);
-		//fix no pin block original start
-		/*int[] bitMap = { 
-				ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
-				ISOField.F11_STAN, ISOField.F14_EXP,
-				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
-				ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
-				ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
-				ISOField.F60, ISOField.F61, ISOField.F64_MAC 
-			};*/
-		//fix no pin block original end
-		
-		//fix no pin block start
+		// fix no pin block original start
+		/*
+		 * int[] bitMap = { ISOField.F02_PAN,
+		 * ISOField.F03_PROC,ISOField.F04_AMOUNT, ISOField.F11_STAN,
+		 * ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+		 * ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40, ISOField.F41_TID,
+		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
+		 * ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+		 * ISOField.F64_MAC };
+		 */
+		// fix no pin block original end
+
+		// fix no pin block start
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
 			if (pinblock.equals(STR_NULL_PIN)) {
 				paramer.trans.setPinMode(NO_PIN);
-				bitMap = new int[] { 
-						ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
-						ISOField.F11_STAN, ISOField.F14_EXP,
-						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
-						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
-						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-						/*ISOField.F52_PIN, ISOField.F53_SCI,*/ ISOField.F55_ICC,
-						ISOField.F60, ISOField.F61, ISOField.F64_MAC 
-					};
+				bitMap = new int[] {
+						ISOField.F02_PAN,
+						ISOField.F03_PROC,
+						ISOField.F04_AMOUNT,
+						ISOField.F11_STAN,
+						ISOField.F14_EXP,
+						ISOField.F22_POSE,
+						ISOField.F23,
+						ISOField.F25_POCC,
+						ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2,
+						ISOField.F36_TRACK3,
+						ISOField.F37_RRN,
+						ISOField.F38_AUTH,
+						ISOField.F40,
+						ISOField.F41_TID,
+						ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
-				bitMap = new int[] { 
-						ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
-						ISOField.F11_STAN, ISOField.F14_EXP,
-						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
-						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
-						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
-						ISOField.F60, ISOField.F61, ISOField.F64_MAC 
-					};
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
 			}
 		} else {
-			bitMap = new int[] { 
-					ISOField.F02_PAN, ISOField.F03_PROC,ISOField.F04_AMOUNT, 
-					ISOField.F11_STAN, ISOField.F14_EXP,
-					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE, 
-					ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,  
-					ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
-					ISOField.F60, ISOField.F61, ISOField.F64_MAC 
-				};
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F49_CURRENCY, ISOField.F52_PIN, ISOField.F53_SCI,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					ISOField.F64_MAC };
 		}
-		//fix no pin block end
-		
-		
+		// fix no pin block end
+
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
 		return mapAndPack(jsonObject, bitMap);
 	}
-	
+
 	/**
 	 * 退货
 	 * 
@@ -302,29 +344,28 @@ public class ISO8583Controller implements Constant {
 	 */
 	public boolean refund(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_REFUND);
-	      /* 03 REFUND */
-		int[] bitMap = { 
-				ISOField.F02_PAN, ISOField.F03_PROC,
+		/* 03 REFUND */
+		int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
 				ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
 				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
 				ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-				ISOField.F37_RRN, ISOField.F38_AUTH,  ISOField.F40,
+				ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
 				ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-				ISOField.F52_PIN, ISOField.F53_SCI, 
-				ISOField.F60, ISOField.F61, ISOField.F63, ISOField.F64_MAC 
-			};
-		
+				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
+				ISOField.F63, ISOField.F64_MAC };
+
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
 		return mapAndPack(jsonObject, bitMap);
 	}
-	
-	public JSONObject updateMapFromOldTrans(byte[] iso8583, JSONObject jsonObject){
+
+	public JSONObject updateMapFromOldTrans(byte[] iso8583,
+			JSONObject jsonObject) {
 		byte[] data = new byte[iso8583.length - 2];
 		System.arraycopy(iso8583, 2, data, 0, data.length - 2);
 		OldTrans oldTrans = new OldTrans();
 		ChongZheng.chongzhengUnpack(data, oldTrans);
 		paramer.oldTrans = oldTrans;
-		
+
 		try {
 			jsonObject.put("F02", oldTrans.getOldPan());
 			jsonObject.put("F04", oldTrans.getOldTransAmount());
@@ -334,56 +375,62 @@ public class ISO8583Controller implements Constant {
 			jsonObject.put("F40_6F10", oldTrans.getOldApOrderId());
 			jsonObject.put("F40_6F08", oldTrans.getOldPayOrderBatch());
 			jsonObject.put("F40_6F20", oldTrans.getOldOpenBrh());
-			jsonObject.put("F40_6F21", oldTrans.getOldCardId());			
+			jsonObject.put("F40_6F21", oldTrans.getOldCardId());
+			
+			String paymentId = jsonObject.optString("paymentId");
+			if (!paymentId.isEmpty()) {
+				jsonObject.put("F60.6", paymentId);
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return jsonObject;
 	}
-	
-	public boolean mapAndPack(JSONObject jsonObject, int[] bitMap){
+
+	public boolean mapAndPack(JSONObject jsonObject, int[] bitMap) {
 		List<Integer> purchaseMap = new ArrayList<Integer>();
 		for (int i = 0; i < bitMap.length; i++) {
 			boolean save = true;
 			switch (bitMap[i]) {
 			case ISOField.F02_PAN:
-				//主帐号 F02  
+				// 主帐号 F02  
 				paramer.trans.setPAN(jsonObject.optString("F02"));
 				break;
 			case ISOField.F04_AMOUNT:
-				//消费金额 F04
-				paramer.trans.setTransAmount(Integer.parseInt(jsonObject.optString("F04")));
-				break;	
+				// 消费金额 F04
+				paramer.trans.setTransAmount(Integer.parseInt(jsonObject
+						.optString("F04")));
+				break;
 			case ISOField.F11_STAN:
-				//POS终端交易流水 F11
+				// POS终端交易流水 F11
 				String trace = jsonObject.optString("F11", null);
-				if(trace != null){
+				if (trace != null) {
 					paramer.trans.setTrace(Integer.parseInt(trace));
 				}
 				break;
 			case ISOField.F35_TRACK2:
-				//磁道2 F35
+				// 磁道2 F35
 				String track2 = jsonObject.optString("F35", null);
-				if(track2 != null){
+				if (track2 != null) {
 					paramer.trans.setTrack2Data(track2);
-				}else{
+				} else {
 					save = false;
 				}
 				break;
 			case ISOField.F36_TRACK3:
-				//磁道3 F36
+				// 磁道3 F36
 				String track3 = jsonObject.optString("F36", null);
-				if(track3 != null){
+				if (track3 != null) {
 					paramer.trans.setTrack3Data(track3);
-				}else{
+				} else {
 					save = false;
 				}
 				break;
 			case ISOField.F37_RRN:
-				//参考号 F37
+				// 参考号 F37
 				String rrn = jsonObject.optString("F37", null);
-				if(rrn != null){
+				if (rrn != null) {
 					paramer.trans.setRRN(rrn);
 				}
 				break;
@@ -391,11 +438,12 @@ public class ISO8583Controller implements Constant {
 				setF40(jsonObject);
 				break;
 			case ISOField.F49_CURRENCY:
-				//消费币种 F49
-				paramer.trans.setTransCurrency(jsonObject.optString("F49", "156"));
+				// 消费币种 F49
+				paramer.trans.setTransCurrency(jsonObject.optString("F49",
+						"156"));
 				break;
 			case ISOField.F52_PIN:
-				//PIN F52
+				// PIN F52
 				String pinblock = jsonObject.optString("F52");
 				if (!pinblock.isEmpty()) {
 					paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
@@ -405,17 +453,17 @@ public class ISO8583Controller implements Constant {
 				}
 				break;
 			case ISOField.F60:
-				//支付活动号 F60.6
+				// 支付活动号 F60.6
 				paramer.paymentId = jsonObject.optString("F60.6");
 
 			default:
 				break;
 			}
-			if(save){
+			if (save) {
 				purchaseMap.add(bitMap[i]);
-			}		
+			}
 		}
-		
+
 		int[] map = new int[purchaseMap.size()];
 		int i = 0;
 		for (Integer e : purchaseMap) {
@@ -430,7 +478,7 @@ public class ISO8583Controller implements Constant {
 		}
 		return isSuccess;
 	}
-	
+
 	private void setF40(JSONObject jsonObject) {
 		// 机构号 F40 6F20
 		paramer.openBrh = jsonObject.optString("F40_6F20");
@@ -448,12 +496,12 @@ public class ISO8583Controller implements Constant {
 
 		// 是否短信交易 F40 6F14
 		paramer.isSendCode = jsonObject.optString("F40_6F14");
-		
+
 		// 通联订单号 F40 6F10
 		paramer.apOrderId = jsonObject.optString("F40_6F10");
 		// 现金流水/批次号 F40 6F08
 		paramer.payOrderBatch = jsonObject.optString("F40_6F08");
-		
+
 		// 短信验证码 F40 6F11
 		String authCode = jsonObject.optString("F40_6F11");
 		if (!authCode.isEmpty()) {
@@ -491,7 +539,7 @@ public class ISO8583Controller implements Constant {
 			switch (paramer.trans.getTransType()) {
 			case TRAN_LOGIN:
 				if (updateWorkingKey(paramer)) {
-					ISO8583Engine.getInstance().updateLocalBatchNumber();
+					ISO8583Engine.getInstance().updateLocalBatchNumber(paramer);
 				} else {
 					paramer.trans.setResponseCode("F0".getBytes());
 				}
@@ -511,7 +559,7 @@ public class ISO8583Controller implements Constant {
 	private boolean pack8583(UtilFor8583 paramer) {
 		return pack8583(paramer, null);
 	}
-	
+
 	private boolean pack8583(UtilFor8583 paramer, int[] bitMap) {
 		UtilFor8583 appState = paramer;
 
@@ -560,13 +608,16 @@ public class ISO8583Controller implements Constant {
 			mRequest = new byte[ISOPackager.getSendDataLength() + 10];
 
 			byte[] macOut = new byte[8];
-//			if (calculateMAC(ISOPackager.getSendData(), 11, ISOPackager.getSendDataLength() - 11, macOut, appState) == false) {
-//				return false;
-//			}
-			if (calculateMAC2(ISOPackager.getSendData() , macOut, appState) == false) {
+			// if (calculateMAC(ISOPackager.getSendData(), 11,
+			// ISOPackager.getSendDataLength() - 11, macOut, appState) == false)
+			// {
+			// return false;
+			// }
+			if (calculateMAC2(ISOPackager.getSendData(), macOut, appState) == false) {
 				return false;
 			}
-			Log.d(APP_TAG, "calculateMac: macOut = " + StringUtil.toBestString(macOut));
+			Log.d(APP_TAG,
+					"calculateMac: macOut = " + StringUtil.toBestString(macOut));
 			appState.trans.setMac(macOut);
 		} else {
 			mRequest = new byte[ISOPackager.getSendDataLength() + 2];
@@ -583,84 +634,90 @@ public class ISO8583Controller implements Constant {
 		return true;
 	}
 
-//	private boolean calculateMAC(final byte[] data, final int offset,
-//			final int length, byte[] dataOut, UtilFor8583 appState) {
-//		if (debug) {
-//			String strDebug = StringUtil.toBestString(data);
-//			Log.d(APP_TAG, "check 1 MAC Data: " + strDebug);
-//			strDebug = "";
-//			for (int i = 0; i < length; i++) {
-//				strDebug += String.format("%02X ", data[offset + i]);
-//			}
-//			Log.d(APP_TAG, "check 2 MAC Data: " + strDebug);
-//		}
-//
-//		
-//		byte[] out = new byte[8];
-//		int lp, thismove, ret;
-//		byte[] encryptData = new byte[8];
-//
-//		for (int pos = offset; pos < (length + offset); pos += thismove) {
-//			thismove = ((length + offset - pos) >= 8) ? 8
-//					: (length + offset - pos);
-//			for (lp = 0; lp < thismove; lp++)
-//				out[lp] ^= data[lp + pos];
-//		}
-//		byte[] temp = StringUtil.toHexString(out, false).getBytes();
-//		System.arraycopy(temp, 0, out, 0, 8);
-//		
-//		// encrypt
-//		ret = PinPadInterface.open();
-//		Log.d(APP_TAG, "open ret = " + ret);
-//		
-//		ret = PinPadInterface.updateUserKey(Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1, StringUtil.hexString2bytes(appState.terminalConfig.getMAK()), 8);
-//		Log.d(APP_TAG, "updateUserKey ret = " + ret);
-//		if (ret < 0) {
-//			return false;
-//		}
-//		PinPadInterface.selectKey(2,
-//				Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
-//				SINGLE_KEY);
-//		
-//		ret = PinPadInterface.encrypt(out, 8, encryptData);
-//		Log.d(APP_TAG, "encrypt ret = " + ret);
-//		if (ret < 0) {
-//			return false;
-//		}
-//		for (int i = 0; i < 8; i++) {
-//			encryptData[i] ^= temp[8 + i];
-//		}
-//		// Encrypt
-//		ret = PinPadInterface.encrypt(encryptData, 8, out);
-//		if (ret < 0) {
-//			return false;
-//		}
-//		temp = StringUtil.toHexString(out, false).getBytes();
-//		System.arraycopy(temp, 0, dataOut, 0, 8);
-//		
-//		PinPadInterface.close();	//关闭占用
-//		return true;
-//	}
+	// private boolean calculateMAC(final byte[] data, final int offset,
+	// final int length, byte[] dataOut, UtilFor8583 appState) {
+	// if (debug) {
+	// String strDebug = StringUtil.toBestString(data);
+	// Log.d(APP_TAG, "check 1 MAC Data: " + strDebug);
+	// strDebug = "";
+	// for (int i = 0; i < length; i++) {
+	// strDebug += String.format("%02X ", data[offset + i]);
+	// }
+	// Log.d(APP_TAG, "check 2 MAC Data: " + strDebug);
+	// }
+	//
+	//
+	// byte[] out = new byte[8];
+	// int lp, thismove, ret;
+	// byte[] encryptData = new byte[8];
+	//
+	// for (int pos = offset; pos < (length + offset); pos += thismove) {
+	// thismove = ((length + offset - pos) >= 8) ? 8
+	// : (length + offset - pos);
+	// for (lp = 0; lp < thismove; lp++)
+	// out[lp] ^= data[lp + pos];
+	// }
+	// byte[] temp = StringUtil.toHexString(out, false).getBytes();
+	// System.arraycopy(temp, 0, out, 0, 8);
+	//
+	// // encrypt
+	// ret = PinPadInterface.open();
+	// Log.d(APP_TAG, "open ret = " + ret);
+	//
+	// ret =
+	// PinPadInterface.updateUserKey(Integer.parseInt(appState.terminalConfig.getKeyIndex()),
+	// 1, StringUtil.hexString2bytes(appState.terminalConfig.getMAK()), 8);
+	// Log.d(APP_TAG, "updateUserKey ret = " + ret);
+	// if (ret < 0) {
+	// return false;
+	// }
+	// PinPadInterface.selectKey(2,
+	// Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
+	// SINGLE_KEY);
+	//
+	// ret = PinPadInterface.encrypt(out, 8, encryptData);
+	// Log.d(APP_TAG, "encrypt ret = " + ret);
+	// if (ret < 0) {
+	// return false;
+	// }
+	// for (int i = 0; i < 8; i++) {
+	// encryptData[i] ^= temp[8 + i];
+	// }
+	// // Encrypt
+	// ret = PinPadInterface.encrypt(encryptData, 8, out);
+	// if (ret < 0) {
+	// return false;
+	// }
+	// temp = StringUtil.toHexString(out, false).getBytes();
+	// System.arraycopy(temp, 0, dataOut, 0, 8);
+	//
+	// PinPadInterface.close(); //关闭占用
+	// return true;
+	// }
 
-	private boolean calculateMAC2(final byte[] data, byte[] dataOut, UtilFor8583 appState) {
+	private boolean calculateMAC2(final byte[] data, byte[] dataOut,
+			UtilFor8583 appState) {
 		String strDebug = "";
 		if (debug) {
 			strDebug = StringUtil.toBestString(data);
 			Log.d(APP_TAG, "check 1 MAC Data: " + strDebug);
 			strDebug = "";
-			for (int i = 0; i < data.length -11; i++) {
+			for (int i = 0; i < data.length - 11; i++) {
 				strDebug += String.format("%02X ", data[11 + i]);
 			}
 			Log.d(APP_TAG, "check 2 MAC Data: " + strDebug);
 		}
-		
-		byte [] encryptData = StringUtil.hexString2bytes(strDebug);
+
+		byte[] encryptData = StringUtil.hexString2bytes(strDebug);
 		PinPadInterface.open();
 
-		int ret = PinPadInterface.selectKey(2, Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1, SINGLE_KEY);
-		
-		ret = PinPadInterface.calculateMac(encryptData, encryptData.length, 0x10, dataOut);
-		PinPadInterface.close();	//关闭占用
+		int ret = PinPadInterface.selectKey(2,
+				Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
+				SINGLE_KEY);
+
+		ret = PinPadInterface.calculateMac(encryptData, encryptData.length,
+				0x10, dataOut);
+		PinPadInterface.close(); // 关闭占用
 		if (ret < 0) {
 			return false;
 		}
@@ -708,7 +765,7 @@ public class ISO8583Controller implements Constant {
 
 		if (appState.PIK == null || appState.MAK == null
 				|| appState.TDK == null) {
-//			appState.setErrorCode(R.string.error_key_check);
+			// appState.setErrorCode(R.string.error_key_check);
 			return false;
 		}
 		byte[] checkResult = new byte[8];
@@ -791,51 +848,55 @@ public class ISO8583Controller implements Constant {
 		Log.d(APP_TAG, "macKey check OK");
 
 		// check TDK
-//		nResult = PinPadInterface.updateUserKey(
-//				Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
-//				appState.TDK, appState.TDK.length);
-//		if (nResult < 0) {
-//			return false;
-//		}
-//		nResult = PinPadInterface.selectKey(2,
-//				Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
-//				DOUBLE_KEY);
-//		if (nResult < 0) {
-//			return false;
-//		}
-//		// nResult = PinPadInterface.encrypt(new byte[]{0x00, 0x00, 0x00, 0x00,
-//		// 0x00, 0x00, 0x00, 0x00}, 8, checkResult);
-//		nResult = PinPadInterface.calculateMac(new byte[] { 0x00, 0x00, 0x00,
-//				0x00, 0x00, 0x00, 0x00, 0x00 }, 8, 0x10, checkResult);
-//		Log.e("APP", "check TDKkey: encrypt convert calculateMac : nResult = "
-//				+ nResult);
-//		if (nResult < 0) {
-//			return false;
-//		}
-//		if (ByteUtil.compareByteArray(appState.TDKCheck, 0, checkResult, 0, 4) != 0) {
-//			if (debug) {
-//				String strDebug = "";
-//				for (int i = 0; i < 4; i++)
-//					strDebug += String.format("%02X ", appState.TDKCheck[i]);
-//				Log.d(APP_TAG, "TDKCheck = " + strDebug);
-//
-//				strDebug = "";
-//				for (int i = 0; i < 8; i++)
-//					strDebug += String.format("%02X ", checkResult[i]);
-//				Log.d(APP_TAG, "TDK checkResult = " + strDebug);
-//			}
-//		}
+		// nResult = PinPadInterface.updateUserKey(
+		// Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
+		// appState.TDK, appState.TDK.length);
+		// if (nResult < 0) {
+		// return false;
+		// }
+		// nResult = PinPadInterface.selectKey(2,
+		// Integer.parseInt(appState.terminalConfig.getKeyIndex()), 1,
+		// DOUBLE_KEY);
+		// if (nResult < 0) {
+		// return false;
+		// }
+		// // nResult = PinPadInterface.encrypt(new byte[]{0x00, 0x00, 0x00,
+		// 0x00,
+		// // 0x00, 0x00, 0x00, 0x00}, 8, checkResult);
+		// nResult = PinPadInterface.calculateMac(new byte[] { 0x00, 0x00, 0x00,
+		// 0x00, 0x00, 0x00, 0x00, 0x00 }, 8, 0x10, checkResult);
+		// Log.e("APP",
+		// "check TDKkey: encrypt convert calculateMac : nResult = "
+		// + nResult);
+		// if (nResult < 0) {
+		// return false;
+		// }
+		// if (ByteUtil.compareByteArray(appState.TDKCheck, 0, checkResult, 0,
+		// 4) != 0) {
+		// if (debug) {
+		// String strDebug = "";
+		// for (int i = 0; i < 4; i++)
+		// strDebug += String.format("%02X ", appState.TDKCheck[i]);
+		// Log.d(APP_TAG, "TDKCheck = " + strDebug);
+		//
+		// strDebug = "";
+		// for (int i = 0; i < 8; i++)
+		// strDebug += String.format("%02X ", checkResult[i]);
+		// Log.d(APP_TAG, "TDK checkResult = " + strDebug);
+		// }
+		// }
 		Log.d(APP_TAG, "TDK check OK");
 		appState.terminalConfig.setMAK(StringUtil.toHexString(appState.MAK,
 				false));
 		appState.terminalConfig.setTDK(StringUtil.toHexString(appState.TDK,
 				false));
-		
-		PinPadInterface.close();	//关闭占用
+
+		PinPadInterface.close(); // 关闭占用
 		return true;
 	}
 
-	public void printer(byte[] request, byte[] respons, String operator, String paymentId, String paymentName, Context context)
+	public void printer(byte[] request, byte[] respons, String operator,
+			String paymentId, String paymentName, Context context)
 			throws PrinterException {
 
 		byte[] data = new byte[request.length - 2];
@@ -853,25 +914,27 @@ public class ISO8583Controller implements Constant {
 		}
 		oldTrans.setOper(operator);
 		Log.d(APP_TAG, "oldTrans : " + oldTrans.toString());
-		
-		//get print type
-		Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(context, "printType");
+
+		// get print type
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(context, "printType");
 		String printType = (String) map.get(paymentId);
-		
-		//get merchant name
-		Map<String, ?> merchMap = UtilForDataStorage.readPropertyBySharedPreferences(context, "merchant");
+
+		// get merchant name
+		Map<String, ?> merchMap = UtilForDataStorage
+				.readPropertyBySharedPreferences(context, "merchant");
 		String merchName = (String) merchMap.get("merchName");
 		oldTrans.setOldMertName(merchName);
-		
-		//set payment name
+
+		// set payment name
 		oldTrans.setPaymentName(paymentName);
 		oldTrans.setPaymentId(paymentId);
-		
+
 		if (printType.equals(Constant.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
 		} else {
 			PrinterHelper.getInstance(context).printReceipt(oldTrans);
-		} 
+		}
 	}
 
 	public String getResCode() {
@@ -879,36 +942,37 @@ public class ISO8583Controller implements Constant {
 		resCode = StringUtil.toString(paramer.trans.getResponseCode());
 		return resCode;
 	}
-	
-	public String getRRN(){
+
+	public String getRRN() {
 		String rrn = "";
 		rrn = paramer.trans.getRRN();
 		return rrn;
 	}
-	
-	public String getApOrderId(){
+
+	public String getApOrderId() {
 		String apOrderId = "";
 		apOrderId = paramer.apOrderId;
 		return apOrderId;
 	}
-	
-	public String getBatch(){
+
+	public String getBatch() {
 		String batch = "";
 		batch = paramer.payOrderBatch;
 		return batch;
 	}
-	
+
 	public String getPaymentId() {
 		String paymentId = paramer.paymentId;
 		return paymentId;
 	}
-	
-	public String getTransTime(){
+
+	public String getTransTime() {
 		String transTime = paramer.trans.getTransYear();
-		if(transTime == null || transTime.isEmpty()){
+		if (transTime == null || transTime.isEmpty()) {
 			transTime = "" + paramer.currentYear;
 		}
-		transTime += paramer.trans.getTransDate() + paramer.trans.getTransTime();
+		transTime += paramer.trans.getTransDate()
+				+ paramer.trans.getTransTime();
 		return transTime;
 	}
 }

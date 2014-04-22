@@ -15,9 +15,10 @@
 
   function checkTransReverse(action, params, callBack) {
     if (!isActionEqual("base/verifyVersion", action, params) 
-      && !isActionEqual("merchant/login", action, params)
-       && !isActionEqual("merchant/reverse", action, params)
-        && !isActionEqual("merchant/cancel", action, params)) {
+        && !isActionEqual("merchant/login", action, params)
+        && !isActionEqual("merchant/reverse", action, params)
+        && !isActionEqual("merchant/cancel", action, params)
+        && !isActionEqual("merchant/transBatch", action, params)) {
       Pay.reverseOrder(callBack);
     } else {
       if (callBack) {
@@ -67,6 +68,9 @@
   }
 
   function gotoConnect(action, params, callbackfunc, isCustom, isAsyn) {
+  	if(action == "merchant/transBatch"){
+  		action = "merchant/pay"
+  	}
     var reqData = _request(action, params, callbackfunc);
     _customAction = isCustom ? action : "";
     if (isAsyn) {
@@ -212,7 +216,7 @@
       Scene.alert(data.errorMsg,function(){
       	window.user.init({});
 		Scene.goBack("Home");
-		setTimeout(window.util.exeActionWithLoginChecked, 500);      	
+		setTimeout(window.util.exeActionWithLoginChecked,500);      	
       });
 			
 

@@ -64,7 +64,6 @@ import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.ISecureService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.SecureInfo;
-import cn.koolcloud.pos.util.Logger;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
 import cn.koolcloud.pos.util.UtilForThread;
@@ -358,7 +357,7 @@ public class ClientEngine {
 		String msg = data.optString("msg");
 		if (msg.startsWith("JSLOG")) {
 			Log.i(TAG, msg);
-			Logger.i(msg);
+			// Logger.i(msg);
 		} else {
 			if (UtilForThread.isCurrentInMainThread(Thread.currentThread())) {
 				showAlertInMainThread(data, identifier);
@@ -784,6 +783,8 @@ public class ClientEngine {
 				iso8583Controller.purchase(jsonObject);
 			} else if (typeOf8583.equals("login")) {
 				iso8583Controller.login();
+			} else if (typeOf8583.equals("transBatch")) {
+				iso8583Controller.transBatch();
 			} else if (typeOf8583.equals("chongZheng")) {
 				String data8583 = jsonObject.optString("data8583");
 				String transDate = jsonObject.optString("transDate");
