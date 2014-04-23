@@ -95,6 +95,7 @@ public abstract class BaseController extends Activity {
 	@Override
 	protected void onPause() {
 		hasControllerResumed = false;
+		setRemoveJSTag(true);
 		super.onPause();
 	}
 
@@ -124,6 +125,10 @@ public abstract class BaseController extends Activity {
 	abstract protected String getControllerName();
 
 	abstract protected String getControllerJSName();
+
+	abstract protected void setRemoveJSTag(boolean tag);
+
+	abstract protected boolean getRemoveJSTag();
 
 	// abstract protected String otherContollerJsName();
 
@@ -156,8 +161,12 @@ public abstract class BaseController extends Activity {
 		if (null == getControllerJSName()) {
 			return;
 		}
-		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.loadJs(getControllerJSName());
+		if (getRemoveJSTag()) {
+			JavaScriptEngine js = ClientEngine.engineInstance()
+					.javaScriptEngine();
+			js.loadJs(getControllerJSName());
+			setRemoveJSTag(false);
+		}
 	}
 
 	protected void willShow() {
@@ -222,6 +231,7 @@ public abstract class BaseController extends Activity {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
 			clientEngine.setCurrentController(this);
 		}
+		loadRelatedJS();
 		super.onResume();
 		hasControllerResumed = true;
 	}
@@ -265,6 +275,12 @@ public abstract class BaseController extends Activity {
 	}
 
 	@Override
+	protected void onStop() {
+		setRemoveJSTag(true);
+		super.onStop();
+	}
+
+	@Override
 	protected void onDestroy() {
 		if (!willRestart) {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
@@ -275,8 +291,10 @@ public abstract class BaseController extends Activity {
 					&& !(this instanceof SetMerchIdController)) {
 				JavaScriptEngine js = ClientEngine.engineInstance()
 						.javaScriptEngine();
-				Log.i(TAG, "Warning:--------onDestroy:" + getControllerJSName());
+				Log.i(TAG, "Warning:--------RemoveJS:onDestroy:"
+						+ getControllerJSName());
 				js.removeJs(getControllerJSName());
+				setRemoveJSTag(true);
 			}
 		}
 		super.onDestroy();

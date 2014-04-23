@@ -2,14 +2,15 @@ package cn.koolcloud.pos.controller.delivery_voucher;
 
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
 
 public class DelVoucherInfoController extends BaseController {
+
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +19,8 @@ public class DelVoucherInfoController extends BaseController {
 			finish();
 			return;
 		}
-		JSONObject data = formData.optJSONObject(getString(R.string.formData_key_data));
+		JSONObject data = formData
+				.optJSONObject(getString(R.string.formData_key_data));
 		TextView tv_voucherId = (TextView) findViewById(R.id.del_voucher_info_tv_voucherId);
 		tv_voucherId.setText(data.optString("voucherId"));
 		TextView tv_productName = (TextView) findViewById(R.id.del_voucher_info_tv_productName);
@@ -32,7 +34,7 @@ public class DelVoucherInfoController extends BaseController {
 	public void onConfirm(View view) {
 		onCall("DeliveryVocherConsume.onConfirmConsume", null);
 	}
-	
+
 	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_del_voucher_info_controller);
@@ -55,7 +57,19 @@ public class DelVoucherInfoController extends BaseController {
 
 	@Override
 	public void onBackPressed() {
-		
+
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

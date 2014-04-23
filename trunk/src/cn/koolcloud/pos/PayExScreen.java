@@ -185,17 +185,38 @@ public class PayExScreen extends WelcomeScreen {
 		Log.d(TAG, "endPay");
 
 		Intent i = new Intent();
+		String totalAmount = null;
+		String paidAmount = null;
+		String resultValue = null;
+		String detailList = null;
+
 		try {
-			i.putExtra(ACTION, action);
-			i.putExtra("totalAmount", result.getString("totalAmount"));
-			i.putExtra("paidAmount", result.getString("paidAmount"));
-			i.putExtra("result", result.getString("result"));
-			i.putExtra("detailList", result.getJSONArray("orderList")
-					.toString());
+			totalAmount = result.getString("totalAmount");
+		} catch (JSONException e1) {
+			totalAmount = "null";
+		}
+		try {
+			paidAmount = result.getString("paidAmount");
+		} catch (JSONException e1) {
+			paidAmount = "null";
+		}
+		try {
+			resultValue = result.getString("result");
+		} catch (JSONException e1) {
+			resultValue = "0";
+		}
+		try {
+			detailList = result.getJSONArray("orderList").toString();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		i.putExtra(ACTION, action);
+		i.putExtra("totalAmount", totalAmount);
+		i.putExtra("paidAmount", paidAmount);
+		i.putExtra("result", resultValue);
+		i.putExtra("detailList", detailList);
+
 		setResult(RESULT_CODE, i);
 	}
 

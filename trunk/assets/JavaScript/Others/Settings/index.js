@@ -5,15 +5,22 @@
 	}
 
   var g_transBatchRes
+  var logoutTag = false;
   
 	function gotoLogout() {
-		var data = {
-      typeOf8583: "transBatch"
-    }
+
+		logoutTag = true;
 	  if(window.user.userStatus == null){
-	  	Scene.alert("已签退");
+	  	Scene.alert("已签退！");
 	  	return;
 	  }
+    transBatch()
+	}
+
+	function transBatch(){
+		var data = {
+      		typeOf8583: "transBatch"
+    }
     window.data8583.get8583(data, actionAfterGet)
 	}
 	
@@ -37,8 +44,12 @@
 	    Scene.alert(data.resMessage)
 	    return
   	} else {
-    	window.user.init({})
-	    Scene.alert("签退成功")
+  		if(logoutTag){
+	    	window.user.init({})
+		    Scene.alert("签退成功！");
+	  	}else{
+	  		Scene.alert("批结算成功！",TransBatch.gotoHome);
+	  	}
   	}	
 	}
 	
@@ -116,8 +127,6 @@
 			merchName : data.merchName,
 			merchAccount : data.merchAccount,
 		};
-		Scene.alert("JSLOG MERCH NAME:" + data.merchName);
-		Scene.alert("JSLOG MERCH Acount:" + data.merchAccount);
 		RMS.save("merchant", params);
 	}
 
@@ -127,6 +136,10 @@
 
 	function gotoSetTransId() {
 		window.util.showSceneWithLoginChecked("SetTransId");
+	}
+
+	function gotoTransBatch(){
+		window.util.showSceneWithLoginChecked("TransBatch");
 	}
 
 	window.SettingsIndex = {
@@ -139,6 +152,8 @@
 		"clearReverseData" : clearReverseData,
 		"downloadMerchData" : downloadMerchData,
 		"gotoSetTransId": gotoSetTransId,
+		"gotoTransBatch": gotoTransBatch,
+		"transBatch":	transBatch,
 	};
 
 })();

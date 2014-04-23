@@ -3,18 +3,18 @@ package cn.koolcloud.pos.controller.delivery_voucher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
 
 public class InputDelVoucherNumController extends BaseController {
-	
+
 	private EditText et_num;
 	private String open_brh;
 	private String payment_id;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +25,7 @@ public class InputDelVoucherNumController extends BaseController {
 		}
 		JSONObject data = formData
 				.optJSONObject(getString(R.string.formData_key_data));
-		
+
 		open_brh = data.optString("open_brh");
 		payment_id = data.optString("payment_id");
 
@@ -82,6 +82,18 @@ public class InputDelVoucherNumController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_DelVoucherConsume);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

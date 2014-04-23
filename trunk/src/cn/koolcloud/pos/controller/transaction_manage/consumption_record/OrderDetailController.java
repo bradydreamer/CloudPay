@@ -12,8 +12,8 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
 public class OrderDetailController extends BaseController {
-	
-	private final static int PAY_SUCCESS = 1; 
+
+	private final static int PAY_SUCCESS = 1;
 	private boolean cancelEnable;
 	private String rrn;
 	private String transTime;
@@ -22,6 +22,7 @@ public class OrderDetailController extends BaseController {
 	private String openBrh;
 	private String paymentId;
 	private int paymentOrder = -1;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class OrderDetailController extends BaseController {
 
 		openBrh = data.optString("openBrh");
 		paymentId = data.optString("paymentId");
-		
+
 		paymentOrder = data.optInt("paymentOrder");
 		initButtons();
 	}
@@ -64,7 +65,7 @@ public class OrderDetailController extends BaseController {
 			((ViewGroup) textView.getParent()).setVisibility(View.GONE);
 		}
 	}
-	
+
 	private void initButtons() {
 		Button refundBtn = (Button) findViewById(R.id.order_detail_btn_refund);
 		Button reverseBtn = (Button) findViewById(R.id.order_detail_btn_cancel);
@@ -150,6 +151,18 @@ public class OrderDetailController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_OrderDetail);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

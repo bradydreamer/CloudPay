@@ -48,6 +48,7 @@ import cn.koolcloud.pos.controller.others.settings.SetMerchIdController;
 import cn.koolcloud.pos.controller.others.settings.SetTransIdController;
 import cn.koolcloud.pos.controller.others.settings.SettingsDownloadController;
 import cn.koolcloud.pos.controller.others.settings.SettingsIndexController;
+import cn.koolcloud.pos.controller.others.settings.TransBatchController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
@@ -689,6 +690,8 @@ public class ClientEngine {
 			controllerClass = SetMerchIdController.class;
 		} else if (className.equals("SetTransId")) {
 			controllerClass = SetTransIdController.class;
+		} else if (className.equals("TransBatch")) {
+			controllerClass = TransBatchController.class;
 		} else if (className.equals("MerchantInfo")) {
 			controllerClass = MerchantInfoController.class;
 		} else if (className.equals("TransactionManageIndex")) {
@@ -811,7 +814,7 @@ public class ClientEngine {
 				String paymentId = jsonObject.optString("paymentId");
 
 				iso8583Controller.purchaseChaXun(cardID, track2, track3,
-						Utility.hex2byte(balancePwd), openBrh, paymentId);
+						balancePwd, openBrh, paymentId);
 			}
 
 			String data8583 = iso8583Controller.toString();
@@ -904,7 +907,8 @@ public class ClientEngine {
 					Log.d(TAG, "print res8583 : " + res8583);
 					if (!"".equals(req8583) && !"".equals(res8583)) {
 						iso8583Controller.printer(Utility.hex2byte(req8583),
-								Utility.hex2byte(res8583), userName, paymentId, paymentName, context);
+								Utility.hex2byte(res8583), userName, paymentId,
+								paymentName, context);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

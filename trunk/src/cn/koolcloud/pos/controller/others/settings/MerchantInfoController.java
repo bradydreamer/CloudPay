@@ -2,13 +2,14 @@ package cn.koolcloud.pos.controller.others.settings;
 
 import org.json.JSONObject;
 
+import android.os.Bundle;
+import android.widget.TextView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
-import android.os.Bundle;
-import android.widget.TextView;
-
 public class MerchantInfoController extends BaseController {
+
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -17,13 +18,14 @@ public class MerchantInfoController extends BaseController {
 			finish();
 			return;
 		}
-		JSONObject data = formData.optJSONObject(getString(R.string.formData_key_data));
+		JSONObject data = formData
+				.optJSONObject(getString(R.string.formData_key_data));
 		if (null != data) {
 			String merchId = data.optString("merchId");
 			String machineId = data.optString("machineId");
 			String merchName = data.optString("merchName");
 			String merchAccount = data.optString("merchAccount");
-			
+
 			TextView tv_merchId = (TextView) findViewById(R.id.merchant_info_tv_merchId);
 			tv_merchId.setText(merchId);
 			TextView tv_machineId = (TextView) findViewById(R.id.merchant_info_tv_machineId);
@@ -55,6 +57,18 @@ public class MerchantInfoController extends BaseController {
 	protected String getControllerJSName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

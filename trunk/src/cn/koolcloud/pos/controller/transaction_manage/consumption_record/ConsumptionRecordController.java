@@ -3,25 +3,24 @@ package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
-import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.util.UtilForJSON;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
+import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.util.UtilForJSON;
 
 public class ConsumptionRecordController extends BaseController {
 
 	private ListView lv_record;
 	private ConsumptionRecordAdapter adapter;
 	private List<JSONObject> recordDataList;
-	
+	private boolean removeJSTag = true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,9 +28,11 @@ public class ConsumptionRecordController extends BaseController {
 			finish();
 			return;
 		}
-		JSONObject data = formData.optJSONObject(getString(R.string.formData_key_data));
+		JSONObject data = formData
+				.optJSONObject(getString(R.string.formData_key_data));
 		JSONArray recordList = data.optJSONArray("recordList");
-		recordDataList = UtilForJSON.JSONArrayOfJSONObjects2ListOfJSONObjects(recordList);
+		recordDataList = UtilForJSON
+				.JSONArrayOfJSONObjects2ListOfJSONObjects(recordList);
 		lv_record = (ListView) findViewById(R.id.consumption_record_lv_record);
 		adapter = new ConsumptionRecordAdapter(this);
 		adapter.setList(recordDataList);
@@ -41,21 +42,22 @@ public class ConsumptionRecordController extends BaseController {
 		lv_record.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				if (position == recordDataList.size()) {
 					onCall("ConsumptionRecord.reqMore", null);
 				} else {
-					JSONObject recordData = recordDataList.get(position);					
+					JSONObject recordData = recordDataList.get(position);
 					onCall("ConsumptionRecord.getRecordDetail", recordData);
 				}
 			}
 		});
-		
+
 	}
-	
+
 	@Override
 	protected View viewForIdentifier(String name) {
-		if("lv_record".equals(name)) {
+		if ("lv_record".equals(name)) {
 			return lv_record;
 		}
 		return super.viewForIdentifier(name);
@@ -67,7 +69,7 @@ public class ConsumptionRecordController extends BaseController {
 			return;
 		}
 		if ("addList".equals(key)) {
-			JSONObject data = (JSONObject)value;
+			JSONObject data = (JSONObject) value;
 			JSONArray dataArray = data.optJSONArray("recordList");
 			for (int i = 0; i < dataArray.length(); i++) {
 				recordDataList.add(dataArray.optJSONObject(i));
@@ -78,7 +80,7 @@ public class ConsumptionRecordController extends BaseController {
 		}
 		super.setView(view, key, value);
 	}
-	
+
 	@Override
 	protected void onStart() {
 		adapter.notifyDataSetChanged();
@@ -103,6 +105,18 @@ public class ConsumptionRecordController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_ConsumptionRecord);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

@@ -106,11 +106,11 @@
             <ImageButton
                 style="@style/module_logo"
                 android:src="@drawable/logo_set_trans_id"
-                android:onClick="gotoSetTransId" />
+                android:onClick="gotoTransBatch" />
 
             <TextView
                 style="@style/module_title"
-                android:text="@string/settins_index_module_title_set_trans_id" />
+                android:text="@string/settins_index_module_title_trans_batch" />
         </LinearLayout>
     </TableRow>
 

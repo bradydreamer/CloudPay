@@ -3,17 +3,17 @@ package cn.koolcloud.pos.controller.others.settings;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
 
 public class SetTransIdController extends BaseController {
 
 	private EditText et_id;
-	
+	private boolean removeJSTag = true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,6 +54,18 @@ public class SetTransIdController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_SetTransId);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

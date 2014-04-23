@@ -16,6 +16,7 @@ public class LoginController extends BaseController {
 	private EditText et_pwd;
 	private JSONObject data;
 	private String loginType;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class LoginController extends BaseController {
 		onCall(loginType, msg);
 		// }
 	}
-	
+
 	@Override
 	protected void loadRelatedJS() {
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
@@ -76,13 +77,13 @@ public class LoginController extends BaseController {
 		super.loadRelatedJS();
 	}
 
-	//call get merchant info start mod by Teddy on 7 April
+	// call get merchant info start mod by Teddy on 7 April
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		onCall("SettingsIndex.getMerchantInfoAfterLogin", null);
 	}
-	//call get merchant info end mod by Teddy on 7 April
+
+	// call get merchant info end mod by Teddy on 7 April
 
 	@Override
 	protected void setControllerContentView() {
@@ -103,6 +104,18 @@ public class LoginController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_Login);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

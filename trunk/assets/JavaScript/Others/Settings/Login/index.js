@@ -75,6 +75,7 @@
         window.user.init(g_loginRes)
         window.user.userName = g_userName
         window.user.reloginAction(g_loginRes)
+        SettingsIndex.getMerchantInfoAfterLogin();
       } else {
         Scene.alert(g_loginRes.errorMsg)
       }

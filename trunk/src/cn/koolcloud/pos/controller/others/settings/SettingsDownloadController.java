@@ -1,15 +1,15 @@
 package cn.koolcloud.pos.controller.others.settings;
 
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
 
 public class SettingsDownloadController extends BaseController {
 	private ProgressBar progressBar;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +18,7 @@ public class SettingsDownloadController extends BaseController {
 		progressBar.setProgress(0);
 		onCall("SettingsDownload.start", null);
 	}
-	
+
 	@Override
 	protected View viewForIdentifier(String name) {
 		if ("loading".equals(name)) {
@@ -37,7 +37,7 @@ public class SettingsDownloadController extends BaseController {
 				final int progress = Integer.parseInt("" + value);
 				Log.d(TAG, "loading process:" + progress);
 				mainHandler.post(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						progressBar.setProgress(progress);
@@ -67,6 +67,18 @@ public class SettingsDownloadController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_SettingsDownload);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

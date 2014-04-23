@@ -129,18 +129,56 @@ public class ISO8583Controller implements Constant {
 	 * @return
 	 */
 	public boolean purchaseChaXun(String account, String track2, String track3,
-			byte[] pinBlock, String open_brh, String payment_id) {
+			String pinBlock, String open_brh, String payment_id) {
 
 		paramer.trans.setTransType(TRAN_BALANCE);
 		paramer.trans.setPAN(account); // 设置主帐号
 		paramer.trans.setTrack2Data(track2);
 		paramer.trans.setTrack3Data(track3);
-		paramer.trans.setPinBlock(pinBlock);
+		
 		paramer.trans.setEntryMode(HAVE_PIN);
 		paramer.paymentId = payment_id;
 		paramer.openBrh = open_brh;
+		
+		// fix no pin block start
+		int[] bitMap = null;
+		if (!pinBlock.isEmpty()) {
+			if (pinBlock.equals(STR_NULL_PIN)) {
+				paramer.trans.setPinMode(NO_PIN);
+				bitMap = new int[] {
+						ISOField.F02_PAN,    ISOField.F03_PROC, 
+						ISOField.F11_STAN,   ISOField.F14_EXP, 
+						ISOField.F22_POSE,   ISOField.F23,        
+						ISOField.F25_POCC,   ISOField.F26_CAPTURE, 
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID,    ISOField.F42_ACCID,  ISOField.F49_CURRENCY,
+						/*ISOField.F52_PIN,    ISOField.F53_SCI,*/    ISOField.F55_ICC,
+						ISOField.F60,        ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinBlock(Utility.hex2byte(pinBlock));
+				bitMap = new int[] { ISOField.F02_PAN,    ISOField.F03_PROC, 
+						ISOField.F11_STAN,   ISOField.F14_EXP, 
+						ISOField.F22_POSE,   ISOField.F23,        
+						ISOField.F25_POCC,   ISOField.F26_CAPTURE, 
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID,    ISOField.F42_ACCID,  ISOField.F49_CURRENCY,
+						ISOField.F52_PIN,    ISOField.F53_SCI,    ISOField.F55_ICC,
+						ISOField.F60,        ISOField.F64_MAC };
+			}
+		} else {
+			paramer.trans.setPinBlock(Utility.hex2byte(pinBlock));
+			bitMap = new int[] { ISOField.F02_PAN,    ISOField.F03_PROC, 
+					ISOField.F11_STAN,   ISOField.F14_EXP, 
+					ISOField.F22_POSE,   ISOField.F23,        
+					ISOField.F25_POCC,   ISOField.F26_CAPTURE, 
+					ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
+					ISOField.F41_TID,    ISOField.F42_ACCID,  ISOField.F49_CURRENCY,
+					ISOField.F52_PIN,    ISOField.F53_SCI,    ISOField.F55_ICC,
+					ISOField.F60,        ISOField.F64_MAC };
+		}
+		// fix no pin block end
 
-		boolean isSuccess = pack8583(paramer);
+		boolean isSuccess = pack8583(paramer, bitMap);
 		if (isSuccess) {
 			Log.d(APP_TAG, "pack 8583 ok!");
 		} else {

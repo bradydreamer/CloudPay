@@ -5,21 +5,23 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
 
 public class MultiPayIndex extends BaseHomeController {
-	
-	public void onClickClose(View view){
+
+	private boolean removeJSTag = true;
+
+	public void onClickClose(View view) {
 		onCall("MultiPay.onClickClose", null);
 	}
 
-	public void onClickRecord(View view){
+	public void onClickRecord(View view) {
 		onCall("MultiPay.onClickRecord", null);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-		onCall("MultiPay.onClickClose", null);		
+		onCall("MultiPay.onClickClose", null);
 		super.onBackPressed();
 	}
-	
+
 	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_multipay_index_controller);
@@ -38,6 +40,18 @@ public class MultiPayIndex extends BaseHomeController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_MultiPay);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

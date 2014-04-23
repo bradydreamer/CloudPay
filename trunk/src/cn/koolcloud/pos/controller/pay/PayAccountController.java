@@ -1,22 +1,10 @@
 package cn.koolcloud.pos.controller.pay;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.Utility;
-import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.external.CardSwiper;
-import cn.koolcloud.pos.external.CardSwiper.CardSwiperListener;
-import cn.koolcloud.pos.external.CodeScanner;
-import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
-import cn.koolcloud.pos.external.SoundWave;
-import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +13,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.external.CardSwiper;
+import cn.koolcloud.pos.external.CardSwiper.CardSwiperListener;
+import cn.koolcloud.pos.external.CodeScanner;
+import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
+import cn.koolcloud.pos.external.SoundWave;
+import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 
 public class PayAccountController extends BaseController implements
 		CardSwiperListener, SoundWaveListener, CodeScannerListener {
@@ -45,6 +41,7 @@ public class PayAccountController extends BaseController implements
 	protected String func_swipeCard;
 	protected String func_inputAccount;
 	protected String func_nearfieldAccount;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,20 +70,23 @@ public class PayAccountController extends BaseController implements
 		func_nearfieldAccount = data.optString("nearfieldAccount");
 
 		initBtnStatus(R.id.pay_account_btn_swiper, data.optInt("btn_swipe", -1));
-		initBtnStatus(R.id.pay_account_btn_keyboard, data.optInt("btn_input", -1));
+		initBtnStatus(R.id.pay_account_btn_keyboard,
+				data.optInt("btn_input", -1));
 		initBtnStatus(R.id.pay_account_btn_sound, data.optInt("btn_sound", -1));
-		initBtnStatus(R.id.pay_account_btn_qrcode, data.optInt("btn_qrcode", -1));
-		
-		if(findViewById(R.id.pay_account_btn_qrcode).isEnabled()){
+		initBtnStatus(R.id.pay_account_btn_qrcode,
+				data.optInt("btn_qrcode", -1));
+
+		if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
 			ex_codeScanner = new CodeScanner();
-			ex_codeScanner.onCreate(PayAccountController.this, PayAccountController.this);
+			ex_codeScanner.onCreate(PayAccountController.this,
+					PayAccountController.this);
 		}
-		
+
 		setTitle(formData.optString(getString(R.string.formData_key_title)));
 	}
-	
-	private void initBtnStatus(int id, int status){
-		Button view = (Button)findViewById(id);
+
+	private void initBtnStatus(int id, int status) {
+		Button view = (Button) findViewById(id);
 
 		switch (status) {
 		case -1:
@@ -179,14 +179,15 @@ public class PayAccountController extends BaseController implements
 	private void onStartQRScanner() {
 		if (ex_codeScanner == null) {
 			ex_codeScanner = new CodeScanner();
-			ex_codeScanner.onCreate(PayAccountController.this, PayAccountController.this);
+			ex_codeScanner.onCreate(PayAccountController.this,
+					PayAccountController.this);
 
 			mainHandler.post(new Runnable() {
-				
+
 				@Override
 				public void run() {
 				}
-			});			
+			});
 		} else {
 			ex_codeScanner.onResume();
 		}
@@ -221,6 +222,7 @@ public class PayAccountController extends BaseController implements
 	}
 
 	private boolean isPause = false;
+
 	@Override
 	protected void onPause() {
 		isPause = true;
@@ -238,10 +240,10 @@ public class PayAccountController extends BaseController implements
 
 	@Override
 	protected void onResume() {
-		if(!isPause){
+		if (!isPause) {
 			super.onResume();
 			return;
-		}else{
+		} else {
 			isPause = false;
 		}
 		Log.d(TAG, "NearFieldController onResume");
@@ -278,10 +280,10 @@ public class PayAccountController extends BaseController implements
 
 	@Override
 	public void onBackPressed() {
-		onCall("PayAccount.clear", null);		
+		onCall("PayAccount.clear", null);
 		super.onBackPressed();
 	}
-	
+
 	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_pay_account_controller);
@@ -326,11 +328,11 @@ public class PayAccountController extends BaseController implements
 		receivedData = new String(receivedBytes);
 		Log.d(TAG, "NearFieldController receivedData : " + receivedData);
 		JSONObject transData = new JSONObject();
-		
+
 		if (!receivedData.isEmpty()) {
 			try {
-				transData
-						.put(getString(R.string.formData_key_payData_field0), receivedData);
+				transData.put(getString(R.string.formData_key_payData_field0),
+						receivedData);
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -353,5 +355,17 @@ public class PayAccountController extends BaseController implements
 			e.printStackTrace();
 		}
 		onCall(func_inputAccount, msg);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 }

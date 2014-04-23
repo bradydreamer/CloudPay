@@ -10,14 +10,16 @@ import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
 
-public class HomeController extends BaseHomeController implements View.OnClickListener {
+public class HomeController extends BaseHomeController implements
+		View.OnClickListener {
 	private LinearLayout settingsIndexController;
 	private LinearLayout transactionManageIndexController;
 	private LinearLayout currentLayout;
-	
+
 	private View navSelectedButton = null;
 	private Button homeButton = null;
-	private Button aboutButton;					//about button
+	private Button aboutButton; // about button
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +49,19 @@ public class HomeController extends BaseHomeController implements View.OnClickLi
 		onCall("Home.onShow", null);
 		super.willShow();
 	}
-	
+
 	@Override
 	protected void loadRelatedJS() {
-		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.loadJs(getString(R.string.controllerJSName_TransactionManageIndex));
-		js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
+		if (getRemoveJSTag()) {
+			JavaScriptEngine js = ClientEngine.engineInstance()
+					.javaScriptEngine();
+			js.loadJs(getString(R.string.controllerJSName_TransactionManageIndex));
+			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));			
+		}
 		super.loadRelatedJS();
+		setRemoveJSTag(false);
 	}
+
 	@Override
 	protected String getTitlebarTitle() {
 		return getString(R.string.title_activity_home_controller);
@@ -186,22 +193,39 @@ public class HomeController extends BaseHomeController implements View.OnClickLi
 	public void downloadMerchData(View view) {
 		onCall("SettingsIndex.downloadMerchData", null);
 	}
-	
+
 	public void gotoSetTransId(View view) {
 		onCall("SettingsIndex.gotoSetTransId", null);
+	}
+
+	public void gotoTransBatch(View view) {
+		onCall("SettingsIndex.gotoTransBatch", null);
 	}
 
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.abountBtn:
-			Intent mIntent = new Intent(getApplicationContext(), AboutDialog.class);
+			Intent mIntent = new Intent(getApplicationContext(),
+					AboutDialog.class);
 			startActivity(mIntent);
-			
+
 			break;
 
 		default:
 			break;
 		}
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 }

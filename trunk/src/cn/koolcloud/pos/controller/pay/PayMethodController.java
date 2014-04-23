@@ -4,24 +4,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.widget.ViewPagerIndicator;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.widget.ViewPagerIndicator;
 
 public class PayMethodController extends BaseController {
 	private HorizontalScrollView sView;
 	private ViewPagerIndicator pageIndicator;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,17 +91,12 @@ public class PayMethodController extends BaseController {
 			pageIndicator.setVisibility(View.INVISIBLE);
 		} else {
 			/*
-			sView.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					if (v == sView) {
-						return pageIndicator.onScroll(sView, event);
-					}
-					return false;
-				}
-			});
-			*/
+			 * sView.setOnTouchListener(new OnTouchListener() {
+			 * 
+			 * @Override public boolean onTouch(View v, MotionEvent event) { if
+			 * (v == sView) { return pageIndicator.onScroll(sView, event); }
+			 * return false; } });
+			 */
 		}
 	}
 
@@ -154,10 +147,10 @@ public class PayMethodController extends BaseController {
 		}
 		super.setView(view, key, value);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-		onCall("PayMethod.clear", null);		
+		onCall("PayMethod.clear", null);
 		super.onBackPressed();
 	}
 
@@ -179,6 +172,18 @@ public class PayMethodController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_PayMethod);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }

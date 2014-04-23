@@ -19,6 +19,7 @@ import cn.koolcloud.pos.util.UtilForJSON;
 
 public class MultiPayRecord extends BaseController {
 
+	private boolean removeJSTag = true;
 	private ListView lv_record;
 	private MultiPayRecordAdapter adapter;
 	private List<JSONObject> recordDataList;
@@ -97,8 +98,6 @@ public class MultiPayRecord extends BaseController {
 		tv_totalAmount.setText("" + totalAmount
 				+ getString(R.string.transCurrency_text));
 	}
-
-	
 
 	public void onPay(View view) {
 		if (!payFinish) {
@@ -182,5 +181,17 @@ public class MultiPayRecord extends BaseController {
 					+ amount.substring(length - 2, length);
 		}
 		return floatAmount;
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 }

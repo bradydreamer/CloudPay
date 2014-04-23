@@ -8,11 +8,9 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.widget.TextView;
-
+import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
-import cn.koolcloud.pos.util.UtilForMoney;
-import cn.koolcloud.jni.PinPadInterface;
 
 public class PinPadController extends BaseController {
 	private Looper looper;
@@ -20,6 +18,7 @@ public class PinPadController extends BaseController {
 	private JSONObject transData;
 	private TextView tv_notice;
 	private int TIME_INPUT = 300000;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +29,8 @@ public class PinPadController extends BaseController {
 		}
 		setLeftButtonHidden();
 		tv_notice = (TextView) findViewById(R.id.pin_pad_id_tv_notice);
-		transData = formData.optJSONObject(getString(R.string.formData_key_data));
+		transData = formData
+				.optJSONObject(getString(R.string.formData_key_data));
 
 		handlerThread = new HandlerThread("PinPadInterface");
 		handlerThread.start();
@@ -42,11 +42,11 @@ public class PinPadController extends BaseController {
 		super.willShow();
 		Handler handler = new Handler(looper);
 		handler.post(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				boolean isCancelled = false;
-				
+
 				int openResult = PinPadInterface.open();
 				if (openResult < 0) {
 					PinPadInterface.close();
@@ -54,7 +54,7 @@ public class PinPadController extends BaseController {
 				}
 
 				String cardId = transData.optString("cardID");
-				if(cardId.isEmpty()) {
+				if (cardId.isEmpty()) {
 					cardId = "0000000000000000000";
 				}
 				byte[] bytes_pan = cardId.getBytes();
@@ -66,12 +66,14 @@ public class PinPadController extends BaseController {
 					if (!amount.isEmpty()) {
 						String text = amount;
 						byte[] btyes_text = text.getBytes();
-						PinPadInterface.showText(0, btyes_text, btyes_text.length, 1);
+						PinPadInterface.showText(0, btyes_text,
+								btyes_text.length, 1);
 					}
 				}
 				PinPadInterface.setPinLength(6, 1);
-				int pwdInputResult = PinPadInterface.calculatePinBlock(bytes_pan, bytes_pan.length, pinBlock, TIME_INPUT, 0);
-				if(pwdInputResult < 0) {
+				int pwdInputResult = PinPadInterface.calculatePinBlock(
+						bytes_pan, bytes_pan.length, pinBlock, TIME_INPUT, 0);
+				if (pwdInputResult < 0) {
 					isCancelled = true;
 				} else {
 					String pwd = Utility.hexString(pinBlock);
@@ -80,20 +82,23 @@ public class PinPadController extends BaseController {
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-					
+
 					Boolean needAuthCode = transData.optBoolean("needAuthCode");
 					if (needAuthCode) {
 						Handler handler = new Handler(Looper.getMainLooper());
 						handler.post(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								setTitle(getString(R.string.pin_pad_tv_java_input_authCode));
-								tv_notice.setText(getString(R.string.pin_pad_tv_java_input_authCode));
+								tv_notice
+										.setText(getString(R.string.pin_pad_tv_java_input_authCode));
 							}
 						});
 						byte[] auth = new byte[8];
-						int authInputResult = PinPadInterface.calculatePinBlock(bytes_pan, bytes_pan.length, auth, TIME_INPUT, 0);
+						int authInputResult = PinPadInterface
+								.calculatePinBlock(bytes_pan, bytes_pan.length,
+										auth, TIME_INPUT, 0);
 						if (authInputResult < 0) {
 							isCancelled = true;
 						} else {
@@ -106,7 +111,7 @@ public class PinPadController extends BaseController {
 						}
 					}
 				}
-				PinPadInterface.close();//关闭占用
+				PinPadInterface.close();// 关闭占用
 				try {
 					transData.put("isCancelled", isCancelled);
 				} catch (JSONException e) {
@@ -116,7 +121,7 @@ public class PinPadController extends BaseController {
 			}
 		});
 	}
-	
+
 	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_pin_pad_controller);
@@ -143,9 +148,21 @@ public class PinPadController extends BaseController {
 		looper.quit();
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-		
+
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 }

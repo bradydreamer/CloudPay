@@ -1,24 +1,22 @@
 package cn.koolcloud.pos.controller.pay;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.util.UtilForMoney;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.util.UtilForMoney;
 
 public class TransAmountController extends BaseController {
 
 	private EditText et_money;
 	private long maxAmount = 0;
 	private Typeface faceType;
+	private boolean removeJSTag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +28,8 @@ public class TransAmountController extends BaseController {
 		faceType = Typeface.createFromAsset(getAssets(), "font/digital-7.ttf");
 		et_money = (EditText) findViewById(R.id.input_money_et_money);
 		et_money.setTypeface(faceType);
-		JSONObject data = formData.optJSONObject(getString(R.string.formData_key_data));
+		JSONObject data = formData
+				.optJSONObject(getString(R.string.formData_key_data));
 		if (data != null) {
 			String defaulAmount = data.optString("maxAmount");
 			if (!defaulAmount.isEmpty()) {
@@ -117,6 +116,18 @@ public class TransAmountController extends BaseController {
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_TransAmount);
+	}
+
+	@Override
+	protected void setRemoveJSTag(boolean tag) {
+		removeJSTag = tag;
+
+	}
+
+	@Override
+	protected boolean getRemoveJSTag() {
+		// TODO Auto-generated method stub
+		return removeJSTag;
 	}
 
 }
