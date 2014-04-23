@@ -69,6 +69,12 @@ public class PinPadController extends BaseController {
 						PinPadInterface.showText(0, btyes_text,
 								btyes_text.length, 1);
 					}
+				} else {// input pwd character on pinpad line 1
+//					String text = getString(R.string.pin_pad_tv_input_pwd);
+//					byte[] btyes_text = new byte[] {(byte) 0x80, (byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
+//					PinPadInterface.showText(0, btyes_text, btyes_text.length, 1);
+					byte[] btyes_text_1 = new byte[] {(byte) 0x80, (byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
+					PinPadInterface.showText(1, btyes_text_1, btyes_text_1.length, 1);
 				}
 				PinPadInterface.setPinLength(6, 1);
 				int pwdInputResult = PinPadInterface.calculatePinBlock(

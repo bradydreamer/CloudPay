@@ -130,7 +130,7 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(("凭证号:" + StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6)
-						+ "  授权码:" + trans.getOldAcquirerCode()).getBytes("GB2312"));
+						+ "  授权码:" + trans.getOldAuthCode()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(("操作员:" + trans.getOper()).getBytes("GB2312"));
@@ -296,6 +296,8 @@ public class PrinterHelper implements Constant {
 				control.printText(TAG_LINE2 + "\n");
 				
 				control.printText(TAG_CHANNEL + trans.getPaymentName() + "\n");
+				
+				control.printText(TAG_ACCOUNT + trans.getAlipayAccount() + "\n");
 				
 				String amt = AppUtil.formatAmount(trans.getOldTransAmount());
 				if (trans.getTransType() == TRAN_VOID || trans.getTransType() == TRAN_REFUND) {

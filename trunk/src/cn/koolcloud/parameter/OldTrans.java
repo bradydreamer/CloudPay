@@ -30,6 +30,7 @@ public class OldTrans implements Constant{
     private String paymentName;		//payment Name
     private String paymentId;		//payment ID
     private String alipayPId;		//alipay PID
+    private String alipayAccount;		//alipay account
 
 	private byte oldEntryMode;
 	private byte oldPinMode;
@@ -45,7 +46,14 @@ public class OldTrans implements Constant{
     private String oper;				//操作员
     
 
-    
+	public String getAlipayAccount() {
+		return alipayAccount;
+	}
+
+	public void setAlipayAccount(String alipayAccount) {
+		this.alipayAccount = alipayAccount;
+	}
+
 	public String getAlipayPId() {
 		return alipayPId;
 	}

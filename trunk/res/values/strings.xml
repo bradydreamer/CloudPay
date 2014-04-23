@@ -3,7 +3,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="app_name">智能POS</string>
+    <string name="app_name">收银通</string>
     <string name="backButton">返回</string>
     <string name="desc_image">image</string>
     <string name="notice_aboutpwd">请使用不同的登录密码和会员支付密码，建议密码使用超过6位大小写加数字混合，为了您的安全，请定期更换密码！</string>
