@@ -107,7 +107,8 @@ public class PrinterHelper implements Constant {
 						+ ":" + ("" + trans.getOldTransTime().substring(4, 6))).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 				
-				printerWrite("交易类型(TRANS TYPE):".getBytes("GB2312"));
+//				printerWrite("交易类型(TRANS TYPE):".getBytes("GB2312"));
+				printerWrite("交易类型:".getBytes("GB2312"));
 //				printerWrite(PrinterCommand.linefeed());
 				
 				if (trans.getTransType() == TRAN_VOID) {
@@ -126,7 +127,7 @@ public class PrinterHelper implements Constant {
 				}
 				
 				printerWrite(("批次号:" + StringUtil.fillZero(
-						Integer.toString(trans.getOldTrace()), 6)).getBytes("GB2312"));
+						Integer.toString(trans.getOldBatch()), 6)).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(("凭证号:" + StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6)
@@ -151,8 +152,9 @@ public class PrinterHelper implements Constant {
 				// 增大字体：高度增加1倍，宽度不变
 				printerWrite(PrinterCommand.setFontEnlarge(0x01));
 
-				printerWrite("卡号(CARD NO):".getBytes("GB2312"));
-				printerWrite(PrinterCommand.linefeed());
+//				printerWrite("卡号(CARD NO):".getBytes("GB2312"));
+				printerWrite("卡号:".getBytes("GB2312"));
+//				printerWrite(PrinterCommand.linefeed());
 
 				String pan = "";
 				pan = trans.getOldPan();
@@ -182,7 +184,8 @@ public class PrinterHelper implements Constant {
 				// 结束增大字体
 				printerWrite(PrinterCommand.setFontEnlarge(0));
 
-				String ref = "备注/REFERENCE";
+//				String ref = "备注/REFERENCE";
+				String ref = "备注";
 				printerWrite(ref.getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 				if (trans.getTransType() == TRAN_VOID_SALE
@@ -308,10 +311,12 @@ public class PrinterHelper implements Constant {
 				
 				control.sendESC(PrinterCommand.setFontEnlarge(0x01));
 				control.sendESC(PrinterCommand.setFontBold(1));
-				control.printText(amt + "\n");
+				control.printText(amt);
 				control.sendESC(PrinterCommand.setFontBold(0));
 				control.sendESC(PrinterCommand.setFontEnlarge(0));
+				control.printText("\n", FontType.NORMAL, Align.LEFT);
 				
+				control.printText(TRANSACTION_ID + "\n" + trans.getAlipayTransactionID() + "\n", FontType.NORMAL, Align.LEFT);
 				control.printText("PID: " + trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
 				String number = trans.getOldApOrderId();

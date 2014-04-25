@@ -135,46 +135,54 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setPAN(account); // 设置主帐号
 		paramer.trans.setTrack2Data(track2);
 		paramer.trans.setTrack3Data(track3);
-		
+
 		paramer.trans.setEntryMode(HAVE_PIN);
 		paramer.paymentId = payment_id;
 		paramer.openBrh = open_brh;
-		
+
 		// fix no pin block start
 		int[] bitMap = null;
 		if (!pinBlock.isEmpty()) {
 			if (pinBlock.equals(STR_NULL_PIN)) {
 				paramer.trans.setPinMode(NO_PIN);
 				bitMap = new int[] {
-						ISOField.F02_PAN,    ISOField.F03_PROC, 
-						ISOField.F11_STAN,   ISOField.F14_EXP, 
-						ISOField.F22_POSE,   ISOField.F23,        
-						ISOField.F25_POCC,   ISOField.F26_CAPTURE, 
-						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
-						ISOField.F41_TID,    ISOField.F42_ACCID,  ISOField.F49_CURRENCY,
-						/*ISOField.F52_PIN,    ISOField.F53_SCI,*/    ISOField.F55_ICC,
-						ISOField.F60,        ISOField.F64_MAC };
+						ISOField.F02_PAN,
+						ISOField.F03_PROC,
+						ISOField.F11_STAN,
+						ISOField.F14_EXP,
+						ISOField.F22_POSE,
+						ISOField.F23,
+						ISOField.F25_POCC,
+						ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2,
+						ISOField.F36_TRACK3,
+						ISOField.F39_RSP,
+						ISOField.F40,
+						ISOField.F41_TID,
+						ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
+						ISOField.F60, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinBlock(Utility.hex2byte(pinBlock));
-				bitMap = new int[] { ISOField.F02_PAN,    ISOField.F03_PROC, 
-						ISOField.F11_STAN,   ISOField.F14_EXP, 
-						ISOField.F22_POSE,   ISOField.F23,        
-						ISOField.F25_POCC,   ISOField.F26_CAPTURE, 
-						ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
-						ISOField.F41_TID,    ISOField.F42_ACCID,  ISOField.F49_CURRENCY,
-						ISOField.F52_PIN,    ISOField.F53_SCI,    ISOField.F55_ICC,
-						ISOField.F60,        ISOField.F64_MAC };
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F11_STAN, ISOField.F14_EXP, ISOField.F22_POSE,
+						ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+						ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+						ISOField.F60, ISOField.F64_MAC };
 			}
 		} else {
 			paramer.trans.setPinBlock(Utility.hex2byte(pinBlock));
-			bitMap = new int[] { ISOField.F02_PAN,    ISOField.F03_PROC, 
-					ISOField.F11_STAN,   ISOField.F14_EXP, 
-					ISOField.F22_POSE,   ISOField.F23,        
-					ISOField.F25_POCC,   ISOField.F26_CAPTURE, 
-					ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
-					ISOField.F41_TID,    ISOField.F42_ACCID,  ISOField.F49_CURRENCY,
-					ISOField.F52_PIN,    ISOField.F53_SCI,    ISOField.F55_ICC,
-					ISOField.F60,        ISOField.F64_MAC };
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F11_STAN, ISOField.F14_EXP, ISOField.F22_POSE,
+					ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE,
+					ISOField.F35_TRACK2, ISOField.F36_TRACK3, ISOField.F39_RSP,
+					ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F49_CURRENCY, ISOField.F52_PIN, ISOField.F53_SCI,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
 		}
 		// fix no pin block end
 
@@ -414,7 +422,7 @@ public class ISO8583Controller implements Constant {
 			jsonObject.put("F40_6F08", oldTrans.getOldPayOrderBatch());
 			jsonObject.put("F40_6F20", oldTrans.getOldOpenBrh());
 			jsonObject.put("F40_6F21", oldTrans.getOldCardId());
-			
+
 			String paymentId = jsonObject.optString("paymentId");
 			if (!paymentId.isEmpty()) {
 				jsonObject.put("F60.6", paymentId);
@@ -1012,5 +1020,26 @@ public class ISO8583Controller implements Constant {
 		transTime += paramer.trans.getTransDate()
 				+ paramer.trans.getTransTime();
 		return transTime;
+	}
+
+	public String getBankCardNum() {
+		String cardNum = null;
+		String pan = paramer.trans.getPAN();
+		cardNum = pan.substring(0, 4) + "*******"
+				+ pan.substring(pan.length() - 4, pan.length());
+		return cardNum;
+	}
+
+	public String getIssuerName() {
+		String issuerName = paramer.trans.getIssuerName();
+		return issuerName;
+	}
+
+	public String getAlipayAccount() {
+		return paramer.alipayAccount;
+	}
+
+	public String getAlipayPID() {
+		return paramer.alipayPID;
 	}
 }

@@ -850,13 +850,21 @@ public class ClientEngine {
 			data8583JsonObject.put("resMessage", resMessage);
 			data8583JsonObject.put("rrn", iso8583Controller.getRRN());
 			data8583JsonObject.put("apOrderId",
-					iso8583Controller.getApOrderId());
+					iso8583Controller.getApOrderId());// 通联订单号
 			data8583JsonObject.put("payOrderBatch",
 					iso8583Controller.getBatch());
 			data8583JsonObject.put("transTime",
 					iso8583Controller.getTransTime());
 			data8583JsonObject.put("paymentId",
 					iso8583Controller.getPaymentId());
+			data8583JsonObject.put("cardNum",
+					iso8583Controller.getBankCardNum());// 卡号
+			data8583JsonObject.put("iusserName",
+					iso8583Controller.getIssuerName());
+			data8583JsonObject.put("alipayAccount",
+					iso8583Controller.getAlipayAccount());
+			data8583JsonObject.put("alipayPID",
+					iso8583Controller.getAlipayPID());
 
 		} catch (Exception e) {
 			e.printStackTrace();

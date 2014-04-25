@@ -406,14 +406,14 @@ var merchSettings_temp = [{
 	"payment_name" : "余额",
 	"content" : "余额查询",
 	"classes" : "BALANCE",
-	"payment_icon" : "logo_card.png",
+	"payment_icon" : "logo_search_balance.png",
 }, {
 	"open_brh" : "0000000002",
 	"payment_id" : "0000",
 	"payment_name" : "广分余额",
 	"content" : "余额查询",
 	"classes" : "BALANCE",
-	"payment_icon" : "logo_card.png",
+	"payment_icon" : "logo_search_balance.png",
 }];
 
 var js_1_swiper = [{

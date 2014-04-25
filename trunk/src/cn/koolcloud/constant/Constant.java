@@ -217,6 +217,8 @@ public interface Constant
 	
 	public static final String TAG_TELLERNO = "操作员  ：";
 	
+	public static final String TRANSACTION_ID = "交易号  ：";
+	
 	public static final String TAG_SIGNATURE = "用户签名：";
 	
 	public static final String PRINT_TYPE_DEFAULT 	= "1";			//default print type

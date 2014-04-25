@@ -57,7 +57,7 @@ public class ISOPackager implements Constant {
 		byte[] tag_4 = "6F12".getBytes();
 		byte[] tag_5 = "6F13".getBytes();
 
-//		byte[] tag_6 = "6F10".getBytes();
+		// byte[] tag_6 = "6F10".getBytes();
 
 		byte[] tag_7 = "6F14".getBytes();
 		byte[] tag_8 = "6F20".getBytes();
@@ -136,16 +136,17 @@ public class ISOPackager implements Constant {
 		F40_Length = F40_Length + url.length;
 
 		// 通联商户订单号
-		/*System.arraycopy(tag_6, 0, tmpBuf, F40_Length, tag_6.length);
-		F40_Length = F40_Length + tag_6.length;
-		System.arraycopy(F40_TYPE, 0, tmpBuf, F40_Length, F40_TYPE.length);
-		F40_Length = F40_Length + F40_TYPE.length;
-		byte[] order_ID = appState.apOrderId.getBytes(); // 6F10
-		byte[] order_ID_length = NumberUtil.longToAscii(order_ID.length, 4);
-		System.arraycopy(order_ID_length, 0, tmpBuf, F40_Length, 4);
-		F40_Length = F40_Length + 4;
-		System.arraycopy(order_ID, 0, tmpBuf, F40_Length, order_ID.length);
-		F40_Length = F40_Length + order_ID.length;*/
+		/*
+		 * System.arraycopy(tag_6, 0, tmpBuf, F40_Length, tag_6.length);
+		 * F40_Length = F40_Length + tag_6.length; System.arraycopy(F40_TYPE, 0,
+		 * tmpBuf, F40_Length, F40_TYPE.length); F40_Length = F40_Length +
+		 * F40_TYPE.length; byte[] order_ID = appState.apOrderId.getBytes(); //
+		 * 6F10 byte[] order_ID_length = NumberUtil.longToAscii(order_ID.length,
+		 * 4); System.arraycopy(order_ID_length, 0, tmpBuf, F40_Length, 4);
+		 * F40_Length = F40_Length + 4; System.arraycopy(order_ID, 0, tmpBuf,
+		 * F40_Length, order_ID.length); F40_Length = F40_Length +
+		 * order_ID.length;
+		 */
 
 		// 签名
 
@@ -2267,6 +2268,7 @@ public class ISOPackager implements Constant {
 			System.arraycopy(tempBuffer, 11, acqID, 0, 8);
 			appState.trans.setIssuerID(StringUtil.toString(issID));
 			appState.trans.setAcquirerID(StringUtil.toString(acqID));
+			appState.trans.setIssuerName();
 			break;
 		case ISOField.F48:
 			procB48_CUP(tempBuffer, appState);
@@ -2324,36 +2326,48 @@ public class ISOPackager implements Constant {
 				Locale.getDefault());
 		Log.d("8583", "F40_CUP is : " + temp_F40);
 		String[] strs = temp_F40.split("6F");
+		String payOrderBatch = "";
+		String apOrderId = "";
+		String sale_F40_Type = "";
+		String openBrh = "";
+		String cardId = "";
+		String alipayPId = "";
+		String alipayAccount = "";
+
 		for (String s : strs) {
 			if (s.length() < 2) {
 				continue;
 			}
 			String flag = s.substring(0, 2);
 			if (flag.equals("08")) {
-				String payOrderBatch = s.substring(8);
-				appState.payOrderBatch = payOrderBatch;
+				payOrderBatch = s.substring(8);
 				continue;
-			}
-			if (flag.equals("10")) {
-				String apOrderId = s.substring(8);
-				appState.apOrderId = apOrderId;
+			} else if (flag.equals("10")) {
+				apOrderId = s.substring(8);
 				continue;
-			}
-			if (flag.equals("13")) {
-				String sale_F40_Type = s.substring(8);
-				appState.sale_F40_Type = sale_F40_Type;
+			} else if (flag.equals("13")) {
+				sale_F40_Type = s.substring(8);
 				continue;
-			}
-			if (flag.equals("20")) {
-				String openBrh = s.substring(8);
-				appState.openBrh = openBrh;
+			} else if (flag.equals("20")) {
+				openBrh = s.substring(8);
 				continue;
-			}
-			if (flag.equals("21")) {
-				String cardId = s.substring(8);
-				appState.cardId = cardId;
+			} else if (flag.equals("21")) {
+				cardId = s.substring(8);
+				continue;
+			} else if (flag.equals("22")) {
+				alipayPId = s.substring(8);
+				continue;
+			} else if (flag.equals("26")) {
+				alipayAccount = s.substring(8);
 				continue;
 			}
 		}
+		appState.payOrderBatch = payOrderBatch;
+		appState.apOrderId = apOrderId;
+		appState.sale_F40_Type = sale_F40_Type;
+		appState.openBrh = openBrh;
+		appState.cardId = cardId;
+		appState.alipayPID = alipayPId;
+		appState.alipayAccount = alipayAccount;
 	}
 }

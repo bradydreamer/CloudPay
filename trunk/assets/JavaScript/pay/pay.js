@@ -75,6 +75,11 @@ Pay.payResult = function(params) {
 	// params.resCode ＝ "98";
 	ConsumptionData.dataForPayment.rrn = params.rrn;
 	ConsumptionData.dataForPayment.transTime = params.transTime;
+	ConsumptionData.dataForPayment.bankCardNum = params.cardNum;
+	ConsumptionData.dataForPayment.issuerName = params.iusserName;
+	ConsumptionData.dataForPayment.alipayAccount = params.alipayAccount;
+	ConsumptionData.dataForPayment.alipayPID = params.alipayPID;
+	ConsumptionData.dataForPayment.apOrderId = params.apOrderId;
 
 	window.Database.insertTransData8583(
 		ConsumptionData.dataForPayment.rrn,
@@ -145,6 +150,11 @@ Pay.restart = function(params) {
 		"payTime" : ConsumptionData.dataForPayment.transTime,
 		"payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
 		"transAmount" : ConsumptionData.dataForPayment.transAmount,
+		"bankCardNum" : ConsumptionData.dataForPayment.bankCardNum,
+		"issuerName" : ConsumptionData.dataForPayment.issuerName,
+		"alipayAccount" : ConsumptionData.dataForPayment.alipayAccount,
+		"alipayPID" : ConsumptionData.dataForPayment.alipayPID,
+		"orderID" : ConsumptionData.dataForPayment.apOrderId,
 		//"showAmount" : ConsumptionData.dataForPayment.transAmount,
 	};
 
