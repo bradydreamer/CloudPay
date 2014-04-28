@@ -4,76 +4,56 @@ public class APDefine {
 
 	// for show
 	// neiwang
-	// public static final String APPSERVER =
-	// "http://192.168.101.18:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://192.168.101.18:8080/apmp/mobile.action";
 	// dianxin
-	// public static final String APPSERVER =
-	// "http://116.236.252.101:30074/apmp/mobile.action";
+	// public static final String APPSERVER = "http://116.236.252.101:30074/apmp/mobile.action";
 	// liantong
-	// public static final String APPSERVER =
-	// "http://27.115.64.18:30074/apmp/mobile.action";
+	// public static final String APPSERVER = "http://27.115.64.18:30074/apmp/mobile.action";
 
 	// for test
 
-	// public static final String APPSERVER =
-	// "http://116.236.252.101:20019/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://27.115.64.18:20169/apmp/mobile.action";
+	// public static final String APPSERVER = "http://116.236.252.101:20019/apmp/mobile.action";
+	// public static final String APPSERVER = "http://27.115.64.18:20169/apmp/mobile.action";
 
 	// for develop
-	// public static final String APPSERVER =
-	// "http://192.168.102.128:8080/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://116.236.252.101:20021/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://27.115.64.18:20021/apmp/mobile.action";
+	// public static final String APPSERVER = "http://192.168.102.128:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://116.236.252.101:20021/apmp/mobile.action";
+	// public static final String APPSERVER = "http://27.115.64.18:20021/apmp/mobile.action";
 
-	// public static final String APPSERVER =
-	// "http://192.168.11.108:8080/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://10.0.5.107:8080/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://10.0.5.108:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://192.168.11.108:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://10.0.5.107:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://10.0.5.108:8080/apmp/mobile.action";
 
-	// public static final String APPSERVER =
-	// "http://192.168.102.118:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://192.168.102.118:8080/apmp/mobile.action";
 
 	/**
 	 * hongmei.miao for produce.
 	 */
-	// public static final String APPSERVER =
-	// "http://180.153.20.171:80/apmp/mobile.action";
+	// public static final String APPSERVER = "http://180.153.20.171:80/apmp/mobile.action";
 //	 public static final String APPSERVER = "http://aop.koolcloud.cn/apmp/mobile.action";
 	 
 	/**
 	 * hongmei.miao IP China Unicom network IP China telecommunication network
 	 * IP internal network
 	 */
-	// public static final String APPSERVER =
-	// "http://192.168.105.118:8080/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://192.168.103.166:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://192.168.105.118:8080/apmp/mobile.action";
+	// public static final String APPSERVER = "http://192.168.103.166:8080/apmp/mobile.action";
 	/**
 	 * hongmei.miao China Unicom network IP
 	 */
-	// public static final String APPSERVER =
-	// "http://27.115.64.22:30106/apmp/mobile.action";
+	// public static final String APPSERVER = "http://27.115.64.22:30106/apmp/mobile.action";
 	/**
 	 * hongmei.miao China telecommunication network IP
 	 */
 	public static final String APPSERVER = "http://116.236.252.102:30106/apmp/mobile.action";
 
 	// for produce
-	// public static final String APPSERVER =
-	// "http://apmp.allinpay.com:80/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://180.169.5.238:80/apmp/mobile.action";
-	// public static final String APPSERVER =
-	// "http://112.65.148.57:80/apmp/mobile.action";
+	// public static final String APPSERVER = "http://apmp.allinpay.com:80/apmp/mobile.action";
+	// public static final String APPSERVER = "http://180.169.5.238:80/apmp/mobile.action";
+	// public static final String APPSERVER = "http://112.65.148.57:80/apmp/mobile.action";
 
 	// for produce
-	// String static final modulus =
-	// "27389931790447534105781341866918731963286382930807124939837353656323048890769904532995036368188691232718557484635468755394931052071718100631942540331977222873137125911360171002084582598306286071481062235455866734193589323860931674198447409772316388216483582030977130722880667769509295998776039838838430218202610744367503552201399484529856446146730644370308754202072465588889273273557926400555253943267275224467808359313086455218064904146278757064155960387177989959545703732962434843679496085762980803453246231808655434025036196751471019191178886354150432830601126767242031192210919375104471952922530154277081129555451";
+	// String static final modulus = "27389931790447534105781341866918731963286382930807124939837353656323048890769904532995036368188691232718557484635468755394931052071718100631942540331977222873137125911360171002084582598306286071481062235455866734193589323860931674198447409772316388216483582030977130722880667769509295998776039838838430218202610744367503552201399484529856446146730644370308754202072465588889273273557926400555253943267275224467808359313086455218064904146278757064155960387177989959545703732962434843679496085762980803453246231808655434025036196751471019191178886354150432830601126767242031192210919375104471952922530154277081129555451";
 
 	/**
 	 * hongmei.miao produce modulus

@@ -2333,6 +2333,7 @@ public class ISOPackager implements Constant {
 		String cardId = "";
 		String alipayPId = "";
 		String alipayAccount = "";
+		String alipayTransactionID = "";
 
 		for (String s : strs) {
 			if (s.length() < 2) {
@@ -2360,6 +2361,9 @@ public class ISOPackager implements Constant {
 			} else if (flag.equals("26")) {
 				alipayAccount = s.substring(8);
 				continue;
+			} else if (flag.equals("27")) {
+				alipayTransactionID = s.substring(8);
+				continue;
 			}
 		}
 		appState.payOrderBatch = payOrderBatch;
@@ -2369,5 +2373,6 @@ public class ISOPackager implements Constant {
 		appState.cardId = cardId;
 		appState.alipayPID = alipayPId;
 		appState.alipayAccount = alipayAccount;
+		appState.alipayTransactionID = alipayTransactionID;
 	}
 }

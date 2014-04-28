@@ -13,4 +13,8 @@
 	<dimen name="dialog_title_other_text_height">65.0dp</dimen>
 	<dimen name="dialog_title_other_text_size">25.0px</dimen>
 	<dimen name="dialog_content_text_size">18px</dimen>
+
+	<!-- ListView  elements width -->
+	<dimen name="listview_elements_large_width">104dp</dimen>
+	<dimen name="listview_elements_small_width">102dp</dimen>
 </resources>

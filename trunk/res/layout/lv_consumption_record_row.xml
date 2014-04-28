@@ -2,40 +2,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
+ 
+
     android:orientation="horizontal" >
     
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_small_width"
             android:id="@+id/lv_consumption_record_tv_transType"
             style="@style/consumption_record_lv_tv"
             />
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_large_width"
             android:id="@+id/lv_consumption_record_tv_payType"
             style="@style/consumption_record_lv_tv"
             />
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_large_width"
             android:id="@+id/lv_consumption_record_tv_rrn"
             style="@style/consumption_record_lv_tv"
             />
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_small_width"
             android:id="@+id/lv_consumption_record_tv_transDate"
             style="@style/consumption_record_lv_tv"
-            />
+             />
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_small_width"
             android:id="@+id/lv_consumption_record_tv_transTime"
             style="@style/consumption_record_lv_tv"
             />
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_large_width"
             android:id="@+id/lv_consumption_record_tv_transAmount"
             style="@style/consumption_record_lv_tv"
             />
         <TextView 
-            android:layout_weight="1"
+            android:layout_width="@dimen/listview_elements_small_width"
             android:id="@+id/lv_consumption_record_tv_orderStatus"
             style="@style/consumption_record_lv_tv"
             />

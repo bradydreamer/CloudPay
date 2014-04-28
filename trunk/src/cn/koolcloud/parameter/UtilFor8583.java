@@ -33,6 +33,7 @@ public class UtilFor8583 implements Constant {
 	public String cardId; // 其他类型卡号 F40 6F21
 	public String alipayPID = ""; // 支付宝 PID F40 6F22
 	public String alipayAccount = ""; // 支付宝账户 F40 6F26
+	public String alipayTransactionID = "";// 支付宝交易号 F40 6F27
 
 	public TransDetailInfo trans = new TransDetailInfo();
 

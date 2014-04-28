@@ -865,6 +865,8 @@ public class ClientEngine {
 					iso8583Controller.getAlipayAccount());
 			data8583JsonObject.put("alipayPID",
 					iso8583Controller.getAlipayPID());
+			data8583JsonObject.put("alipayTransactionID",
+					iso8583Controller.getAlipayTransactionID());
 
 		} catch (Exception e) {
 			e.printStackTrace();
