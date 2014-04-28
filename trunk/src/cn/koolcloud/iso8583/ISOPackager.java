@@ -619,6 +619,7 @@ public class ISOPackager implements Constant {
 					|| appState.trans.getTransType() == TRAN_SALE_REVERSAL
 					|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
 					|| appState.trans.getTransType() == TRAN_VOID
+					|| appState.trans.getTransType() == TRAN_REFUND
 					|| appState.trans.getTransType() == TRAN_BALANCE) {
 
 				F60_last += "99";
