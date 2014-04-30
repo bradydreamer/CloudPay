@@ -232,9 +232,9 @@
 							<phase>install</phase>
 						</execution>
 					</executions>
-					<configuration>
+					<!-- configuration>
 						<proguardConfig>proguard-project.txt</proguardConfig>
-						<proguardSkip>false</proguardSkip>
+						<proguardSkip>true</proguardSkip>
 						<manifestDebuggable>false</manifestDebuggable>
 						<androidManifestFile>AndroidManifest.xml</androidManifestFile>
 						<release>true</release>
@@ -245,7 +245,7 @@
 						<sign>
 							<debug>false</debug>
 						</sign>
-					</configuration>
+					</configuration-->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -308,6 +308,15 @@
 						<artifactId>android-maven-plugin</artifactId>
 						<inherited>true</inherited>
 						<configuration>
+							<proguardConfig>proguard-project.txt</proguardConfig>
+							<proguardSkip>true</proguardSkip>
+							<manifestDebuggable>false</manifestDebuggable>
+							<androidManifestFile>AndroidManifest.xml</androidManifestFile>
+							<release>false</release>
+							<run>
+								<debug>true</debug>
+							</run>
+							<runDebug>true</runDebug>
 							<sign>
 								<debug>false</debug>
 							</sign>
@@ -423,6 +432,25 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<inherited>true</inherited>
+						<configuration>
+							<proguardConfig>proguard-project.txt</proguardConfig>
+							<proguardSkip>false</proguardSkip>
+							<manifestDebuggable>false</manifestDebuggable>
+							<androidManifestFile>AndroidManifest.xml</androidManifestFile>
+							<release>true</release>
+							<run>
+								<debug>false</debug>
+							</run>
+							<runDebug>false</runDebug>
+							<sign>
+								<debug>false</debug>
+							</sign>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
