@@ -47,7 +47,8 @@
       	} else {
 			data.paymentName =  ConsumptionData.dataForPayment.paymentName;
       	}
-    } else {
+    } 
+    if ("" === data.req8583 || null == data.req8583) {
 		Scene.alert("未找到对应纪录");
     }
     Global.callObjcHandler("printTrans", data);
