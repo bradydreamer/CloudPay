@@ -1042,4 +1042,8 @@ public class ISO8583Controller implements Constant {
 	public String getAlipayPID() {
 		return paramer.alipayPID;
 	}
+
+	public String getAlipayTransactionID() {
+		return paramer.alipayTransactionID;
+	}
 }

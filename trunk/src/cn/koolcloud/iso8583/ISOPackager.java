@@ -619,6 +619,7 @@ public class ISOPackager implements Constant {
 					|| appState.trans.getTransType() == TRAN_SALE_REVERSAL
 					|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
 					|| appState.trans.getTransType() == TRAN_VOID
+					|| appState.trans.getTransType() == TRAN_REFUND
 					|| appState.trans.getTransType() == TRAN_BALANCE) {
 
 				F60_last += "99";
@@ -2333,6 +2334,7 @@ public class ISOPackager implements Constant {
 		String cardId = "";
 		String alipayPId = "";
 		String alipayAccount = "";
+		String alipayTransactionID = "";
 
 		for (String s : strs) {
 			if (s.length() < 2) {
@@ -2360,6 +2362,9 @@ public class ISOPackager implements Constant {
 			} else if (flag.equals("26")) {
 				alipayAccount = s.substring(8);
 				continue;
+			} else if (flag.equals("27")) {
+				alipayTransactionID = s.substring(8);
+				continue;
 			}
 		}
 		appState.payOrderBatch = payOrderBatch;
@@ -2369,5 +2374,6 @@ public class ISOPackager implements Constant {
 		appState.cardId = cardId;
 		appState.alipayPID = alipayPId;
 		appState.alipayAccount = alipayAccount;
+		appState.alipayTransactionID = alipayTransactionID;
 	}
 }

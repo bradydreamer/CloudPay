@@ -23,6 +23,8 @@
 	var open_brh = params.openBrh;
 	var payment_id = params.paymentId;
 	
+	window.OrderDetail.paymentId = params.paymentId;
+    window.OrderDetail.paymentName = params.paymentName;
     window.Database.getTransData8583(rrn, actionAfterGetTransData8583);
 
     function actionAfterGetTransData8583(data) {
@@ -64,13 +66,16 @@
   function onPrint(data) {
     var params = JSON.parse(data);
     var rrn = params.ref;
+    //global variable for search pay result
+    window.OrderDetail.paymentId = params.paymentId;
+    window.OrderDetail.paymentName = params.paymentName;
     window.posPrint.printTrans(rrn);
   }
 
   window.OrderDetail = {
     "onRefund": onRefund,
     "onCancel": onCancel,
-    "onPrint": onPrint,
+    "onPrint": onPrint
   };
 
 })();

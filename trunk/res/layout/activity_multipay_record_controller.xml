@@ -74,27 +74,27 @@
             android:paddingRight="10dp" >
 
             <TextView
-                style="@style/consumption_record_listTitle"
+                style="@style/consumption_record_multi_pay_listTitle"
                 android:layout_weight="1"
                 android:text="@string/multipay_record_tv_no" />
 
             <TextView
-                style="@style/consumption_record_listTitle"
+                style="@style/consumption_record_multi_pay_listTitle"
                 android:layout_weight="1"
                 android:text="@string/multipay_record_tv_transType" />
 
             <TextView
-                style="@style/consumption_record_listTitle"
+                style="@style/consumption_record_multi_pay_listTitle"
                 android:layout_weight="1"
                 android:text="@string/multipay_record_tv_rrn" />
 
             <TextView
-                style="@style/consumption_record_listTitle"
+                style="@style/consumption_record_multi_pay_listTitle"
                 android:layout_weight="1"
                 android:text="@string/multipay_record_tv_transAmount" />
 
             <TextView
-                style="@style/consumption_record_listTitle"
+                style="@style/consumption_record_multi_pay_listTitle"
                 android:layout_weight="1"
                 android:text="@string/multipay_record_tv_orderStatus" />
         </LinearLayout>

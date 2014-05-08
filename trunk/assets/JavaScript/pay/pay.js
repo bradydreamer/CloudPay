@@ -80,6 +80,7 @@ Pay.payResult = function(params) {
 	ConsumptionData.dataForPayment.alipayAccount = params.alipayAccount;
 	ConsumptionData.dataForPayment.alipayPID = params.alipayPID;
 	ConsumptionData.dataForPayment.apOrderId = params.apOrderId;
+	ConsumptionData.dataForPayment.alipayTransactionID = params.alipayTransactionID;
 
 	window.Database.insertTransData8583(
 		ConsumptionData.dataForPayment.rrn,
@@ -155,6 +156,7 @@ Pay.restart = function(params) {
 		"alipayAccount" : ConsumptionData.dataForPayment.alipayAccount,
 		"alipayPID" : ConsumptionData.dataForPayment.alipayPID,
 		"orderID" : ConsumptionData.dataForPayment.apOrderId,
+		"alipayTransactionID" : ConsumptionData.dataForPayment.alipayTransactionID,
 		//"showAmount" : ConsumptionData.dataForPayment.transAmount,
 	};
 

@@ -52,10 +52,11 @@ public class PrinterHelper implements Constant {
 			PrinterInterface.open();
 			PrinterInterface.set(1);
 			PrinterInterface.begin();
-
-			printerWrite(PrinterCommand.init());
-			printerWrite(PrinterCommand.setHeatTime(180));
-
+			PrinterInterface.end();
+//			printerWrite(PrinterCommand.init());
+//			printerWrite(PrinterCommand.setHeatTime(180));
+			
+			PrinterInterface.begin();
 			for (int i = 0; i < 2; i++) {
 				printerWrite(PrinterCommand.setFontBold(1));
 				printerWrite(PrinterCommand.setAlignMode(1));
@@ -66,6 +67,18 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.setFontBold(0));
 				printerWrite(PrinterCommand.setAlignMode(0));
 				printerWrite(PrinterCommand.setFontEnlarge(0));
+				
+				if (i == 0) {
+					printerWrite(("商户存根").getBytes("GB2312"));
+					printerWrite(PrinterCommand.linefeed());
+				} else if (i == 1) {
+					printerWrite(("持卡人存根").getBytes("GB2312"));
+
+					printerWrite(PrinterCommand.linefeed());
+				} else if (i == 2) {
+					printerWrite(("银行存根").getBytes("GB2312"));
+					printerWrite(PrinterCommand.linefeed());
+				}
 				
 				printerWrite("--------------------------------".getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
@@ -158,7 +171,7 @@ public class PrinterHelper implements Constant {
 
 				String pan = "";
 				pan = trans.getOldPan();
-				String tempPan = pan.substring(0, 4) + "*******" + pan.substring(pan.length() - 4, pan.length());
+				String tempPan = pan.substring(0, 6) + "******" + pan.substring(pan.length() - 4, pan.length());
 				pan = tempPan;
 				printerWrite(pan.getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
@@ -261,6 +274,15 @@ public class PrinterHelper implements Constant {
 //			control.printText(TAG_DTITAL + "\n", FontType.DOUBLE_WH, Align.CENTER);
 				
 				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+				
+				if (i == 0) {
+					control.printText("商户存根");
+					printerWrite(PrinterCommand.linefeed());
+				} else if (i == 1) {
+					control.printText("买家存根");
+
+					printerWrite(PrinterCommand.linefeed());
+				}
 				
 				control.printText(TAG_LINE2 + "\n");
 				

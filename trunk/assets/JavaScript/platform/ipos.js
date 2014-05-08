@@ -34,9 +34,21 @@
 
   function gotoPrint(data) {
     if (null != data) {
-      data.userName = window.user.userName;
-	  data.paymentId =  ConsumptionData.dataForPayment.paymentId;
-	  data.paymentName =  ConsumptionData.dataForPayment.paymentName;
+      	data.userName = window.user.userName;
+      
+      	if ("" === ConsumptionData.dataForPayment.paymentId) {
+			data.paymentId = window.OrderDetail.paymentId;      	
+      	} else {
+			data.paymentId =  ConsumptionData.dataForPayment.paymentId;
+      	}
+      
+      	if ("" === ConsumptionData.dataForPayment.paymentName) {
+			data.paymentName = window.OrderDetail.paymentName;      	
+      	} else {
+			data.paymentName =  ConsumptionData.dataForPayment.paymentName;
+      	}
+    } else {
+		Scene.alert("未找到对应纪录");
     }
     Global.callObjcHandler("printTrans", data);
   }

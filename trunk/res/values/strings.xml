@@ -60,9 +60,9 @@
     <!-- activity_settings_index_controller.xml -->
     <string name="settins_index_module_title_login">签到</string>
     <string name="settins_index_module_title_logout">签退</string>
-    <string name="settins_index_module_title_merchant_info">商户信息</string>
-    <string name="settins_index_module_title_setMerchId">设置商户号</string>
-    <string name="settins_index_module_title_setMachineId">设置终端号</string>
+    <string name="settins_index_module_title_merchant_info">客户信息</string>
+    <string name="settins_index_module_title_setMerchId">设置客户号</string>
+    <string name="settins_index_module_title_setMachineId">设置设备号</string>
     <string name="settins_index_module_title_clearReverseData">清除冲正数据</string>
     <string name="settins_index_module_title_downloadMerchData">参数下载</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
@@ -89,7 +89,7 @@
     <string name="consumption_record_tv_rrn">参考号</string>
     <string name="consumption_record_tv_transDate">日期</string>
     <string name="consumption_record_tv_transTime">时间</string>
-    <string name="consumption_record_tv_transAmount">金额</string>
+    <string name="consumption_record_tv_transAmount">金额(元)</string>
     <string name="consumption_record_tv_orderStatus">状态</string>
     <string name="consumption_record_tv_paidAmount">已付金额</string>
     <string name="consumption_record_tv_balance">差额</string>
@@ -158,10 +158,10 @@
     <string name="waiting_dialog_msg_reverse">正在冲正</string>
 
     <!-- activity_merchant_info_controller.xml -->
-    <string name="merchant_info_tv_merchId">商户代码：</string>
-    <string name="merchant_info_tv_machineId">终端号：</string>
-    <string name="merchant_info_tv_merchName">商户名称：</string>
-    <string name="merchant_info_tv_merchAccount">商户结算账户：</string>
+    <string name="merchant_info_tv_merchId">客户代码：</string>
+    <string name="merchant_info_tv_machineId">设备号：</string>
+    <string name="merchant_info_tv_merchName">客户名称：</string>
+    <string name="merchant_info_tv_merchAccount">客户结算账户：</string>
 
     <!-- activity_transAmount_controller.xml -->
     <string name="input_money_et_money_hint">0</string>
@@ -241,7 +241,7 @@
     <string name="title_activity_input_del_voucher_num_controller">输入提货数量</string>
     <string name="title_activity_del_voucher_way_chosen_controller">方式选择</string>
     <string name="title_activity_input_del_voucher_id_controller">输入提货券号</string>
-    <string name="title_activity_set_machine_id_controller">设置终端号</string>
+    <string name="title_activity_set_machine_id_controller">设置设备号</string>
     <string name="title_activity_del_voucher_record_search_controller">提货记录查询</string>
     <string name="title_activity_del_voucher_record_controller">提货记录</string>
     <string name="title_activity_del_voucher_info_controller">提货券信息</string>

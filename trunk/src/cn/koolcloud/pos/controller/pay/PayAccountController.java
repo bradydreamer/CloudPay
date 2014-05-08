@@ -336,7 +336,7 @@ public class PayAccountController extends BaseController implements
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
-
+			onStopQRScanner();
 			Log.d(TAG, "processReceivedData : " + transData.toString());
 			onCall(func_nearfieldAccount, transData);
 		}

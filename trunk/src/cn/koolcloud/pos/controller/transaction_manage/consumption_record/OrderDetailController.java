@@ -21,6 +21,7 @@ public class OrderDetailController extends BaseController {
 	private String func_confirm;
 	private String openBrh;
 	private String paymentId;
+	private String paymentName;
 	private int paymentOrder = -1;
 	private boolean removeJSTag = true;
 
@@ -48,7 +49,7 @@ public class OrderDetailController extends BaseController {
 
 		openBrh = data.optString("openBrh");
 		paymentId = data.optString("paymentId");
-
+		paymentName = data.optString("paymentName");
 		paymentOrder = data.optInt("paymentOrder");
 		initButtons();
 	}
@@ -83,6 +84,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("transAmount", transAmount);
 			msg.put("openBrh", openBrh);
 			msg.put("paymentId", paymentId);
+			msg.put("paymentName", paymentName);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -97,6 +99,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("transAmount", transAmount);
 			msg.put("openBrh", openBrh);
 			msg.put("paymentId", paymentId);
+			msg.put("paymentName", paymentName);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -108,6 +111,8 @@ public class OrderDetailController extends BaseController {
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("ref", rrn);
+			msg.put("paymentId", paymentId);
+			msg.put("paymentName", paymentName);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

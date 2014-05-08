@@ -127,9 +127,15 @@
     </style>
 
     <style name="consumption_record_listTitle">
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/color_for_consumption_record_listTitle_text</item>
+    </style>
+    
+    <style name="consumption_record_multi_pay_listTitle">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:textSize">20sp</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/color_for_consumption_record_listTitle_text</item>
@@ -153,8 +159,15 @@
     </style>
 
     <style name="consumption_record_lv_tv">
-        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@drawable/lv_row_text_color</item>
+    </style>
+    
+    <style name="consumption_record_multi_pay_lv_tv">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:textSize">20sp</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@drawable/lv_row_text_color</item>

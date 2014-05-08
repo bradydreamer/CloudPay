@@ -6,27 +6,27 @@
 
     <TextView
         android:id="@+id/lv_multipay_record_tv_no"
-        style="@style/consumption_record_lv_tv"
+        style="@style/consumption_record_multi_pay_lv_tv"
         android:layout_weight="1" />
 
     <TextView
         android:id="@+id/lv_multipay_record_tv_transType"
-        style="@style/consumption_record_lv_tv"
+        style="@style/consumption_record_multi_pay_lv_tv"
         android:layout_weight="1" />
 
     <TextView
         android:id="@+id/lv_multipay_record_tv_rrn"
-        style="@style/consumption_record_lv_tv"
+        style="@style/consumption_record_multi_pay_lv_tv"
         android:layout_weight="1" />
 
     <TextView
         android:id="@+id/lv_multipay_record_tv_transAmount"
-        style="@style/consumption_record_lv_tv"
+        style="@style/consumption_record_multi_pay_lv_tv"
         android:layout_weight="1" />
 
     <TextView
         android:id="@+id/lv_multipay_record_tv_orderStatus"
-        style="@style/consumption_record_lv_tv"
+        style="@style/consumption_record_multi_pay_lv_tv"
         android:layout_weight="1" />
 
 </LinearLayout>

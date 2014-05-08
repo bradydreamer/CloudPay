@@ -232,9 +232,9 @@
 							<phase>install</phase>
 						</execution>
 					</executions>
-					<configuration>
+					<!-- configuration>
 						<proguardConfig>proguard-project.txt</proguardConfig>
-						<proguardSkip>false</proguardSkip>
+						<proguardSkip>true</proguardSkip>
 						<manifestDebuggable>false</manifestDebuggable>
 						<androidManifestFile>AndroidManifest.xml</androidManifestFile>
 						<release>true</release>
@@ -245,7 +245,7 @@
 						<sign>
 							<debug>false</debug>
 						</sign>
-					</configuration>
+					</configuration-->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -275,7 +275,8 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jarsigner-plugin</artifactId>
-						<version>1.2</version>
+						<version>1.3.2</version>
+						<!--available versions 1.2, 1.3.2 -->
 						<executions>
 							<execution>
 								<id>signing</id>
@@ -285,6 +286,7 @@
 								<phase>package</phase>
 								<inherited>true</inherited>
 								<configuration>
+								    <removeExistingSignatures>false</removeExistingSignatures>
 									<archiveDirectory></archiveDirectory>
 									<includes>
 										<include>target/*.apk</include>
@@ -308,6 +310,15 @@
 						<artifactId>android-maven-plugin</artifactId>
 						<inherited>true</inherited>
 						<configuration>
+							<proguardConfig>proguard-project.txt</proguardConfig>
+							<proguardSkip>true</proguardSkip>
+							<manifestDebuggable>false</manifestDebuggable>
+							<androidManifestFile>AndroidManifest.xml</androidManifestFile>
+							<release>false</release>
+							<run>
+								<debug>false</debug>
+							</run>
+							<runDebug>false</runDebug>
 							<sign>
 								<debug>false</debug>
 							</sign>
@@ -352,6 +363,8 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jarsigner-plugin</artifactId>
+						<version>1.3.2</version>
+						<!--available versions 1.2, 1.3.2 -->
 						<executions>
 							<execution>
 								<id>signing</id>
@@ -362,7 +375,7 @@
 								<phase>package</phase>
 								<inherited>true</inherited>
 								<configuration>
-									<removeExistingSignatures>true</removeExistingSignatures>
+									<removeExistingSignatures>false</removeExistingSignatures>
 									<archiveDirectory />
 									<includes>
 										<include>${project.build.directory}/*.apk</include>
@@ -423,6 +436,25 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<inherited>true</inherited>
+						<configuration>
+							<proguardConfig>proguard-project.txt</proguardConfig>
+							<proguardSkip>false</proguardSkip>
+							<manifestDebuggable>false</manifestDebuggable>
+							<androidManifestFile>AndroidManifest.xml</androidManifestFile>
+							<release>true</release>
+							<run>
+								<debug>false</debug>
+							</run>
+							<runDebug>false</runDebug>
+							<sign>
+								<debug>false</debug>
+							</sign>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
