@@ -82,10 +82,19 @@ public class MultiPayRecord extends BaseController {
 		if (data == null) {
 			return;
 		}
-		float totalAmount = Float.parseFloat(formatAmountStr(data.optString(
-				"totalAmount", "0")));
-		float paidAmount = Float.parseFloat(formatAmountStr(data.optString(
-				"paidAmount", "0")));
+		float totalAmount = 0;
+		float paidAmount = 0;
+		
+		if (null != data.optString("totalAmount") && !"null".equals(data.optString("totalAmount"))) {
+			
+			totalAmount = Float.parseFloat(formatAmountStr(data.optString("totalAmount", "0")));
+		}
+		
+		if (null != data.optString("paidAmount") && !"null".equals(data.optString("paidAmount"))) {
+			
+			paidAmount = Float.parseFloat(formatAmountStr(data.optString("paidAmount", "0")));
+		}
+		
 		float balance = totalAmount - paidAmount;
 		if (balance == (float) 0.0) {
 			nextPay.setBackgroundResource(R.drawable.button_nextpay_unused_background);

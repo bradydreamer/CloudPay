@@ -17,7 +17,7 @@ public class WelcomeScreen extends Activity {
 	protected Context context;
 	protected boolean hasInit;
 	protected boolean exitOnDestroy = true;
-	protected final String TAG = "AllinpayController";
+	protected final String TAG = "WelcomeScreen";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

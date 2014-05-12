@@ -237,12 +237,14 @@ public class ChongZheng implements Constant {
 			break;
 		case ISOField.F41_TID:
 			String oldTID = StringUtil.toString(tempBuffer);
-			oldTrans.setOldTID(oldTID);
+//			oldTrans.setOldTID(oldTID);
+			oldTrans.setKoolCloudTID(oldTID);
 			Log.i(APP_TAG, "F41_TID: oldTID = :" + oldTID);
 			break;
 		case ISOField.F42_ACCID:
 			String oldMID = StringUtil.toString(tempBuffer);
-			oldTrans.setOldMID(oldMID);
+//			oldTrans.setOldMID(oldMID);
+			oldTrans.setKoolCloudMID(oldMID);
 			Log.i(APP_TAG, "F42_ACCID: oldMID = :" + oldMID);
 			break;
 		case ISOField.F44_ADDITIONAL:
@@ -349,6 +351,12 @@ public class ChongZheng implements Constant {
 			if(flag.equals("22")){
 				String alipayPId = s.substring(8);
 				oldTrans.setAlipayPId(alipayPId);
+				oldTrans.setOldMID(alipayPId);
+				continue;
+			}
+			if(flag.equals("23")){
+				String terminalId = s.substring(8);
+				oldTrans.setOldTID(terminalId);
 				continue;
 			}
 			if(flag.equals("26")){

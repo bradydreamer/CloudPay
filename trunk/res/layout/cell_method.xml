@@ -5,7 +5,7 @@
 
     <Button
         style="@style/module_logo"
-        android:background="@drawable/logo_allinpay"
+        android:background="@drawable/icon_swiper"
         android:onClick="onClickBtn" />
 
     <TextView style="@style/module_title" 

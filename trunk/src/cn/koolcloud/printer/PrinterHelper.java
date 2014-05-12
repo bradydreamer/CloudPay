@@ -11,7 +11,6 @@ import cn.koolcloud.constant.Constant;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.pos.R;
-import cn.koolcloud.printer.command.CharacterSettingCommand;
 import cn.koolcloud.printer.command.FormatSettingCommand;
 import cn.koolcloud.printer.control.Align;
 import cn.koolcloud.printer.control.Depth;
@@ -102,11 +101,19 @@ public class PrinterHelper implements Constant {
 
 				printerWrite(("商户名:" + trans.getOldMertName()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
-				
-				printerWrite(("商户号:" + trans.getOldMID()).getBytes("GB2312"));
+
+				printerWrite(("酷云客户号:" + trans.getKoolCloudMID())
+						.getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(("终端号:" + trans.getOldTID()).getBytes("GB2312"));
+				printerWrite(("酷云设备号:" + trans.getKoolCloudTID())
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+
+				printerWrite(("收单商户号:" + trans.getOldMID()).getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+
+				printerWrite(("收单终端号:" + trans.getOldTID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 				
 				printerWrite(("参考号:" + trans.getOldRrn()).getBytes("GB2312"));
@@ -124,6 +131,8 @@ public class PrinterHelper implements Constant {
 				printerWrite("交易类型:".getBytes("GB2312"));
 //				printerWrite(PrinterCommand.linefeed());
 				
+				//set bold font
+				printerWrite(PrinterCommand.setFontBold(1));
 				if (trans.getTransType() == TRAN_VOID) {
 					printerWrite("消费撤销".getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
@@ -138,6 +147,7 @@ public class PrinterHelper implements Constant {
 					printerWrite(str.getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
 				}
+				printerWrite(PrinterCommand.setFontBold(0));
 				
 				printerWrite(("批次号:" + StringUtil.fillZero(
 						Integer.toString(trans.getOldBatch()), 6)).getBytes("GB2312"));
@@ -191,7 +201,11 @@ public class PrinterHelper implements Constant {
 				if (trans.getTransType() == TRAN_VOID || trans.getTransType() == TRAN_REFUND) {
 					amt = " - " + amt;
 				}
-				printerWrite(("金额: " + amt).getBytes("GB2312"));
+				
+				printerWrite(("金额: ").getBytes("GB2312"));
+				printerWrite(PrinterCommand.setFontBold(1));
+				printerWrite((amt).getBytes("GB2312"));
+				printerWrite(PrinterCommand.setFontBold(0));
 				printerWrite(PrinterCommand.linefeed());
 
 				// 结束增大字体
@@ -287,12 +301,18 @@ public class PrinterHelper implements Constant {
 				control.printText(TAG_LINE2 + "\n");
 				
 				control.printText(TAG_MERCHANT);
-				
-				control.printText(trans.getOldMertName() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
-				
-//				control.printText(TAG_AP_NAME + trans.getPaymentName() + "\n");
-				control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
-				
+
+				control.printText(trans.getOldMertName() + "\n",
+						FontType.NORMAL, Align.LEFT, Depth.DEEP);
+
+				control.printText(TAG_KOOL_CLOUD_MID + trans.getKoolCloudMID()
+						+ "\n");
+				control.printText(TAG_KOOL_CLOUD_TID + trans.getKoolCloudTID()
+						+ "\n");
+				// control.printText(TAG_AP_NAME + trans.getPaymentName() +
+				// "\n");
+				// control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
+
 				control.printText(TAG_REF + trans.getOldRrn() + "\n");
 				
 				control.printText(TAG_DATE_TIME + Utils.getCurrentDate() + " ");
@@ -339,11 +359,13 @@ public class PrinterHelper implements Constant {
 				control.printText("\n", FontType.NORMAL, Align.LEFT);
 				
 				control.printText(TRANSACTION_ID + "\n" + trans.getAlipayTransactionID() + "\n", FontType.NORMAL, Align.LEFT);
-				control.printText("PID: " + trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
+				control.printText(PARTNER_ID + "\n", FontType.NORMAL, Align.LEFT);
+				control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
 				String number = trans.getOldApOrderId();
 				
-				control.printText("No." + number + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
+				control.printText(MERCHANT_RECEIPT_ID + "\n", FontType.NORMAL, Align.LEFT);
+				control.printText(number + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 				
 				// not record the setting state, resetting it after finishing
 //				control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));

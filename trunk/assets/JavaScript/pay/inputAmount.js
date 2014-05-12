@@ -24,6 +24,7 @@
   };
 
   function clear() {
+	ConsumptionData.isMultiPay = false;
     if (currentStep == null) {
       return;
     }

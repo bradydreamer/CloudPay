@@ -66,19 +66,21 @@ public class PinPadController extends BaseController {
 					if (!amount.isEmpty()) {
 						String text = amount;
 						byte[] btyes_text = text.getBytes();
-						PinPadInterface.showText(0, btyes_text,
-								btyes_text.length, 1);
+						//clean line
+						PinPadInterface.showText(0, null, 0, 1);
+						PinPadInterface.showText(0, btyes_text, btyes_text.length, 1);
 					}
 				} else {// input pwd character on pinpad line 1
 //					String text = getString(R.string.pin_pad_tv_input_pwd);
 //					byte[] btyes_text = new byte[] {(byte) 0x80, (byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
 //					PinPadInterface.showText(0, btyes_text, btyes_text.length, 1);
 					byte[] btyes_text_1 = new byte[] {(byte) 0x80, (byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
+					//clean line
+					PinPadInterface.showText(1, null, 0, 1);
 					PinPadInterface.showText(1, btyes_text_1, btyes_text_1.length, 1);
 				}
 				PinPadInterface.setPinLength(6, 1);
-				int pwdInputResult = PinPadInterface.calculatePinBlock(
-						bytes_pan, bytes_pan.length, pinBlock, TIME_INPUT, 0);
+				int pwdInputResult = PinPadInterface.calculatePinBlock(bytes_pan, bytes_pan.length, pinBlock, TIME_INPUT, 0);
 				if (pwdInputResult < 0) {
 					isCancelled = true;
 				} else {
@@ -97,14 +99,11 @@ public class PinPadController extends BaseController {
 							@Override
 							public void run() {
 								setTitle(getString(R.string.pin_pad_tv_java_input_authCode));
-								tv_notice
-										.setText(getString(R.string.pin_pad_tv_java_input_authCode));
+								tv_notice.setText(getString(R.string.pin_pad_tv_java_input_authCode));
 							}
 						});
 						byte[] auth = new byte[8];
-						int authInputResult = PinPadInterface
-								.calculatePinBlock(bytes_pan, bytes_pan.length,
-										auth, TIME_INPUT, 0);
+						int authInputResult = PinPadInterface.calculatePinBlock(bytes_pan, bytes_pan.length, auth, TIME_INPUT, 0);
 						if (authInputResult < 0) {
 							isCancelled = true;
 						} else {

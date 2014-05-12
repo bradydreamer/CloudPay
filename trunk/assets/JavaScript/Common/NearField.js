@@ -20,7 +20,7 @@
 		ConsumptionData.dataForPayment.field3 = params.field3
 		ConsumptionData.dataForPayment.field4 = params.field4
 		if("" == window.util.payTypeCode2Name(payType)
-			|| payType == window.util.getPayTypeCode("allinpay_cash")
+			|| payType == window.util.getPayTypeCode("koolcloud_cash")
 			|| payType == window.util.getPayTypeCode("coupon")) {
 			Scene.goBack("ConsumptionIndex",{})
 		} else {

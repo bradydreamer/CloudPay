@@ -223,7 +223,7 @@
     <string name="controllerJSName_MultiPay">pay/multipay</string>
 
     <!-- title -->
-    <string name="title_activity_home_controller">智能POS</string>
+    <string name="title_activity_home_controller">收银通</string>
     <string name="title_activity_multi_pay_controller">组合支付</string>
     <string name="title_activity_input_money_controller">请输入金额</string>
     <string name="title_activity_login_controller">签 到</string>
@@ -235,7 +235,7 @@
     <string name="title_activity_pin_pad_controller">请输入密码</string>
     <string name="title_activity_settings_index_controller">设置</string>
     <string name="title_activity_others_index">其他</string>
-    <string name="title_activity_set_merch_id_controller">设置商户号</string>
+    <string name="title_activity_set_merch_id_controller">设置客户号</string>
     <string name="title_activity_merchant_info_controller">商户信息</string>
     <string name="title_activity_settings_download_controller">参数下载</string>
     <string name="title_activity_input_del_voucher_num_controller">输入提货数量</string>

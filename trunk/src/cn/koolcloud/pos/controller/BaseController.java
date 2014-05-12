@@ -41,7 +41,7 @@ public abstract class BaseController extends Activity {
 	private Button titlebar_btn_right;
 	private TextView titlebar_btn_title;
 	private Button titlebar_btn_left;
-	protected final String TAG = "AllinpayController";
+	protected final String TAG = "BaseController";
 	public boolean willRestart;
 
 	protected StringBuilder numberInputString;

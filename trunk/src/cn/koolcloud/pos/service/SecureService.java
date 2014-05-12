@@ -8,7 +8,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public class SecureService extends IntentService {
-	protected final static String TAG = "AllinpaySecureService";
+	protected final static String TAG = "SecureService";
 	
 	private SecureInfo secureInfo;
 	private String userInfo;

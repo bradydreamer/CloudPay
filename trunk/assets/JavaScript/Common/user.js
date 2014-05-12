@@ -10,7 +10,7 @@ function UserInfo(){
 }
 
 UserInfo.prototype.init =  function(data){
-	this.userName = "";
+	this.userName = data.userName;
     this.userStatus = data.userStatus;
     this.token = data.token;
     ServiceMerchInfo.setInfo(data);

@@ -26,6 +26,8 @@ public class OldTrans implements Constant{
     private Integer oldBatch;		//批次号
     private String oldTID;			//
     private String oldMID;			//
+    private String koolCloudTID;			//KoolCloud terminal id
+    private String koolCloudMID;			//KoolCloud merchant id
     private String oldMertName;				//Merchant Name
     private String paymentName;				//payment Name
     private String paymentId;				//payment ID
@@ -46,6 +48,22 @@ public class OldTrans implements Constant{
     
     private String oper;				//操作员
     
+
+	public String getKoolCloudTID() {
+		return koolCloudTID;
+	}
+
+	public void setKoolCloudTID(String koolCloudTID) {
+		this.koolCloudTID = koolCloudTID;
+	}
+
+	public String getKoolCloudMID() {
+		return koolCloudMID;
+	}
+
+	public void setKoolCloudMID(String koolCloudMID) {
+		this.koolCloudMID = koolCloudMID;
+	}
 
 	public String getAlipayTransactionID() {
 		return alipayTransactionID;

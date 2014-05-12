@@ -159,10 +159,10 @@ Util.prototype.getTransType = function(transTypeKey) {
 }
 
 Util.prototype.getPayTypeCode = function(payTypeKey) {
-	if ("allinpay_cash" == payTypeKey) {
+	if ("koolcloud_cash" == payTypeKey) {
 		return "9100"
 	}
-	if ("allinpay_account" == payTypeKey) {
+	if ("koolcloud_account" == payTypeKey) {
 		return "9110"
 	} else if ("quickPay_debit" == payTypeKey) {
 		return "9120"
@@ -176,7 +176,7 @@ Util.prototype.getPayTypeCode = function(payTypeKey) {
 		return "9150"
 	} else if ("deliveryVocher" == payTypeKey) {
 		return "9141"
-	} else if ("allinpay" == payTypeKey) {
+	} else if ("koolcloud" == payTypeKey) {
 		return "9000"
 	}
 }

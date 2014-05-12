@@ -1,24 +1,23 @@
 package cn.koolcloud.constant;
 
-public interface Constant
-{
+public interface Constant {
 	final boolean debug = true;
 	final boolean GUANGDONG_CUP = true;
 	final String APP_TAG = "CUP";
 	final String APP_VERSION = "V000001";
 	final String TSN = "WP15010000000001";
-	
-	final byte MAX_MASTER_KEY_NUMBER = 10;  // pinpad所支持的最大主密钥数
-	final byte DEFAULT_KEY[] = {(byte)0x20, (byte)0x12, (byte)0x12, (byte)0x17, (byte)0x15, (byte)0x13, (byte)0x41, (byte)0x00,
-			                    (byte)0x01, (byte)0x02, (byte)0x03, (byte)0x04, (byte)0x05, (byte)0x06, (byte)0x07, (byte)0x08
-                               };
-	
+
+	final byte MAX_MASTER_KEY_NUMBER = 10; // pinpad所支持的最大主密钥数
+	final byte DEFAULT_KEY[] = { (byte) 0x20, (byte) 0x12, (byte) 0x12,
+			(byte) 0x17, (byte) 0x15, (byte) 0x13, (byte) 0x41, (byte) 0x00,
+			(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05,
+			(byte) 0x06, (byte) 0x07, (byte) 0x08 };
+
 	/*-----  TRANSACTION TYPES  ---------------------------------*/
 	final byte TRAN_BALANCE           =  0; //余额查询
 	final byte TRAN_SALE              =  1; //消费
 	/**
-	 * 撤销的原交易必须在该终端能找到
-	 * 退货则不需要在终端上找到原交易
+	 * 撤销的原交易必须在该终端能找到 退货则不需要在终端上找到原交易
 	 * */
 	final byte TRAN_VOID              =  2; //撤销
 	final byte TRAN_REFUND            =  3; //退货
@@ -192,7 +191,10 @@ public interface Constant
 	public static final String TAG_LINE2 = "------------------------------";
 	
 	public static final String TAG_MERCHANT = "商户名  ：";
-	
+
+	public static final String TAG_KOOL_CLOUD_MID = "酷云客户号：";
+	public static final String TAG_KOOL_CLOUD_TID = "酷云设备号：";
+
 	public static final String TAG_TERMINAL = "终端号  ：";
 
 	public static final String TAG_REF = "参考号  ：";
@@ -216,9 +218,13 @@ public interface Constant
 	public static final String TAG_AMOUNT = "支付金额：";
 	
 	public static final String TAG_TELLERNO = "操作员  ：";
+
+	public static final String TRANSACTION_ID = "支付宝流水号：";
 	
-	public static final String TRANSACTION_ID = "交易号  ：";
+	public static final String PARTNER_ID = "支付宝合作身份：";
 	
+	public static final String MERCHANT_RECEIPT_ID = "商户订单号：";
+
 	public static final String TAG_SIGNATURE = "用户签名：";
 	
 	public static final String PRINT_TYPE_DEFAULT 	= "1";			//default print type

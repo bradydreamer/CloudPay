@@ -23,7 +23,6 @@
     }
 
     function gotoLogin(params) {
-      params.userName = "operator";
       var req = {
         merchId: window.user.merchId,
         iposId: window.user.machineId,
@@ -69,6 +68,7 @@
       if ("0" == g_loginRes.userStatus) {
 
         g_loginRes.transTime = data.transTime;
+		g_loginRes.userName = g_userName;
         delete g_loginRes.data;
         //ServiceMerchInfo.setInfo(g_loginRes);
 

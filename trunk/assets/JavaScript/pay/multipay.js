@@ -22,7 +22,7 @@
   }
   
   function onClickComplete () {
-    ConsumptionData.isMultiPay = null;
+    ConsumptionData.isMultiPay = false;
     ConsumptionData.dataForMultiPay.completed = true;
     Pay.restart();
   }

@@ -9,7 +9,7 @@ public class TerminalConfig
     
 	private String  mid = "";
 	private String  tid = "";
-	private String  merchantName = "allinpay";
+	private String  merchantName = "koolcloud";
 	private Integer trace = 1;
 	// 通讯参数
 	private String  tpdu = APDefine.TPDU;

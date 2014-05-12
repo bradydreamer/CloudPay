@@ -13,7 +13,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public class MerchService extends IntentService {
-	protected final String TAG = "AllinpayMerchService";
+	protected final String TAG = "MerchService";
 
 	public final static String ACTION = "ex_action";
 	public final static int RESULT_CODE = 100010;
@@ -30,7 +30,7 @@ public class MerchService extends IntentService {
 	private RemoteCallbackList<IMerchCallBack> myCallbacks;
 
 	public MerchService() {
-		super("AllinpayMerchService");
+		super("MerchService");
 	}
 
 	@Override
