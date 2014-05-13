@@ -36,13 +36,14 @@
     if (null != data) {
       	data.userName = window.user.userName;
       
-      	if ("" === ConsumptionData.dataForPayment.paymentId) {
+      	if ("" === ConsumptionData.dataForPayment.paymentId ||
+      		undefined ===ConsumptionData.dataForPayment.paymentId) {
 			data.paymentId = window.OrderDetail.paymentId;      	
       	} else {
 			data.paymentId =  ConsumptionData.dataForPayment.paymentId;
       	}
-      
-      	if ("" === ConsumptionData.dataForPayment.paymentName) {
+      	if ("" === ConsumptionData.dataForPayment.paymentName || 
+      		undefined ===ConsumptionData.dataForPayment.paymentName) {
 			data.paymentName = window.OrderDetail.paymentName;      	
       	} else {
 			data.paymentName =  ConsumptionData.dataForPayment.paymentName;

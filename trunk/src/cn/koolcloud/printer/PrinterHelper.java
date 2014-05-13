@@ -224,9 +224,9 @@ public class PrinterHelper implements Constant {
 						|| trans.getTransType() == TRAN_MOTO_VOID_SALE
 						|| trans.getTransType() == TRAN_MOTO_VOID_COMP
 						|| trans.getTransType() == TRAN_INSTALLMENT_VOID) {
-					printerWrite(("原凭证号:" + StringUtil.fillZero(
-							Integer.toString(trans.getOldTrace()), 6)).getBytes("GB2312"));
-					printerWrite(PrinterCommand.linefeed());
+//					printerWrite(("原凭证号:" + StringUtil.fillZero(
+//							Integer.toString(trans.getOldTrace()), 6)).getBytes("GB2312"));
+//					printerWrite(PrinterCommand.linefeed());
 
 				}
 

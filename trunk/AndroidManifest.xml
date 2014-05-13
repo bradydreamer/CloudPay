@@ -76,7 +76,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cn.koolcloud.AllinpayClient.Controller.BaseController" />
+                android:value=".controller.BaseController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.LoginController"

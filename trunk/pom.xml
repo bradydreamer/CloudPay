@@ -4,30 +4,30 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>cn.koolcloud.ipos</groupId>
-	<artifactId>allinpay-android-ipos</artifactId>
+	<artifactId>koolcloud-android-ipos</artifactId>
 	<version>1.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
 	<packaging>apk</packaging>
 
 	<organization>
-		<name>All-In-Pay</name>
-		<url>http://www.allinpay.com/</url>
+		<name>Kool Cloud</name>
+		<url>http://www.koolcloud.com/</url>
 	</organization>
 
 	<developers>
 		<developer>
 			<id>Teddy</id>
 			<name>Teddy</name>
-			<email>ljm3@allinpay.com</email>
-			<url>http://www.allinpay.com/</url>
-			<organization>All-In-Pay</organization>
-			<organizationUrl>http://www.allinpay.com/</organizationUrl>
+			<email>teddy.li@koolpos.com</email>
+			<url>http://www.koolpos.com/</url>
+			<organization>Kool Cloud</organization>
+			<organizationUrl>http://www.koolpos.com/</organizationUrl>
 			<roles>
 				<role>developer</role>
 			</roles>
 			<timezone>UTC+08:00</timezone>
 			<properties>
-				<picUrl>http://www.allinpay.com/templates/default/images/logo.gif</picUrl>
+				<picUrl>http://www.koolpos.com/logo.gif</picUrl>
 			</properties>
 		</developer>
 	</developers>
