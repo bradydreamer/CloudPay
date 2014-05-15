@@ -19,7 +19,7 @@
 		        >
 		        <ImageButton 
 			        style="@style/module_logo"
-			        android:src="@drawable/logo_consumption_record_today"
+			        android:src="@drawable/logo_card"
 			        android:onClick="gotoConsumptionRecord"
 			        />
 		        <TextView 

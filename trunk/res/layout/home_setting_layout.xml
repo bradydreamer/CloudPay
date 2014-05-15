@@ -14,7 +14,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_login"
+                android:background="@drawable/logo_login"
                 android:onClick="gotoLogin" />
 
             <TextView
@@ -26,7 +26,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_logout"
+                android:background="@drawable/logo_logout"
                 android:onClick="gotoLogout" />
 
             <TextView
@@ -38,7 +38,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_merchant_info"
+                android:background="@drawable/logo_merchant_info"
                 android:onClick="gotoMerchantInfo" />
 
             <TextView
@@ -50,7 +50,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_set_merch_id"
+                android:background="@drawable/logo_set_merch_id"
                 android:onClick="gotoSetMerchId" />
 
             <TextView
@@ -69,7 +69,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_set_machine_id"
+                android:background="@drawable/logo_set_machine_id"
                 android:onClick="gotoSetMachineId" />
 
             <TextView
@@ -81,7 +81,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_clear_reverse_data"
+                android:background="@drawable/logo_clear_reverse_data"
                 android:onClick="clearReverseData" />
 
             <TextView
@@ -93,7 +93,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_setting_download"
+                android:background="@drawable/logo_setting_download"
                 android:onClick="downloadMerchData" />
 
             <TextView
@@ -105,7 +105,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:src="@drawable/logo_set_trans_id"
+                android:background="@drawable/logo_set_trans_id"
                 android:onClick="gotoTransBatch" />
 
             <TextView

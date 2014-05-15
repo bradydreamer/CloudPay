@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:background="@color/main_page_backgroud" >
 	<ScrollView style="@style/broadside_bg_style">
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
-
+		<!-- main page -->
         <LinearLayout style="@style/broadside_cell_style" >
 
             <Button
@@ -20,25 +21,7 @@
                 android:onClick="onClickHome"
                 android:text="@string/home_activity_home" />
         </LinearLayout>
-
-        <LinearLayout style="@style/broadside_cell_style" >
-
-            <Button
-                style="@style/broadside_btn_style"
-                android:drawableTop="@drawable/btn_setting"
-                android:onClick="onClickSetting"
-                android:text="@string/home_activity_setting" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/broadside_cell_style" >
-
-            <Button
-                style="@style/broadside_btn_style"
-                android:drawableTop="@drawable/btn_transaction_inquiries"
-                android:onClick="onClickTransactionInquiries"
-                android:text="@string/home_activity_transaction_inquiries" />
-        </LinearLayout>
-
+        <!-- multi pay -->
         <LinearLayout style="@style/broadside_cell_style" >
 
             <Button
@@ -47,6 +30,25 @@
                 android:onClick="onClickMultiPay"
                 android:text="@string/home_activity_multi_pay" />
         </LinearLayout>
+		<!-- search -->
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_transaction_inquiries"
+                android:onClick="onClickTransactionInquiries"
+                android:text="@string/home_activity_transaction_inquiries" />
+        </LinearLayout>
+		<!-- settings -->
+        <LinearLayout style="@style/broadside_cell_style" >
+
+            <Button
+                style="@style/broadside_btn_style"
+                android:drawableTop="@drawable/btn_setting"
+                android:onClick="onClickSetting"
+                android:text="@string/home_activity_setting" />
+        </LinearLayout>
+        <!-- about -->
         <LinearLayout style="@style/broadside_cell_style" >
 
             <Button
@@ -63,14 +65,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <!-- 主页 -->
+        <!-- main page frame -->
 
         <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             layout="@layout/base_home_layout" />
 
-        <!-- 设置 -->
+        <!-- setting frame -->
 
         <include
             android:layout_width="match_parent"
@@ -78,15 +80,13 @@
             android:layout_gravity="center"
             layout="@layout/home_setting_layout" />
 
-        <!-- 交易查询 -->
+        <!-- search frame -->
 
         <include
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             layout="@layout/home_transaction_manage_layout" />
-
-        <!-- 组合支付 -->
 
     </FrameLayout>
 

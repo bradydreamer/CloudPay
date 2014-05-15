@@ -29,4 +29,6 @@
     <color name="share_text_color">#ff3273a0</color>
     <color name="detail_title_backgroud">#ff017ecd</color>
     
+    <color name="main_page_backgroud">#FFE9ECF5</color>
+    
 </resources>

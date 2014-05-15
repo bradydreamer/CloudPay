@@ -204,7 +204,7 @@ public abstract class BaseHomeController extends BaseController {
 					} else if (imageName.startsWith("logo_search_balance")) {
 						iv.setImageResource(R.drawable.logo_search_balance);
 					}
-					iv.setBackgroundResource(R.drawable.icon_bg);
+//					iv.setBackgroundResource(R.drawable.icon_bg);
 				}
 			} else {
 				TextView tv = (TextView) v;
