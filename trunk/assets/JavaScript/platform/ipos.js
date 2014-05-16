@@ -50,7 +50,7 @@
       	}
     } 
     if ("" === data.req8583 || null == data.req8583) {
-		Scene.alert("未找到对应纪录");
+		Scene.alert("交易已经过期");
     }
     Global.callObjcHandler("printTrans", data);
   }

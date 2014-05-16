@@ -47,7 +47,6 @@ import cn.koolcloud.pos.controller.others.settings.SetMachineIdController;
 import cn.koolcloud.pos.controller.others.settings.SetMerchIdController;
 import cn.koolcloud.pos.controller.others.settings.SetTransIdController;
 import cn.koolcloud.pos.controller.others.settings.SettingsDownloadController;
-import cn.koolcloud.pos.controller.others.settings.SettingsIndexController;
 import cn.koolcloud.pos.controller.others.settings.TransBatchController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
@@ -708,8 +707,6 @@ public class ClientEngine {
 			controllerClass = SetMachineIdController.class;
 		} else if (className.equals("SettingsDownload")) {
 			controllerClass = SettingsDownloadController.class;
-		} else if (className.equals("SettingsIndex")) {
-			controllerClass = SettingsIndexController.class;
 		} else if (className.equals("DelVoucherRecordSearch")) {
 			controllerClass = DelVoucherRecordSearchController.class;
 		} else if (className.equals("DelVoucherInfo")) {

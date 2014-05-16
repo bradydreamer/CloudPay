@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal" 
+    android:background="@drawable/activity_frame_bg">
     
     <LinearLayout 
         android:layout_width="wrap_content"
@@ -22,6 +23,8 @@
 	            android:layout_height="80dp"
 	            android:layout_marginLeft="80dp"
 	            android:background="@null"
+	            android:paddingLeft="10dp"
+	            android:singleLine="true"
 	            android:textSize="40sp"/>
         </LinearLayout>
         <LinearLayout  
@@ -36,6 +39,8 @@
 	            android:layout_height="80dp"
 	            android:layout_marginLeft="80dp"
 	            android:textSize="40sp"
+	            android:paddingLeft="10dp"
+	            android:singleLine="true"
 	            android:inputType="textPassword"
 	            android:background="@null"/>
         </LinearLayout>       
@@ -50,12 +55,5 @@
             android:background="@drawable/login_btn"
             android:onClick="onClickBtnOK"/>
     </LinearLayout>
-    
-    <!-- 
-    <include 
-    	layout="@layout/table_number_input"
-    	/>
-    
-     -->
     
 </LinearLayout>

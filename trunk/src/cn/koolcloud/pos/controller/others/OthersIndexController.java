@@ -2,10 +2,8 @@ package cn.koolcloud.pos.controller.others;
 
 import android.os.Bundle;
 import android.view.View;
-import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.controller.others.settings.SettingsIndexController;
 
 public class OthersIndexController extends BaseController {
 
@@ -15,11 +13,6 @@ public class OthersIndexController extends BaseController {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-	}
-
-	public void gotoSettings(View view) {
-		ClientEngine clientEngine = ClientEngine.engineInstance();
-		clientEngine.showController(SettingsIndexController.class);
 	}
 
 	public void gotoBalance(View view) {

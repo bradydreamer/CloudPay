@@ -75,7 +75,7 @@
   window.OrderDetail = {
     "onRefund": onRefund,
     "onCancel": onCancel,
-    "onPrint": onPrint
+    "onPrint": onPrint,
   };
 
 })();

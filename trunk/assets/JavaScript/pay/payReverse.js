@@ -66,7 +66,7 @@ Pay.cancelCallBack = function() {
 
 Pay.cancelOrder = function(params, callBack) {
 	if (params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("未找到对应纪录");
+		Scene.alert("交易已经过期");
 		return;
 	};
 	Pay.cancelCallBack = callBack;
@@ -176,7 +176,7 @@ Pay.cancelEnd = function() {
 
 Pay.refundOrder = function(params, callBack) {
 	if (params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("未找到对应纪录");
+		Scene.alert("交易已经过期");
 		return;
 	};
 	Pay.cancelCallBack = callBack;

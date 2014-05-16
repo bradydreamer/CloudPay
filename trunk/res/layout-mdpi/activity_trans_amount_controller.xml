@@ -4,6 +4,7 @@
    	android:layout_height="match_parent"
     android:orientation="horizontal"
    	android:gravity="center"
+   	android:background="@drawable/activity_frame_bg"
     >
  <!--     
     <ImageView 
