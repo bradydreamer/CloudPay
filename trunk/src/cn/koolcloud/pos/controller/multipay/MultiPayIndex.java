@@ -17,6 +17,12 @@ public class MultiPayIndex extends BaseHomeController {
 	}
 
 	@Override
+	protected void onResume() {
+		onCall("MultiPay.resumeMultiPayTag", null);
+		super.onResume();
+	}
+
+	@Override
 	public void onBackPressed() {
 		onCall("MultiPay.onClickClose", null);
 		super.onBackPressed();

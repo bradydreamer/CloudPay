@@ -28,23 +28,31 @@
 		var hasMore = (parseInt(pageNo) < parseInt("" + totalPages));
 		var params = {
 			hasMore : hasMore,
-			recordList : recordDisplayedList
+			recordList : recordDisplayedList,
+			start_date : msg.start_date,
+			end_date : msg.end_date
 		};
-		if (1 == pageNo) {
-			/*if (recordDisplayedList.length == 1) {
-				recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
-				Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
-			} else {*/
-				Scene.showScene("ConsumptionRecord", "", params);
-			//};
+		if (window.TransactionManageIndex.refresh !== undefined) {
+			params.shouldRemoveCurCtrl = true;
+			Scene.showScene("ConsumptionRecord", "消费记录", params);
 		} else {
-			var propertyList = [{
-				name : "lv_record",
-				key : "addList",
-				value : params
-			}];
-			Scene.setProperty("ConsumptionRecord", propertyList);
-		};
+			
+			if (1 == pageNo) {
+				/*if (recordDisplayedList.length == 1) {
+					recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
+					Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
+				} else {*/
+					Scene.showScene("ConsumptionRecord", "", params);
+				//};
+			} else {
+				var propertyList = [{
+					name : "lv_record",
+					key : "addList",
+					value : params
+				}];
+				Scene.setProperty("ConsumptionRecord", propertyList);
+			};
+		}
 	}
 
 	function handleRecordData(params) {
@@ -163,6 +171,10 @@
 	}
 	
 	function onConsumptionRecord() {
+		//request tag
+		window.TransactionManageIndex.refresh = undefined;
+		//delete global variable date object
+		window.TransactionManageIndex.params = undefined;
 		window.util.exeActionWithLoginChecked(gotoConsumptionRecord);
 	}
 
@@ -182,6 +194,17 @@
 		Scene.goBack("TransactionManageIndex");
 	}
 
+	function refreshResearch() {
+		window.TransactionManageIndex.refresh = true;
+	  	if (window.TransactionManageIndex.params === undefined || window.TransactionManageIndex.params === "") {
+	  		//delete global variable date object
+			window.TransactionManageIndex.params = undefined;
+			window.util.exeActionWithLoginChecked(gotoConsumptionRecord);
+	  	} else {
+	  		var param = window.TransactionManageIndex.params;
+	  		gotoConsumptionRecord(param);
+	  	}
+	}
 
 	window.TransactionManageIndex = {
 		"onConsumptionRecord" : onConsumptionRecord,
@@ -191,6 +214,7 @@
 		"gotoConsumptionRecord" : gotoConsumptionRecord,
 		"gotoSingleRecord" : gotoSingleRecord,
 		"gotoIndex" : gotoIndex,
+		"refreshResearch" : refreshResearch
 	}; 
 
 

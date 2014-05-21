@@ -27,10 +27,16 @@
     Pay.restart();
   }
 
+  function resumeMultiPayTag(){
+
+	ConsumptionData.isMultiPay = true;		
+  }
+
   window.MultiPay = {
     "onClickClose": onClickClose,
     "onClickRecord": onClickRecord,
     "onClickPay": onClickPay,
     "onClickComplete": onClickComplete,
+    "resumeMultiPayTag": resumeMultiPayTag,
   };
 })();

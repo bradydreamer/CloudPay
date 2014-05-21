@@ -71,11 +71,11 @@
     window.OrderDetail.paymentName = params.paymentName;
     window.posPrint.printTrans(rrn);
   }
-
+  
   window.OrderDetail = {
     "onRefund": onRefund,
     "onCancel": onCancel,
-    "onPrint": onPrint,
+    "onPrint": onPrint
   };
 
 })();

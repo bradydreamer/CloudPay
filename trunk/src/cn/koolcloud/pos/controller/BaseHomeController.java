@@ -203,6 +203,12 @@ public abstract class BaseHomeController extends BaseController {
 						iv.setImageResource(R.drawable.logo_quickpay);
 					} else if (imageName.startsWith("logo_search_balance")) {
 						iv.setImageResource(R.drawable.logo_search_balance);
+					} else if (imageName.startsWith("logo_test")) {
+						iv.setImageResource(R.drawable.logo_test);
+					} else if (imageName.startsWith("logo_unionpay")) {
+						iv.setImageResource(R.drawable.logo_unionpay);
+					} else if (imageName.startsWith("logo_wechat")) {
+						iv.setImageResource(R.drawable.logo_wechat);
 					}
 //					iv.setBackgroundResource(R.drawable.icon_bg);
 				}

@@ -51,7 +51,6 @@ import cn.koolcloud.pos.controller.others.settings.TransBatchController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
-import cn.koolcloud.pos.controller.transaction_manage.TransactionManageIndexController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
@@ -64,6 +63,7 @@ import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.ISecureService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.SecureInfo;
+import cn.koolcloud.pos.util.Logger;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
 import cn.koolcloud.pos.util.UtilForThread;
@@ -540,6 +540,18 @@ public class ClientEngine {
 			e.printStackTrace();
 		}
 		JSONObject response = NetEngine.post(context, body, headerMap);
+		
+		//fix update search record status while refund or reverse operating --start Teddy on 20th May
+		/*String startDate = params.optJSONArray("body").optJSONObject(0).optString("startDate");
+		String endDate = params.optJSONArray("body").optJSONObject(0).optString("endDate");
+		try {
+			response.optJSONArray("body").optJSONObject(0).put("start_date", startDate);
+			response.optJSONArray("body").optJSONObject(0).put("end_date", endDate);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}*/
+		
+		//fix update search record status while refund or reverse operating --end Teddy on 20th May
 		callBack(identifier, response);
 	}
 
@@ -693,8 +705,6 @@ public class ClientEngine {
 			controllerClass = TransBatchController.class;
 		} else if (className.equals("MerchantInfo")) {
 			controllerClass = MerchantInfoController.class;
-		} else if (className.equals("TransactionManageIndex")) {
-			controllerClass = TransactionManageIndexController.class;
 		} else if (className.equals("ConsumptionRecord")) {
 			controllerClass = ConsumptionRecordController.class;
 		} else if (className.equals("ConsumptionRecordSearch")) {

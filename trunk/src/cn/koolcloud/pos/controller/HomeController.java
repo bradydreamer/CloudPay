@@ -129,7 +129,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void onClickMultiPay(View view) {
-		changeSelectedButton(view);
+//		changeSelectedButton(view);
 		onCall("Home.onClickMultiPay", null);
 	}
 

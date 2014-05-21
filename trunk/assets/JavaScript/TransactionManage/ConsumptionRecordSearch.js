@@ -7,6 +7,10 @@
 	  		startDate : msg.startDate + "000000",
 	  		endDate : msg.endDate + "235959",
 	  	}
+	  	//save startDate and endDate to global variable
+	  	window.TransactionManageIndex.refresh = undefined;
+	  	window.TransactionManageIndex.params = params;
+	  	//save end
   	    window.TransactionManageIndex.gotoConsumptionRecord(params)
   }
   

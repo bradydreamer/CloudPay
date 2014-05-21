@@ -40,7 +40,7 @@ Pay.reverseResult = function(params) {
 		};
 		window.data8583.convert8583(params, afterConvertReverseRes);
 	} else {
-		Scene.alert("冲正失败，请联系客服");
+		Scene.alert("冲正失败，请联系代理机构");
 		if (Pay.reverseCallBack) {
 			Pay.reverseCallBack();
 			Pay.reverseCallBack = null;

@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,6 +25,7 @@ public class OrderDetailController extends BaseController {
 	private String paymentName;
 	private int paymentOrder = -1;
 	private boolean removeJSTag = true;
+	private JSONObject data;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +34,7 @@ public class OrderDetailController extends BaseController {
 			finish();
 			return;
 		}
-		JSONObject data = formData
-				.optJSONObject(getString(R.string.formData_key_data));
+		data = formData.optJSONObject(getString(R.string.formData_key_data));
 		initTextView(R.id.order_detail_tv_orderId, data, "ref");
 		initTextView(R.id.order_detail_tv_orderStatus, data, "orderStateDesc");
 		initTextView(R.id.order_detail_tv_payType, data, "payTypeDesc");
@@ -121,6 +122,12 @@ public class OrderDetailController extends BaseController {
 
 	public void onConfirm(View view) {
 		onCall(func_confirm, null);
+		//call research js
+		TextView orderStatusTextView = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
+		String orderStatus = orderStatusTextView.getText().toString();
+		if (!TextUtils.isEmpty(orderStatus) && !orderStatus.equals("完成") && !orderStatus.equals("成功")) {
+			onCall("TransactionManageIndex.refreshResearch", null);
+		}
 	}
 
 	@Override

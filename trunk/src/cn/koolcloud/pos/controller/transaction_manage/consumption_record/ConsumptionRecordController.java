@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,11 +40,14 @@ public class ConsumptionRecordController extends BaseController {
 		boolean hasMore = data.optBoolean("hasMore");
 		adapter.setHasMore(hasMore);
 		lv_record.setAdapter(adapter);
+		
 		lv_record.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				setRemoveJSTag(true);
+				loadRelatedJS();
 				if (position == recordDataList.size()) {
 					onCall("ConsumptionRecord.reqMore", null);
 				} else {
@@ -118,5 +122,4 @@ public class ConsumptionRecordController extends BaseController {
 		// TODO Auto-generated method stub
 		return removeJSTag;
 	}
-
 }
