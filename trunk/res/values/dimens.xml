@@ -17,4 +17,18 @@
 	<!-- ListView  elements width -->
 	<dimen name="listview_elements_large_width">200dp</dimen>
 	<dimen name="listview_elements_small_width">150dp</dimen>
+	
+	<!-- Dialog devices checking size -->
+	<dimen name="dialog_device_checking_root_width">730dp</dimen>
+	<dimen name="dialog_device_checking_root_height">400dp</dimen>
+	<dimen name="dialog_device_checking_title_margin_top">25dp</dimen>
+	<dimen name="dialog_device_checking_title_margin_bottom">20dp</dimen>
+	<dimen name="dialog_device_checking_title_margin_left">100dp</dimen>
+	<dimen name="dialog_device_checking_item_margin_left">108dp</dimen>
+	<dimen name="dialog_device_checking_title_text_size">30px</dimen>
+	<dimen name="dialog_device_checking_item_text_size">20px</dimen>
+	<dimen name="dialog_device_checking_item_margin_top_bottom">17dp</dimen>
+	<dimen name="dialog_device_checking_button_margin_top">35dp</dimen>
+	<dimen name="dialog_device_checking_button_text_size">25px</dimen>
+	<dimen name="dialog_device_checking_progress_bar_width">45dp</dimen>
 </resources>

@@ -7,8 +7,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
+import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
@@ -20,6 +22,8 @@ public class HomeController extends BaseHomeController implements
 	private Button homeButton = null;
 	private Button aboutButton; // about button
 	private boolean removeJSTag = true;
+	
+	private MyApplication application;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,7 @@ public class HomeController extends BaseHomeController implements
 		settingsIndexController = (LinearLayout) findViewById(R.id.settingindexcontroller);
 		transactionManageIndexController = (LinearLayout) findViewById(R.id.transactionmanageindexcontroller);
 		currentLayout = home_layout;
-
+		
 		/*
 		 * navigation button,setting selected state.
 		 */
@@ -42,6 +46,14 @@ public class HomeController extends BaseHomeController implements
 
 		aboutButton = (Button) findViewById(R.id.abountBtn);
 		aboutButton.setOnClickListener(this);
+		
+		//start checking devices
+		application = (MyApplication) getApplication();
+		boolean isFirstStart = application.isFirstStart();
+		if (!isFirstStart) {
+			startDeviceChecking();
+			application.setFirstStart(true);
+		}
 	}
 
 	@Override
@@ -60,6 +72,11 @@ public class HomeController extends BaseHomeController implements
 		}
 		super.loadRelatedJS();
 		setRemoveJSTag(false);
+	}
+	
+	private void startDeviceChecking() {
+		Intent mIntent = new Intent(getApplicationContext(), DevicesCheckingDialog.class);
+		startActivity(mIntent);
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
     <color name="red">#ff0000</color>
     <color name="transparent">#00000000</color>
     <color name="orange">#ffa500</color>
@@ -24,11 +26,17 @@
     <color name="color_for_consumption_record_listTitle_text">#969698</color>
     
     <!-- dialog colors -->
+    <color name="pay_account_btn_background_color">#ffC1C1C1</color>
     <color name="alert_dailog_background_color">#fff4f8f9</color>
     <color name="about_gray_text">#FF999999</color>
     <color name="share_text_color">#ff3273a0</color>
     <color name="detail_title_backgroud">#ff017ecd</color>
     
     <color name="main_page_backgroud">#FFE9ECF5</color>
+    <color name="main_page_title_backgroud">#FFCDD7E6</color>
+    
+    <color name="dialog_devices_checking_page_backgroud">#FFEEEEEE</color>
+    <color name="dialog_devices_checking_text_color">#FF6A6A6A</color>
+    <color name="dialog_devices_checking_interval_color">#FFD5D5D5</color>
     
 </resources>

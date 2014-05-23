@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -92,6 +93,7 @@ public class PayAccountController extends BaseController implements
 		case -1:
 			view.setEnabled(false);
 			view.setBackgroundResource(R.drawable.unable_button);
+			setDisableBtn(view);
 			break;
 		case 0:
 			view.setEnabled(true);
@@ -100,6 +102,38 @@ public class PayAccountController extends BaseController implements
 			view.setEnabled(true);
 			onSwitchAccount(view);
 			break;
+		default:
+			break;
+		}
+	}
+	
+	private void setDisableBtn(Button btn) {
+		switch (btn.getId()) {
+		case R.id.pay_account_btn_swiper:
+			Drawable swiperDrawable = getResources().getDrawable(R.drawable.icon_swiper_disable);
+			swiperDrawable.setBounds(0, 0, swiperDrawable.getMinimumWidth(), swiperDrawable.getMinimumHeight());
+			btn.setCompoundDrawables(swiperDrawable, null, null, null);
+			btn.setTextColor(R.color.black);
+			break;
+		case R.id.pay_account_btn_keyboard:
+			Drawable keyboadDrawable = getResources().getDrawable(R.drawable.icon_keyboard_disable);
+			keyboadDrawable.setBounds(0, 0, keyboadDrawable.getMinimumWidth(), keyboadDrawable.getMinimumHeight());
+			btn.setCompoundDrawables(keyboadDrawable, null, null, null);
+			btn.setTextColor(R.color.black);
+			break;
+		case R.id.pay_account_btn_sound:
+			Drawable soundDrawable = getResources().getDrawable(R.drawable.icon_sound_disable);
+			soundDrawable.setBounds(0, 0, soundDrawable.getMinimumWidth(), soundDrawable.getMinimumHeight());
+			btn.setCompoundDrawables(soundDrawable, null, null, null);
+			btn.setTextColor(R.color.black);
+			break;
+		case R.id.pay_account_btn_qrcode:
+			Drawable qrcodeDrawable = getResources().getDrawable(R.drawable.icon_qrcode_disable);
+			qrcodeDrawable.setBounds(0, 0, qrcodeDrawable.getMinimumWidth(), qrcodeDrawable.getMinimumHeight());
+			btn.setCompoundDrawables(qrcodeDrawable, null, null, null);
+			btn.setTextColor(R.color.black);
+			break;
+
 		default:
 			break;
 		}

@@ -57,7 +57,9 @@ public abstract class BaseHomeController extends BaseController {
 		viewPager = (ViewPager) findViewById(R.id.home_viewpager);
 		pageIndicator = (ViewPagerIndicator) findViewById(R.id.home_indicator);
 
-		onCall("Home.updateTransInfo", null);
+		//start update trans info after devices checking on 23th May -- start
+//		onCall("Home.updateTransInfo", null);
+		//start update trans info after devices checking on 23th May -- end
 	}
 
 	private void initHomeTitlebar() {

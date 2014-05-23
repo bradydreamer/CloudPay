@@ -1,5 +1,6 @@
 package cn.koolcloud.pos.controller.multipay;
 
+import android.os.Bundle;
 import android.view.View;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
@@ -7,6 +8,14 @@ import cn.koolcloud.pos.controller.BaseHomeController;
 public class MultiPayIndex extends BaseHomeController {
 
 	private boolean removeJSTag = true;
+
+	//restart update trans info on 23th May -- start
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		onCall("Home.updateTransInfo", null);
+	}
+	//restart update trans info on 23th May -- end
 
 	public void onClickClose(View view) {
 		onCall("MultiPay.onClickClose", null);

@@ -285,4 +285,18 @@
     
     <!-- for trans batch -->
     <string name="trans_batch_alert_content">正在批结算，请稍后！</string>
+    
+    <!-- Dialog devices checking msg -->
+    <string name="dialog_device_check_device_ok_msg">所有设备连接正常！</string>
+    <string name="dialog_device_checking_device_msg">正在检查外部设备状态，请稍候！</string>
+    <string name="dialog_device_checking_now">设备正在查检中，请稍候！</string>
+    <string name="dialog_device_check_devices_unusual">设备发现异常，请您及时处理！</string>
+    <string name="dialog_device_check_pinpad_unusual">密码键盘接口断开，请检查连接。</string>
+    <string name="dialog_device_check_pinpad_usual">密码键盘连接正常。</string>
+    <string name="dialog_device_check_printer_unusual">打印机未连接好。</string>
+    <string name="dialog_device_check_printer_usual">打印机连接正常。</string>
+    <string name="dialog_device_check_network_unusual">网络连接不通。</string>
+    <string name="dialog_device_check_network_usual">网络连接检测正常。</string>
+    <string name="dialog_device_check_self_checking">手动自检</string>
+    <string name="ping_host_url">www.baidu.com</string>
 </resources>

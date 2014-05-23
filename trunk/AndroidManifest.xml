@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="14"
-    android:versionName="1.0.14" >
+    android:versionCode="21"
+    android:versionName="1.1.2" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -18,6 +18,7 @@
         android:name="cn.koolcloud.pos.SERVICE"
         android:protectionLevel="normal" >
     </permission>
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="cn.koolcloud.pos.SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     
@@ -289,6 +290,8 @@
         </activity>
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.AboutDialog" android:theme="@style/dialog"/>
+        <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog" android:theme="@style/dialog"/>
         
         <!-- receiver -->
         <receiver android:name="cn.koolcloud.pos.receiver.LanchReceiver" >
