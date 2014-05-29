@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -57,9 +58,9 @@ public abstract class BaseHomeController extends BaseController {
 		viewPager = (ViewPager) findViewById(R.id.home_viewpager);
 		pageIndicator = (ViewPagerIndicator) findViewById(R.id.home_indicator);
 
-		//start update trans info after devices checking on 23th May -- start
-//		onCall("Home.updateTransInfo", null);
-		//start update trans info after devices checking on 23th May -- end
+		// start update trans info after devices checking on 23th May -- start
+		// onCall("Home.updateTransInfo", null);
+		// start update trans info after devices checking on 23th May -- end
 	}
 
 	private void initHomeTitlebar() {
@@ -67,8 +68,20 @@ public abstract class BaseHomeController extends BaseController {
 		/*
 		 * home activity hide left and right title button.
 		 */
-		setLeftButtonHidden();
+		setTitleHidden();
+		setLeftButton(R.drawable.ic_launcher_home);
 		setRightButtonHidden();
+	}
+
+	@Override
+	protected void setLeftButton(int resourceId) {
+		Drawable leftPic = getResources().getDrawable(resourceId);
+		leftPic.setBounds(0, 0, leftPic.getIntrinsicWidth(),
+				leftPic.getMinimumHeight());
+		titlebar_btn_left.setCompoundDrawables(leftPic, null, null, null);
+		titlebar_btn_left.setText(getTitlebarTitle());
+		titlebar_btn_left.setVisibility(View.VISIBLE);
+		titlebar_btn_left.setBackgroundDrawable(null);
 	}
 
 	@Override
@@ -212,7 +225,7 @@ public abstract class BaseHomeController extends BaseController {
 					} else if (imageName.startsWith("logo_wechat")) {
 						iv.setImageResource(R.drawable.logo_wechat);
 					}
-//					iv.setBackgroundResource(R.drawable.icon_bg);
+					// iv.setBackgroundResource(R.drawable.icon_bg);
 				}
 			} else {
 				TextView tv = (TextView) v;

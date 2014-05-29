@@ -123,7 +123,7 @@
             android:text="@string/opitonsMenu_quitApp_text"
             android:textColor="@android:color/white"
             android:textSize="@dimen/dialog_device_checking_button_text_size"
-            android:textAlignment="center"/>
+            android:gravity="center"/>
         <Button 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/dialog_device_checking_button_text_size"
             android:layout_marginLeft="30dp"
-            android:textAlignment="center"/>
+            android:gravity="center"/>
     </LinearLayout>
 
 </LinearLayout>

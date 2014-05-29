@@ -1,8 +1,11 @@
 package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
+import java.util.HashSet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,6 +18,9 @@ import cn.koolcloud.pos.controller.BaseController;
 public class OrderDetailController extends BaseController {
 
 	private final static int PAY_SUCCESS = 1;
+	private final static int ORDER_STATUS_SUCCESS = 0;
+	private final static String TRAN_TYPE_REVERSE = "6062";
+	private final static String TRAN_TYPE_REFUND = "6078";
 	private boolean cancelEnable;
 	private String rrn;
 	private String transTime;
@@ -23,9 +29,26 @@ public class OrderDetailController extends BaseController {
 	private String openBrh;
 	private String paymentId;
 	private String paymentName;
+	private int orderState = -1;
 	private int paymentOrder = -1;
 	private boolean removeJSTag = true;
 	private JSONObject data;
+	
+	//muilti info bar components
+	private TextView koolCloudMerchNumNameTextView;
+	private TextView koolCloudMerchNumTextView;
+	private TextView koolCloudDeviceNumNameTextView;
+	private TextView koolCloudDeviceNumTextView;
+	private TextView acquireNameTextView;
+	private TextView acquireNickNameTextView;
+	private TextView acquireMerchNameTextView;
+	private TextView acquireMerchNumTextView;
+	private TextView qcquireTerminalTextView;
+	private TextView acquireTerminalNumTextView;
+	
+	private HashSet<String> orderStateSet = new HashSet<String>();
+	private String transType;
+	private Typeface faceTypeLanTing;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,21 +65,58 @@ public class OrderDetailController extends BaseController {
 		initTextView(R.id.order_detail_tv_transDate, data, "transTime");
 		initTextView(R.id.order_detail_tv_transType, data, "transTypeDesc");
 
-		cancelEnable = data.optBoolean("cancelEnable");
+		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
+		
 		rrn = data.optString("ref");
 		transTime = data.optString("transTime");
 		transAmount = data.optString("transAmount");
 		func_confirm = data.optString("confirm");
 
+		//get order state and tran type
+		String orderStateDesc = data.optString("orderStateDesc");
+		orderStateSet.add(orderStateDesc);
+		orderState = data.optInt("orderState");
+		transType = data.optString("transType");
+
 		openBrh = data.optString("openBrh");
 		paymentId = data.optString("paymentId");
 		paymentName = data.optString("paymentName");
 		paymentOrder = data.optInt("paymentOrder");
+		
+		findViews();
 		initButtons();
 	}
 
 	private void initTextView(int resourceId, JSONObject data, String key) {
 		initTextView(resourceId, data, key, false);
+	}
+	
+	private void findViews() {
+		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
+		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
+		koolCloudMerchNumTextView = (TextView) findViewById(R.id.koolCloudMerchNumTextView);
+		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
+		koolCloudMerchNumTextView.setText(data.optString("merchId"));
+		koolCloudDeviceNumNameTextView = (TextView) findViewById(R.id.koolCloudDeviceNumNameTextView);
+		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
+		koolCloudDeviceNumTextView = (TextView) findViewById(R.id.koolCloudDeviceNumTextView);
+		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
+		koolCloudDeviceNumTextView.setText(data.optString("iposId"));
+		acquireNameTextView = (TextView) findViewById(R.id.acquireNameTextView);
+		acquireNameTextView.setTypeface(faceTypeLanTing);
+		acquireNickNameTextView = (TextView) findViewById(R.id.acquireNickNameTextView);
+		acquireNickNameTextView.setTypeface(faceTypeLanTing);
+		acquireNickNameTextView.setText(data.optString("openBrhName"));
+		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
+		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
+		acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
+		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
+		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
+		qcquireTerminalTextView = (TextView) findViewById(R.id.qcquireTerminalTextView);
+		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
+		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 	}
 
 	private void initTextView(int resourceId, JSONObject data, String key,
@@ -71,7 +131,9 @@ public class OrderDetailController extends BaseController {
 	private void initButtons() {
 		Button refundBtn = (Button) findViewById(R.id.order_detail_btn_refund);
 		Button reverseBtn = (Button) findViewById(R.id.order_detail_btn_cancel);
-		if (paymentOrder == PAY_SUCCESS) {
+		if (paymentOrder == PAY_SUCCESS || orderState != ORDER_STATUS_SUCCESS
+				|| (orderState == ORDER_STATUS_SUCCESS && transType.equals(TRAN_TYPE_REVERSE))
+				|| (orderState == ORDER_STATUS_SUCCESS && transType.equals(TRAN_TYPE_REFUND))) {
 			refundBtn.setVisibility(View.INVISIBLE);
 			reverseBtn.setVisibility(View.INVISIBLE);
 		}
@@ -125,7 +187,8 @@ public class OrderDetailController extends BaseController {
 		//call research js
 		TextView orderStatusTextView = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
 		String orderStatus = orderStatusTextView.getText().toString();
-		if (!TextUtils.isEmpty(orderStatus) && !orderStatus.equals("完成") && !orderStatus.equals("成功")) {
+		//if (!TextUtils.isEmpty(orderStatus) && (orderStatus.equals("已撤销") || orderStatus.equals("已退货"))) {
+		if (!orderStateSet.contains(orderStatus)) {//refresh the record list when status changed
 			onCall("TransactionManageIndex.refreshResearch", null);
 		}
 	}
@@ -143,6 +206,21 @@ public class OrderDetailController extends BaseController {
 			return findViewById(R.id.order_detail_tv_orderStatus);
 		}
 		return super.viewForIdentifier(name);
+	}
+
+	@Override
+	protected void updateViews(JSONObject item) {
+		super.updateViews(item);
+		String orderStatus = "";
+		if (null != item) {
+			orderStatus = item.optString("value");
+		}
+		if (!orderStateSet.contains(orderStatus)) {//refresh button status
+			Button refundBtn = (Button) findViewById(R.id.order_detail_btn_refund);
+			Button reverseBtn = (Button) findViewById(R.id.order_detail_btn_cancel);
+			refundBtn.setVisibility(View.INVISIBLE);
+			reverseBtn.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.util.UtilForMoney;
@@ -16,7 +17,21 @@ public class TransAmountController extends BaseController {
 	private EditText et_money;
 	private long maxAmount = 0;
 	private Typeface faceType;
+	private Typeface faceTypeLanTing;
 	private boolean removeJSTag = true;
+	
+	//muilti info bar components
+	private TextView koolCloudMerchNumNameTextView;
+	private TextView koolCloudMerchNumTextView;
+	private TextView koolCloudDeviceNumNameTextView;
+	private TextView koolCloudDeviceNumTextView;
+	private TextView acquireNameTextView;
+	private TextView acquireNickNameTextView;
+	private TextView acquireMerchNameTextView;
+	private TextView acquireMerchNumTextView;
+	private TextView qcquireTerminalTextView;
+	private TextView acquireTerminalNumTextView;
+	private JSONObject data;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +41,10 @@ public class TransAmountController extends BaseController {
 			return;
 		}
 		faceType = Typeface.createFromAsset(getAssets(), "font/digital-7.ttf");
+		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
 		et_money = (EditText) findViewById(R.id.input_money_et_money);
 		et_money.setTypeface(faceType);
-		JSONObject data = formData
-				.optJSONObject(getString(R.string.formData_key_data));
+		data = formData.optJSONObject(getString(R.string.formData_key_data));
 		if (data != null) {
 			String defaulAmount = data.optString("maxAmount");
 			if (!defaulAmount.isEmpty()) {
@@ -38,6 +53,35 @@ public class TransAmountController extends BaseController {
 				numberInputString.append(maxAmount);
 			}
 		}
+		findViews();
+	}
+	
+	private void findViews() {
+		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
+		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
+		koolCloudMerchNumTextView = (TextView) findViewById(R.id.koolCloudMerchNumTextView);
+		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
+		koolCloudMerchNumTextView.setText(data.optString("merchId"));
+		koolCloudDeviceNumNameTextView = (TextView) findViewById(R.id.koolCloudDeviceNumNameTextView);
+		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
+		koolCloudDeviceNumTextView = (TextView) findViewById(R.id.koolCloudDeviceNumTextView);
+		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
+		koolCloudDeviceNumTextView.setText(data.optString("iposId"));
+		acquireNameTextView = (TextView) findViewById(R.id.acquireNameTextView);
+		acquireNameTextView.setTypeface(faceTypeLanTing);
+		acquireNickNameTextView = (TextView) findViewById(R.id.acquireNickNameTextView);
+		acquireNickNameTextView.setTypeface(faceTypeLanTing);
+		acquireNickNameTextView.setText(data.optString("openBrhName"));
+		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
+		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
+		acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
+		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
+		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
+		qcquireTerminalTextView = (TextView) findViewById(R.id.qcquireTerminalTextView);
+		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
+		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 	}
 
 	@Override
@@ -54,7 +98,7 @@ public class TransAmountController extends BaseController {
 
 	@Override
 	protected void addInputNumber(String text) {
-		if (null != text && numberInputString.toString().length() < 7) {
+		if (null != text && numberInputString.toString().length() < 9) {
 			if (numberInputString.toString().equals("0")) {
 				numberInputString.replace(0, 1, text);
 			} else {

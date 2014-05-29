@@ -41,15 +41,14 @@
 		// 	"typeName": "消费",
 		// 	"typeId": "SALE",
 		// 	"imgName": "logo_card.png",
-
+		var merchId = window.user.merchId;
+		var iposId = window.user.machineId;
 		var open_brh = product.openBrh;
-		var payment_id = product.paymentId;
-		
-		// open_brh = "0000000003";
-		// payment_id = "0000";
-// 		
+		var open_brh_name = product.openBrhName;
+		var brhMchtId = product.brhMchtId;
+		var brhTermId = product.brhTermId;
+		var payment_id = product.paymentId;		
 		var payment_name = product.paymentName;
-
 		var typeId = product.typeId;
 
 		if (typeId == util.getTransType("DELIVERY_VOUCHER")) {
@@ -75,8 +74,12 @@
 			Scene.alert(product);
 			return;
 		};
-
+		ConsumptionData.dataForPayment.merchId = merchId;
+		ConsumptionData.dataForPayment.iposId = iposId;
 		ConsumptionData.dataForPayment.openBrh = open_brh;
+		ConsumptionData.dataForPayment.openBrhName = open_brh_name;
+		ConsumptionData.dataForPayment.brhMchtId = brhMchtId;
+		ConsumptionData.dataForPayment.brhTermId = brhTermId;
 		ConsumptionData.dataForPayment.paymentId = payment_id;
 		ConsumptionData.dataForPayment.paymentName = payment_name;
 		ConsumptionData.dataForPayment.flowList = payList;

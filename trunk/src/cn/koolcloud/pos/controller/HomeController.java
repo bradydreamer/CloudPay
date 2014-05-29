@@ -53,6 +53,8 @@ public class HomeController extends BaseHomeController implements
 		if (!isFirstStart) {
 			startDeviceChecking();
 			application.setFirstStart(true);
+		} else {
+			onCall("Home.updateTransInfo", null);
 		}
 	}
 

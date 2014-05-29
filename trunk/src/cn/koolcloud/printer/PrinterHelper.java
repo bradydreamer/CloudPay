@@ -345,8 +345,10 @@ public class PrinterHelper implements Constant {
 				control.printText(TAG_LINE2 + "\n");
 
 				control.printText(TAG_CHANNEL + trans.getPaymentName() + "\n");
-
-				control.printText(TAG_ACCOUNT + trans.getAlipayAccount() + "\n");
+				
+				if (trans.getTransType() == TRAN_SALE) {
+					control.printText(TAG_ACCOUNT + trans.getAlipayAccount() + "\n");
+				}
 
 				String amt = AppUtil.formatAmount(trans.getOldTransAmount());
 				if (trans.getTransType() == TRAN_VOID || trans.getTransType() == TRAN_REFUND) {

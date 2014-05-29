@@ -281,7 +281,7 @@
     <string name="str_new_version">发现新版本：</string>
     <string name="str_install_appstore_first">安装应用中心以查检更新</string>
     <string name="already_latest_version">已是最新版本</string>
-    <string name="about_info">酷云智能POS是新一代基于云POS的超级收银作业台，集刷卡，提货券，二维码等多种支付方式于一体，为商户打造全面的收银接入服务。</string>
+    <string name="about_info">酷云智能POS是新一代基于云POS的超级收银作业平台，集刷卡、提货券、二维码支付等多种支付方式于一体，为商户打造全面的收银接入服务。</string>
     
     <!-- for trans batch -->
     <string name="trans_batch_alert_content">正在批结算，请稍后！</string>
@@ -299,4 +299,11 @@
     <string name="dialog_device_check_network_usual">网络连接检测正常。</string>
     <string name="dialog_device_check_self_checking">手动自检</string>
     <string name="ping_host_url">www.baidu.com</string>
+    
+    <!-- device, merchant bar msg -->
+    <string name="bar_koolcloud_merch_name_msg">客户号：</string>
+    <string name="bar_koolcloud_device_name_msg">设备号：</string>
+    <string name="bar_acquire_name_msg">收单机构：</string>
+    <string name="bar_acquire_merch_msg">商户号：</string>
+    <string name="bar_acquire_terminal_msg">终端号：</string>
 </resources>

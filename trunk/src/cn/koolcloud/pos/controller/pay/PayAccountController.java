@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +44,22 @@ public class PayAccountController extends BaseController implements
 	protected String func_inputAccount;
 	protected String func_nearfieldAccount;
 	private boolean removeJSTag = true;
+	
+	//muilti info bar components
+	private TextView koolCloudMerchNumNameTextView;
+	private TextView koolCloudMerchNumTextView;
+	private TextView koolCloudDeviceNumNameTextView;
+	private TextView koolCloudDeviceNumTextView;
+	private TextView acquireNameTextView;
+	private TextView acquireNickNameTextView;
+	private TextView acquireMerchNameTextView;
+	private TextView acquireMerchNumTextView;
+	private TextView qcquireTerminalTextView;
+	private TextView acquireTerminalNumTextView;
+	
+	private Typeface faceTypeLanTing;
+	
+	private JSONObject data;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +69,7 @@ public class PayAccountController extends BaseController implements
 			return;
 		}
 
-		JSONObject data = formData
-				.optJSONObject(getString(R.string.formData_key_data));
+		data = formData.optJSONObject(getString(R.string.formData_key_data));
 
 		layout_qrcode = (LinearLayout) findViewById(R.id.pay_account_layout_qrcode);
 		layout_sound = (LinearLayout) findViewById(R.id.pay_account_layout_sound);
@@ -82,8 +98,38 @@ public class PayAccountController extends BaseController implements
 			ex_codeScanner.onCreate(PayAccountController.this,
 					PayAccountController.this);
 		}
-
+		
+		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
+		findViews();
 		setTitle(formData.optString(getString(R.string.formData_key_title)));
+	}
+	
+	private void findViews() {
+		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
+		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
+		koolCloudMerchNumTextView = (TextView) findViewById(R.id.koolCloudMerchNumTextView);
+		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
+		koolCloudMerchNumTextView.setText(data.optString("merchId"));
+		koolCloudDeviceNumNameTextView = (TextView) findViewById(R.id.koolCloudDeviceNumNameTextView);
+		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
+		koolCloudDeviceNumTextView = (TextView) findViewById(R.id.koolCloudDeviceNumTextView);
+		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
+		koolCloudDeviceNumTextView.setText(data.optString("iposId"));
+		acquireNameTextView = (TextView) findViewById(R.id.acquireNameTextView);
+		acquireNameTextView.setTypeface(faceTypeLanTing);
+		acquireNickNameTextView = (TextView) findViewById(R.id.acquireNickNameTextView);
+		acquireNickNameTextView.setTypeface(faceTypeLanTing);
+		acquireNickNameTextView.setText(data.optString("openBrhName"));
+		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
+		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
+		acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
+		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
+		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
+		qcquireTerminalTextView = (TextView) findViewById(R.id.qcquireTerminalTextView);
+		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
+		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 	}
 
 	private void initBtnStatus(int id, int status) {
@@ -113,25 +159,25 @@ public class PayAccountController extends BaseController implements
 			Drawable swiperDrawable = getResources().getDrawable(R.drawable.icon_swiper_disable);
 			swiperDrawable.setBounds(0, 0, swiperDrawable.getMinimumWidth(), swiperDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(swiperDrawable, null, null, null);
-			btn.setTextColor(R.color.black);
+			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
 			break;
 		case R.id.pay_account_btn_keyboard:
 			Drawable keyboadDrawable = getResources().getDrawable(R.drawable.icon_keyboard_disable);
 			keyboadDrawable.setBounds(0, 0, keyboadDrawable.getMinimumWidth(), keyboadDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(keyboadDrawable, null, null, null);
-			btn.setTextColor(R.color.black);
+			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
 			break;
 		case R.id.pay_account_btn_sound:
 			Drawable soundDrawable = getResources().getDrawable(R.drawable.icon_sound_disable);
 			soundDrawable.setBounds(0, 0, soundDrawable.getMinimumWidth(), soundDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(soundDrawable, null, null, null);
-			btn.setTextColor(R.color.black);
+			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
 			break;
 		case R.id.pay_account_btn_qrcode:
 			Drawable qrcodeDrawable = getResources().getDrawable(R.drawable.icon_qrcode_disable);
 			qrcodeDrawable.setBounds(0, 0, qrcodeDrawable.getMinimumWidth(), qrcodeDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(qrcodeDrawable, null, null, null);
-			btn.setTextColor(R.color.black);
+			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
 			break;
 
 		default:

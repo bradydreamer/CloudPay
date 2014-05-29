@@ -31,4 +31,9 @@
 	<dimen name="dialog_device_checking_button_margin_top">35dp</dimen>
 	<dimen name="dialog_device_checking_button_text_size">25px</dimen>
 	<dimen name="dialog_device_checking_progress_bar_width">45dp</dimen>
+	
+	<!-- bar merchant device -->
+	<dimen name="bar_multi_info_margin_head_tail">25dp</dimen>
+	<dimen name="bar_multi_info_middle_margin_left">35dp</dimen>
+	<dimen name="bar_multi_info_text_size">18px</dimen>
 </resources>

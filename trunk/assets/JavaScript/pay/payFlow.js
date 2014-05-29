@@ -119,7 +119,11 @@ Pay.gotoFlow = function() {
 		formData.shouldRemoveCurCtrl = true;
 		cacheData.preScene = null;
 	}
-	
+	formData.openBrhName = ConsumptionData.dataForPayment.openBrhName;
+	formData.brhMchtId = ConsumptionData.dataForPayment.brhMchtId;
+	formData.brhTermId = ConsumptionData.dataForPayment.brhTermId;
+	formData.merchId = ConsumptionData.dataForPayment.merchId;
+	formData.iposId = ConsumptionData.dataForPayment.iposId;
 	window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
 	cacheData.preScene = sceneName;
 

@@ -40,7 +40,7 @@ public abstract class BaseController extends Activity {
 	private boolean hasControllerResumed;
 	private Button titlebar_btn_right;
 	private TextView titlebar_btn_title;
-	private Button titlebar_btn_left;
+	protected Button titlebar_btn_left;
 	protected final String TAG = "BaseController";
 	public boolean willRestart;
 
@@ -215,6 +215,10 @@ public abstract class BaseController extends Activity {
 		titlebar_btn_right.setEnabled(enabled);
 	}
 
+	protected void setTitleHidden() {
+		titlebar_btn_title.setVisibility(View.INVISIBLE);
+	}
+
 	@Override
 	public void setTitle(CharSequence title) {
 		titlebar_btn_title.setText(title);
@@ -306,12 +310,18 @@ public abstract class BaseController extends Activity {
 			View view = viewForIdentifier(item.optString("name"));
 			if (null != view) {
 				setView(view, item.optString("key"), item.opt("value"));
+				updateViews(item);
 			}
 		}
 	}
 
 	protected View viewForIdentifier(String name) {
 		return null;
+	}
+	
+	//update more views
+	protected void updateViews(JSONObject item) {
+		//children class Override this method to refresh views
 	}
 
 	protected void setView(View view, String key, Object value) {

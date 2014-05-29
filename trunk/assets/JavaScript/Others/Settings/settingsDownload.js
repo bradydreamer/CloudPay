@@ -98,13 +98,33 @@
 			var refundTemplate = prdtList[i]["refund_template"];
 
 			_settingParams[i] = {
+				"mch_no" : prdtList[i]["mcht_no"],
 				"openBrh" : prdtList[i]["open_brh"],
+				"openBrhName" : prdtList[i]["open_brh_name"],
 				"paymentId" : prdtList[i]["payment_id"],
 				"paymentName" : prdtList[i]["payment_name"],
-				"typeName" : prdtList[i]["classes"],
-				"typeId" : prdtList[i]["content"],
+				"brhKeyIndex" : prdtList[i]["brh_key_index"],
+				"brhMchtId" : prdtList[i]["brh_mcht_cd"],
+				"brhTermId" : prdtList[i]["brh_term_id"],
+				"brhMchtMcc" : prdtList[i]["brh_mcht_mcc"],
+				"prdtNo" : prdtList[i]["prdt_no"],
+				"prdtTitle" : prdtList[i]["prdt_title"],
+				"prdtDesc" : prdtList[i]["prdt_desc"],
+				"prdtType" : prdtList[i]["prdt_type"],
 				"imgName" : prdtList[i]["payment_icon"],
+				"typeName" : prdtList[i]["classes"],
+				"typeId" : prdtList[i]["content"],				
 			};
+			if(i == 0){
+				_settingParams[i].brhMchtId = "100044441";
+				_settingParams[i].brhTermId = "2000001";
+			}else if(i == 1){
+				_settingParams[i].brhMchtId = "100044442";
+				_settingParams[i].brhTermId = "2000002";
+			}else if(i == 2){
+				_settingParams[i].brhMchtId = "100044443";
+				_settingParams[i].brhTermId = "2000003";
+			}
 
 			if (saleTemplate != null) {
 				_settingParams[i]["saleTemplate"] = saleTemplate;

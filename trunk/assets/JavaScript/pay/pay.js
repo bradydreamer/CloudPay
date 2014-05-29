@@ -124,6 +124,11 @@ Pay.payResult = function(params) {
 			"openBrh": ConsumptionData.dataForPayment.openBrh,
 			"paymentId": ConsumptionData.dataForPayment.paymentId,
 			"paymentOrder": 1,
+			"openBrhName": ConsumptionData.dataForPayment.openBrhName,
+			"brhMchtId": ConsumptionData.dataForPayment.brhMchtId,
+			"brhTermId": ConsumptionData.dataForPayment.brhTermId,
+			"merchId": ConsumptionData.dataForPayment.merchId,
+			"iposId": ConsumptionData.dataForPayment.iposId,
 		};
 		
 		if(ConsumptionData.dataForPayment.preScene == "PayAccount" || ConsumptionData.dataForPayment.preScene == "PinPad"){
