@@ -69,8 +69,8 @@
 		var req = {
 			merchId : window.user.merchId,
 		};
-		Net.asynConnect("merchant/prdtInfoByMerid", req, callBack_reqInfo);
-
+		//Net.asynConnect("merchant/prdtInfoByMerid", req, callBack_reqInfo);
+		Net.asynConnect("merchant/paymentQuery", req, callBack_reqInfo);
 		// var merchSettings = {
 		//   "prdtList": merchSettings_temp,
 		// };
@@ -115,7 +115,7 @@
 				"typeName" : prdtList[i]["classes"],
 				"typeId" : prdtList[i]["content"],				
 			};
-			if(i == 0){
+		/*	if(i == 0){
 				_settingParams[i].brhMchtId = "100044441";
 				_settingParams[i].brhTermId = "2000001";
 			}else if(i == 1){
@@ -124,7 +124,7 @@
 			}else if(i == 2){
 				_settingParams[i].brhMchtId = "100044443";
 				_settingParams[i].brhTermId = "2000003";
-			}
+			}*/
 
 			if (saleTemplate != null) {
 				_settingParams[i]["saleTemplate"] = saleTemplate;
@@ -254,6 +254,7 @@
 				for (var i = 0; i < _prdtListLength; i++) {
 					if(_settingParams[i]["saleTemplate"]==params.templateName){
 						_printTypeList[_settingParams[i].paymentId]=JSON.stringify(params.templateContent[INDEX_PRINTTYPE].printType);
+						_settingParams[i].printType = JSON.stringify(params.templateContent[INDEX_PRINTTYPE].printType);
 					}
 				}
 				

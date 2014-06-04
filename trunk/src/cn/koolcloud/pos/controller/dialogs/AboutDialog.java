@@ -26,8 +26,8 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 	private TextView titleTextView;
 	private TextView msgBodyTextView;
 	private Button okButton;
-	private Button cancelButton;
-	private ParcelableApp localParcelableApp;
+//	private Button cancelButton;
+	/*private ParcelableApp localParcelableApp;
 	
 	private IMSCService mIService;
 	  
@@ -43,19 +43,19 @@ public class AboutDialog extends Activity implements View.OnClickListener {
             mIService = null;
             Logger.i("onServiceDisconnected");
         }
-    };
+    };*/
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.dialog_soft_update_layout);
+		setContentView(R.layout.dialog_about_layout);
 		initViews();
 		
 		//bind MSC service
-		Intent service = new Intent(IMSCService.class.getName());
-        bindService(service, connection, BIND_AUTO_CREATE);
+//		Intent service = new Intent(IMSCService.class.getName());
+//        bindService(service, connection, BIND_AUTO_CREATE);
 	}
 
 	private void initViews() {
@@ -68,8 +68,8 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 		okButton.setVisibility(View.VISIBLE);
 		okButton.setOnClickListener(this);
 		
-		cancelButton = (Button) findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(this);
+//		cancelButton = (Button) findViewById(R.id.cancel);
+//		cancelButton.setOnClickListener(this);
 		
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
 		strBuffer.append(getResources().getString(R.string.app_name) + "\n");
@@ -94,7 +94,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 			finish();
 			break;
 		case R.id.cancel:
-			if (null != localParcelableApp) {
+			/*if (null != localParcelableApp) {
 				try {
 					if (null != mIService) {
 						mIService.openAppDetail(localParcelableApp);
@@ -105,7 +105,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 				}
 			} else {
 				checkAppUpdate(true);
-			}
+			}*/
 			break;
 		default:
 			break;
@@ -126,7 +126,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 	 * @param paramBoolean true show toast
 	 * @return: void
 	 */
-	public void checkAppUpdate(boolean paramBoolean) {
+	/*public void checkAppUpdate(boolean paramBoolean) {
 		try {
 			if (null != mIService) {
 				
@@ -160,11 +160,11 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 		} catch (RemoteException localRemoteException) {
 			Logger.e(localRemoteException.getMessage());
 		}
-	}
+	}*/
 	
 	@Override
 	protected void onDestroy() {
-		unbindService(connection);
+//		unbindService(connection);
 		super.onDestroy();
 	}
 }

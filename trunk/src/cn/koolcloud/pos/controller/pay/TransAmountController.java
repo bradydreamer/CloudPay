@@ -5,9 +5,13 @@ import org.json.JSONObject;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import cn.koolcloud.constant.Constant;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.util.UtilForMoney;
@@ -17,10 +21,11 @@ public class TransAmountController extends BaseController {
 	private EditText et_money;
 	private long maxAmount = 0;
 	private Typeface faceType;
-	private Typeface faceTypeLanTing;
+//	private Typeface faceTypeLanTing;
 	private boolean removeJSTag = true;
 	
 	//muilti info bar components
+	private RelativeLayout barTitleLayout;
 	private TextView koolCloudMerchNumNameTextView;
 	private TextView koolCloudMerchNumTextView;
 	private TextView koolCloudDeviceNumNameTextView;
@@ -29,7 +34,7 @@ public class TransAmountController extends BaseController {
 	private TextView acquireNickNameTextView;
 	private TextView acquireMerchNameTextView;
 	private TextView acquireMerchNumTextView;
-	private TextView qcquireTerminalTextView;
+	private TextView acquireTerminalTextView;
 	private TextView acquireTerminalNumTextView;
 	private JSONObject data;
 
@@ -41,7 +46,7 @@ public class TransAmountController extends BaseController {
 			return;
 		}
 		faceType = Typeface.createFromAsset(getAssets(), "font/digital-7.ttf");
-		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
+//		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
 		et_money = (EditText) findViewById(R.id.input_money_et_money);
 		et_money.setTypeface(faceType);
 		data = formData.optJSONObject(getString(R.string.formData_key_data));
@@ -57,30 +62,44 @@ public class TransAmountController extends BaseController {
 	}
 	
 	private void findViews() {
+		//hidden bar title on input amount for multi pay
+		barTitleLayout = (RelativeLayout) findViewById(R.id.barTitleLayout);
+		String merchId = data.optString("merchId");
+		if (TextUtils.isEmpty(merchId)) {
+			barTitleLayout.setVisibility(View.INVISIBLE);
+		}
 		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
-		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
+//		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
 		koolCloudMerchNumTextView = (TextView) findViewById(R.id.koolCloudMerchNumTextView);
-		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
+//		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
 		koolCloudMerchNumTextView.setText(data.optString("merchId"));
 		koolCloudDeviceNumNameTextView = (TextView) findViewById(R.id.koolCloudDeviceNumNameTextView);
-		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
+//		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
 		koolCloudDeviceNumTextView = (TextView) findViewById(R.id.koolCloudDeviceNumTextView);
-		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
+//		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
 		koolCloudDeviceNumTextView.setText(data.optString("iposId"));
 		acquireNameTextView = (TextView) findViewById(R.id.acquireNameTextView);
-		acquireNameTextView.setTypeface(faceTypeLanTing);
+//		acquireNameTextView.setTypeface(faceTypeLanTing);
 		acquireNickNameTextView = (TextView) findViewById(R.id.acquireNickNameTextView);
-		acquireNickNameTextView.setTypeface(faceTypeLanTing);
+//		acquireNickNameTextView.setTypeface(faceTypeLanTing);
 		acquireNickNameTextView.setText(data.optString("openBrhName"));
 		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
-		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
+//		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
+		//check print type
+		String printType = data.optString("printType");
+		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+			acquireMerchNameTextView.setText(getResources().getString(R.string.bar_acquire_merch_msg_pid));
+		}
 		acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
-		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
+//		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
 		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
-		qcquireTerminalTextView = (TextView) findViewById(R.id.qcquireTerminalTextView);
-		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalTextView = (TextView) findViewById(R.id.acquireTerminalTextView);
+		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+			acquireTerminalTextView.setText(getResources().getString(R.string.bar_acquire_terminal_msg_beneficiary_account_no));
+		}
+//		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
-		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
+//		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 	}
 
@@ -98,7 +117,7 @@ public class TransAmountController extends BaseController {
 
 	@Override
 	protected void addInputNumber(String text) {
-		if (null != text && numberInputString.toString().length() < 9) {
+		if (null != text && numberInputString.toString().length() < 12) {
 			if (numberInputString.toString().equals("0")) {
 				numberInputString.replace(0, 1, text);
 			} else {

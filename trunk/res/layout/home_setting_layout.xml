@@ -57,13 +57,35 @@
                 style="@style/module_title"
                 android:text="@string/settins_index_module_title_setMerchId" />
         </LinearLayout>
+        <!-- <LinearLayout style="@style/module_layout" >
+		
+            <ImageButton
+                style="@style/module_logo"
+                android:background="@drawable/logo_set_machine_id"
+                android:onClick="gotoSignUp" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/settins_index_module_title_sign_up" />
+        </LinearLayout> -->
+        <LinearLayout style="@style/module_layout" >
+
+            <ImageButton
+                style="@style/module_logo"
+                android:background="@drawable/logo_password"
+                android:onClick="gotoModifyPwd" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/settins_index_module_title_modify_pwd" />
+        </LinearLayout>
     </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
-        android:weightSum="4" >
+        android:weightSum="5" >
 
         <LinearLayout style="@style/module_layout" >
 

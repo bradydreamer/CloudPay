@@ -162,6 +162,7 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
 							R.string.dialog_device_check_device_ok_msg));
 					titleTextView.setCompoundDrawables(titleCheckPassDrawable, null, null, null);
+					exitButton.setText(getResources().getString(R.string.dialog_device_check_start_to_use));
 				} else {
 					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
 							R.string.dialog_device_check_devices_unusual));

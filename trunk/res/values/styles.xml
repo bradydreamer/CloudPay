@@ -305,6 +305,13 @@
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
     </style>
+    
+    <!-- bar multi info text style -->
+    <style name="bar_multi_info_text_style">
+        <item name="android:textSize">@dimen/bar_multi_info_text_size</item>
+        <item name="android:textColor">@color/order_detail_textcolor_gray</item>
+        <item name="android:singleLine">true</item>
+    </style>
 
     <style name="broadside_bg_style">
         <item name="android:layout_width">150dp</item>

@@ -124,6 +124,7 @@ Pay.gotoFlow = function() {
 	formData.brhTermId = ConsumptionData.dataForPayment.brhTermId;
 	formData.merchId = ConsumptionData.dataForPayment.merchId;
 	formData.iposId = ConsumptionData.dataForPayment.iposId;
+	formData.printType = ConsumptionData.dataForPayment.printType;
 	window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
 	cacheData.preScene = sceneName;
 

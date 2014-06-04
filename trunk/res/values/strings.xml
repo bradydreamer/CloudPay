@@ -67,6 +67,8 @@
     <string name="settins_index_module_title_downloadMerchData">参数下载</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
     <string name="settins_index_module_title_trans_batch">批结算</string>
+    <string name="settins_index_module_title_sign_up">用户注册</string>
+    <string name="settins_index_module_title_modify_pwd">修改密码</string>
     
     <!-- activity_others_index_controller.xml -->
     <string name="others_index_module_title_pre_authorization">预授权</string>
@@ -122,6 +124,10 @@
     <!-- activity_login_controller.xml -->
     <string name="login_tv_userName">操作员</string>
     <string name="login_tv_pwd">密码</string>
+    <string name="msg_mod_pwd_submit">确定</string>
+    <string name="msg_mod_pwd_hint_pwd_origin_input">请输入原始密码</string>
+    <string name="msg_mod_pwd_hint_pwd_input">请输入密码</string>
+    <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认密码</string>
 
     <!-- activity_consumption_record_search_controller.xml -->
     <string name="consumption_record_search_tv_startDate">起始日期</string>
@@ -158,8 +164,8 @@
     <string name="waiting_dialog_msg_reverse">正在冲正</string>
 
     <!-- activity_merchant_info_controller.xml -->
-    <string name="merchant_info_tv_merchId">客户代码：</string>
-    <string name="merchant_info_tv_machineId">设备号：</string>
+    <string name="merchant_info_tv_merchId">酷云客户号：</string>
+    <string name="merchant_info_tv_machineId">酷云设备号：</string>
     <string name="merchant_info_tv_merchName">客户名称：</string>
     <string name="merchant_info_tv_merchAccount">客户结算账户：</string>
 
@@ -278,7 +284,8 @@
     <string name="str_update_now">马上更新</string>
     <string name="str_about">关于</string>
     <string name="str_version_name">版本号：</string>
-    <string name="str_new_version">发现新版本：</string>
+    <string name="str_current_version_name">当前版本：</string>
+    <string name="str_new_version">最新版本：</string>
     <string name="str_install_appstore_first">安装应用中心以查检更新</string>
     <string name="already_latest_version">已是最新版本</string>
     <string name="about_info">酷云智能POS是新一代基于云POS的超级收银作业平台，集刷卡、提货券、二维码支付等多种支付方式于一体，为商户打造全面的收银接入服务。</string>
@@ -297,13 +304,18 @@
     <string name="dialog_device_check_printer_usual">打印机连接正常。</string>
     <string name="dialog_device_check_network_unusual">网络连接不通。</string>
     <string name="dialog_device_check_network_usual">网络连接检测正常。</string>
-    <string name="dialog_device_check_self_checking">手动自检</string>
+    <string name="dialog_device_check_self_checking">再次检验</string>
+    <string name="dialog_device_check_use_anyway">继续使用</string>
+    <string name="dialog_device_check_start_to_use">开始使用</string>
     <string name="ping_host_url">www.baidu.com</string>
+    <string name="msg_checking_version_waiting">正在检查新版本，请稍候...</string>
     
     <!-- device, merchant bar msg -->
     <string name="bar_koolcloud_merch_name_msg">客户号：</string>
     <string name="bar_koolcloud_device_name_msg">设备号：</string>
     <string name="bar_acquire_name_msg">收单机构：</string>
     <string name="bar_acquire_merch_msg">商户号：</string>
+    <string name="bar_acquire_merch_msg_pid">PID：</string>
     <string name="bar_acquire_terminal_msg">终端号：</string>
+    <string name="bar_acquire_terminal_msg_beneficiary_account_no">收款账号：</string>
 </resources>

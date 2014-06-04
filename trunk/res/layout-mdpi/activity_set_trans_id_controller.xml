@@ -18,6 +18,7 @@
 	   	    android:id="@+id/set_trans_id_et_id"
 	   	    android:background="@drawable/number_input_edittext_bg"
 	        android:textSize="58sp"
+	        android:textColor="@color/white"
 	        style="@style/calculator_display_screen_style"
 	        android:maxLength="6"
 	        />

@@ -231,7 +231,4 @@ public interface Constant {
 	public static final String MERCHANT_RECEIPT_ID = "商户订单号：";
 
 	public static final String TAG_SIGNATURE = "用户签名：";
-
-	public static final String PRINT_TYPE_DEFAULT = "1"; // default print type
-	public static final String PRINT_TYPE_ALIPAY = "2"; // Alipay print type
 }

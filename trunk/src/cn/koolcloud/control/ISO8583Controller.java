@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.Log;
 import cn.koolcloud.constant.Constant;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.iso8583.ChongZheng;
 import cn.koolcloud.iso8583.ISOField;
 import cn.koolcloud.iso8583.ISOPackager;
@@ -391,15 +392,53 @@ public class ISO8583Controller implements Constant {
 	public boolean refund(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_REFUND);
 		/* 03 REFUND */
-		int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
+		// fix no pin block original start on 4th June
+		/*int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
 				ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
 				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
 				ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
 				ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
 				ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
 				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
-				ISOField.F63, ISOField.F64_MAC };
-
+				ISOField.F63, ISOField.F64_MAC };*/
+		// fix no pin block original end on 4th June
+		
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(STR_NULL_PIN)) {
+				paramer.trans.setPinMode(NO_PIN);
+				bitMap = new int[] {
+						ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						/*ISOField.F52_PIN, ISOField.F53_SCI,*/ ISOField.F60, ISOField.F61,
+						ISOField.F63, ISOField.F64_MAC };
+			} else {
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
+						ISOField.F63, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+					ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+					ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
+					ISOField.F63, ISOField.F64_MAC };
+		}
+		// fix no pin block end
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
 		return mapAndPack(jsonObject, bitMap);
 	}
@@ -445,7 +484,7 @@ public class ISO8583Controller implements Constant {
 				break;
 			case ISOField.F04_AMOUNT:
 				// 消费金额 F04
-				paramer.trans.setTransAmount(Integer.parseInt(jsonObject
+				paramer.trans.setTransAmount(Long.parseLong(jsonObject
 						.optString("F04")));
 				break;
 			case ISOField.F11_STAN:
@@ -976,7 +1015,7 @@ public class ISO8583Controller implements Constant {
 		oldTrans.setPaymentName(paymentName);
 		oldTrans.setPaymentId(paymentId);
 
-		if (printType.equals(Constant.PRINT_TYPE_ALIPAY)) {
+		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
 		} else {
 			PrinterHelper.getInstance(context).printReceipt(oldTrans);

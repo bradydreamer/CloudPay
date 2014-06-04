@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/dialog_device_checking_root_width"
     android:layout_height="@dimen/dialog_device_checking_root_height"
-    android:background="@color/dialog_devices_checking_page_backgroud"
+    android:background="@color/main_page_backgroud"
     android:orientation="vertical" >
     <LinearLayout 
         android:layout_width="fill_parent"
@@ -120,7 +120,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/exitButton"
             android:background="@drawable/btn_dialog_devices_check_exit_selector"
-            android:text="@string/opitonsMenu_quitApp_text"
+            android:text="@string/dialog_device_check_use_anyway"
             android:textColor="@android:color/white"
             android:textSize="@dimen/dialog_device_checking_button_text_size"
             android:gravity="center"/>

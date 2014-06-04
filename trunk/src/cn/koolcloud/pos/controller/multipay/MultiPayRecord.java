@@ -82,29 +82,34 @@ public class MultiPayRecord extends BaseController {
 		if (data == null) {
 			return;
 		}
-		float totalAmount = 0;
-		float paidAmount = 0;
-		
-		if (null != data.optString("totalAmount") && !"null".equals(data.optString("totalAmount"))) {
-			
-			totalAmount = Float.parseFloat(formatAmountStr(data.optString("totalAmount", "0")));
+		Long totalAmount = (long) 0;
+		Long paidAmount = (long) 0;
+		String totalAmountStr = null;
+		String paidAmountStr = null;
+
+		if (null != data.optString("totalAmount")
+				&& !"null".equals(data.optString("totalAmount"))) {
+			totalAmountStr = formatAmountStr(data.optString("totalAmount", "0"));
+			totalAmount = Long.valueOf(data.optString("totalAmount", "0"));
 		}
-		
-		if (null != data.optString("paidAmount") && !"null".equals(data.optString("paidAmount"))) {
-			
-			paidAmount = Float.parseFloat(formatAmountStr(data.optString("paidAmount", "0")));
+
+		if (null != data.optString("paidAmount")
+				&& !"null".equals(data.optString("paidAmount"))) {
+			paidAmountStr = formatAmountStr(data.optString("paidAmount", "0"));
+			paidAmount = Long.valueOf(data.optString("paidAmount", "0"));
 		}
-		
-		float balance = totalAmount - paidAmount;
+
+		float balance = (float) (totalAmount - paidAmount);
+		String balanceStr = formatAmountStr(Long.toString(totalAmount
+				- paidAmount));
 		if (balance == (float) 0.0) {
 			nextPay.setBackgroundResource(R.drawable.button_nextpay_unused_background);
 			payFinish = true;
 		}
-		tv_paidAmount.setText("" + paidAmount
+		tv_paidAmount.setText(paidAmountStr
 				+ getString(R.string.transCurrency_text));
-		tv_balance.setText("" + balance
-				+ getString(R.string.transCurrency_text));
-		tv_totalAmount.setText("" + totalAmount
+		tv_balance.setText(balanceStr + getString(R.string.transCurrency_text));
+		tv_totalAmount.setText(totalAmountStr
 				+ getString(R.string.transCurrency_text));
 	}
 

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
    	android:layout_height="fill_parent"
-   	android:background="@drawable/activity_frame_bg"
+   	android:background="@color/main_page_backgroud"
     >
  <!--     
     <ImageView 
@@ -47,7 +47,7 @@
 			        android:gravity="right|center_vertical"
 			        android:paddingRight="20dp"
 			        android:textColor="@android:color/white"
-			        android:maxLength="9"
+			        android:maxLength="13"
 			        />
 		    	
 		        <include 

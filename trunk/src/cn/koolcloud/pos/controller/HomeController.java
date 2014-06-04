@@ -10,6 +10,7 @@ import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
+import cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog;
 import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
 
 public class HomeController extends BaseHomeController implements
@@ -50,8 +51,14 @@ public class HomeController extends BaseHomeController implements
 		//start checking devices
 		application = (MyApplication) getApplication();
 		boolean isFirstStart = application.isFirstStart();
-		if (!isFirstStart) {
+		/*if (!isFirstStart) {
 			startDeviceChecking();
+			application.setFirstStart(true);
+		} else {
+			onCall("Home.updateTransInfo", null);
+		}*/
+		if (!isFirstStart) {
+			startAppVersionChecking();
 			application.setFirstStart(true);
 		} else {
 			onCall("Home.updateTransInfo", null);
@@ -78,6 +85,11 @@ public class HomeController extends BaseHomeController implements
 	
 	private void startDeviceChecking() {
 		Intent mIntent = new Intent(getApplicationContext(), DevicesCheckingDialog.class);
+		startActivity(mIntent);
+	}
+	
+	private void startAppVersionChecking() {
+		Intent mIntent = new Intent(getApplicationContext(), CheckingUpdateDialog.class);
 		startActivity(mIntent);
 	}
 

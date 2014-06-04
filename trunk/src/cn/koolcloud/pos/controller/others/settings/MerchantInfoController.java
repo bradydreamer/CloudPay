@@ -24,7 +24,6 @@ public class MerchantInfoController extends BaseController {
 			String merchId = data.optString("merchId");
 			String machineId = data.optString("machineId");
 			String merchName = data.optString("merchName");
-			String merchAccount = data.optString("merchAccount");
 
 			TextView tv_merchId = (TextView) findViewById(R.id.merchant_info_tv_merchId);
 			tv_merchId.setText(merchId);
@@ -32,8 +31,6 @@ public class MerchantInfoController extends BaseController {
 			tv_machineId.setText(machineId);
 			TextView tv_merchName = (TextView) findViewById(R.id.merchant_info_tv_merchName);
 			tv_merchName.setText(merchName);
-			TextView tv_merchAccount = (TextView) findViewById(R.id.merchant_info_tv_merchAccount);
-			tv_merchAccount.setText(merchAccount);
 		}
 	}
 

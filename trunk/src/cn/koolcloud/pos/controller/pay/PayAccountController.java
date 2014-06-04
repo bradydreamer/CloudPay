@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import cn.koolcloud.constant.Constant;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
@@ -54,10 +56,10 @@ public class PayAccountController extends BaseController implements
 	private TextView acquireNickNameTextView;
 	private TextView acquireMerchNameTextView;
 	private TextView acquireMerchNumTextView;
-	private TextView qcquireTerminalTextView;
+	private TextView acquireTerminalTextView;
 	private TextView acquireTerminalNumTextView;
 	
-	private Typeface faceTypeLanTing;
+//	private Typeface faceTypeLanTing;
 	
 	private JSONObject data;
 
@@ -99,36 +101,44 @@ public class PayAccountController extends BaseController implements
 					PayAccountController.this);
 		}
 		
-		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
+//		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
 		findViews();
 		setTitle(formData.optString(getString(R.string.formData_key_title)));
 	}
 	
 	private void findViews() {
 		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
-		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
+//		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
 		koolCloudMerchNumTextView = (TextView) findViewById(R.id.koolCloudMerchNumTextView);
-		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
+//		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
 		koolCloudMerchNumTextView.setText(data.optString("merchId"));
 		koolCloudDeviceNumNameTextView = (TextView) findViewById(R.id.koolCloudDeviceNumNameTextView);
-		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
+//		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
 		koolCloudDeviceNumTextView = (TextView) findViewById(R.id.koolCloudDeviceNumTextView);
-		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
+//		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
 		koolCloudDeviceNumTextView.setText(data.optString("iposId"));
 		acquireNameTextView = (TextView) findViewById(R.id.acquireNameTextView);
-		acquireNameTextView.setTypeface(faceTypeLanTing);
+//		acquireNameTextView.setTypeface(faceTypeLanTing);
 		acquireNickNameTextView = (TextView) findViewById(R.id.acquireNickNameTextView);
-		acquireNickNameTextView.setTypeface(faceTypeLanTing);
+//		acquireNickNameTextView.setTypeface(faceTypeLanTing);
 		acquireNickNameTextView.setText(data.optString("openBrhName"));
 		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
-		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
+//		acquireMerchNameTextView.setTypeface(faceTypeLaTing);
+		//check print type
+		String printType = data.optString("printType");
+		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+			acquireMerchNameTextView.setText(getResources().getString(R.string.bar_acquire_merch_msg_pid));
+		}
 		acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
-		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
+//		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
 		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
-		qcquireTerminalTextView = (TextView) findViewById(R.id.qcquireTerminalTextView);
-		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
+		acquireTerminalTextView = (TextView) findViewById(R.id.acquireTerminalTextView);
+		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+			acquireTerminalTextView.setText(getResources().getString(R.string.bar_acquire_terminal_msg_beneficiary_account_no));
+		}
+//		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
-		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
+//		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 	}
 
@@ -138,7 +148,7 @@ public class PayAccountController extends BaseController implements
 		switch (status) {
 		case -1:
 			view.setEnabled(false);
-			view.setBackgroundResource(R.drawable.unable_button);
+//			view.setBackgroundResource(R.drawable.btn_account_grey);
 			setDisableBtn(view);
 			break;
 		case 0:

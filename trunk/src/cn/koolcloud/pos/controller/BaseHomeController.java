@@ -85,6 +85,11 @@ public abstract class BaseHomeController extends BaseController {
 	}
 
 	@Override
+	public void onClickLeftButton(View view) {
+
+	}
+
+	@Override
 	protected View viewForIdentifier(String name) {
 		if ("viewPager".equals(name)) {
 			return viewPager;
@@ -224,6 +229,8 @@ public abstract class BaseHomeController extends BaseController {
 						iv.setImageResource(R.drawable.logo_unionpay);
 					} else if (imageName.startsWith("logo_wechat")) {
 						iv.setImageResource(R.drawable.logo_wechat);
+					} else if (imageName.startsWith("logo_fufeitong")) {
+						iv.setImageResource(R.drawable.logo_fufeitong);
 					}
 					// iv.setBackgroundResource(R.drawable.icon_bg);
 				}

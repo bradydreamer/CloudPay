@@ -16,8 +16,9 @@
 	   	<EditText 
 	   	    android:id="@+id/input_del_voucher_id_et_id"
 	   	    android:gravity="center"
-	   	    android:background="@android:drawable/edit_text"
 	        android:textSize="60sp"
+	        android:background="@drawable/number_input_edittext_bg"
+	        android:textColor="@color/white"
 	        style="@style/calculator_display_screen_style"
 	        android:maxLength="15"/>	   	
 	       <include 
