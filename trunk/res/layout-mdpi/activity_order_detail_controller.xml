@@ -4,8 +4,7 @@
     android:layout_height="fill_parent"
     android:background="@color/main_page_backgroud"
     android:orientation="vertical" >
-    <include layout="@layout/bar_terminal_device_merchant_info"
-        android:id="@+id/barTitleLayout"/>
+    <include layout="@layout/bar_terminal_device_merchant_info"/>
 	<RelativeLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"

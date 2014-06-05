@@ -65,6 +65,16 @@
         Scene.alert(data.resMessage)
         return
       };
+		  if("1" == g_loginRes.pwdTag){
+		  	/*
+		  	此处跳转密码修改界面。密码界面修改完成后重新跳转至登录界面。
+		  	*/
+		  	params = {
+					shouldRemoveCurCtrl: true
+				}
+		  	Scene.showScene("ModifyPwd","",params);
+			return;
+		  }
       if ("0" == g_loginRes.userStatus) {
 
         g_loginRes.transTime = data.transTime;

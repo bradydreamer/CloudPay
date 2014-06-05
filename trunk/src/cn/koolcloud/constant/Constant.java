@@ -172,9 +172,8 @@ public interface Constant {
 	final byte SWIPE_ENTRY = 0x02; // 读取磁条卡号
 	final byte INSERT_ENTRY = 0x05; // 读取IC卡
 	// PIN Mode
-	final byte HAVE_PIN = 0x10; // 有密码
-	final byte NO_PIN = 0x20; // 无密码
-	final String STR_NULL_PIN = "0000000000000000";// null pin block string
+//	final byte HAVE_PIN = 0x10; // 有密码
+//	final byte NO_PIN = 0x20; // 无密码
 
 	// Key Algorithm
 	final byte SINGLE_KEY = 0;

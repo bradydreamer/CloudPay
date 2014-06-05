@@ -137,15 +137,16 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setTrack2Data(track2);
 		paramer.trans.setTrack3Data(track3);
 
-		paramer.trans.setEntryMode(HAVE_PIN);
+		// paramer.trans.setEntryMode(ConstantUtils.SEARCH_ENTRY_MODE);
+		paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 		paramer.paymentId = payment_id;
 		paramer.openBrh = open_brh;
 
 		// fix no pin block start
 		int[] bitMap = null;
 		if (!pinBlock.isEmpty()) {
-			if (pinBlock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
+			if (pinBlock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] {
 						ISOField.F02_PAN,
 						ISOField.F03_PROC,
@@ -166,6 +167,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F60, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinBlock(Utility.hex2byte(pinBlock));
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 						ISOField.F11_STAN, ISOField.F14_EXP, ISOField.F22_POSE,
 						ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE,
@@ -214,8 +216,8 @@ public class ISO8583Controller implements Constant {
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
-			if (pinblock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] {
 						ISOField.F02_PAN,
 						ISOField.F03_PROC,
@@ -236,6 +238,8 @@ public class ISO8583Controller implements Constant {
 						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
 						ISOField.F60, ISOField.F64_MAC };
 			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 						ISOField.F04_AMOUNT, ISOField.F11_STAN,
 						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
@@ -329,8 +333,8 @@ public class ISO8583Controller implements Constant {
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
-			if (pinblock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] {
 						ISOField.F02_PAN,
 						ISOField.F03_PROC,
@@ -352,6 +356,8 @@ public class ISO8583Controller implements Constant {
 						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
 						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 						ISOField.F04_AMOUNT, ISOField.F11_STAN,
 						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
@@ -393,50 +399,57 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setTransType(TRAN_REFUND);
 		/* 03 REFUND */
 		// fix no pin block original start on 4th June
-		/*int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
-				ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-				ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-				ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
-				ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
-				ISOField.F63, ISOField.F64_MAC };*/
+		/*
+		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
+		 * ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+		 * ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+		 * ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40, ISOField.F41_TID,
+		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
+		 * ISOField.F53_SCI, ISOField.F60, ISOField.F61, ISOField.F63,
+		 * ISOField.F64_MAC };
+		 */
 		// fix no pin block original end on 4th June
-		
+
 		// fix no pin block start
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
-			if (pinblock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
-				bitMap = new int[] {
-						ISOField.F02_PAN, ISOField.F03_PROC,
-						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
-						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-						/*ISOField.F52_PIN, ISOField.F53_SCI,*/ ISOField.F60, ISOField.F61,
-						ISOField.F63, ISOField.F64_MAC };
-			} else {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
-						ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-						ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-						ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
-						ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F60,
+						ISOField.F61, ISOField.F63, ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F60, ISOField.F61,
 						ISOField.F63, ISOField.F64_MAC };
 			}
 		} else {
 			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
 					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-					ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-					ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
-					ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
-					ISOField.F63, ISOField.F64_MAC };
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F49_CURRENCY, ISOField.F52_PIN, ISOField.F53_SCI,
+					ISOField.F60, ISOField.F61, ISOField.F63, ISOField.F64_MAC };
 		}
 		// fix no pin block end
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
@@ -532,7 +545,7 @@ public class ISO8583Controller implements Constant {
 				String pinblock = jsonObject.optString("F52");
 				if (!pinblock.isEmpty()) {
 					paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
-					paramer.trans.setPinMode(HAVE_PIN);
+					paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				} else {
 					save = false;
 				}

@@ -23,7 +23,7 @@ public class HomeController extends BaseHomeController implements
 	private Button homeButton = null;
 	private Button aboutButton; // about button
 	private boolean removeJSTag = true;
-	
+
 	private MyApplication application;
 
 	@Override
@@ -36,7 +36,7 @@ public class HomeController extends BaseHomeController implements
 		settingsIndexController = (LinearLayout) findViewById(R.id.settingindexcontroller);
 		transactionManageIndexController = (LinearLayout) findViewById(R.id.transactionmanageindexcontroller);
 		currentLayout = home_layout;
-		
+
 		/*
 		 * navigation button,setting selected state.
 		 */
@@ -47,16 +47,15 @@ public class HomeController extends BaseHomeController implements
 
 		aboutButton = (Button) findViewById(R.id.abountBtn);
 		aboutButton.setOnClickListener(this);
-		
-		//start checking devices
+
+		// start checking devices
 		application = (MyApplication) getApplication();
 		boolean isFirstStart = application.isFirstStart();
-		/*if (!isFirstStart) {
-			startDeviceChecking();
-			application.setFirstStart(true);
-		} else {
-			onCall("Home.updateTransInfo", null);
-		}*/
+		/*
+		 * if (!isFirstStart) { startDeviceChecking();
+		 * application.setFirstStart(true); } else {
+		 * onCall("Home.updateTransInfo", null); }
+		 */
 		if (!isFirstStart) {
 			startAppVersionChecking();
 			application.setFirstStart(true);
@@ -77,19 +76,21 @@ public class HomeController extends BaseHomeController implements
 			JavaScriptEngine js = ClientEngine.engineInstance()
 					.javaScriptEngine();
 			js.loadJs(getString(R.string.controllerJSName_TransactionManageIndex));
-			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));			
+			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
 		}
 		super.loadRelatedJS();
 		setRemoveJSTag(false);
 	}
-	
+
 	private void startDeviceChecking() {
-		Intent mIntent = new Intent(getApplicationContext(), DevicesCheckingDialog.class);
+		Intent mIntent = new Intent(getApplicationContext(),
+				DevicesCheckingDialog.class);
 		startActivity(mIntent);
 	}
-	
+
 	private void startAppVersionChecking() {
-		Intent mIntent = new Intent(getApplicationContext(), CheckingUpdateDialog.class);
+		Intent mIntent = new Intent(getApplicationContext(),
+				CheckingUpdateDialog.class);
 		startActivity(mIntent);
 	}
 
@@ -160,7 +161,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void onClickMultiPay(View view) {
-//		changeSelectedButton(view);
+		// changeSelectedButton(view);
 		onCall("Home.onClickMultiPay", null);
 	}
 
@@ -215,6 +216,10 @@ public class HomeController extends BaseHomeController implements
 
 	public void gotoMerchantInfo(View view) {
 		onCall("SettingsIndex.gotoMerchantInfo", null);
+	}
+
+	public void gotoModifyPwd(View view) {
+		onCall("SettingsIndex.gotoModifyPwd", null);
 	}
 
 	public void clearReverseData(View view) {

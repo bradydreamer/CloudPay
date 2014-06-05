@@ -3,19 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/main_page_backgroud"
-    tools:context=".MerchantInfoController" >
+    tools:context=".MerchantInfoController"
+    android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/merch_info_kool_cloud_margin_left_right"
+        android:layout_marginRight="@dimen/merch_info_kool_cloud_margin_left_right"
+       	android:layout_marginTop="@dimen/merch_info_list_title_margin_left_right"
         android:orientation="vertical" >
 		<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal" >
 
@@ -23,53 +24,110 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/merchant_info_tv_merchName"
-                android:textSize="36sp" />
+                android:textSize="@dimen/merchant_info_cloud_text_size" />
 
             <TextView
                 android:id="@+id/merchant_info_tv_merchName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="36sp" />
+                android:textSize="@dimen/merchant_info_cloud_text_size" />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
+        <RelativeLayout 
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/merchant_info_tv_merchId"
-                android:textSize="36sp" />
-
-            <TextView
-                android:id="@+id/merchant_info_tv_merchId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="36sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/merchant_info_tv_machineId"
-                android:textSize="36sp" />
-
-            <TextView
-                android:id="@+id/merchant_info_tv_machineId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="36sp" />
-        </LinearLayout>
-
+            android:layout_marginTop="10dp"
+            >
+            
+	        <LinearLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:id="@+id/koolCloudMerchNumLayout"
+	            android:gravity="center_vertical"
+	            android:orientation="horizontal" >
+	
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/merchant_info_tv_merchId"
+	                android:textSize="@dimen/merchant_info_cloud_text_size" />
+	
+	            <TextView
+	                android:id="@+id/merchant_info_tv_merchId"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:textSize="@dimen/merchant_info_cloud_text_size" />
+	        </LinearLayout>
+	        <LinearLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_vertical"
+	            android:id="@+id/koolCloudDeviceNumLayout"
+	            android:orientation="horizontal"
+	            android:layout_alignParentRight="true" >
+	
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/merchant_info_tv_machineId"
+	                android:textSize="@dimen/merchant_info_cloud_text_size" />
+	
+	            <TextView
+	                android:id="@+id/merchant_info_tv_machineId"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:textSize="@dimen/merchant_info_cloud_text_size" />
+	        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/merch_info_list_title_height"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
+        android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
+        android:layout_marginTop="25dp"
+        android:background="@color/merchant_info_list_title_bg_color"
+        android:orientation="horizontal">
+        <TextView 
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/merchant_info_msg_acquire_institute_name_title"
+            android:textSize="@dimen/merchant_info_list_title_text_size"
+            android:textStyle="bold"
+            android:layout_weight="2"/>
+        <TextView android:layout_width="1dp"
+            android:layout_height="@dimen/merch_info_list_title_interval_height"
+            android:background="@color/white"/>
+        <TextView 
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/merchant_info_msg_acquire_institute_num_title"
+            android:textStyle="bold"
+            android:textSize="@dimen/merchant_info_list_title_text_size"
+            android:layout_weight="2"/>
+        <TextView android:layout_width="1dp"
+            android:layout_height="@dimen/merch_info_list_title_interval_height"
+            android:background="@color/white"/>
+        <TextView 
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/merchant_info_msg_acquire_institute_device_no_title"
+            android:textStyle="bold"
+            android:textSize="@dimen/merchant_info_list_title_text_size"
+            android:layout_weight="1.5"/>
+    </LinearLayout>
+    <ListView 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/acquireInstituteList"
+        android:background="@color/merchant_info_list_bg_color"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
+        android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
+        android:scrollbars="none"/>
 </LinearLayout>

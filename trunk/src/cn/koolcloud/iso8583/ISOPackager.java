@@ -1510,7 +1510,7 @@ public class ISOPackager implements Constant {
 			switch (bitMap[i]) {
 			case ISOField.F02_PAN:
 				if (appState.trans.getPAN().length() > 0
-						&& appState.trans.getEntryMode() != SWIPE_ENTRY // 读取磁条卡号
+				// && appState.trans.getEntryMode() == SWIPE_ENTRY // 读取磁条卡号
 				) {
 					byte[] F2_AccountNumber = new byte[(appState.trans.getPAN()
 							.length() + 1) / 2];
@@ -1575,8 +1575,8 @@ public class ISOPackager implements Constant {
 				}
 				break;
 			case ISOField.F14_EXP:
-				if (appState.trans.getEntryMode() != SWIPE_ENTRY
-						&& appState.trans.getExpiry().length() == 4) {
+				if (// appState.trans.getEntryMode() != SWIPE_ENTRY&&
+				appState.trans.getExpiry().length() == 4) {
 					byte[] F14_Expiry = new byte[2];
 					ByteUtil.asciiToBCD(appState.trans.getExpiry().getBytes(),
 							0, F14_Expiry, 0, 4, 0);

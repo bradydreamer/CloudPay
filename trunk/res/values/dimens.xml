@@ -37,4 +37,14 @@
 	<dimen name="bar_multi_info_margin_head_tail">25dp</dimen>
 	<dimen name="bar_multi_info_middle_margin_left">35dp</dimen>
 	<dimen name="bar_multi_info_text_size">18px</dimen>
+	
+	<!-- merchant info size -->
+	<dimen name="merch_info_list_title_height">55dp</dimen>
+	<dimen name="merch_info_list_item_height">45dp</dimen>
+	<dimen name="merch_info_list_title_interval_height">45dp</dimen>
+	<dimen name="merchant_info_list_title_text_size">22px</dimen>
+	<dimen name="merchant_info_list_item_text_size">20px</dimen>
+	<dimen name="merchant_info_cloud_text_size">23px</dimen>
+	<dimen name="merch_info_list_title_margin_left_right">55dp</dimen>
+	<dimen name="merch_info_kool_cloud_margin_left_right">80dp</dimen>
 </resources>

@@ -78,6 +78,10 @@
 		Scene.showScene("SetMerchId")
 	}
 
+	function gotoModifyPwd(){
+		window.util.showSceneWithLoginChecked("ModifyPwd", null, null);
+	}
+
 	function gotoSetMachineId() {
 		window.user.setMachineIdResult(function() {
 			Scene.goBack()
@@ -153,6 +157,7 @@
 		"downloadMerchData" : downloadMerchData,
 		"gotoSetTransId": gotoSetTransId,
 		"gotoTransBatch": gotoTransBatch,
+		"gotoModifyPwd": gotoModifyPwd,
 		"transBatch":	transBatch,
 	};
 

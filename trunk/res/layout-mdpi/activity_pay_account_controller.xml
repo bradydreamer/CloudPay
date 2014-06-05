@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:background="@color/main_page_backgroud" >
     <include 
-        android:id="@+id/barMultiInfoLayout"
+        android:id="@+id/barTitleLayout"
         layout="@layout/bar_terminal_device_merchant_info"/>
     <LinearLayout
         android:id="@+id/money_amount_view"
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="70dp"
         android:layout_marginTop="15dp"
-        android:layout_below="@+id/barMultiInfoLayout"
+        android:layout_below="@+id/barTitleLayout"
         android:orientation="horizontal"
        	 >
 

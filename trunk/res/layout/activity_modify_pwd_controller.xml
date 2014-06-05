@@ -6,7 +6,7 @@
     android:orientation="horizontal" 
     android:background="@drawable/activity_frame_bg">
     
-    <LinearLayout 
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -27,7 +27,7 @@
 	            android:singleLine="true"
 	            android:inputType="textPassword"
 	            android:hint="@string/msg_mod_pwd_hint_pwd_origin_input"
-	            android:textSize="40sp"/>
+	            android:textSize="35sp"/>
         </LinearLayout>
         <LinearLayout  
             android:layout_width="540dp"
@@ -40,7 +40,7 @@
 	            android:layout_width="430dp"
 	            android:layout_height="80dp"
 	            android:layout_marginLeft="80dp"
-	            android:textSize="40sp"
+	            android:textSize="35sp"
 	            android:paddingLeft="10dp"
 	            android:singleLine="true"
 	            android:inputType="textPassword"
@@ -58,7 +58,7 @@
 	            android:layout_width="430dp"
 	            android:layout_height="80dp"
 	            android:layout_marginLeft="80dp"
-	            android:textSize="40sp"
+	            android:textSize="35sp"
 	            android:paddingLeft="10dp"
 	            android:singleLine="true"
 	            android:inputType="textPassword"

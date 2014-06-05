@@ -6,17 +6,18 @@ import java.util.Hashtable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import cn.koolcloud.constant.Constant;
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
@@ -46,8 +47,9 @@ public class PayAccountController extends BaseController implements
 	protected String func_inputAccount;
 	protected String func_nearfieldAccount;
 	private boolean removeJSTag = true;
-	
-	//muilti info bar components
+
+	// muilti info bar components
+	private RelativeLayout barTitleLayout;
 	private TextView koolCloudMerchNumNameTextView;
 	private TextView koolCloudMerchNumTextView;
 	private TextView koolCloudDeviceNumNameTextView;
@@ -58,9 +60,9 @@ public class PayAccountController extends BaseController implements
 	private TextView acquireMerchNumTextView;
 	private TextView acquireTerminalTextView;
 	private TextView acquireTerminalNumTextView;
-	
-//	private Typeface faceTypeLanTing;
-	
+
+	// private Typeface faceTypeLanTing;
+
 	private JSONObject data;
 
 	@Override
@@ -100,45 +102,54 @@ public class PayAccountController extends BaseController implements
 			ex_codeScanner.onCreate(PayAccountController.this,
 					PayAccountController.this);
 		}
-		
-//		faceTypeLanTing = Typeface.createFromAsset(getAssets(), "font/fzltxhk.ttf");
+
+		// faceTypeLanTing = Typeface.createFromAsset(getAssets(),
+		// "font/fzltxhk.ttf");
 		findViews();
 		setTitle(formData.optString(getString(R.string.formData_key_title)));
 	}
-	
+
 	private void findViews() {
+		// hidden bar title on clicking searching result item
+		barTitleLayout = (RelativeLayout) findViewById(R.id.barTitleLayout);
+		String merchId = data.optString("merchId");
+		if (TextUtils.isEmpty(merchId)) {
+			barTitleLayout.setVisibility(View.INVISIBLE);
+		}
 		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
-//		koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
+		// koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);
 		koolCloudMerchNumTextView = (TextView) findViewById(R.id.koolCloudMerchNumTextView);
-//		koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
+		// koolCloudMerchNumTextView.setTypeface(faceTypeLanTing);
 		koolCloudMerchNumTextView.setText(data.optString("merchId"));
 		koolCloudDeviceNumNameTextView = (TextView) findViewById(R.id.koolCloudDeviceNumNameTextView);
-//		koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
+		// koolCloudDeviceNumNameTextView.setTypeface(faceTypeLanTing);
 		koolCloudDeviceNumTextView = (TextView) findViewById(R.id.koolCloudDeviceNumTextView);
-//		koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
+		// koolCloudDeviceNumTextView.setTypeface(faceTypeLanTing);
 		koolCloudDeviceNumTextView.setText(data.optString("iposId"));
 		acquireNameTextView = (TextView) findViewById(R.id.acquireNameTextView);
-//		acquireNameTextView.setTypeface(faceTypeLanTing);
+		// acquireNameTextView.setTypeface(faceTypeLanTing);
 		acquireNickNameTextView = (TextView) findViewById(R.id.acquireNickNameTextView);
-//		acquireNickNameTextView.setTypeface(faceTypeLanTing);
+		// acquireNickNameTextView.setTypeface(faceTypeLanTing);
 		acquireNickNameTextView.setText(data.optString("openBrhName"));
 		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
-//		acquireMerchNameTextView.setTypeface(faceTypeLaTing);
-		//check print type
+		// acquireMerchNameTextView.setTypeface(faceTypeLaTing);
+		// check print type
 		String printType = data.optString("printType");
 		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
-			acquireMerchNameTextView.setText(getResources().getString(R.string.bar_acquire_merch_msg_pid));
+			acquireMerchNameTextView.setText(getResources().getString(
+					R.string.bar_acquire_merch_msg_pid));
 		}
 		acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
-//		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
+		// acquireMerchNumTextView.setTypeface(faceTypeLanTing);
 		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
 		acquireTerminalTextView = (TextView) findViewById(R.id.acquireTerminalTextView);
 		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
-			acquireTerminalTextView.setText(getResources().getString(R.string.bar_acquire_terminal_msg_beneficiary_account_no));
+			acquireTerminalTextView.setText(getResources().getString(
+					R.string.bar_acquire_terminal_msg_beneficiary_account_no));
 		}
-//		qcquireTerminalTextView.setTypeface(faceTypeLanTing);
+		// qcquireTerminalTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
-//		acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
+		// acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 	}
 
@@ -148,7 +159,7 @@ public class PayAccountController extends BaseController implements
 		switch (status) {
 		case -1:
 			view.setEnabled(false);
-//			view.setBackgroundResource(R.drawable.btn_account_grey);
+			// view.setBackgroundResource(R.drawable.btn_account_grey);
 			setDisableBtn(view);
 			break;
 		case 0:
@@ -162,32 +173,44 @@ public class PayAccountController extends BaseController implements
 			break;
 		}
 	}
-	
+
 	private void setDisableBtn(Button btn) {
 		switch (btn.getId()) {
 		case R.id.pay_account_btn_swiper:
-			Drawable swiperDrawable = getResources().getDrawable(R.drawable.icon_swiper_disable);
-			swiperDrawable.setBounds(0, 0, swiperDrawable.getMinimumWidth(), swiperDrawable.getMinimumHeight());
+			Drawable swiperDrawable = getResources().getDrawable(
+					R.drawable.icon_swiper_disable);
+			swiperDrawable.setBounds(0, 0, swiperDrawable.getMinimumWidth(),
+					swiperDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(swiperDrawable, null, null, null);
-			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
+			btn.setTextColor(getResources().getColor(
+					R.color.trade_statistics_textcolor_gray));
 			break;
 		case R.id.pay_account_btn_keyboard:
-			Drawable keyboadDrawable = getResources().getDrawable(R.drawable.icon_keyboard_disable);
-			keyboadDrawable.setBounds(0, 0, keyboadDrawable.getMinimumWidth(), keyboadDrawable.getMinimumHeight());
+			Drawable keyboadDrawable = getResources().getDrawable(
+					R.drawable.icon_keyboard_disable);
+			keyboadDrawable.setBounds(0, 0, keyboadDrawable.getMinimumWidth(),
+					keyboadDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(keyboadDrawable, null, null, null);
-			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
+			btn.setTextColor(getResources().getColor(
+					R.color.trade_statistics_textcolor_gray));
 			break;
 		case R.id.pay_account_btn_sound:
-			Drawable soundDrawable = getResources().getDrawable(R.drawable.icon_sound_disable);
-			soundDrawable.setBounds(0, 0, soundDrawable.getMinimumWidth(), soundDrawable.getMinimumHeight());
+			Drawable soundDrawable = getResources().getDrawable(
+					R.drawable.icon_sound_disable);
+			soundDrawable.setBounds(0, 0, soundDrawable.getMinimumWidth(),
+					soundDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(soundDrawable, null, null, null);
-			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
+			btn.setTextColor(getResources().getColor(
+					R.color.trade_statistics_textcolor_gray));
 			break;
 		case R.id.pay_account_btn_qrcode:
-			Drawable qrcodeDrawable = getResources().getDrawable(R.drawable.icon_qrcode_disable);
-			qrcodeDrawable.setBounds(0, 0, qrcodeDrawable.getMinimumWidth(), qrcodeDrawable.getMinimumHeight());
+			Drawable qrcodeDrawable = getResources().getDrawable(
+					R.drawable.icon_qrcode_disable);
+			qrcodeDrawable.setBounds(0, 0, qrcodeDrawable.getMinimumWidth(),
+					qrcodeDrawable.getMinimumHeight());
 			btn.setCompoundDrawables(qrcodeDrawable, null, null, null);
-			btn.setTextColor(getResources().getColor(R.color.trade_statistics_textcolor_gray));
+			btn.setTextColor(getResources().getColor(
+					R.color.trade_statistics_textcolor_gray));
 			break;
 
 		default:
@@ -222,6 +245,8 @@ public class PayAccountController extends BaseController implements
 		String actionTag = getString(R.string.pay_account_tag_qrcode);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_qrcode.setVisibility(View.VISIBLE);
+			UtilFor8583.getInstance().trans
+					.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
 			onStartQRScanner();
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			onStopQRScanner();
@@ -230,6 +255,7 @@ public class PayAccountController extends BaseController implements
 		actionTag = getString(R.string.pay_account_tag_sound);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_sound.setVisibility(View.VISIBLE);
+			// TODO add entryMode.
 			onStartSound();
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			onStopSound();
@@ -238,6 +264,8 @@ public class PayAccountController extends BaseController implements
 		actionTag = getString(R.string.pay_account_tag_swiper);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_swiper.setVisibility(View.VISIBLE);
+			UtilFor8583.getInstance().trans
+					.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
 			onStartSwiper();
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			onStopSwiper();
@@ -246,6 +274,8 @@ public class PayAccountController extends BaseController implements
 		actionTag = getString(R.string.pay_account_tag_keyboard);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_keyboard.setVisibility(View.VISIBLE);
+			UtilFor8583.getInstance().trans
+					.setEntryMode(ConstantUtils.ENTRY_KEYBOARD_MODE);
 			onStartKeyBoard();
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			onStopKeyBoard();

@@ -125,9 +125,10 @@
     <string name="login_tv_userName">操作员</string>
     <string name="login_tv_pwd">密码</string>
     <string name="msg_mod_pwd_submit">确定</string>
-    <string name="msg_mod_pwd_hint_pwd_origin_input">请输入原始密码</string>
-    <string name="msg_mod_pwd_hint_pwd_input">请输入密码</string>
-    <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认密码</string>
+    <string name="msg_mod_pwd_hint_pwd_origin_input">请输入原密码</string>
+    <string name="msg_mod_pwd_hint_pwd_input">请输入新密码</string>
+    <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认新密码</string>
+    <string name="msg_mod_pwd_hint_error_dialog">密码不一致，请重新输入</string>
 
     <!-- activity_consumption_record_search_controller.xml -->
     <string name="consumption_record_search_tv_startDate">起始日期</string>
@@ -210,6 +211,7 @@
     <string name="controllerJSName_DelVoucherInfo">DeliveryVoucher/DelVoucherInfo</string>
     <string name="controllerJSName_SetMerchId">Others/Settings/SetMerchId</string>
     <string name="controllerJSName_SetMachineId">Others/Settings/SetMachineId</string>
+    <string name="controllerJSName_ModifyPwd">Others/Settings/ModifyPwd</string>
     <string name="controllerJSName_SetTransId">Others/Settings/SetTransId</string>
     <string name="controllerJSName_TransBatch">Others/Settings/TransBatch</string>
     <string name="controllerJSName_Login">Others/Settings/Login/index</string>
@@ -248,6 +250,7 @@
     <string name="title_activity_del_voucher_way_chosen_controller">方式选择</string>
     <string name="title_activity_input_del_voucher_id_controller">输入提货券号</string>
     <string name="title_activity_set_machine_id_controller">设置设备号</string>
+    <string name="title_activity_modify_pwd_controller">修改密码</string>
     <string name="title_activity_del_voucher_record_search_controller">提货记录查询</string>
     <string name="title_activity_del_voucher_record_controller">提货记录</string>
     <string name="title_activity_del_voucher_info_controller">提货券信息</string>
@@ -318,4 +321,9 @@
     <string name="bar_acquire_merch_msg_pid">PID：</string>
     <string name="bar_acquire_terminal_msg">终端号：</string>
     <string name="bar_acquire_terminal_msg_beneficiary_account_no">收款账号：</string>
+    
+    <!-- merchant info -->
+    <string name="merchant_info_msg_acquire_institute_name_title">收单机构名称</string>
+    <string name="merchant_info_msg_acquire_institute_num_title">商户号/PID</string>
+    <string name="merchant_info_msg_acquire_institute_device_no_title">终端号/收款账号</string>
 </resources>
