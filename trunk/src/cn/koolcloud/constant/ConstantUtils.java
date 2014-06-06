@@ -15,4 +15,8 @@ public class ConstantUtils {
 	public static final byte ENTRY_SWIPER_MODE = 0X02;
 	public static final byte ENTRY_KEYBOARD_MODE = 0X01;
 	public static final byte ENTRY_UNKNOW_MODE = 0X00;
+	
+	//appstore package name
+	public static final String APP_STORE_PACKAGE_NAME = "cn.koolcloud.ipos.appstore";
+	
 }

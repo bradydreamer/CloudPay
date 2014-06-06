@@ -210,6 +210,26 @@ public class Env {
 	    return false;
 	}
 	
+	/**
+	 * @Title: checkApkExist
+	 * @Description: TODO check if the app is installed.
+	 * @param context
+	 * @param packageName
+	 * @return
+	 * @return: boolean
+	 */
+	public static boolean checkApkExist(Context context, String packageName) {
+		if (packageName == null || "".equals(packageName))
+			return false;
+		try {
+//			ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+			context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+			return true;
+		} catch (NameNotFoundException e) {
+			return false;
+		}
+	}
+	
 	public static String getDeviceInfo(Context ctx) {
 		TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
 		StringBuilder sb = new StringBuilder();

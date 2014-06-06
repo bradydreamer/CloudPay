@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.constant.ConstantUtils;
@@ -1077,8 +1078,12 @@ public class ISO8583Controller implements Constant {
 	public String getBankCardNum() {
 		String cardNum = null;
 		String pan = paramer.trans.getPAN();
-		cardNum = pan.substring(0, 4) + "*******"
-				+ pan.substring(pan.length() - 4, pan.length());
+		if (TextUtils.isEmpty(pan) || pan.length() <= 4) {
+			cardNum = pan;
+		} else {
+			cardNum = pan.substring(0, 4) + "*******"
+					+ pan.substring(pan.length() - 4, pan.length());
+		}
 		return cardNum;
 	}
 

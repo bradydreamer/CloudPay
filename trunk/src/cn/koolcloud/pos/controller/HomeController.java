@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.MyApplication;
@@ -12,6 +13,7 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
 import cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog;
 import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
+import cn.koolcloud.pos.util.Env;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
@@ -57,7 +59,11 @@ public class HomeController extends BaseHomeController implements
 		 * onCall("Home.updateTransInfo", null); }
 		 */
 		if (!isFirstStart) {
-			startAppVersionChecking();
+			if (Env.checkApkExist(getApplicationContext(), ConstantUtils.APP_STORE_PACKAGE_NAME)) {
+				startAppVersionChecking();
+			} else {
+				startDeviceChecking();
+			}
 			application.setFirstStart(true);
 		} else {
 			onCall("Home.updateTransInfo", null);
