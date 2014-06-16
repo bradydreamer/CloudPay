@@ -25,6 +25,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 	public static final int UPDATE_CLIENT_DIALOG_REQUEST = 1;
 	private TextView titleTextView;
 	private TextView msgBodyTextView;
+	private TextView dialogTitleTextView;
 	private Button okButton;
 //	private Button cancelButton;
 	/*private ParcelableApp localParcelableApp;
@@ -71,8 +72,10 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 //		cancelButton = (Button) findViewById(R.id.cancel);
 //		cancelButton.setOnClickListener(this);
 		
+		dialogTitleTextView = (TextView) findViewById(R.id.dialogTitleTextView);
+		dialogTitleTextView.setText(getResources().getString(R.string.app_name));
+		
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
-		strBuffer.append(getResources().getString(R.string.app_name) + "\n");
 		strBuffer.append(getResources().getString(R.string.str_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
 		strBuffer.append(getResources().getString(R.string.about_info) + "\n");
 		

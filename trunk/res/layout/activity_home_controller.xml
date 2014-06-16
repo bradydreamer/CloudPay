@@ -55,7 +55,7 @@
 	                style="@style/broadside_btn_style"
 	                android:id="@+id/abountBtn"
 	                android:drawableTop="@drawable/btn_about_selector"
-	                android:text="@string/str_about" />
+	                android:text="@string/str_about_programme" />
 	        </LinearLayout>
 	    </LinearLayout>
     </ScrollView>

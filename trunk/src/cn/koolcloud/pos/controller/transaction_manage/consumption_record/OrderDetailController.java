@@ -152,8 +152,13 @@ public class OrderDetailController extends BaseController {
 		if (paymentOrder == PAY_SUCCESS || orderState != ORDER_STATUS_SUCCESS
 				|| (orderState == ORDER_STATUS_SUCCESS && transType.equals(TRAN_TYPE_REVERSE))
 				|| (orderState == ORDER_STATUS_SUCCESS && transType.equals(TRAN_TYPE_REFUND))) {
-			refundBtn.setVisibility(View.INVISIBLE);
-			reverseBtn.setVisibility(View.INVISIBLE);
+//			refundBtn.setVisibility(View.INVISIBLE);
+//			reverseBtn.setVisibility(View.INVISIBLE);
+			refundBtn.setClickable(false);
+			refundBtn.setBackgroundResource(R.drawable.button_disable_background_color);
+			reverseBtn.setClickable(false);
+			reverseBtn.setBackgroundResource(R.drawable.button_disable_background_color);
+			
 		}
 	}
 
@@ -236,8 +241,12 @@ public class OrderDetailController extends BaseController {
 		if (!orderStateSet.contains(orderStatus)) {//refresh button status
 			Button refundBtn = (Button) findViewById(R.id.order_detail_btn_refund);
 			Button reverseBtn = (Button) findViewById(R.id.order_detail_btn_cancel);
-			refundBtn.setVisibility(View.INVISIBLE);
-			reverseBtn.setVisibility(View.INVISIBLE);
+//			refundBtn.setVisibility(View.INVISIBLE);
+//			reverseBtn.setVisibility(View.INVISIBLE);
+			refundBtn.setClickable(false);
+			refundBtn.setBackgroundResource(R.drawable.button_disable_background_color);
+			reverseBtn.setClickable(false);
+			reverseBtn.setBackgroundResource(R.drawable.button_disable_background_color);
 		}
 	}
 

@@ -302,6 +302,8 @@
 			android:name="cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog" android:theme="@style/dialog"/>
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog" android:theme="@style/dialog"/>
+        <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.AlertCommonDialog" android:theme="@style/dialog"/>
         
         <!-- receiver -->
         <receiver android:name="cn.koolcloud.pos.receiver.LanchReceiver" >

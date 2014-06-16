@@ -30,6 +30,7 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 	private TextView titleTextView;
 	private TextView msgBodyTextView;
 	private TextView msgBodyWaitingTextView;
+	private TextView dialogTitleTextView;
 	private Button okButton;
 	
 	protected ParcelableApp localParcelableApp;
@@ -68,6 +69,7 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 		titleTextView = (TextView) findViewById(R.id.dialog_title_text);
 		msgBodyWaitingTextView = (TextView) findViewById(R.id.dialog_common_waiting_text);
 		titleTextView.setText(getResources().getString(R.string.str_check_update));
+		dialogTitleTextView = (TextView) findViewById(R.id.dialogTitleTextView);
 		
 		okButton = (Button) findViewById(R.id.ok);
 		okButton.setOnClickListener(this);
@@ -86,19 +88,20 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 				okButton.setVisibility(View.VISIBLE);
 				StringBuffer strBuffer = new StringBuffer();
 				if (null != localParcelableApp) {
-					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
+//					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
 					strBuffer.append(getResources().getString(R.string.str_current_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
 					strBuffer.append(getResources().getString(R.string.str_new_version) + localParcelableApp.getVersion() + "\n");
 					strBuffer.append(getResources().getString(R.string.about_info) + "\n");
 					okButton.setText(getResources().getString(R.string.str_update));
 					
 				} else {
-					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
+//					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
 					strBuffer.append(getResources().getString(R.string.str_current_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
 					strBuffer.append(getResources().getString(R.string.str_new_version) + Env.getVersionName(getApplicationContext()) + "\n");
 					strBuffer.append(getResources().getString(R.string.about_info) + "\n");
 					okButton.setText(getResources().getString(R.string.alert_btn_positive));
 				}
+				dialogTitleTextView.setText(getResources().getString(R.string.app_name));
 				msgBodyTextView.setText(strBuffer.toString());
 				break;
 

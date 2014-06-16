@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import cn.koolcloud.jni.MsrInterface;
 import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.pos.ClientEngine;
@@ -163,6 +164,7 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 							R.string.dialog_device_check_device_ok_msg));
 					titleTextView.setCompoundDrawables(titleCheckPassDrawable, null, null, null);
 					exitButton.setText(getResources().getString(R.string.dialog_device_check_start_to_use));
+					exitButton.setBackgroundResource(R.drawable.btn_dialog_devices_check_pass_selector);
 				} else {
 					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
 							R.string.dialog_device_check_devices_unusual));
@@ -243,6 +245,8 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 
 		@Override
 		public void run() {
+			//close msr anyway
+			MsrInterface.close();
 			int pinPadOpenStatus = PinPadInterface.open();
 			int pinPadCloseStatus = PinPadInterface.close();
 			Message msg = mHandler.obtainMessage();

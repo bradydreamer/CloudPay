@@ -5,7 +5,7 @@ public class APDefine {
 	/**
 	 * hongmei.miao for produce.
 	 */
-	public static final String APPSERVER = "http://aop.koolcloud.cn/apmp/mobile.action";
+	public static final String APPSERVER = "http://aop.koolyun.com/apmp/mobile.action";
 
 	/**
 	 * hongmei.miao China Unicom network IP

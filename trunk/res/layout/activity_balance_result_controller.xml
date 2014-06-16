@@ -20,14 +20,14 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/balance_result_tv_title_balance" 
-	        android:textSize="70sp"
+	        android:textSize="70px"
 	        android:visibility="gone" />
 	    
 	    <TextView
 	        android:id="@+id/balance_result_tv_balance"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:textSize="70sp" />
+	        android:textSize="70px" />
 	
 	</LinearLayout>
 </LinearLayout>

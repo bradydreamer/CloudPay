@@ -58,7 +58,7 @@ public class MultiPayRecordAdapter extends LoadMoreAdapter {
 		recordViewHolder.tv_orderStatus.setText(recordData
 				.optString("orderStateDesc"));
 
-		convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
+//		convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
 
 		return convertView;
 	}
