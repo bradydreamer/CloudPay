@@ -18,62 +18,84 @@
 	    android:paddingRight="40dp"
 	    android:paddingTop="20dp"
 	    tools:context=".DelVoucherInfoController" >
-	
-	    <Button
-	        android:id="@+id/order_detail_btn_confirm"
-	        android:layout_width="240dp"
-	        android:layout_height="60dp"
-	        android:layout_alignParentBottom="true"
-	        android:layout_alignParentRight="true"
-	        android:layout_marginTop="20dp"
-	        android:background="@drawable/button_confirm_background"
-	        android:onClick="onConfirm"
-	        android:text="@string/order_detail_btn_operation_text_confirm"
-	        android:textColor="@android:color/white"
-	        android:textSize="25sp" />
-	
-	    <Button
-	        android:id="@+id/order_detail_btn_refund"
-	        android:layout_width="240dp"
-	        android:layout_height="60dp"
-	        android:layout_alignParentBottom="true"
-	        android:layout_alignParentLeft="true"
-	        android:background="@drawable/button_refund_background"
-	        android:onClick="onRefund"
-	        android:text="@string/order_detail_btn_operation_text_refund"
-	        android:textColor="@android:color/white"
-	        android:textSize="25sp" />
-	
-	    <Button
-	        android:id="@+id/order_detail_btn_cancel"
-	        android:layout_width="240dp"
-	        android:layout_height="60dp"
-	        android:layout_alignTop="@id/order_detail_btn_refund"
-	        android:layout_marginLeft="22dp"
-	        android:layout_toRightOf="@id/order_detail_btn_refund"
-	        android:background="@drawable/button_cancel_background"
-	        android:onClick="onCancel"
-	        android:text="@string/order_detail_btn_operation_text_cancel"
-	        android:textColor="@android:color/white"
-	        android:textSize="25sp" />
-	
-	    <Button
-	        android:id="@+id/order_detail_btn_print"
-	        android:layout_width="240dp"
-	        android:layout_height="60dp"
-	        android:layout_alignTop="@id/order_detail_btn_cancel"
-	        android:layout_marginLeft="22dp"
-	        android:layout_toRightOf="@id/order_detail_btn_cancel"
-	        android:background="@drawable/button_print_background"
-	        android:onClick="onPrint"
-	        android:text="@string/order_detail_btn_operation_text_print"
-	        android:textColor="@android:color/white"
-	        android:textSize="25sp" />
+		<LinearLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal"
+		    android:id="@+id/btnsRootLayout"
+		    android:layout_alignParentBottom="true">
+			<RelativeLayout 
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:visibility="gone">
+			    
+			    <Button
+			        android:id="@+id/order_detail_btn_refund"
+			        android:layout_width="240dp"
+			        android:layout_height="60dp"
+			        android:layout_centerInParent="true"
+			        android:background="@drawable/button_refund_background"
+			        android:onClick="onRefund"
+			        android:text="@string/order_detail_btn_operation_text_refund"
+			        android:textColor="@android:color/white"
+			        android:textSize="25sp" />
+			</RelativeLayout>
+			<RelativeLayout 
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1">
+			    
+			    <Button
+			        android:id="@+id/order_detail_btn_cancel"
+			        android:layout_width="240dp"
+			        android:layout_height="60dp"
+			        android:layout_centerInParent="true"
+			        android:background="@drawable/button_cancel_background"
+			        android:onClick="onCancel"
+			        android:text="@string/order_detail_btn_operation_text_cancel"
+			        android:textColor="@android:color/white"
+			        android:textSize="25sp" />
+			</RelativeLayout>
+			<RelativeLayout 
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1">
+			    
+			    <Button
+			        android:id="@+id/order_detail_btn_print"
+			        android:layout_width="240dp"
+			        android:layout_height="60dp"
+			        android:layout_centerInParent="true"
+			        android:background="@drawable/button_print_background"
+			        android:onClick="onPrint"
+			        android:text="@string/order_detail_btn_operation_text_print"
+			        android:textColor="@android:color/white"
+			        android:textSize="25sp" />
+			</RelativeLayout>
+		    
+			<RelativeLayout 
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1">
+			    
+			    <Button
+			        android:id="@+id/order_detail_btn_confirm"
+			        android:layout_width="240dp"
+			        android:layout_height="60dp"
+			        android:layout_centerInParent="true"
+			        android:background="@drawable/button_confirm_background"
+			        android:onClick="onConfirm"
+			        android:text="@string/order_detail_btn_operation_text_confirm"
+			        android:textColor="@android:color/white"
+			        android:textSize="25sp" />
+			</RelativeLayout>
+		</LinearLayout>
 	
 	    <ScrollView
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:layout_above="@id/order_detail_btn_confirm"
+	        android:layout_above="@id/btnsRootLayout"
 	        android:layout_marginLeft="100dp" >
 	
 	        <RelativeLayout

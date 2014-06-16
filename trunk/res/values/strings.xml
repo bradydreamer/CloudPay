@@ -64,7 +64,7 @@
     <string name="settins_index_module_title_setMerchId">设置客户号</string>
     <string name="settins_index_module_title_setMachineId">设置设备号</string>
     <string name="settins_index_module_title_clearReverseData">清除冲正数据</string>
-    <string name="settins_index_module_title_downloadMerchData">参数下载</string>
+    <string name="settins_index_module_title_downloadMerchData">手动参数更新</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
     <string name="settins_index_module_title_trans_batch">批结算</string>
     <string name="settins_index_module_title_sign_up">用户注册</string>
@@ -268,10 +268,10 @@
     <string name="title_activity_set_trans_batch_controller">批结算</string>
     
     <!-- for home -->
-    <string name="home_activity_home">主页</string>
-    <string name="home_activity_setting">设置</string>
+    <string name="home_activity_home">单笔支付</string>
+    <string name="home_activity_setting">设置管理</string>
     <string name="home_activity_transaction_inquiries">交易查询</string>
-    <string name="home_activity_multi_pay">组合支付</string>
+    <string name="home_activity_multi_pay">拆单支付</string>
     <string name="home_activity_check_update">检查更新</string>
 
     <!-- for multi pay -->
@@ -285,13 +285,14 @@
 	<string name="str_check_update">检查更新</string>
     <string name="str_update_later">暂不更新</string>
     <string name="str_update_now">马上更新</string>
+    <string name="str_about_programme">关于程序</string>
     <string name="str_about">关于</string>
     <string name="str_version_name">版本号：</string>
     <string name="str_current_version_name">当前版本：</string>
     <string name="str_new_version">最新版本：</string>
     <string name="str_install_appstore_first">安装应用中心以查检更新</string>
     <string name="already_latest_version">已是最新版本</string>
-    <string name="about_info">酷云智能POS是新一代基于云POS的超级收银作业平台，集刷卡、提货券、二维码支付等多种支付方式于一体，为商户打造全面的收银接入服务。</string>
+    <string name="about_info">收银通是新一代基于云POS的超级收银作业平台，集刷卡、二维码支付等多种支付方式于一体，为客户打造全面的收银接入服务。</string>
     
     <!-- for trans batch -->
     <string name="trans_batch_alert_content">正在批结算，请稍后！</string>
@@ -312,6 +313,7 @@
     <string name="dialog_device_check_start_to_use">开始使用</string>
     <string name="ping_host_url">www.baidu.com</string>
     <string name="msg_checking_version_waiting">正在检查新版本，请稍候...</string>
+    <string name="alert_common_warn_msg">提示</string>
     
     <!-- device, merchant bar msg -->
     <string name="bar_koolcloud_merch_name_msg">客户号：</string>

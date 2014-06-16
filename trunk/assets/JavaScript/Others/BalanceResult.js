@@ -55,6 +55,7 @@
 
   window.BalanceResult = {
     reqBalance: reqBalance,
+    goBack: goBackToOthers
   }
 
 })()

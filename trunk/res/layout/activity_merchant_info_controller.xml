@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud"
+    android:background="@drawable/main_page_bg_bitmap"
     tools:context=".MerchantInfoController"
     android:orientation="vertical" >
 
@@ -87,7 +87,7 @@
         android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
         android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
         android:layout_marginTop="25dp"
-        android:background="@color/merchant_info_list_title_bg_color"
+        android:background="@drawable/listview_title_background"
         android:orientation="horizontal">
         <TextView 
             android:layout_width="0dp"
@@ -124,8 +124,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/acquireInstituteList"
-        android:background="@color/merchant_info_list_bg_color"
-        android:divider="@null"
+        android:background="@color/white"
         android:listSelector="@android:color/transparent"
         android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
         android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"

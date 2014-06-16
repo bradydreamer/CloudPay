@@ -43,4 +43,7 @@
     <color name="merchant_info_list_title_bg_color">#FFB6BCCC</color>
     <color name="merchant_info_list_bg_color">#FFCDD3E1</color>
     
+    <!-- multi info -->
+    <color name="merchant_info_text_color">#FF4B64B3</color>
+    
 </resources>

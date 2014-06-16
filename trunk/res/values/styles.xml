@@ -309,6 +309,12 @@
     <!-- bar multi info text style -->
     <style name="bar_multi_info_text_style">
         <item name="android:textSize">@dimen/bar_multi_info_text_size</item>
+        <item name="android:textColor">@color/merchant_info_text_color</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="bar_multi_info_text_style_gray">
+        <item name="android:textSize">@dimen/bar_multi_info_text_size</item>
         <item name="android:textColor">@color/order_detail_textcolor_gray</item>
         <item name="android:singleLine">true</item>
     </style>

@@ -3,6 +3,7 @@ package cn.koolcloud.pos.controller.others;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import cn.koolcloud.pos.R;
@@ -72,4 +73,19 @@ public class BalanceResultController extends BaseController {
 		return removeJSTag;
 	}
 
+	@Override
+	public void onClickLeftButton(View view) {
+		onCall("BalanceResult.goBack", null);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			onCall("BalanceResult.goBack", null);
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	
 }

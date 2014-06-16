@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.constant.ConstantUtils;
@@ -19,6 +18,7 @@ import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
@@ -638,7 +638,15 @@ public class ISO8583Controller implements Constant {
 			switch (paramer.trans.getTransType()) {
 			case TRAN_LOGIN:
 				if (updateWorkingKey(paramer)) {
-					ISO8583Engine.getInstance().updateLocalBatchNumber(paramer);
+					Map<String, ?> map = UtilForDataStorage
+							.readPropertyBySharedPreferences(
+									MyApplication.getContext(), "merchant");
+					int oldBatchId = ((Integer) map.get("batchId")).intValue();
+					int newBatchId = paramer.trans.getBatchNumber();
+					if (newBatchId > oldBatchId) {
+						ISO8583Engine.getInstance().updateLocalBatchNumber(
+								paramer);
+					}
 				} else {
 					paramer.trans.setResponseCode("F0".getBytes());
 				}
@@ -1076,15 +1084,7 @@ public class ISO8583Controller implements Constant {
 	}
 
 	public String getBankCardNum() {
-		String cardNum = null;
-		String pan = paramer.trans.getPAN();
-		if (TextUtils.isEmpty(pan) || pan.length() <= 4) {
-			cardNum = pan;
-		} else {
-			cardNum = pan.substring(0, 4) + "*******"
-					+ pan.substring(pan.length() - 4, pan.length());
-		}
-		return cardNum;
+		return paramer.trans.getPAN();
 	}
 
 	public String getIssuerName() {

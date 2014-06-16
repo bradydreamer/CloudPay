@@ -17,12 +17,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/koolCloudMerchNumNameTextView"
             android:text="@string/bar_koolcloud_merch_name_msg"
-            style="@style/bar_multi_info_text_style"/>
+            style="@style/bar_multi_info_text_style_gray"/>
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/koolCloudMerchNumTextView"
-            style="@style/bar_multi_info_text_style"/>
+            style="@style/bar_multi_info_text_style_gray"/>
     </LinearLayout>
     <LinearLayout 
         android:layout_width="fill_parent"
@@ -40,12 +40,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/koolCloudDeviceNumNameTextView"
             android:text="@string/bar_koolcloud_device_name_msg"
-            style="@style/bar_multi_info_text_style"/>
+            style="@style/bar_multi_info_text_style_gray"/>
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/koolCloudDeviceNumTextView"
-            style="@style/bar_multi_info_text_style"/>
+            style="@style/bar_multi_info_text_style_gray"/>
     </LinearLayout>
     <LinearLayout 
         android:layout_width="wrap_content"
