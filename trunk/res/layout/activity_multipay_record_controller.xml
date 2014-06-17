@@ -117,7 +117,7 @@
 	                android:id="@+id/nextpaybutton"
 	                android:layout_width="240dp"
 	                android:layout_height="60dp"
-	                android:background="@drawable/button_nextpay_background"
+	                android:background="@drawable/button_blue_background"
 	                android:onClick="onPay"
 	                android:text="@string/multipay_record_btn_text_pay"
 	                android:textColor="@android:color/white"
@@ -127,7 +127,7 @@
 	            <Button
 	                android:layout_width="240dp"
 	                android:layout_height="60dp"
-	                android:background="@drawable/button_confirm_background"
+	                android:background="@drawable/button_green_background"
 	                android:onClick="onComplete"
 	                android:text="@string/multipay_record_btn_text_confirm"
 	                android:textColor="@android:color/white"

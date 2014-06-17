@@ -28,7 +28,7 @@
             android:layout_marginLeft="42dp"
             android:gravity="right"
             android:text="@string/pay_account_tv_amount"
-            android:textColor="@color/lv_row_highlight_bg_blue"
+            android:textColor="@color/dark_blue"
             android:textSize="25sp" />
     </LinearLayout>
 
@@ -159,7 +159,7 @@
 	                android:hint="@string/input_money_et_money_hint"
 	                android:maxLength="15"
 	                android:paddingRight="20dp"
-	                android:textColor="@color/lv_row_highlight_bg_blue"
+	                android:textColor="@color/dark_blue"
 	                android:textSize="58sp"/>
 
 	            <include layout="@layout/table_number_input" />

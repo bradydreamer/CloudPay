@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.control.ISO8583Controller;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.HomeController;
@@ -37,6 +38,7 @@ import cn.koolcloud.pos.controller.PinPadController;
 import cn.koolcloud.pos.controller.delivery_voucher.DelVoucherIdController;
 import cn.koolcloud.pos.controller.delivery_voucher.DelVoucherInfoController;
 import cn.koolcloud.pos.controller.delivery_voucher.InputDelVoucherNumController;
+import cn.koolcloud.pos.controller.dialogs.AlertCommonDialog;
 import cn.koolcloud.pos.controller.multipay.MultiPayIndex;
 import cn.koolcloud.pos.controller.multipay.MultiPayRecord;
 import cn.koolcloud.pos.controller.others.BalanceResultController;
@@ -381,7 +383,17 @@ public class ClientEngine {
 			positiveText = context.getString(R.string.alert_btn_positive);
 		}
 		String negativeText = data.optString("negativeButtonText", null);
-		if (null == negativeText) {
+		
+		//use styled alert dialog start on 16th June
+		Intent mIntent = new Intent(context, AlertCommonDialog.class);
+		mIntent.putExtra(ConstantUtils.POSITIVE_BTN_KEY, positiveText);
+		mIntent.putExtra(ConstantUtils.NEGATIVE_BTN_KEY, negativeText);
+		mIntent.putExtra(ConstantUtils.MSG_KEY, msg);
+		mIntent.putExtra(ConstantUtils.IDENTIFIER_KEY, identifier);
+		context.startActivity(mIntent);
+		//use styled alert dialog end on 16th June
+		
+		/*if (null == negativeText) {
 			new AlertDialog.Builder(context)
 					.setMessage(msg)
 					.setPositiveButton(
@@ -428,7 +440,7 @@ public class ClientEngine {
 							}).show();
 			alertWith2Buttons.setCanceledOnTouchOutside(false);
 			alertWith2Buttons.setCancelable(false);
-		}
+		}*/
 	}
 
 	private void onAlertClicked(String identifier, boolean isPositiveClicked) {

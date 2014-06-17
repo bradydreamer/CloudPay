@@ -56,13 +56,13 @@
 
     
     <Button 
-        android:layout_width="540dp"
-	    android:layout_height="80dp"
+        android:layout_width="@dimen/login_search_btn_width"
+	    android:layout_height="@dimen/login_search_btn_height"
         android:layout_marginTop="100dp"
         android:text="@string/consumption_record_search_btn_confirm_text"
         android:textColor="@android:color/white"
-        android:textSize="30sp"
-        android:background="@drawable/historical_consumption_button_ok_background"
+        android:textSize="@dimen/login_search_btn_text_size"
+        android:background="@drawable/button_blue_background"
         android:onClick="onConfirm"
         />
    

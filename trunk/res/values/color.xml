@@ -4,10 +4,15 @@
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="red">#ff0000</color>
+    <color name="gray">#FF7F7F7F</color>
     <color name="transparent">#00000000</color>
     <color name="orange">#ffa500</color>
+    <color name="blue">#FF2A77BB</color>
+    <color name="dark_blue">#FF5F87BC</color>
+    <color name="light_blue">#FF2F81D4</color>
     
     <color name="custom_anim_dialog_bg">#aa000000</color>
+    <color name="home_navigation_bg">#FF253341</color>
     
     <color name="consumption_index_textview_bgcolor1">#6a788b</color>
     <color name="consumption_index_payType2_layout_bg">#e8e8e8</color>
@@ -18,7 +23,7 @@
     
     <color name="trade_statistics_textcolor_gray">#7f7f7f</color>
     
-    <color name="lv_row_highlight_bg_blue">#5F87BC</color>
+    <!-- <color name="lv_row_highlight_bg_blue">#5F87BC</color> -->
     
     <color name="color_for_historical_consumption_search_text">#93A9C3</color>
     
@@ -42,8 +47,5 @@
     <!-- merchant info -->
     <color name="merchant_info_list_title_bg_color">#FFB6BCCC</color>
     <color name="merchant_info_list_bg_color">#FFCDD3E1</color>
-    
-    <!-- multi info -->
-    <color name="merchant_info_text_color">#FF4B64B3</color>
     
 </resources>

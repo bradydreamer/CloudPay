@@ -47,12 +47,12 @@
 
         <Button 
             android:layout_marginTop="30dp"
-            android:layout_width="540dp"
-            android:layout_height="90dp"
-            android:textSize="46sp"
+            android:layout_width="@dimen/login_search_btn_width"
+	    	android:layout_height="@dimen/login_search_btn_height"
+            android:textSize="@dimen/login_search_btn_text_size"
             android:textColor="@android:color/white"
-            android:text="登录"
-            android:background="@drawable/login_btn"
+            android:text="@string/msg_login"
+            android:background="@drawable/button_blue_background"
             android:onClick="onClickBtnOK"/>
     </LinearLayout>
     

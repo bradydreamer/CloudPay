@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:gravity="right"
-            android:textColor="@color/lv_row_highlight_bg_blue"
+            android:textColor="@color/blue"
             android:textStyle="bold"
             android:textSize="30sp" />
     </LinearLayout>
@@ -171,7 +171,7 @@
 		                android:hint="@string/input_money_et_money_hint"
 		                android:maxLength="15"
 		                android:paddingRight="20dp"
-		                android:textColor="@color/lv_row_highlight_bg_blue"
+		                android:textColor="@color/dark_blue"
 		                android:textSize="58sp"/>
 	
 		            <include layout="@layout/table_number_input" />

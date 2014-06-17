@@ -8,7 +8,7 @@
   
   function gotoHome(){
   	
-  	Scene.goBack();
+  	Scene.goBack("Home");
   }
   
   

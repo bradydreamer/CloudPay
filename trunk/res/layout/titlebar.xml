@@ -15,7 +15,7 @@
         android:layout_centerVertical="true"
         android:background="@drawable/titlebar_btn_back"
         android:textColor="@android:color/white"
-        android:textSize="25sp"
+        android:textSize="30px"
         android:onClick="onClickLeftButton"
         android:drawablePadding="20dp"
         android:gravity="center_vertical"

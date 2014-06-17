@@ -32,19 +32,13 @@
     <style name="module_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">19sp</item>
+        <item name="android:textSize">22px</item>
     </style>
 
     <style name="module_method_logo">
         <item name="android:layout_width">148dp</item>
         <item name="android:layout_height">148dp</item>
         <item name="android:padding">6dp</item>
-    </style>
-
-    <style name="module_method_title">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">19sp</item>
     </style>
 
     <style name="consumption_index_btn_payType">
@@ -154,7 +148,7 @@
         <item name="android:layout_marginLeft">40dp</item>
         <item name="android:textSize">20sp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/lv_row_highlight_bg_blue</item>
+        <item name="android:textColor">@color/dark_blue</item>
     </style>
 
     <style name="consumption_record_lv_tv">
@@ -282,7 +276,7 @@
         <item name="android:background">#0000</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">25px</item>
         <item name="android:textColor">@drawable/home_btn_textcolor</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:focusable">true</item>
@@ -303,7 +297,7 @@
     <style name="broadside_bg_style">
         <item name="android:layout_width">150dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@drawable/broadside_bg</item>
+        <item name="android:background">@color/home_navigation_bg</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
     </style>

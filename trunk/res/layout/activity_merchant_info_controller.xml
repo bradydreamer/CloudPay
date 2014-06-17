@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/main_page_bg_bitmap"
+    android:background="@color/main_page_backgroud"
     tools:context=".MerchantInfoController"
     android:orientation="vertical" >
 
@@ -24,12 +24,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/merchant_info_tv_merchName"
+                android:textColor="@color/gray"
                 android:textSize="@dimen/merchant_info_cloud_text_size" />
 
             <TextView
                 android:id="@+id/merchant_info_tv_merchName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/gray"
                 android:textSize="@dimen/merchant_info_cloud_text_size" />
         </LinearLayout>
         <RelativeLayout 
@@ -49,12 +51,14 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:text="@string/merchant_info_tv_merchId"
+	                android:textColor="@color/gray"
 	                android:textSize="@dimen/merchant_info_cloud_text_size" />
 	
 	            <TextView
 	                android:id="@+id/merchant_info_tv_merchId"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
+	                android:textColor="@color/gray"
 	                android:textSize="@dimen/merchant_info_cloud_text_size" />
 	        </LinearLayout>
 	        <LinearLayout
@@ -69,12 +73,14 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:text="@string/merchant_info_tv_machineId"
+	                android:textColor="@color/gray"
 	                android:textSize="@dimen/merchant_info_cloud_text_size" />
 	
 	            <TextView
 	                android:id="@+id/merchant_info_tv_machineId"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
+	                android:textColor="@color/gray"
 	                android:textSize="@dimen/merchant_info_cloud_text_size" />
 	        </LinearLayout>
         </RelativeLayout>
@@ -96,6 +102,7 @@
             android:text="@string/merchant_info_msg_acquire_institute_name_title"
             android:textSize="@dimen/merchant_info_list_title_text_size"
             android:textStyle="bold"
+            android:textColor="@color/gray"
             android:layout_weight="2"/>
         <TextView android:layout_width="1dp"
             android:layout_height="@dimen/merch_info_list_title_interval_height"
@@ -106,6 +113,7 @@
             android:gravity="center"
             android:text="@string/merchant_info_msg_acquire_institute_num_title"
             android:textStyle="bold"
+            android:textColor="@color/gray"
             android:textSize="@dimen/merchant_info_list_title_text_size"
             android:layout_weight="2"/>
         <TextView android:layout_width="1dp"
@@ -117,6 +125,7 @@
             android:gravity="center"
             android:text="@string/merchant_info_msg_acquire_institute_device_no_title"
             android:textStyle="bold"
+            android:textColor="@color/gray"
             android:textSize="@dimen/merchant_info_list_title_text_size"
             android:layout_weight="1.5"/>
     </LinearLayout>

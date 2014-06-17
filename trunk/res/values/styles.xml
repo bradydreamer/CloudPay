@@ -32,7 +32,7 @@
     <style name="module_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">19sp</item>
+        <item name="android:textSize">22px</item>
     </style>
 
     <style name="module_method_logo">
@@ -40,13 +40,6 @@
         <item name="android:layout_height">148dp</item>
         <item name="android:padding">6dp</item>
     </style>
-
-    <style name="module_method_title">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">19sp</item>
-    </style>
-
     <style name="consumption_index_btn_payType">
         <item name="android:layout_width">106dp</item>
         <item name="android:layout_height">106dp</item>
@@ -154,7 +147,7 @@
         <item name="android:layout_marginLeft">40dp</item>
         <item name="android:textSize">20sp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/lv_row_highlight_bg_blue</item>
+        <item name="android:textColor">@color/dark_blue</item>
     </style>
 
     <style name="consumption_record_lv_tv">
@@ -288,7 +281,7 @@
         <item name="android:background">#0000</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">25px</item>
         <item name="android:textColor">@drawable/home_btn_textcolor</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:focusable">true</item>
@@ -300,7 +293,7 @@
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:textSize">30sp</item>
-        <item name="android:textColor">@android:color/holo_blue_bright</item>
+        <item name="android:textColor">@color/blue</item>
         <item name="android:layout_margin">6dp</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
@@ -309,7 +302,7 @@
     <!-- bar multi info text style -->
     <style name="bar_multi_info_text_style">
         <item name="android:textSize">@dimen/bar_multi_info_text_size</item>
-        <item name="android:textColor">@color/merchant_info_text_color</item>
+        <item name="android:textColor">@color/blue</item>
         <item name="android:textStyle">normal</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -322,7 +315,7 @@
     <style name="broadside_bg_style">
         <item name="android:layout_width">150dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@drawable/broadside_bg</item>
+        <item name="android:background">@color/home_navigation_bg</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
     </style>
@@ -341,6 +334,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">#0000</item>
         <item name="android:focusable">true</item>
+        <item name="android:textSize">@dimen/home_navigation_btn_text_size</item>
         <item name="android:textColor">@drawable/home_navigate_text_color</item>
     </style>
 

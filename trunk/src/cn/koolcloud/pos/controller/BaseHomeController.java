@@ -69,7 +69,7 @@ public abstract class BaseHomeController extends BaseController {
 		 * home activity hide left and right title button.
 		 */
 		setTitleHidden();
-		setLeftButton(R.drawable.ic_launcher_home);
+		setLeftButton(R.drawable.ic_launcher_home_48);
 		setRightButtonHidden();
 	}
 

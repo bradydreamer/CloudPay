@@ -124,6 +124,7 @@
     <!-- activity_login_controller.xml -->
     <string name="login_tv_userName">操作员</string>
     <string name="login_tv_pwd">密码</string>
+    <string name="msg_login">登录</string>
     <string name="msg_mod_pwd_submit">确定</string>
     <string name="msg_mod_pwd_hint_pwd_origin_input">请输入原密码</string>
     <string name="msg_mod_pwd_hint_pwd_input">请输入新密码</string>
@@ -311,6 +312,7 @@
     <string name="dialog_device_check_self_checking">再次检验</string>
     <string name="dialog_device_check_use_anyway">继续使用</string>
     <string name="dialog_device_check_start_to_use">开始使用</string>
+    <string name="dialog_device_checking">设备检测中...</string>
     <string name="ping_host_url">www.baidu.com</string>
     <string name="msg_checking_version_waiting">正在检查新版本，请稍候...</string>
     <string name="alert_common_warn_msg">提示</string>

@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,10 +43,15 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 	private Button selfCheckButton;
 	private LinearLayout progressBarLayout;
 	
+	private LinearLayout summaryLayout;
+	private ImageView summaryImageView;
+	
+	
 	private Drawable checkPassDrawable;
+	private Drawable checkingDrawable;
 	private Drawable checkFailDrawable;
-	private Drawable titleCheckPassDrawable;
-	private Drawable titleCheckFailDrawable;
+//	private Drawable titleCheckPassDrawable;
+//	private Drawable titleCheckFailDrawable;
 	
 	private boolean devicesStatusTag = true;						//Whether all devices ready or not
 	private HashSet<String> devicesSet = new HashSet<String>();		//the collection of execute checking devices
@@ -71,6 +77,9 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 		networkTextView = (TextView) findViewById(R.id.networkTextView);
 		progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
 		
+		summaryLayout = (LinearLayout) findViewById(R.id.summaryLayout);
+		summaryImageView = (ImageView) findViewById(R.id.summaryImageView);
+		
 		exitButton = (Button) findViewById(R.id.exitButton);
 		exitButton.setOnClickListener(this);
 		
@@ -78,19 +87,22 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 		selfCheckButton.setOnClickListener(this);
 		
 		checkPassDrawable = getResources().getDrawable(R.drawable.dialog_device_checking_pass);
+		checkingDrawable = getResources().getDrawable(R.drawable.dialog_device_checking);
 		checkFailDrawable = getResources().getDrawable(R.drawable.dialog_device_checking_fail);
-		titleCheckPassDrawable = getResources().getDrawable(R.drawable.dialog_device_checking_title_usual);
-		titleCheckFailDrawable = getResources().getDrawable(R.drawable.dialog_device_checking_title_unusual);
+//		titleCheckPassDrawable = getResources().getDrawable(R.drawable.dialog_device_checking_title_usual);
+//		titleCheckFailDrawable = getResources().getDrawable(R.drawable.dialog_device_checking_title_unusual);
 		
 		//set drawable bounds
 		checkPassDrawable.setBounds(0, 0,
 				checkPassDrawable.getMinimumWidth(), checkPassDrawable.getMinimumHeight());
+		checkingDrawable.setBounds(0, 0,
+				checkingDrawable.getMinimumWidth(), checkingDrawable.getMinimumHeight());
 		checkFailDrawable.setBounds(0, 0,
 				checkPassDrawable.getMinimumWidth(), checkPassDrawable.getMinimumHeight());
-		titleCheckPassDrawable.setBounds(0, 0,
-				titleCheckPassDrawable.getMinimumWidth(), titleCheckPassDrawable.getMinimumHeight());
-		titleCheckFailDrawable.setBounds(0, 0,
-				titleCheckFailDrawable.getMinimumWidth(), titleCheckFailDrawable.getMinimumHeight());
+//		titleCheckPassDrawable.setBounds(0, 0,
+//				titleCheckPassDrawable.getMinimumWidth(), titleCheckPassDrawable.getMinimumHeight());
+//		titleCheckFailDrawable.setBounds(0, 0,
+//				titleCheckFailDrawable.getMinimumWidth(), titleCheckFailDrawable.getMinimumHeight());
 	}
 	
 	//devices checking handler
@@ -157,18 +169,21 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 				}
 				break;
 			case HANDLE_TITLE_STATUS:
-				titleTextView.setVisibility(View.VISIBLE);
+//				titleTextView.setVisibility(View.VISIBLE);
+				summaryLayout.setVisibility(View.VISIBLE);
 				progressBarLayout.setVisibility(View.GONE);
 				if (devicesStatusTag) {
 					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
 							R.string.dialog_device_check_device_ok_msg));
-					titleTextView.setCompoundDrawables(titleCheckPassDrawable, null, null, null);
+//					titleTextView.setCompoundDrawables(titleCheckPassDrawable, null, null, null);
+					summaryImageView.setImageResource(R.drawable.dialog_device_checking_title_usual);
 					exitButton.setText(getResources().getString(R.string.dialog_device_check_start_to_use));
-					exitButton.setBackgroundResource(R.drawable.btn_dialog_devices_check_pass_selector);
+					exitButton.setBackgroundResource(R.drawable.button_green_background);
 				} else {
 					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
 							R.string.dialog_device_check_devices_unusual));
-					titleTextView.setCompoundDrawables(titleCheckFailDrawable, null, null, null);
+//					titleTextView.setCompoundDrawables(titleCheckFailDrawable, null, null, null);
+					summaryImageView.setImageResource(R.drawable.dialog_device_checking_title_unusual);
 				}
 				break;
 			default:
@@ -213,8 +228,8 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 	private void checkDevices() {
 		devicesStatusTag = true;
 		devicesSet.clear();
-		
-		titleTextView.setVisibility(View.GONE);
+		setDevicesCheckingStatus();
+		summaryLayout.setVisibility(View.GONE);
 		progressBarLayout.setVisibility(View.VISIBLE);
 		
 		threadStack.removeAllElements();
@@ -223,6 +238,15 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 		threadStack.pop().start();
 		//checking is locking
 		deviceCheckingLock = true;
+	}
+	
+	private void setDevicesCheckingStatus() {
+		pinpadTextView.setCompoundDrawables(checkingDrawable, null, null, null);
+		pinpadTextView.setText(getResources().getString(R.string.dialog_device_checking));
+		printerTextView.setCompoundDrawables(checkingDrawable, null, null, null);
+		printerTextView.setText(getResources().getString(R.string.dialog_device_checking));
+		networkTextView.setCompoundDrawables(checkingDrawable, null, null, null);
+		networkTextView.setText(getResources().getString(R.string.dialog_device_checking));
 	}
 	
 	//push all the devices thread to stack then pop to execute checking

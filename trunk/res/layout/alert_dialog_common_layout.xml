@@ -10,7 +10,7 @@
 	    android:layout_height="@dimen/alert_common_dialog_title_height"
 	    android:orientation="horizontal"
 	    android:id="@+id/titleLayout"
-	    android:background="@drawable/titlebar" >
+	    android:background="@color/light_blue" >
 		<ImageView 
 		    android:layout_width="@dimen/alert_common_dialog_title_image_width_height"
 		    android:layout_height="@dimen/alert_common_dialog_title_image_width_height"
@@ -34,10 +34,11 @@
         android:id="@+id/dialog_common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="52.0px"
-        android:layout_marginRight="60.0px"
+        android:layout_marginLeft="52.0dp"
+        android:layout_marginRight="60.0dp"
+        android:layout_marginTop="40dp"
         android:textSize="@dimen/dialog_content_text_size"
-        android:textColor="@color/about_gray_text"
+        android:textColor="@color/black"
         android:textStyle="normal"
         android:layout_below="@+id/titleLayout" />
 
@@ -64,7 +65,7 @@
                 android:id="@+id/ok"
                 android:layout_width="@dimen/alert_common_dialog_ok_width"
                 android:layout_height="@dimen/alert_common_dialog_ok_height"
-                android:background="@drawable/button_confirm_background"
+                android:background="@drawable/button_blue_background"
                 android:text="@string/str_ok"
                 android:textColor="@color/white"
                 android:textSize="20.0px" />
@@ -75,7 +76,7 @@
             android:layout_width="@dimen/alert_common_dialog_ok_width"
             android:layout_height="@dimen/alert_common_dialog_ok_height"
             android:layout_marginLeft="15.0px"
-            android:background="@drawable/button_confirm_background"
+            android:background="@drawable/button_blue_background"
             android:text="@string/alert_btn_negative"
             android:textColor="@color/white"
             android:textSize="20.0px"

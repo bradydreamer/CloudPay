@@ -9,13 +9,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import cn.koolcloud.ipos.appstore.service.aidl.IMSCService;
 import cn.koolcloud.ipos.appstore.service.aidl.ParcelableApp;
@@ -31,7 +31,9 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 	private TextView msgBodyTextView;
 	private TextView msgBodyWaitingTextView;
 	private TextView dialogTitleTextView;
+	private ImageView dialogTitleImageView;
 	private Button okButton;
+	
 	
 	protected ParcelableApp localParcelableApp;
 	protected IMSCService mIService;
@@ -70,11 +72,14 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 		msgBodyWaitingTextView = (TextView) findViewById(R.id.dialog_common_waiting_text);
 		titleTextView.setText(getResources().getString(R.string.str_check_update));
 		dialogTitleTextView = (TextView) findViewById(R.id.dialogTitleTextView);
+		dialogTitleImageView = (ImageView) findViewById(R.id.dialogTitleImageView);
+		dialogTitleImageView.setImageResource(R.drawable.dialog_self_checking_update);
 		
 		okButton = (Button) findViewById(R.id.ok);
 		okButton.setOnClickListener(this);
 		
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
+		
 		
 	}
 	

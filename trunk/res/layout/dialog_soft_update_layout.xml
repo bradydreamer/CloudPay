@@ -68,9 +68,9 @@
                 android:id="@+id/ok"
                 android:layout_width="@dimen/dialog_soft_update_ok_button_width"
                 android:layout_height="wrap_content"
-                android:background="@drawable/btn_ok"
+                android:background="@drawable/button_blue_background"
                 android:text="@string/str_update"
-                android:textColor="@color/share_text_color"
+                android:textColor="@color/white"
                 android:textSize="20.0px"
                 android:visibility="invisible" />
         </RelativeLayout>
@@ -80,9 +80,9 @@
             android:layout_width="@dimen/dialog_soft_update_cancel_button_width"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8.0px"
-            android:background="@drawable/btn_ok"
+            android:background="@drawable/button_blue_background"
             android:text="@string/str_check_update"
-            android:textColor="@color/share_text_color"
+            android:textColor="@color/white"
             android:textSize="20.0px"
             android:layout_toRightOf="@+id/okLayout"
             android:visibility="gone" />

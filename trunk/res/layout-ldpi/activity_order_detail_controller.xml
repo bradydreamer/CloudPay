@@ -21,7 +21,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="20dp"
-        android:background="@drawable/button_confirm_background"
+        android:background="@drawable/button_blue_background"
         android:onClick="onConfirm"
         android:text="@string/order_detail_btn_operation_text_confirm"
         android:textColor="@android:color/white"

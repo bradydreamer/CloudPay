@@ -43,6 +43,7 @@
 
   function objcResponse(data) {
     var message = JSON.parse(data)
+	Scene.alert("JSLOG:" + message);
     if (message.responseId) {
       var handler = callbackQueue[message.responseId]
       if (handler) {
