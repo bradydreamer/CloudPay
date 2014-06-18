@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     
 	<LinearLayout 
 	    android:layout_width="match_parent"
@@ -66,6 +66,7 @@
 	        android:layout_height="match_parent"
 	        android:layout_marginLeft="20dp"
 	        android:layout_marginRight="20dp"
+	        android:background="@android:color/transparent"
 	        >
 	    </ListView>
 	</LinearLayout>

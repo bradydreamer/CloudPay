@@ -3,7 +3,7 @@
     tools:context=".DelVoucherInfoController"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,7 +12,7 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@drawable/shape_frame_rectangle"
+        android:background="@drawable/main_page_bg_bitmap"
         android:paddingBottom="20dp"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"

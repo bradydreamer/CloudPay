@@ -29,6 +29,8 @@ import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 
 public class PayAccountController extends BaseController implements
 		CardSwiperListener, SoundWaveListener, CodeScannerListener {
+	
+	private final int PAY_ACOUNT_MAX_LENGTH = 20;
 	protected LinearLayout layout_qrcode;
 	protected LinearLayout layout_sound;
 	protected LinearLayout layout_swiper;
@@ -339,6 +341,13 @@ public class PayAccountController extends BaseController implements
 
 	private void onStopKeyBoard() {
 
+	}
+
+	@Override
+	protected void addInputNumber(String text) {
+		if (et_id.getText().length() < PAY_ACOUNT_MAX_LENGTH) {
+			super.addInputNumber(text);
+		}
 	}
 
 	private boolean isPause = false;

@@ -12,13 +12,14 @@
     function onLogin(msg) {
       var params = JSON.parse(msg)
       // if (params.userName == "") {
-      // Scene.alert("请输入账号。", null)
+      // Scene.alert("请输入账号", null)
       // return
       // }
       // if (params.pwd == 0) {
-      // Scene.alert("请输入密码。", null)
+      // Scene.alert("请输入密码", null)
       // return
       // }
+      window.user.init({});
       gotoLogin(params)
     }
 
@@ -128,13 +129,13 @@
 		gradeId为："1":高权限，"2":低
     */
     if(data.gradeId == "1"){
-    	Scene.alert("权限确认成功！",function(){
+    	Scene.alert("权限确认成功",function(){
     	currentStep = Pay.cacheData.step;
     	currentTag = Pay.cacheData.flowList[currentStep].packTag;
     	Pay.cacheData.step = currentStep + 1;
     	Pay.gotoFlow();});
     }else{
-    	Scene.alert("权限确认失败！",goback);
+    	Scene.alert("权限确认失败",goback);
     	
     }
 	}

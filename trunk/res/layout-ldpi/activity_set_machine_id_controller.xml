@@ -19,6 +19,7 @@
 	   	    android:background="@drawable/number_input_edittext_bg"
 	        android:textSize="58sp"
 	        android:textColor="@color/white"
+	        android:gravity="center"
 	        style="@style/calculator_display_screen_style"
 	        android:maxLength="15"
 	        />

@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:gravity="center"
     android:orientation="horizontal"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
 	<ScrollView style="@style/broadside_bg_style">
 	    <LinearLayout 
 	        android:layout_width="match_parent"

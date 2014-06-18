@@ -3,7 +3,7 @@
     tools:context=".NearFieldController"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     
 	<RelativeLayout 
 	    android:layout_width="match_parent"

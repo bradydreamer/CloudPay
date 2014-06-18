@@ -5,7 +5,7 @@
     android:layout_gravity="center"
 	android:gravity="center"
     android:orientation="vertical"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     
 	<LinearLayout 
 	    android:layout_width="wrap_content"
@@ -28,6 +28,7 @@
 		        android:textSize="58sp"
 		        android:textColor="@android:color/white"
 		        android:paddingLeft="15dp"
+		        android:gravity="center"
 		        style="@style/calculator_display_screen_style"
 		        android:maxLength="15"
 		        />

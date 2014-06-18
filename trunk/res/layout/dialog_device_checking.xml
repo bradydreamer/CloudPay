@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/dialog_device_checking_root_width"
     android:layout_height="@dimen/dialog_device_checking_root_height"
-    android:background="@color/main_page_backgroud"
+    android:background="@drawable/main_page_bg_bitmap"
     android:orientation="vertical" >
     <LinearLayout 
         android:layout_width="fill_parent"
@@ -59,7 +59,7 @@
         android:layout_height="1dp"
         android:layout_marginLeft="80dp"
         android:layout_marginRight="80dp"
-        android:background="@color/dialog_devices_checking_interval_color"/>
+        android:background="@color/interval_line_color"/>
     <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         android:layout_height="1dp"
         android:layout_marginLeft="80dp"
         android:layout_marginRight="80dp"
-        android:background="@color/dialog_devices_checking_interval_color"/>
+        android:background="@color/interval_line_color"/>
     <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
         android:layout_height="1dp"
         android:layout_marginLeft="80dp"
         android:layout_marginRight="80dp"
-        android:background="@color/dialog_devices_checking_interval_color"/>
+        android:background="@color/interval_line_color"/>
     <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
         android:layout_height="1dp"
         android:layout_marginLeft="80dp"
         android:layout_marginRight="80dp"
-        android:background="@color/dialog_devices_checking_interval_color"/>
+        android:background="@color/interval_line_color"/>
     <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

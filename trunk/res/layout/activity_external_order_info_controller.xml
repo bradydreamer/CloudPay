@@ -3,7 +3,7 @@
     tools:context=".ExternalOrderInfoController"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,7 +17,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_frame_rectangle"
+            android:background="@drawable/main_page_bg_bitmap"
             android:gravity="left"
             android:orientation="vertical"
             android:padding="40dp" >

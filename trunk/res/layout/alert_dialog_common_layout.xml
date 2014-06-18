@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/alert_common_dialog_width"
     android:layout_height="@dimen/alert_common_dialog_height"
-    android:background="@color/main_page_backgroud"
+    android:background="@drawable/main_page_bg_bitmap"
     android:orientation="vertical" >
     <LinearLayout 
 	    android:layout_width="fill_parent"
@@ -30,13 +30,23 @@
 	
 	</LinearLayout>
    
-   	<TextView
+   	<!-- <TextView
         android:id="@+id/dialog_common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="52.0dp"
         android:layout_marginRight="60.0dp"
         android:layout_marginTop="40dp"
+        android:textSize="@dimen/dialog_content_text_size"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        android:layout_below="@+id/titleLayout" /> -->
+   	<TextView
+        android:id="@+id/dialog_common_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
         android:textSize="@dimen/dialog_content_text_size"
         android:textColor="@color/black"
         android:textStyle="normal"
@@ -55,7 +65,7 @@
         android:gravity="center_horizontal"
         android:layout_alignParentBottom="true" >
 
-        <RelativeLayout
+        <!-- <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="8.0px"
@@ -68,7 +78,21 @@
                 android:background="@drawable/button_blue_background"
                 android:text="@string/str_ok"
                 android:textColor="@color/white"
-                android:textSize="20.0px" />
+                android:textSize="@dimen/dialog_btn_text_size" />
+        </RelativeLayout> -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/okLayout" >
+
+            <Button
+                android:id="@+id/ok"
+                android:layout_width="@dimen/alert_common_dialog_ok_width"
+                android:layout_height="@dimen/alert_common_dialog_ok_height"
+                android:background="@drawable/button_blue_background"
+                android:text="@string/str_ok"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dialog_btn_text_size" />
         </RelativeLayout>
 
         <Button
@@ -79,7 +103,7 @@
             android:background="@drawable/button_blue_background"
             android:text="@string/alert_btn_negative"
             android:textColor="@color/white"
-            android:textSize="20.0px"
+            android:textSize="@dimen/dialog_btn_text_size"
             android:layout_toRightOf="@+id/okLayout"
             android:visibility="visible" />
     </RelativeLayout>

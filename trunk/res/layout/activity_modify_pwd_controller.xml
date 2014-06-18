@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="horizontal" 
-    android:background="@drawable/activity_frame_bg">
+    android:background="@drawable/main_page_bg_bitmap">
     
     <LinearLayout
         android:layout_width="wrap_content"

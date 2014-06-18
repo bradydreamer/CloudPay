@@ -94,6 +94,7 @@ public class MultiPayRecord extends BaseController {
 		}
 
 		if (null != data.optString("paidAmount")
+				&& !"NaN".equals(data.optString("paidAmount"))
 				&& !"null".equals(data.optString("paidAmount"))) {
 			paidAmountStr = formatAmountStr(data.optString("paidAmount", "0"));
 			paidAmount = Long.valueOf(data.optString("paidAmount", "0"));

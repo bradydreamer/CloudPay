@@ -2,19 +2,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:layout_margin="20dp"
-	    android:background="@drawable/shape_frame_rectangle"
+	    android:background="@drawable/main_page_bg_bitmap"
 	    android:orientation="vertical" >
 	
 	    <RelativeLayout
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:background="@drawable/lv_row_bg_white"
+	        android:background="@color/transparent"
 	        android:orientation="vertical"
 	        android:paddingLeft="20dp"
 	        android:paddingRight="20dp" >
@@ -139,6 +139,7 @@
 	            android:id="@+id/multipay_record_lv_record"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
+	            android:background="@android:color/transparent"
 	            android:layout_below="@+id/multipay_record_layout_title"
 	            android:layout_above="@+id/multipay_record_layout_btns"
 	            android:listSelector="@android:color/transparent" >

@@ -4,18 +4,20 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="home_navigation_btn_text_size">22px</dimen>
+    <dimen name="order_details_content_text_size">28px</dimen>
+    <dimen name="order_details_content_item_height">80dp</dimen>
+    <dimen name="order_detail_interval_margin_right">100dp</dimen>
     
     <!-- dialog width and height -->
     <dimen name="about_dialog_width">630.0dp</dimen>
 	<dimen name="about_dialog_height">360.0dp</dimen>
 	<dimen name="dialog_soft_update_ok_button_width">200dp</dimen>
 	<dimen name="dialog_soft_update_cancel_button_width">200dp</dimen>
-	<dimen name="dialog_title_height">80.0dp</dimen>
+	<dimen name="dialog_title_height">70.0dp</dimen>
 	<dimen name="dialog_title_other_text_height">75.0dp</dimen>
-	<dimen name="dialog_title_other_text_size">30.0px</dimen>
+	<dimen name="dialog_title_other_text_size">35.0px</dimen>
 	<dimen name="dialog_content_text_size">20px</dimen>
-	<dimen name="dialog_title_text_size">26px</dimen>
-	<dimen name="dialog_content_text_big_size">25px</dimen>
+	<dimen name="dialog_title_text_size">30px</dimen>
 	
 	<dimen name="alert_common_dialog_width">400dp</dimen>
 	<dimen name="alert_common_dialog_height">240dp</dimen>
@@ -44,18 +46,19 @@
 	<dimen name="dialog_device_checking_button_height">46dp</dimen>
 	<dimen name="dialog_device_checking_button_text_size">25px</dimen>
 	<dimen name="dialog_device_checking_progress_bar_width">45dp</dimen>
+	<dimen name="dialog_btn_text_size">23px</dimen>
 	
 	<!-- bar merchant device -->
 	<dimen name="bar_multi_info_margin_head_tail">25dp</dimen>
 	<dimen name="bar_multi_info_middle_margin_left">35dp</dimen>
-	<dimen name="bar_multi_info_text_size">18px</dimen>
+	<dimen name="bar_multi_info_text_size">20px</dimen>
 	
 	<!-- merchant info size -->
 	<dimen name="merch_info_list_title_height">55dp</dimen>
 	<dimen name="merch_info_list_item_height">45dp</dimen>
 	<dimen name="merch_info_list_title_interval_height">45dp</dimen>
-	<dimen name="merchant_info_list_title_text_size">22px</dimen>
-	<dimen name="merchant_info_list_item_text_size">20px</dimen>
+	<dimen name="merchant_info_list_title_text_size">25px</dimen>
+	<dimen name="merchant_info_list_item_text_size">23px</dimen>
 	<dimen name="merchant_info_cloud_text_size">23px</dimen>
 	<dimen name="merch_info_list_title_margin_left_right">55dp</dimen>
 	<dimen name="merch_info_kool_cloud_margin_left_right">80dp</dimen>

@@ -11,7 +11,7 @@
 
 		logoutTag = true;
 	  if(window.user.userStatus == null){
-	  	Scene.alert("已签退！");
+	  	Scene.alert("已签退");
 	  	return;
 	  }
     transBatch()
@@ -46,9 +46,9 @@
   	} else {
   		if(logoutTag){
 	    	window.user.init({})
-		    Scene.alert("签退成功！");
+		    Scene.alert("签退成功");
 	  	}else{
-	  		Scene.alert("批结算成功！",TransBatch.gotoHome);
+	  		Scene.alert("批结算成功",TransBatch.gotoHome);
 	  	}
   	}	
 	}
@@ -65,8 +65,7 @@
 		}, 300)
 	}
 
-	function gotoLogin() {
-		window.user.init({})
+	function gotoLogin() {		
 		window.util.exeActionWithLoginChecked(function() {
 		})
 	}

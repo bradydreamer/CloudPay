@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
    	android:layout_height="fill_parent"
-   	android:background="@color/main_page_backgroud"
+   	android:background="@drawable/main_page_bg_bitmap"
     >
  <!--     
     <ImageView 
@@ -46,7 +46,7 @@
 			        android:hint="@string/input_money_et_money_hint"
 			        android:gravity="right|center_vertical"
 			        android:paddingRight="20dp"
-			        android:textColor="@android:color/white"
+			        android:textColor="@color/orange"
 			        android:maxLength="13"
 			        />
 		    	

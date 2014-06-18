@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud"
+    android:background="@drawable/main_page_bg_bitmap"
     tools:context=".MerchantInfoController"
     android:orientation="vertical" >
 
@@ -101,7 +101,6 @@
             android:gravity="center"
             android:text="@string/merchant_info_msg_acquire_institute_name_title"
             android:textSize="@dimen/merchant_info_list_title_text_size"
-            android:textStyle="bold"
             android:textColor="@color/gray"
             android:layout_weight="2"/>
         <TextView android:layout_width="1dp"
@@ -112,7 +111,6 @@
             android:layout_height="fill_parent"
             android:gravity="center"
             android:text="@string/merchant_info_msg_acquire_institute_num_title"
-            android:textStyle="bold"
             android:textColor="@color/gray"
             android:textSize="@dimen/merchant_info_list_title_text_size"
             android:layout_weight="2"/>
@@ -124,7 +122,6 @@
             android:layout_height="fill_parent"
             android:gravity="center"
             android:text="@string/merchant_info_msg_acquire_institute_device_no_title"
-            android:textStyle="bold"
             android:textColor="@color/gray"
             android:textSize="@dimen/merchant_info_list_title_text_size"
             android:layout_weight="1.5"/>
@@ -133,7 +130,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/acquireInstituteList"
-        android:background="@color/white"
+        android:background="@android:color/transparent"
         android:listSelector="@android:color/transparent"
         android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
         android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"

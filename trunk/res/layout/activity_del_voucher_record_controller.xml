@@ -3,14 +3,14 @@
     tools:context=".del_voucherRecordController"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/main_page_backgroud" >
+    android:background="@drawable/main_page_bg_bitmap" >
     
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:layout_margin="20dp"
 	    android:orientation="vertical"
-	    android:background="@drawable/shape_frame_rectangle" >
+	    android:background="@drawable/main_page_bg_bitmap" >
 	
 	    <LinearLayout 
 	        android:layout_width="match_parent"
@@ -53,6 +53,7 @@
 	        android:id="@+id/del_voucher_record_lv_record"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
+	        android:background="@android:color/transparent"
 	        android:layout_marginLeft="10dp"
 	        android:layout_marginRight="10dp" >
 	    </ListView>

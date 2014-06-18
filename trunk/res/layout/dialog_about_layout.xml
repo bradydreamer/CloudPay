@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/about_dialog_width"
     android:layout_height="@dimen/about_dialog_height"
-    android:background="@color/main_page_backgroud"
+    android:background="@drawable/main_page_bg_bitmap"
     android:orientation="vertical" >
 
     <include layout="@layout/dialog_title_other"
@@ -17,7 +17,7 @@
         android:layout_marginLeft="52.0px"
         android:layout_marginRight="60.0px"
         android:textSize="@dimen/dialog_title_text_size"
-        android:textColor="@color/about_gray_text"
+        android:textColor="@color/black"
         android:textStyle="normal"
         android:layout_marginTop="30dp"
         android:layout_below="@+id/titleLayout" />
@@ -58,7 +58,7 @@
                 android:background="@drawable/button_blue_background"
                 android:text="@string/str_ok"
                 android:textColor="@color/white"
-                android:textSize="20.0px" />
+                android:textSize="@dimen/dialog_btn_text_size" />
         </RelativeLayout>
 
         <Button
@@ -69,7 +69,7 @@
             android:background="@drawable/button_blue_background"
             android:text="@string/str_check_update"
             android:textColor="@color/white"
-            android:textSize="20.0px"
+            android:textSize="@dimen/dialog_btn_text_size"
             android:layout_toRightOf="@+id/okLayout"
             android:visibility="gone" />
     </RelativeLayout>

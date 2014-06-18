@@ -42,8 +42,6 @@ public class ConsumptionRecordAdapter  extends LoadMoreAdapter {
 		recordViewHolder.tv_transAmount.setText(recordData.optString("transAmount"));
 		recordViewHolder.tv_orderStatus.setText(recordData.optString("orderStateDesc"));
 		
-		convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
-		
 		return convertView;
 	}
 

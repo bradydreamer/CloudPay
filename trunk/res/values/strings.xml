@@ -130,6 +130,8 @@
     <string name="msg_mod_pwd_hint_pwd_input">请输入新密码</string>
     <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认新密码</string>
     <string name="msg_mod_pwd_hint_error_dialog">密码不一致，请重新输入</string>
+    <string name="msg_account_hint">请输入账号</string>
+    <string name="msg_pwd_hint">请输入密码</string>
 
     <!-- activity_consumption_record_search_controller.xml -->
     <string name="consumption_record_search_tv_startDate">起始日期</string>
@@ -179,7 +181,7 @@
     <string name="pay_account_btn_qrcode">二维码</string>
     <string name="pay_account_btn_sound">声波</string>
     <string name="pay_account_btn_swiper">刷卡</string>
-    <string name="pay_account_btn_keyboard">键盘</string>
+    <string name="pay_account_btn_keyboard">手动输入</string>
     <string name="pay_account_tag_qrcode">qrcode</string>
     <string name="pay_account_tag_sound">sound</string>
     <string name="pay_account_tag_swiper">swiper</string>
