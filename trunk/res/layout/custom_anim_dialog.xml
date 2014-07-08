@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="20dp"
-                android:textSize="30sp"
+                android:textSize="@dimen/custom_anim_dialog_textview_text_size"
                 android:visibility="gone" />
         </LinearLayout>
 

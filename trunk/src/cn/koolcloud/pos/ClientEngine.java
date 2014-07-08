@@ -6,15 +6,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -26,10 +25,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.control.ISO8583Controller;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.HomeController;
@@ -37,28 +38,35 @@ import cn.koolcloud.pos.controller.PinPadController;
 import cn.koolcloud.pos.controller.delivery_voucher.DelVoucherIdController;
 import cn.koolcloud.pos.controller.delivery_voucher.DelVoucherInfoController;
 import cn.koolcloud.pos.controller.delivery_voucher.InputDelVoucherNumController;
+import cn.koolcloud.pos.controller.dialogs.AlertCommonDialog;
+import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.controller.multipay.MultiPayIndex;
 import cn.koolcloud.pos.controller.multipay.MultiPayRecord;
 import cn.koolcloud.pos.controller.others.BalanceResultController;
 import cn.koolcloud.pos.controller.others.OthersIndexController;
+import cn.koolcloud.pos.controller.others.settings.CreateUserController;
 import cn.koolcloud.pos.controller.others.settings.LoginController;
+import cn.koolcloud.pos.controller.others.settings.LoginVerifyController;
 import cn.koolcloud.pos.controller.others.settings.MerchantInfoController;
+import cn.koolcloud.pos.controller.others.settings.ModifyPWDController;
+import cn.koolcloud.pos.controller.others.settings.PaymentMechanismController;
 import cn.koolcloud.pos.controller.others.settings.SetMachineIdController;
 import cn.koolcloud.pos.controller.others.settings.SetMerchIdController;
 import cn.koolcloud.pos.controller.others.settings.SetTransIdController;
 import cn.koolcloud.pos.controller.others.settings.SettingsDownloadController;
-import cn.koolcloud.pos.controller.others.settings.SettingsIndexController;
+import cn.koolcloud.pos.controller.others.settings.SigninController;
 import cn.koolcloud.pos.controller.others.settings.TransBatchController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
-import cn.koolcloud.pos.controller.transaction_manage.TransactionManageIndexController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController;
+import cn.koolcloud.pos.database.CacheDB;
+import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.net.NetEngine;
 import cn.koolcloud.pos.secure.SecureEngine;
 import cn.koolcloud.pos.service.IMerchService;
@@ -382,54 +390,45 @@ public class ClientEngine {
 			positiveText = context.getString(R.string.alert_btn_positive);
 		}
 		String negativeText = data.optString("negativeButtonText", null);
-		if (null == negativeText) {
-			new AlertDialog.Builder(context)
-					.setMessage(msg)
-					.setPositiveButton(
-							context.getString(R.string.alert_btn_positive),
-							new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									onAlertClicked(identifier, true);
-								}
-							})
-					.setOnCancelListener(
-							new DialogInterface.OnCancelListener() {
+		// use styled alert dialog start on 16th June
+		Intent mIntent = new Intent(context, AlertCommonDialog.class);
+		mIntent.putExtra(ConstantUtils.POSITIVE_BTN_KEY, positiveText);
+		mIntent.putExtra(ConstantUtils.NEGATIVE_BTN_KEY, negativeText);
+		mIntent.putExtra(ConstantUtils.MSG_KEY, msg);
+		mIntent.putExtra(ConstantUtils.IDENTIFIER_KEY, identifier);
+		context.startActivity(mIntent);
+		// use styled alert dialog end on 16th June
 
-								@Override
-								public void onCancel(DialogInterface dialog) {
-									onAlertClicked(identifier, true);
-								}
-							}).show().setCanceledOnTouchOutside(false);
-		} else {
-			if (0 == negativeText.length()) {
-				negativeText = context.getString(R.string.alert_btn_negative);
-			}
-			AlertDialog alertWith2Buttons = new AlertDialog.Builder(context)
-					.setMessage(msg)
-					.setPositiveButton(positiveText,
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									onAlertClicked(identifier, true);
-								}
-							})
-					.setNegativeButton(negativeText,
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									onAlertClicked(identifier, false);
-								}
-							}).show();
-			alertWith2Buttons.setCanceledOnTouchOutside(false);
-			alertWith2Buttons.setCancelable(false);
-		}
+		/*
+		 * if (null == negativeText) { new AlertDialog.Builder(context)
+		 * .setMessage(msg) .setPositiveButton(
+		 * context.getString(R.string.alert_btn_positive), new
+		 * DialogInterface.OnClickListener() {
+		 * 
+		 * @Override public void onClick(DialogInterface dialog, int which) {
+		 * onAlertClicked(identifier, true); } }) .setOnCancelListener( new
+		 * DialogInterface.OnCancelListener() {
+		 * 
+		 * @Override public void onCancel(DialogInterface dialog) {
+		 * onAlertClicked(identifier, true); }
+		 * }).show().setCanceledOnTouchOutside(false); } else { if (0 ==
+		 * negativeText.length()) { negativeText =
+		 * context.getString(R.string.alert_btn_negative); } AlertDialog
+		 * alertWith2Buttons = new AlertDialog.Builder(context) .setMessage(msg)
+		 * .setPositiveButton(positiveText, new
+		 * DialogInterface.OnClickListener() {
+		 * 
+		 * @Override public void onClick(DialogInterface dialog, int which) {
+		 * onAlertClicked(identifier, true); } })
+		 * .setNegativeButton(negativeText, new
+		 * DialogInterface.OnClickListener() {
+		 * 
+		 * @Override public void onClick(DialogInterface dialog, int which) {
+		 * onAlertClicked(identifier, false); } }).show();
+		 * alertWith2Buttons.setCanceledOnTouchOutside(false);
+		 * alertWith2Buttons.setCancelable(false); }
+		 */
 	}
 
 	private void onAlertClicked(String identifier, boolean isPositiveClicked) {
@@ -484,20 +483,40 @@ public class ClientEngine {
 		jsEngine.responseCallback(callBackHandler, data);
 	}
 
-	public void saveLocal(JSONObject data, String identifier) {
+	public void saveLocal(JSONObject data, String identifier, Context context) {
 		if (null == data) {
 			return;
 		}
-		String preferencesName = data.optString("key", null);
-		JSONObject value = data.optJSONObject("value");
-		Iterator<String> iterator = value.keys();
-		Map<String, Object> map = new HashMap<String, Object>();
-		while (iterator.hasNext()) {
-			String key = (String) iterator.next();
-			map.put(key, value.opt(key));
+		boolean saveCacheBatch = data.optBoolean("saveCacheBatch");
+		if (saveCacheBatch) {
+			String txnId = data.optString("txnId");
+			if (!TextUtils.isEmpty(txnId) && TextUtils.isDigitsOnly(txnId)) {
+				BatchTaskBean batchTask = new BatchTaskBean();
+				batchTask.setAuthCode(data.optString("authNo"));
+				batchTask.setExpDate(data.optString("dateExpr"));
+				batchTask.setIssuerId(data.optString("issuerId"));
+				batchTask.setRefrenceRetrievalNumber(data.optString("refNo"));
+				batchTask.setResponseCode(data.optString("resCode"));
+				batchTask.setResponseMsg(data.optString("resMsg"));
+				batchTask.setSettlementDate(data.optString("stlmDate"));
+				batchTask.setTxnId(data.optString("txnId"));
+				CacheDB cacheDB = CacheDB.getInstance(context);
+				cacheDB.insertBatchTask(batchTask);
+			}
+
+		} else {
+
+			String preferencesName = data.optString("key", null);
+			JSONObject value = data.optJSONObject("value");
+			Iterator<String> iterator = value.keys();
+			Map<String, Object> map = new HashMap<String, Object>();
+			while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				map.put(key, value.opt(key));
+			}
+			UtilForDataStorage.savePropertyBySharedPreferences(context,
+					preferencesName, map);
 		}
-		UtilForDataStorage.savePropertyBySharedPreferences(context,
-				preferencesName, map);
 	}
 
 	public void readLocal(JSONObject data, String identifier) {
@@ -511,6 +530,12 @@ public class ClientEngine {
 		callBack(identifier, new JSONObject(map));
 	}
 
+	public void readLocalBatch(String identifier, Context context) {
+		CacheDB cacheDB = CacheDB.getInstance(context);
+		JSONArray jsArray = cacheDB.selectAllBatchStack();
+		callBack(identifier, jsArray);
+	}
+
 	public void clearLocal(JSONObject data, String identifier) {
 		if (null == data) {
 			return;
@@ -519,6 +544,16 @@ public class ClientEngine {
 		UtilForDataStorage.clearPropertyBySharedPreferences(context,
 				preferencesName);
 		callBack(identifier, null);
+	}
+
+	public void rmBachCache(JSONObject data, Context context) {
+		if (null == data) {
+			return;
+		}
+		String txnId = data.optString("txnId");
+		CacheDB cacheDB = CacheDB.getInstance(context);
+		// remove local cached batch task
+		cacheDB.deleteBatchTaskByTxnId(txnId);
 	}
 
 	void netConnect(JSONObject params, String identifier) {
@@ -541,6 +576,39 @@ public class ClientEngine {
 			e.printStackTrace();
 		}
 		JSONObject response = NetEngine.post(context, body, headerMap);
+
+		// fix update search record status while refund or reverse operating
+		// --start Teddy on 20th May
+		/*
+		 * String startDate =
+		 * params.optJSONArray("body").optJSONObject(0).optString("startDate");
+		 * String endDate =
+		 * params.optJSONArray("body").optJSONObject(0).optString("endDate");
+		 * try {
+		 * response.optJSONArray("body").optJSONObject(0).put("start_date",
+		 * startDate);
+		 * response.optJSONArray("body").optJSONObject(0).put("end_date",
+		 * endDate); } catch (JSONException e) { e.printStackTrace(); }
+		 */
+
+		// fix update search record status while refund or reverse operating
+		// --end Teddy on 20th May
+
+		// try {
+		// JSONArray mbody = response.getJSONArray("body");
+		// JSONObject mrp = mbody.getJSONObject(0);
+		// JSONArray arr = mrp.getJSONArray("recordList");
+		// String txnId;
+		// for (int i = 0; i < arr.length(); i++) {
+		// JSONObject jo = arr.getJSONObject(i);
+		// txnId = jo.optString("txnId");
+		// jo.put("txnId", txnId);
+		// }
+		// } catch (JSONException e) { // TODO Auto-generated catch block
+		// // e.printStackTrace();
+		// callBack(identifier, response);
+		// }
+
 		callBack(identifier, response);
 	}
 
@@ -556,7 +624,7 @@ public class ClientEngine {
 							.optString("action");
 				}
 				String message = null;
-				if ("merchant/reverse".equals(action)
+				if ("msc/pay/reverse".equals(action)
 						|| "merchant/orderCloseRefund".equals(action)) {
 					message = context
 							.getString(R.string.waiting_dialog_msg_reverse);
@@ -682,24 +750,32 @@ public class ClientEngine {
 		}
 
 		Class<?> controllerClass = null;
-		if (className.equals("Login")) {
-			controllerClass = LoginController.class;
+		if (className.equals("LoginVerify")) {
+			controllerClass = LoginVerifyController.class;
+		} else if (className.equals("Signin")) {
+			controllerClass = SigninController.class;
 		} else if (className.equals("Home")) {
 			controllerClass = HomeController.class;
 		} else if (className.equals("SetMerchId")) {
 			controllerClass = SetMerchIdController.class;
 		} else if (className.equals("SetTransId")) {
 			controllerClass = SetTransIdController.class;
+		} else if (className.equals("ModifyPwd")) {
+			controllerClass = ModifyPWDController.class;
+		} else if (className.equals("CreateUser")) {
+			controllerClass = CreateUserController.class;
 		} else if (className.equals("TransBatch")) {
 			controllerClass = TransBatchController.class;
 		} else if (className.equals("MerchantInfo")) {
 			controllerClass = MerchantInfoController.class;
-		} else if (className.equals("TransactionManageIndex")) {
-			controllerClass = TransactionManageIndexController.class;
+		} else if (className.equals("Login")) {
+			controllerClass = LoginController.class;
 		} else if (className.equals("ConsumptionRecord")) {
 			controllerClass = ConsumptionRecordController.class;
 		} else if (className.equals("ConsumptionRecordSearch")) {
 			controllerClass = ConsumptionRecordSearchController.class;
+		} else if (className.equals("PaymentMechanism")) {
+			controllerClass = PaymentMechanismController.class;
 		} else if (className.equals("InputDelVoucherNum")) {
 			controllerClass = InputDelVoucherNumController.class;
 		} else if (className.equals("OrderDetail")) {
@@ -708,8 +784,6 @@ public class ClientEngine {
 			controllerClass = SetMachineIdController.class;
 		} else if (className.equals("SettingsDownload")) {
 			controllerClass = SettingsDownloadController.class;
-		} else if (className.equals("SettingsIndex")) {
-			controllerClass = SettingsIndexController.class;
 		} else if (className.equals("DelVoucherRecordSearch")) {
 			controllerClass = DelVoucherRecordSearchController.class;
 		} else if (className.equals("DelVoucherInfo")) {
@@ -736,6 +810,8 @@ public class ClientEngine {
 			controllerClass = MultiPayIndex.class;
 		} else if (className.equals("MultiPayRecord")) {
 			controllerClass = MultiPayRecord.class;
+		} else if (className.equals("MisposController")) {
+			controllerClass = MisposController.class;
 		}
 
 		return controllerClass;
@@ -780,12 +856,22 @@ public class ClientEngine {
 		ISO8583Controller iso8583Controller = ISO8583Engine.getInstance()
 				.generateISO8583Controller();
 		String typeOf8583 = jsonObject.optString("typeOf8583");
+		String oriTxnId = jsonObject.optString("oriTxnId");
+		if (oriTxnId.equals("")) {
+			oriTxnId = null;
+		}
+		String paymentId = jsonObject.optString("paymentId");
+		if (paymentId.equals("")) {
+			paymentId = null;
+		}
 
 		try {
 			if (typeOf8583.equals("pay")) {
 				iso8583Controller.purchase(jsonObject);
-			} else if (typeOf8583.equals("login")) {
-				iso8583Controller.login();
+			} else if (typeOf8583.equals("preAuth")) {
+				iso8583Controller.preAuth(jsonObject);
+			} else if (typeOf8583.equals("signin")) {
+				iso8583Controller.signin();
 			} else if (typeOf8583.equals("transBatch")) {
 				iso8583Controller.transBatch();
 			} else if (typeOf8583.equals("chongZheng")) {
@@ -811,16 +897,56 @@ public class ClientEngine {
 				String balancePwd = jsonObject.optString("balancePwd");
 
 				String openBrh = jsonObject.optString("openBrh");
-				String paymentId = jsonObject.optString("paymentId");
+				paymentId = jsonObject.optString("paymentId");
 
 				iso8583Controller.purchaseChaXun(cardID, track2, track3,
 						balancePwd, openBrh, paymentId);
+			} else if (typeOf8583.equals("preAuthComplete")) {
+				String data8583 = jsonObject.optString("transData8583");
+				jsonObject.remove("transData8583");
+				iso8583Controller.preAuthComplete(Utility.hex2byte(data8583),
+						jsonObject);
+			} else if (typeOf8583.equals("preAuthSettlement")) {
+				String data8583 = jsonObject.optString("transData8583");
+				jsonObject.remove("transData8583");
+				iso8583Controller.preAuthSettlement(Utility.hex2byte(data8583),
+						jsonObject);
+			} else if (typeOf8583.equals("preAuthCancel")) {
+				String data8583 = jsonObject.optString("transData8583");
+				jsonObject.remove("transData8583");
+				iso8583Controller.preAuthCancel(Utility.hex2byte(data8583),
+						jsonObject);
+			} else if (typeOf8583.equals("preAuthCompleteCancel")) {
+				String data8583 = jsonObject.optString("transData8583");
+				jsonObject.remove("transData8583");
+				iso8583Controller.preAuthCompleteCancel(
+						Utility.hex2byte(data8583), jsonObject);
 			}
 
 			String data8583 = iso8583Controller.toString();
+			String transType = iso8583Controller.getApmpTransType();
+			String batchNo = iso8583Controller.getBatchNum();
+			String traceNo = iso8583Controller.getTraceNum();
+			String transTime = iso8583Controller.getCurrentTime();
+			String cardNo = iso8583Controller.getBankCardNum();
+			Long transAmount = iso8583Controller.getTransAmount();
+			String oriBatchNo = iso8583Controller.getOriBatchNum();
+			String oriTraceNo = iso8583Controller.getOriTraceNum();
+			String oriTransTime = iso8583Controller.getOriTransTime();
 			JSONObject businessJsonObject = new JSONObject();
 			try {
 				businessJsonObject.put("data8583", data8583);
+				businessJsonObject.put("paymentId", paymentId);
+				businessJsonObject.put("transType", transType);
+				businessJsonObject.put("batchNo", batchNo);
+				businessJsonObject.put("traceNo", traceNo);
+				businessJsonObject.put("transTime", transTime);
+				businessJsonObject.put("cardNo", cardNo);
+				businessJsonObject.put("transAmount", transAmount);
+				businessJsonObject.put("oriTxnId", oriTxnId);
+				businessJsonObject.put("oriBatchNo", oriBatchNo);
+				businessJsonObject.put("oriTraceNo", oriTraceNo);
+				businessJsonObject.put("oriTransTime", oriTransTime);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -867,6 +993,13 @@ public class ClientEngine {
 					iso8583Controller.getAlipayPID());
 			data8583JsonObject.put("alipayTransactionID",
 					iso8583Controller.getAlipayTransactionID());
+			data8583JsonObject.put("issuerId", iso8583Controller.getIssuerId());
+			data8583JsonObject.put("dateExpr",
+					iso8583Controller.getDateExpiry());
+			data8583JsonObject.put("stlmDate",
+					iso8583Controller.getSettlementTime());
+			data8583JsonObject.put("authNo", iso8583Controller.getAuthCode());
+			iso8583Controller.setAuthCode("");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -930,7 +1063,7 @@ public class ClientEngine {
 
 	public void insertTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {
-		String apOrderId = jsonObjData.optString("ref");
+		String apOrderId = jsonObjData.optString("txnId");
 		String req8583 = jsonObjData.optString("req8583");
 		String res8583 = jsonObjData.optString("res8583");
 		String databaseName = "TransData8583";
@@ -950,7 +1083,7 @@ public class ClientEngine {
 
 	public void updateTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {
-		String apOrderId = jsonObjData.optString("ref");
+		String apOrderId = jsonObjData.optString("txnId");
 		String req8583 = jsonObjData.optString("req8583");
 		String res8583 = jsonObjData.optString("res8583");
 		String databaseName = "TransData8583";
@@ -969,7 +1102,7 @@ public class ClientEngine {
 
 	public void getTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {
-		String apOrderId = jsonObjData.optString("ref");
+		String apOrderId = jsonObjData.optString("txnId");
 		String databaseName = "TransData8583";
 		SQLiteDatabase db = context.openOrCreateDatabase(databaseName,
 				Context.MODE_PRIVATE, null);

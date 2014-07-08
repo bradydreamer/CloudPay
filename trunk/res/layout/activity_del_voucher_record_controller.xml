@@ -1,55 +1,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".del_voucherRecordController"
-    android:layout_margin="20dp"
-    android:orientation="vertical"
-    android:background="@drawable/shape_frame_rectangle" >
-
-    <LinearLayout 
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@drawable/listview_title"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:orientation="horizontal"
-        >
-        
-        <TextView 
-            android:layout_weight="2"
-            style="@style/del_voucher_record_listTitle"
-            android:text="@string/del_voucher_record_listTitle_voucherName"
-            />
-         <TextView 
-            android:layout_weight="1"
-            style="@style/del_voucher_record_listTitle"
-            android:text="@string/del_voucher_record_listTitle_date"
-            />
-        <TextView 
-            android:layout_weight="1"
-            style="@style/del_voucher_record_listTitle"
-            android:text="@string/del_voucher_record_listTitle_voucherId"
-            />
-        <TextView 
-            android:layout_weight="1"
-            style="@style/del_voucher_record_listTitle"
-            android:text="@string/del_voucher_record_listTitle_voucherNum"
-            />
-        <TextView 
-            android:layout_weight="1"
-            style="@style/del_voucher_record_listTitle"
-            android:text="@string/del_voucher_record_listTitle_operation"
-            />
-        
-    </LinearLayout>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/main_page_bg_bitmap" >
     
-    <ListView
-        android:id="@+id/del_voucher_record_lv_record"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" >
-    </ListView>
-        
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_margin="20dp"
+	    android:orientation="vertical"
+	    android:background="@drawable/main_page_bg_bitmap" >
+	
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="80dp"
+	        android:background="@drawable/listview_title"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:orientation="horizontal"
+	        >
+	        
+	        <TextView 
+	            android:layout_weight="2"
+	            style="@style/del_voucher_record_listTitle"
+	            android:text="@string/del_voucher_record_listTitle_voucherName"
+	            />
+	         <TextView 
+	            android:layout_weight="1"
+	            style="@style/del_voucher_record_listTitle"
+	            android:text="@string/del_voucher_record_listTitle_date"
+	            />
+	        <TextView 
+	            android:layout_weight="1"
+	            style="@style/del_voucher_record_listTitle"
+	            android:text="@string/del_voucher_record_listTitle_voucherId"
+	            />
+	        <TextView 
+	            android:layout_weight="1"
+	            style="@style/del_voucher_record_listTitle"
+	            android:text="@string/del_voucher_record_listTitle_voucherNum"
+	            />
+	        <TextView 
+	            android:layout_weight="1"
+	            style="@style/del_voucher_record_listTitle"
+	            android:text="@string/del_voucher_record_listTitle_operation"
+	            />
+	        
+	    </LinearLayout>
+	    
+	    <ListView
+	        android:id="@+id/del_voucher_record_lv_record"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:background="@android:color/transparent"
+	        android:layout_marginLeft="10dp"
+	        android:layout_marginRight="10dp" >
+	    </ListView>
+	        
+	</LinearLayout>
 </LinearLayout>

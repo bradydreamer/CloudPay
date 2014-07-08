@@ -4,7 +4,17 @@
 		return;
 	};
 
+	var transType_Consume = "1021";
+	var transType_ConsumeCancel = "3021";
+	var transType_Refund = "3051";
+	var transType_PreAuth = "1011";
+	var transType_preAuthComplete= "1031";
+	var transType_preAuthSettlement = "1091";
+	var transType_preAuthCancel = "3011";
+	var transType_preAuthCompleteCancel = "3031";
+
 	function onConfirmMethod(data) {
+		var payType;
 		var params = JSON.parse(data);
 		var product = JSON.parse(params.tag);
 		if (product == null) {
@@ -14,16 +24,31 @@
 
 		if(ConsumptionData.dataForPayment.isExternalOrder != true){			
 			ConsumptionData.resetConsumptionData();
+		}else{
+			var transAmount = ConsumptionData.dataForPayment.transAmount;
+			ConsumptionData.resetConsumptionData();
+			ConsumptionData.dataForPayment.isExternalOrder = true;
+			if(!ConsumptionData.isMultiPay){
+				ConsumptionData.dataForPayment.transAmount = transAmount;
+			}
 		}
 		
-		if (product.saleTemplate != null && product.saleTemplate.length != 0) {
-			if (window.saleTemplates == null) {
-				window.RMS.read("saleTemplates", function(data) {
-					window.saleTemplates = data;
-					confirmMethod(product, window.saleTemplates[product.saleTemplate]);
+		if(product.typeId == "SALE"){
+			payType = transType_Consume;
+		}else if(product.typeId == "PREPAID"){
+			payType = transType_PreAuth;
+		}		
+		
+		if (product[payType] != null && product[payType].length != 0) {
+			if (window.payTemplates == null) {
+				window.RMS.read("templateList", function(data) {
+					window.payTemplates = data;
+					confirmMethod(product, window.payTemplates[product[payType]]);
 				});
+
+				
 			} else {
-				confirmMethod(product, window.saleTemplates[product.saleTemplate]);
+				confirmMethod(product, window.payTemplates[product[payType]]);
 			}
 		}else{
 			confirmMethod(product);
@@ -35,53 +60,98 @@
 		if(payList != null && typeof(payList) == "string"){
 			payList = JSON.parse(payList);
 		}
-		// "openBrh": "0229000184",
-		// 	"paymentId": "9150",
-		// 	"paymentName": "通联刷卡",
-		// 	"typeName": "消费",
-		// 	"typeId": "SALE",
-		// 	"imgName": "logo_card.png",
 
-		var open_brh = product.openBrh;
-		var payment_id = product.paymentId;
-		
-		// open_brh = "0000000003";
-		// payment_id = "0000";
-// 		
-		var payment_name = product.paymentName;
+		RMS.read("merchant", afterGetMerchData);
+		function afterGetMerchData(data){
+			window.user.merchId = data.merchId;
+			window.user.machineId = data.machineId;
+			var merchId = window.user.merchId;
+			var iposId = window.user.machineId;
+			var open_brh = product.openBrh;
+			var open_brh_name = product.openBrhName;
+			var brhMchtId = product.brhMchtId;
+			var brhTermId = product.brhTermId;
+			var payment_id = product.paymentId;		
+			var brhKeyIndex = product.brhKeyIndex;
+			var payment_name = product.paymentName;
+			var typeId = product.typeId;
+			var printType = product.printType;
+			var typeName = product.typeName;
 
-		var typeId = product.typeId;
+			if (typeId == util.getTransType("DELIVERY_VOUCHER")) {
+				var formData = {
+					"open_brh": open_brh,
+					"payment_id": payment_id,
+				};
+				formData.openBrhName = open_brh_name;
+				formData.brhMchtId = brhMchtId;
+				formData.brhTermId = brhTermId;
+				formData.merchId = merchId;
+				formData.iposId = iposId;
+				formData.printType = printType;
+				window.util.showSceneWithLoginChecked("InputDelVoucherNum", formData, product.typeName);
+				return;
+			} else if (typeId == util.getTransType("BALANCE")) {
+				ConsumptionData.resetDataForBalance();
+				ConsumptionData.dataForBalance.openBrh = open_brh;
+				ConsumptionData.dataForBalance.paymentId = payment_id;
+	
+				var formData = {
+					"btn_swipe": 1,
+					"swipeCard": "PayMethod.gotoBalanceResult",
+				};
+				formData.openBrhName = open_brh_name;
+				formData.brhMchtId = brhMchtId;
+				formData.brhTermId = brhTermId;
+				formData.merchId = merchId;
+				formData.iposId = iposId;
+				formData.printType = printType;
+				//indicate operation type, now is balance. --start add by Teddy on 20th June 
+				formData.operationType = "BALANCE";
+				//indicate operation type, now is balance. --end add by Teddy on 20th June 
+				
+				//add brhKeyIndex on balance --start by Teddy on 26th June
+				formData.brhKeyIndex = brhKeyIndex;
+				//add brhKeyIndex on balance --end by Teddy on 26th June
+				window.util.showSceneWithLoginChecked("PayAccount", formData, product.typeName);
+				return;
+			} else if(typeId == util.getTransType("PREPAID")){
+				ConsumptionData.dataForPayment.typeOf8583 = "preAuth";
+				ConsumptionData.dataForPayment.merchId = merchId;
+				ConsumptionData.dataForPayment.iposId = iposId;
+				ConsumptionData.dataForPayment.openBrh = open_brh;
+				ConsumptionData.dataForPayment.openBrhName = open_brh_name;
+				ConsumptionData.dataForPayment.brhMchtId = brhMchtId;
+				ConsumptionData.dataForPayment.brhTermId = brhTermId;
+				ConsumptionData.dataForPayment.printType = printType;
+				ConsumptionData.dataForPayment.paymentId = payment_id;
+				ConsumptionData.dataForPayment.paymentName = payment_name;
+				ConsumptionData.dataForPayment.flowList = payList;
+				ConsumptionData.dataForPayment.brhKeyIndex = brhKeyIndex;
+				ConsumptionData.dataForPayment.typeName = typeName;
+				ConsumptionData.dataForPayment.step = 0;
+				Pay.gotoAuthFlow();
+				return;
 
-		if (typeId == util.getTransType("DELIVERY_VOUCHER")) {
-			var formData = {
-				"open_brh": open_brh,
-				"payment_id": payment_id,
+			}else if (typeId != util.getTransType("SALE")) {
+				Scene.alert(product);
+				return;
 			};
-			window.util.showSceneWithLoginChecked("InputDelVoucherNum", formData, product.typeName);
-			return;
-		} else if (typeId == util.getTransType("BALANCE")) {
-			ConsumptionData.resetDataForBalance();
-			ConsumptionData.dataForBalance.openBrh = open_brh;
-			ConsumptionData.dataForBalance.paymentId = payment_id;
-
-			var formData = {
-				"btn_swipe": 1,
-				"swipeCard": "PayMethod.gotoBalanceResult",
-			};
-
-			window.util.showSceneWithLoginChecked("PayAccount", formData, product.typeName);
-			return;
-		} else if (typeId != util.getTransType("SALE")) {
-			Scene.alert(product);
-			return;
-		};
-
-		ConsumptionData.dataForPayment.openBrh = open_brh;
-		ConsumptionData.dataForPayment.paymentId = payment_id;
-		ConsumptionData.dataForPayment.paymentName = payment_name;
-		ConsumptionData.dataForPayment.flowList = payList;
-		ConsumptionData.dataForPayment.step = 0;
-		Pay.gotoPayFlow();
+			ConsumptionData.dataForPayment.merchId = merchId;
+			ConsumptionData.dataForPayment.iposId = iposId;
+			ConsumptionData.dataForPayment.openBrh = open_brh;
+			ConsumptionData.dataForPayment.openBrhName = open_brh_name;
+			ConsumptionData.dataForPayment.brhMchtId = brhMchtId;
+			ConsumptionData.dataForPayment.brhTermId = brhTermId;
+			ConsumptionData.dataForPayment.printType = printType;
+			ConsumptionData.dataForPayment.paymentId = payment_id;
+			ConsumptionData.dataForPayment.paymentName = payment_name;
+			ConsumptionData.dataForPayment.flowList = payList;
+			ConsumptionData.dataForPayment.brhKeyIndex = brhKeyIndex;
+			ConsumptionData.dataForPayment.typeName = typeName;
+			ConsumptionData.dataForPayment.step = 0;
+			Pay.gotoPayFlow();
+		}
 	};
 
 	function gotoBalanceResult(data) {

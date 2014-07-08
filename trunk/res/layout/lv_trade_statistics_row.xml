@@ -10,7 +10,7 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="36sp"
+        android:textSize="@dimen/lv_trade_textview_text_size"
         android:gravity="center"
         />
     
@@ -19,7 +19,7 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="36sp"
+        android:textSize="@dimen/lv_trade_textview_text_size"
         android:gravity="center"
         />
     
@@ -28,7 +28,7 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="36sp"
+        android:textSize="@dimen/lv_trade_textview_text_size"
         android:gravity="center"
         />
 

@@ -13,7 +13,7 @@
             style="@style/module_method_logo"
             android:background="@null"  />
 
-        <TextView style="@style/module_method_title" />
+        <TextView style="@style/module_title" />
     </LinearLayout>
 
     <LinearLayout style="@style/module_layout" >
@@ -22,7 +22,7 @@
             style="@style/module_method_logo"
             android:background="@null" />
 
-        <TextView style="@style/module_method_title" />
+        <TextView style="@style/module_title" />
     </LinearLayout>
 
     <LinearLayout style="@style/module_layout" >
@@ -31,7 +31,7 @@
             style="@style/module_method_logo"
             android:background="@null" />
 
-        <TextView style="@style/module_method_title" />
+        <TextView style="@style/module_title" />
     </LinearLayout>
     
     <LinearLayout style="@style/module_layout" >
@@ -40,7 +40,7 @@
             style="@style/module_method_logo"
             android:background="@null" />
 
-        <TextView style="@style/module_method_title" />
+        <TextView style="@style/module_title" />
     </LinearLayout>
 
 </LinearLayout>

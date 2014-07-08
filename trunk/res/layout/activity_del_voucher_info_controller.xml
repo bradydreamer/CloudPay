@@ -1,120 +1,125 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:layout_marginBottom="@dimen/activity_vertical_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/shape_frame_rectangle"
-    android:paddingBottom="20dp"
-    android:paddingLeft="40dp"
-    android:paddingRight="40dp"
-    android:paddingTop="20dp"
-    tools:context=".DelVoucherInfoController" >
-
-    <Button
-        android:id="@+id/del_voucher_info_btn_confirm"
-        android:layout_width="240dp"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@android:color/background_dark"
-        android:onClick="onConfirm"
-        android:text="@string/order_detail_btn_operation_text_confirm"
-        android:textColor="@android:color/white"
-        android:textSize="40sp" />
-
-    <ScrollView
+    tools:context=".DelVoucherInfoController"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/main_page_bg_bitmap" >
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/del_voucher_info_btn_confirm" >
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@drawable/main_page_bg_bitmap"
+        android:paddingBottom="20dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingTop="20dp" >
 
-        <LinearLayout
+        <Button
+            android:id="@+id/del_voucher_info_btn_confirm"
+            android:layout_width="240dp"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/background_dark"
+            android:onClick="onConfirm"
+            android:text="@string/order_detail_btn_operation_text_confirm"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/del_voucher_info_button_text_size" />
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_height="match_parent"
+            android:layout_above="@id/del_voucher_info_btn_confirm" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal" >
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="60dp"
+                        android:text="@string/del_voucher_info_tv_voucherId"
+                        android:textSize="@dimen/del_voucher_info_textview_text_size" />
+
+                    <TextView
+                        android:id="@+id/del_voucher_info_tv_voucherId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="@dimen/del_voucher_info_textview_text_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="60dp"
+                        android:text="@string/del_voucher_info_tv_productName"
+                        android:textSize="@dimen/del_voucher_info_textview_text_size" />
+
+                    <TextView
+                        android:id="@+id/del_voucher_info_tv_productName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="@dimen/del_voucher_info_textview_text_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="60dp"
+                        android:text="@string/del_voucher_info_tv_dateRange"
+                        android:textSize="@dimen/del_voucher_info_textview_text_size" />
+
+                    <TextView
+                        android:id="@+id/del_voucher_info_tv_dateRange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="@dimen/del_voucher_info_textview_text_size" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="60dp"
-                    android:text="@string/del_voucher_info_tv_voucherId"
-                    android:textSize="36sp" />
+                    android:layout_marginTop="10dp"
+                    android:text="@string/del_voucher_info_tv_details"
+                    android:textSize="@dimen/del_voucher_info_textview_text_size" />
 
                 <TextView
-                    android:id="@+id/del_voucher_info_tv_voucherId"
+                    android:id="@+id/del_voucher_info_tv_details"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="36sp" />
+                    android:textSize="@dimen/del_voucher_info_textview_text_size" />
             </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="60dp"
-                    android:text="@string/del_voucher_info_tv_productName"
-                    android:textSize="36sp" />
-
-                <TextView
-                    android:id="@+id/del_voucher_info_tv_productName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="36sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="60dp"
-                    android:text="@string/del_voucher_info_tv_dateRange"
-                    android:textSize="36sp" />
-
-                <TextView
-                    android:id="@+id/del_voucher_info_tv_dateRange"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="36sp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/del_voucher_info_tv_details"
-                android:textSize="36sp" />
-
-            <TextView
-                android:id="@+id/del_voucher_info_tv_details"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="36sp" />
-        </LinearLayout>
-    </ScrollView>
-
-</RelativeLayout>
+</LinearLayout>

@@ -4,18 +4,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.R.color;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.secure.SecureEngine;
 
 public class LoginController extends BaseController {
-	private EditText et_userName;
-	private EditText et_pwd;
+	private EditText customerId;
+	private EditText configuration_userName;
+	private EditText configuration_pwd;
+	private String str_customerId = "";
+	private String str_userName = "";
 	private JSONObject data;
-	private String loginType;
 	private boolean removeJSTag = true;
 
 	@Override
@@ -26,48 +31,51 @@ public class LoginController extends BaseController {
 			data = formData
 					.optJSONObject(getString(R.string.formData_key_data));
 		}
-		if (data != null && !data.isNull("Login")) {
-			loginType = data.optString("Login");
-		} else {
-			loginType = "LoginIndex.onLogin";
+		if (data != null && !data.isNull("merchId")) {
+			str_customerId = data.optString("merchId");
 		}
-		et_userName = (EditText) findViewById(R.id.login_et_userName);
-		// setCurrentNumberEditText(et_userName);
-		et_pwd = (EditText) findViewById(R.id.login_et_pwd);
-		// initETWithKBHiddenListener(et_userName);
-		// initETWithKBHiddenListener(et_pwd);
-		String titleName = formData
-				.optString(getString(R.string.formData_key_title));
-		if (!titleName.equals("")) {
-			setTitle(titleName);
+		if (data != null && !data.isNull("operator")) {
+			str_userName = data.optString("operator");
 		}
 
+		customerId = (EditText) findViewById(R.id.customer_id);
+
+		configuration_userName = (EditText) findViewById(R.id.configuration_userName);
+		configuration_pwd = (EditText) findViewById(R.id.configuration_pwd);
+		if (!(str_customerId == null) && !(str_customerId.equals(""))) {
+			customerId.setText(str_customerId);
+			customerId.setTextColor(color.gray);
+			customerId.setInputType(InputType.TYPE_NULL);
+		}
+		configuration_userName.setText(str_userName);
 	}
-
-	// @Override
-	// protected void setOnFocusChangeExtraAction(EditText editText) {
-	// super.setOnFocusChangeExtraAction(editText);
-	// setCurrentNumberEditText(editText);
-	// }
 
 	@Override
 	public void onClickBtnOK(View view) {
-		// if (getCurrentNumberEditText() == et_userName
-		// && (et_userName.getText().toString().isEmpty() ||
-		// et_pwd.getText().toString().isEmpty())) {
-		// et_pwd.requestFocus();
-		// } else {
-		String userName = et_userName.getText().toString();
-		String pwd = et_pwd.getText().toString();
+
+		String customer_Id = customerId.getText().toString();
+		String userName = configuration_userName.getText().toString();
+		SecureEngine se = ClientEngine.engineInstance().secureEngine();
+		String pwdStr = configuration_pwd.getText().toString();
+		// String pwd = se.fieldDecrypt(se.md5(pwdStr));
+		String pwd = se.md5(pwdStr).toLowerCase();
+		String ssn = android.os.Build.SERIAL;
+
 		JSONObject msg = new JSONObject();
 		try {
+			msg.put("merchId", customer_Id);
 			msg.put("userName", userName);
 			msg.put("pwd", pwd);
+			msg.put("ssn", ssn);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		onCall(loginType, msg);
-		// }
+		onCall("LoginIndex.onLogin", msg);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 	}
 
 	@Override
@@ -77,27 +85,18 @@ public class LoginController extends BaseController {
 		super.loadRelatedJS();
 	}
 
-	// call get merchant info start mod by Teddy on 7 April
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-	}
-
-	// call get merchant info end mod by Teddy on 7 April
-
 	@Override
 	protected void setControllerContentView() {
-		setContentView(R.layout.activity_login_controller);
+		setContentView(R.layout.activity_configure_controller);
 	}
 
 	@Override
 	protected String getTitlebarTitle() {
-		return getString(R.string.title_activity_login_controller);
+		return getString(R.string.title_activity_configure_controller);
 	}
 
 	@Override
 	protected String getControllerName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -114,7 +113,6 @@ public class LoginController extends BaseController {
 
 	@Override
 	protected boolean getRemoveJSTag() {
-		// TODO Auto-generated method stub
 		return removeJSTag;
 	}
 

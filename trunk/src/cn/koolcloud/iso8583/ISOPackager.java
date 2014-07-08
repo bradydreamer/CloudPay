@@ -377,15 +377,19 @@ public class ISOPackager implements Constant {
 			break;
 		case TRAN_AUTH:
 		case TRAN_ADD_AUTH:
+		case TRAN_AUTH_REVERSAL:
 			tmpBuf[F60_Length / 2] = 0x10;
 			break;
-		case TRAN_CANCEL:
+		case TRAN_AUTH_CANCEL:
+		case TRAN_AUTH_CANCEL_REVERSAL:
 			tmpBuf[F60_Length / 2] = 0x11;
 			break;
 		case TRAN_AUTH_COMPLETE:
+		case TRAN_AUTH_COMPLETE_REVERSAL:
 			tmpBuf[F60_Length / 2] = 0x20;
 			break;
-		case TRAN_VOID_COMPLETE:
+		case TRAN_AUTH_COMPLETE_CANCEL:
+		case TRAN_AUTH_COMPLETE_CANCEL_REVERSAL:
 			tmpBuf[F60_Length / 2] = 0x21;
 			break;
 		case TRAN_SALE:
@@ -600,7 +604,16 @@ public class ISOPackager implements Constant {
 					|| appState.trans.getTransType() == TRAN_CHECK_CARDHOLDER
 					|| appState.trans.getTransType() == TRAN_SALE_REVERSAL
 					|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
-					|| appState.trans.getTransType() == TRAN_BALANCE) {
+					|| appState.trans.getTransType() == TRAN_BALANCE
+					|| appState.trans.getTransType() == TRAN_AUTH
+					|| appState.trans.getTransType() == TRAN_AUTH_CANCEL
+					|| appState.trans.getTransType() == TRAN_AUTH_SETTLEMENT
+					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE
+					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL
+					|| appState.trans.getTransType() == TRAN_AUTH_REVERSAL
+					|| appState.trans.getTransType() == TRAN_AUTH_CANCEL_REVERSAL
+					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_REVERSAL
+					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL) {
 
 				F60_last += "0"; // 60.5
 
@@ -610,7 +623,6 @@ public class ISOPackager implements Constant {
 				}
 
 				F60_Length += 4;
-				
 			} else {
 
 			}
@@ -684,15 +696,19 @@ public class ISOPackager implements Constant {
 				|| appState.trans.getTransType() == TRAN_VOID
 				|| appState.trans.getTransType() == TRAN_MOTO_REFUND
 				|| appState.trans.getTransType() == TRAN_ADD_AUTH
-				|| appState.trans.getTransType() == TRAN_CANCEL
+				|| appState.trans.getTransType() == TRAN_AUTH_CANCEL
 				|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE
 				|| appState.trans.getTransType() == TRAN_AUTH_SETTLEMENT
-				|| appState.trans.getTransType() == TRAN_VOID_COMPLETE
+				|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL
 				|| appState.trans.getTransType() == TRAN_OFFLINE
 				|| appState.trans.getTransType() == TRAN_ADJUST_OFFLINE
 				|| appState.trans.getTransType() == TRAN_SALE_REVERSAL // 冲正
 				|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL // 撤销冲正
-				|| appState.trans.getTransType() == TRAN_ADJUST_SALE) {
+				|| appState.trans.getTransType() == TRAN_ADJUST_SALE
+				|| appState.trans.getTransType() == TRAN_AUTH_REVERSAL
+				|| appState.trans.getTransType() == TRAN_AUTH_CANCEL_REVERSAL
+				|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_REVERSAL
+				|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL) {
 			if (appState.oldTrans.getOldTransDate().length() > 0) {
 				/* Yes; data in field exists */
 				/* Moves the original batch number into SENDBUF */
@@ -1511,7 +1527,7 @@ public class ISOPackager implements Constant {
 			switch (bitMap[i]) {
 			case ISOField.F02_PAN:
 				if (appState.trans.getPAN().length() > 0
-						&& appState.trans.getEntryMode() != SWIPE_ENTRY // 读取磁条卡号
+				// && appState.trans.getEntryMode() == SWIPE_ENTRY // 读取磁条卡号
 				) {
 					byte[] F2_AccountNumber = new byte[(appState.trans.getPAN()
 							.length() + 1) / 2];
@@ -1531,7 +1547,19 @@ public class ISOPackager implements Constant {
 					ByteUtil.asciiToBCD(
 							MessageType.getProcessingCode(Constant.TRAN_VOID),
 							0, F3_ProcessingCode, 0, 6, 0);
+				} else if (null != appState.oldTrans
+						&& (TRAN_AUTH_REVERSAL == appState.trans.getTransType()
+								|| TRAN_AUTH_CANCEL_REVERSAL == appState.trans
+										.getTransType()
+								|| TRAN_AUTH_COMPLETE_REVERSAL == appState.trans
+										.getTransType() || TRAN_AUTH_COMPLETE_CANCEL_REVERSAL == appState.trans
+								.getTransType())) {
+					ByteUtil.asciiToBCD(
+							MessageType.getProcessingCode(appState.oldTrans
+									.getTransType()), 0, F3_ProcessingCode, 0,
+							6, 0);
 				} else {
+
 					ByteUtil.asciiToBCD(MessageType
 							.getProcessingCode(appState.trans.getTransType()),
 							0, F3_ProcessingCode, 0, 6, 0);
@@ -1549,7 +1577,11 @@ public class ISOPackager implements Constant {
 				break;
 			case ISOField.F11_STAN:
 				if (appState.trans.getTransType() == TRAN_SALE_REVERSAL
-						|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL) {
+						|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_CANCEL_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL) {
 					movGen(ISOField.F11_STAN, NumberUtil.intToBcd(
 							appState.oldTrans.getOldTrace(), 3), 0);
 				} else {
@@ -1576,8 +1608,8 @@ public class ISOPackager implements Constant {
 				}
 				break;
 			case ISOField.F14_EXP:
-				if (appState.trans.getEntryMode() != SWIPE_ENTRY
-						&& appState.trans.getExpiry().length() == 4) {
+				if (// appState.trans.getEntryMode() != SWIPE_ENTRY&&
+				appState.trans.getExpiry().length() == 4) {
 					byte[] F14_Expiry = new byte[2];
 					ByteUtil.asciiToBCD(appState.trans.getExpiry().getBytes(),
 							0, F14_Expiry, 0, 4, 0);
@@ -1607,9 +1639,9 @@ public class ISOPackager implements Constant {
 				byte[] F25_POCC = new byte[1];
 				switch (appState.trans.getTransType()) {
 				case TRAN_AUTH:
-				case TRAN_CANCEL:
+				case TRAN_AUTH_CANCEL:
 				case TRAN_AUTH_COMPLETE:
-				case TRAN_VOID_COMPLETE:
+				case TRAN_AUTH_COMPLETE_CANCEL:
 				case TRAN_AUTH_SETTLEMENT:
 					F25_POCC[0] = 0x06;
 					break;
@@ -1650,8 +1682,26 @@ public class ISOPackager implements Constant {
 					F25_POCC[0] = (byte) 0x66;
 					break;
 				default:
-					F25_POCC[0] = 0x00;
-					break;
+					if (null != appState.oldTrans) {
+						if (TRAN_AUTH_REVERSAL == appState.trans.getTransType()
+								|| TRAN_AUTH_CANCEL_REVERSAL == appState.trans
+										.getTransType()
+								|| TRAN_AUTH_COMPLETE_REVERSAL == appState.trans
+										.getTransType()
+								|| TRAN_AUTH_COMPLETE_CANCEL_REVERSAL == appState.trans
+										.getTransType()) {
+							F25_POCC[0] = 0x06;
+							break;
+						} else if (TRAN_SALE_REVERSAL == appState.trans
+								.getTransType()) {
+							F25_POCC[0] = 0x00;
+							break;
+						}
+
+					} else {
+						F25_POCC[0] = 0x00;
+						break;
+					}
 				}
 				movGen(ISOField.F25_POCC, F25_POCC, 0);
 				break;
@@ -1746,7 +1796,9 @@ public class ISOPackager implements Constant {
 			case ISOField.F38_AUTH:
 				if ((appState.oldTrans.getReversalReason() & 0xf0) != 0) {
 					if (appState.trans.getTransType() == TRAN_AUTH_COMPLETE
-							|| appState.trans.getTransType() == TRAN_VOID_COMPLETE) {
+							|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL
+							|| appState.trans.getTransType() == TRAN_AUTH_SETTLEMENT
+							|| appState.trans.getTransType() == TRAN_AUTH_CANCEL) {
 						movGen(ISOField.F38_AUTH, appState.oldTrans
 								.getOldAuthCode().getBytes(), 0);
 					} else {
@@ -1763,9 +1815,18 @@ public class ISOPackager implements Constant {
 							&& appState.trans.getAuthType() == 3) {
 						break;
 					}
-					if (appState.oldTrans.getOldAuthCode().length() > 0) {
-						movGen(ISOField.F38_AUTH, appState.oldTrans
-								.getOldAuthCode().getBytes(), 0);
+					if (appState.trans.getTransType() == TRAN_AUTH_COMPLETE
+							|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL
+							|| appState.trans.getTransType() == TRAN_AUTH_SETTLEMENT
+							|| appState.trans.getTransType() == TRAN_AUTH_CANCEL
+							|| appState.trans.getTransType() == TRAN_AUTH_REVERSAL
+							|| appState.trans.getTransType() == TRAN_AUTH_CANCEL_REVERSAL
+							|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_REVERSAL
+							|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL) {
+						if (appState.oldTrans.getOldAuthCode().length() > 0) {
+							movGen(ISOField.F38_AUTH, appState.oldTrans
+									.getOldAuthCode().getBytes(), 0);
+						}
 					} else if (appState.trans.getAuthCode().length() > 0) {
 						movGen(ISOField.F38_AUTH, appState.trans.getAuthCode()
 								.getBytes(), 0);
@@ -1774,7 +1835,11 @@ public class ISOPackager implements Constant {
 				break;
 			case ISOField.F39_RSP:
 				if (appState.trans.getTransType() == TRAN_SALE_REVERSAL
-						|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL) {
+						|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_CANCEL_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_REVERSAL
+						|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL) {
 					appState.trans.setResponseCode(new byte[] { '9', '8' });
 					appState.oldTrans
 							.setOldResponseCode(new byte[] { '9', '8' });
@@ -2226,17 +2291,17 @@ public class ISOPackager implements Constant {
 			appState.trans.setRRN(StringUtil.toString(tempBuffer));
 			break;
 		case ISOField.F38_AUTH:
-			if (appState.trans.getTransType() == TRAN_VOID_COMPLETE) {
-				appState.oldTrans.setOldAuthCode(appState.trans.getAuthCode());
-				appState.trans.setAuthCode(StringUtil.toString(tempBuffer));
-			} else {
-				if (appState.trans.getAuthCode().length() > 0) {
-					appState.oldTrans.setOldAuthCode(StringUtil
-							.toString(tempBuffer));
-				} else {
-					appState.trans.setAuthCode(StringUtil.toString(tempBuffer));
-				}
-			}
+			/*
+			 * if (appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL) {
+			 * appState.oldTrans.setOldAuthCode(appState.trans.getAuthCode());
+			 * appState.trans.setAuthCode(StringUtil.toString(tempBuffer)); }
+			 * else { if (appState.trans.getAuthCode().length() > 0) {
+			 * appState.oldTrans.setOldAuthCode(StringUtil
+			 * .toString(tempBuffer)); } else {
+			 * appState.trans.setAuthCode(StringUtil.toString(tempBuffer)); } }
+			 */
+
+			appState.trans.setAuthCode(StringUtil.toString(tempBuffer));
 			break;
 		case ISOField.F39_RSP:
 			appState.trans.setResponseCode(tempBuffer);
@@ -2266,11 +2331,17 @@ public class ISOPackager implements Constant {
 		case ISOField.F44_ADDITIONAL:
 			byte[] issID = new byte[8];
 			byte[] acqID = new byte[8];
-			System.arraycopy(tempBuffer, 0, issID, 0, 8);
-			System.arraycopy(tempBuffer, 11, acqID, 0, 8);
-			appState.trans.setIssuerID(StringUtil.toString(issID));
-			appState.trans.setAcquirerID(StringUtil.toString(acqID));
-			appState.trans.setIssuerName();
+			if (tempBuffer.length <= 11) {
+				System.arraycopy(tempBuffer, 0, issID, 0, 8);
+				appState.trans.setIssuerID(StringUtil.toString(issID));
+				appState.trans.setIssuerName();
+			} else if (tempBuffer.length >= 22) {
+				System.arraycopy(tempBuffer, 11, acqID, 0, 8);
+				System.arraycopy(tempBuffer, 0, issID, 0, 8);
+				appState.trans.setIssuerID(StringUtil.toString(issID));
+				appState.trans.setAcquirerID(StringUtil.toString(acqID));
+				appState.trans.setIssuerName();
+			}
 			break;
 		case ISOField.F48:
 			procB48_CUP(tempBuffer, appState);

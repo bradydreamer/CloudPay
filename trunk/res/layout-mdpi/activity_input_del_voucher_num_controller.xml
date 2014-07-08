@@ -17,8 +17,9 @@
 	   	<EditText 
 	   	    android:id="@+id/input_del_voucher_num_et_num"
 	   	    android:gravity="center"
-	   	    android:background="@android:drawable/edit_text"
-	        android:textSize="60sp"
+	   	    android:background="@drawable/number_input_edittext_bg"
+	        android:textSize="@dimen/input_del_voucher_num_edittext_text_size"
+	        android:textColor="@color/white"
 	        style="@style/calculator_display_screen_style"
 	        android:maxLength="15"
 	        android:hint="1"

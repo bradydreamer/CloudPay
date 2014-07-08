@@ -1,9 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="horizontal"
-    android:gravity="center" >
+    android:gravity="center"
+    android:background="@drawable/main_page_bg_bitmap" >
 
     <LinearLayout 
         style="@style/module_layout"
@@ -15,34 +16,6 @@
         <TextView 
             style="@style/module_title"
             android:text="@string/others_index_module_title_pre_authorization"
-            />
-    </LinearLayout>
-    
-    <LinearLayout 
-        style="@style/module_layout"
-        >
-        <Button 
-	        style="@style/module_logo"
-	        android:background="@drawable/logo_balance"
-	        android:onClick="gotoBalance"
-	        />
-        <TextView 
-            style="@style/module_title"
-            android:text="@string/others_index_module_title_balance"
-            />
-    </LinearLayout>
-    
-	<LinearLayout 
-        style="@style/module_layout"
-        >
-        <Button 
-	        style="@style/module_logo"
-	        android:background="@drawable/logo_settings"
-	        android:onClick="gotoSettings"
-	        />
-        <TextView 
-            style="@style/module_title"
-            android:text="@string/others_index_module_title_settings"
             />
     </LinearLayout>
     

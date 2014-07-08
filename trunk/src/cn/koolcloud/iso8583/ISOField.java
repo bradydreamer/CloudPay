@@ -142,7 +142,7 @@ public class ISOField
 			F60,        F61,        F64_MAC
       },
       
-      /* 06 CANCEL */
+      /* 06 AUTH_CANCEL */
       { 
 			F02_PAN,    F03_PROC, 	F04_AMOUNT,
 			F11_STAN,   F14_EXP, 
@@ -175,7 +175,7 @@ public class ISOField
 			F60,        F61,        F64_MAC
       },
       
-      /* 09 COMPLETE_VOID */
+      /* 09 AUTH_COMPLETE_CANCEL */
       { 
 			F02_PAN,    F03_PROC, 	F04_AMOUNT,
 			F11_STAN,   F14_EXP, 
@@ -772,6 +772,50 @@ public class ISOField
 		  
 	  },
 	  /*71 TRAN_REVOCATION_REVERSAL pos撤销冲正*/
+	  {
+		    F02_PAN,    
+		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
+		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F38_AUTH,	
+			F39_RSP,	F40,		F41_TID,    F42_ACCID,
+			F49_CURRENCY,F55_ICC, 
+			F60,        F61,		F64_MAC
+		  
+	  },
+	  /*72 TRAN_AUTH_REVERSAL*/
+	  {
+		    F02_PAN,    
+		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
+		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F38_AUTH,	
+			F39_RSP,	F40,		F41_TID,    F42_ACCID,
+			F49_CURRENCY,F55_ICC, 
+			F60,        F61,		F64_MAC
+		  
+	  },
+	  /*73 TRAN_AUTH_CANCEL_REVERSAL*/
+	  {
+		    F02_PAN,    
+		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
+		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F38_AUTH,	
+			F39_RSP,	F40,		F41_TID,    F42_ACCID,
+			F49_CURRENCY,F55_ICC, 
+			F60,        F61,		F64_MAC
+		  
+	  },
+	  /*74 TRAN_AUTH_COMPLETE_REVERSAL*/
+	  {
+		    F02_PAN,    
+		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
+		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F38_AUTH,	
+			F39_RSP,	F40,		F41_TID,    F42_ACCID,
+			F49_CURRENCY,F55_ICC, 
+			F60,        F61,		F64_MAC
+		  
+	  },
+	  /*75 TRAN_AUTH_COMPLETE_CANCEL_REVERSAL*/
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 

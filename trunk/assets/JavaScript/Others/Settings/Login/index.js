@@ -9,77 +9,84 @@
   var g_userName
   
 
-    function onLogin(msg) {
-      var params = JSON.parse(msg)
-      // if (params.userName == "") {
-      // Scene.alert("请输入账号。", null)
-      // return
-      // }
-      // if (params.pwd == 0) {
-      // Scene.alert("请输入密码。", null)
-      // return
-      // }
-      gotoLogin(params)
-    }
+	function onLogin(msg) {
+	  var params = JSON.parse(msg)
+	
+	  gotoLogin(params)
+	}
 
-    function gotoLogin(params) {
-      var req = {
-        merchId: window.user.merchId,
-        iposId: window.user.machineId,
-        operatorId: params.userName,
-        pwd: params.pwd,
-      }
-      g_userName = params.userName
-      //	req.operatorId = "operator"
-      //	 req.pwd = "1111111!"
-      //req.pwd = "111111aA"
 
-      // req.merchId = "_TDS_" + req.merchId
-      // req.iposId = "_TDS_" + req.iposId
-      // req.operatorId = "_TDS_" + req.operatorId
-      // req.pwd = "_TDS_" + req.pwd
-      // req.headerCrypt = true
-      g_loginReq = req
-      var data = {
-        typeOf8583: "login"
-      }
-      window.data8583.get8583(data, actionAfterConvert)
-    }
+	function gotoLogin(params) {
+		var req = {
+		  merchId: params.merchId,
+		  operator: params.userName,
+		  pwd: params.pwd,
+		  iposSn: params.ssn,
+		}
 
-    function actionAfterConvert(data) {
-      var req = g_loginReq
-      req.loginData = data.data8583
-      Net.connect("merchant/login", req, actionAfterLogin)
-    }
+		g_loginReq = req
+		Net.connect("msc/user/login", req, actionAfterVerifyLogin)  //For real envir.
+	}
+	
 
-    function actionAfterLogin(data) {
-      g_loginRes = data
-      var params = {
-        data8583: data.data
-      }
-      window.data8583.convert8583(params, actionAfterConvertLoginRes)
-    }
+	function actionAfterVerifyLogin(data){
+		g_loginRes = data;
+		if("0" == g_loginRes.loginCount){
+		  	/*
+		  	此处跳转密码修改界面。密码界面修改完成后重新跳转至登录界面。
+		  	*/
+		  	var params = {
+					shouldRemoveCurCtrl: true
+				}
+		  	Scene.showScene("ModifyPwd","",params);
+			return;
+		  }		
+		if ("0" == g_loginRes.responseCode) {
+			/*if(g_loginRes.gradeId == "1"){
+				Scene.alert("非操作员权限，请重新输入操作员账户！",backLogin);
+				return;
+			}*/
+			g_loginRes.userName = g_loginReq.operator;
+			g_loginRes.userStatus = g_loginRes.responseCode;
+			RMS.read("merchant",getParamsVersion);
+			
+		} else {
+			Scene.alert(g_loginRes.errorMsg)
+		}	
 
-    function actionAfterConvertLoginRes(data) {
-      if ("00" != data.resCode) {
-        Scene.alert(data.resMessage)
-        return
-      };
-      if ("0" == g_loginRes.userStatus) {
+		function getParamsVersion(verParams){
+			
+			var params = {
+				merchId : g_loginReq.merchId,
+				machineId : g_loginRes.iposId,
+				operator: g_loginRes.userName,
+				payParamVersion: g_loginRes.payParamVersion,
+			}
+			RMS.save("merchant",params);
+			
+			window.user.init(g_loginRes);
+			window.user.merchId = g_loginReq.merchId;
+			window.user.machineId = g_loginRes.iposId;
+			window.user.userName = g_loginRes.userName;
+			window.user.gradeId = g_loginRes.gradeId;
+			//SettingsIndex.getMerchantInfoAfterLogin();
+			if(g_loginRes.payParamVersion != verParams.payParamVersion){
+				var mParam = {
+					shouldRemoveCurCtrl: false,
+				};
+				Scene.showScene("SettingsDownload", "", mParam);
+			}else{
+				window.user.reloginAction(g_loginRes);
+			}
+		}
+	}
+    
+	function backLogin(){
+		/*登录界面*/
+		Scene.goBack("Login");
 
-        g_loginRes.transTime = data.transTime;
-		g_loginRes.userName = g_userName;
-        delete g_loginRes.data;
-        //ServiceMerchInfo.setInfo(g_loginRes);
+	}
 
-        window.user.init(g_loginRes)
-        window.user.userName = g_userName
-        window.user.reloginAction(g_loginRes)
-        SettingsIndex.getMerchantInfoAfterLogin();
-      } else {
-        Scene.alert(g_loginRes.errorMsg)
-      }
-    }
 
 
 	/*	
@@ -118,11 +125,21 @@
 		gradeId为："1":高权限，"2":低
     */
     if(data.gradeId == "1"){
-    	Scene.alert("权限确认成功！",function(){
-    	currentStep = Pay.cacheData.step;
-    	currentTag = Pay.cacheData.flowList[currentStep].packTag;
-    	Pay.cacheData.step = currentStep + 1;
-    	Pay.gotoFlow();});
+    	if (ConsumptionData.dataForPayment.payKeyIndex == "90") {
+    		
+	    	Scene.alert("权限确认成功",function(){
+		    	var sceneName = "MisposController";
+  				Scene.goBack("Home");
+  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
+	    	});
+    	} else {
+    		
+	    	Scene.alert("权限确认成功",function(){
+	    	currentStep = Pay.cacheData.step;
+	    	currentTag = Pay.cacheData.flowList[currentStep].packTag;
+	    	Pay.cacheData.step = currentStep + 1;
+	    	Pay.gotoFlow();});
+    	}
     }else{
     	Scene.alert("权限确认失败！",goback);
     	
@@ -133,10 +150,10 @@
 		 var req = {
         merchId: window.user.merchId,
         iposId: window.user.machineId,
-        operatorId: params.userName,
+        operator: params.userName,
         pwd: params.pwd,
       }
-	Net.connect("merchant/verifyLogin", req, afterConfirmLogin);
+	Net.connect("msc/user/verify", req, afterConfirmLogin);
 		
 	}
   

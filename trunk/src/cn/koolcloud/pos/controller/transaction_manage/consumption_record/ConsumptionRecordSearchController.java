@@ -173,6 +173,7 @@ public class ConsumptionRecordSearchController extends BaseController {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		finish();
 		onCall("ConsumptionRecordSearch.onConfirm", msg);
 	}
 

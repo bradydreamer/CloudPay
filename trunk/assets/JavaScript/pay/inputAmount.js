@@ -30,7 +30,7 @@
     }
     Pay.cacheData.transAmount = "";
     Pay.cacheData[currentTag] = null;
-    Pay.cacheData.step = currentStep;
+    Pay.cacheData.step = null;
   }
 
   window.InputAmount = {

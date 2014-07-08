@@ -40,21 +40,21 @@ public class WelcomeScreen extends Activity {
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		
+		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
 		if (hasFocus && !hasInit) {
-			mainHandler.post(new Runnable() {
+			mainHandler.postDelayed(new Runnable() {
 				
 				@Override
 				public void run() {
 					initApp();
 					startScene();
 				}
-			});
+			}, 1500);
 			
 			hasInit = true;
 		}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/main_page_bg_bitmap" >
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:id="@+id/indicatorMisposLayout"
+        android:orientation="vertical">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mispos_swipter"/>
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/indicatorTextView"
+            android:layout_marginTop="30dp"
+            android:text="@string/mispos_onperate_on_mispos"
+            android:textSize="@dimen/mispos_common_text_size"/>
+
+    </LinearLayout>
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:id="@+id/commonMisposLayout">
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/commonTextView"
+            android:text="@string/mispos_onperate_on_mispos"
+            android:textSize="@dimen/mispos_common_text_size"/>
+
+    </LinearLayout>
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:id="@+id/balanceLayout">
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/balanceAmountTextView"
+            android:textSize="@dimen/mispos_balance_text_size"/>
+    </LinearLayout>
+    <include 
+        android:id="@+id/orderDetailslayout"
+        layout="@layout/activity_mispos_order_details_layout"/>
+</LinearLayout>

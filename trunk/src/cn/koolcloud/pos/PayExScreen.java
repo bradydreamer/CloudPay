@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ValueCallback;
 import cn.koolcloud.pos.controller.BaseController;
@@ -40,7 +41,9 @@ public class PayExScreen extends WelcomeScreen {
 			String transAmount = intent.getStringExtra("transAmount");
 			String openBrh = intent.getStringExtra("openBrh");
 			String paymentId = intent.getStringExtra("paymentId");
-			initPay(pMethod, transAmount, openBrh, paymentId);
+			String packageName = intent.getStringExtra("packageName");
+			String orderNo = intent.getStringExtra("orderNo");
+			initPay(pMethod, transAmount, openBrh, paymentId, packageName, orderNo);
 		} else if (ACTION_MERCH_INFO.equalsIgnoreCase(action)) {
 
 		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
@@ -154,12 +157,14 @@ public class PayExScreen extends WelcomeScreen {
 	}
 
 	public void initPay(String pMethod, String transAmount, String openBrh,
-			String paymentId) {
+			String paymentId, String packageName, String orderNo) {
 		payInfo = new PayInfo();
 		payInfo.pMethod = pMethod;
 		payInfo.transAmount = transAmount;
 		payInfo.openBrh = openBrh;
 		payInfo.paymentId = paymentId;
+		payInfo.packageName = packageName;
+		payInfo.orderNo = orderNo;
 	}
 
 	private void startPay() {
@@ -173,6 +178,12 @@ public class PayExScreen extends WelcomeScreen {
 			}
 			if (payInfo.paymentId != null) {
 				msg.put("paymentId", payInfo.paymentId);
+			}
+			if (!TextUtils.isEmpty(payInfo.packageName)) {
+				msg.put("packageName", payInfo.packageName);
+			}
+			if (!TextUtils.isEmpty(payInfo.orderNo)) {
+				msg.put("orderNo", payInfo.orderNo);
 			}
 		} catch (Exception e) {
 
@@ -274,5 +285,7 @@ public class PayExScreen extends WelcomeScreen {
 		public String transAmount;
 		public String openBrh;
 		public String paymentId;
+		public String packageName;
+		public String orderNo;
 	}
 }

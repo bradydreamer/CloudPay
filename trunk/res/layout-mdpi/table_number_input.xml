@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="775dp"
+    android:layout_width="780dp"
     android:layout_height="wrap_content" >
     
 	<TableRow 
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="0dp"
         >
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_7"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber7"
             />
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_8"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber8"
             />
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_9"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber9"
             />
-        <ImageButton 
+        <ImageView 
 	        android:src="@drawable/table_number_input_0"
 	        style="@style/table_number_input_btn_style_small"
 	        android:onClick="onClickBtnNumber0"
          	/>
-        <ImageButton 
+        <ImageView 
 	        android:src="@drawable/table_number_input_back"
 	        style="@style/table_number_input_btn_style_for_back"
 	        android:onClick="onClickBtnNumberBack"
@@ -34,25 +34,25 @@
     </TableRow>
     
     <TableRow 
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="0dp"
         >
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_4"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber4"
             />
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_5"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber5"
             />
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_6"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber6"
             />
         
-        <ImageButton 
+        <ImageView 
 	         android:src="@drawable/table_number_input_c"
 	         android:layout_span="2" 
 	         style="@style/table_number_input_btn_style_big"
@@ -63,23 +63,23 @@
     <TableRow 
         >
 
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_1"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber1"
             />
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_2"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber2"
             />
-        <ImageButton 
+        <ImageView 
             android:src="@drawable/table_number_input_3"
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber3"
             />
                 
-        <ImageButton 
+        <ImageView 
 	         android:src="@drawable/table_number_input_ok"
 	         android:layout_span="2"
 	         style="@style/table_number_input_btn_style_big"

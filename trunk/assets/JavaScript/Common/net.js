@@ -3,7 +3,12 @@
   if (window.Net) {
     return;
   };
-
+  
+  var _sessionId = "";
+  var _keyExchange = false;
+  var _callbackQueue = {};
+  var _customAction = "";
+  
   function isActionEqual(specAction, action, params) {
     if ((null != action && -1 != action.search(specAction))
       || (null != params && -1 != JSON.stringify(params).search(specAction))) {
@@ -15,10 +20,15 @@
 
   function checkTransReverse(action, params, callBack) {
     if (!isActionEqual("base/verifyVersion", action, params) 
-        && !isActionEqual("merchant/login", action, params)
-        && !isActionEqual("merchant/reverse", action, params)
-        && !isActionEqual("merchant/cancel", action, params)
-        && !isActionEqual("merchant/transBatch", action, params)) {
+        && !isActionEqual("msc/user/login", action, params)
+        && !isActionEqual("msc/pay/reverse", action, params)
+        && !isActionEqual("msc/pay/signin", action, params)
+        && !isActionEqual("msc/pay/consume/cancel", action, params)
+        && !isActionEqual("merchant/transBatch", action, params)
+        && !isActionEqual("msc/txn/update",action, params)
+        && !isActionEqual("msc/payment/info/query", action, params)
+	&& !isActionEqual("msc/payment/template/query", action, params)
+        && !isActionEqual("msc/cust/info/query", action, params)) {
       Pay.reverseOrder(callBack);
     } else {
       if (callBack) {
@@ -28,32 +38,68 @@
   }
 
   function saveTransData(action, params) {
-    if (isActionEqual("merchant/pay", action, params)) {
+    if (action == "msc/pay/consume") {
       var value = {
         "type": "reverse",
         "subType": "zhifuchongzheng",
         "data": params.data,
         "trans8583": params.data,
         "transDate": "",
+        "brhKeyIndex":ConsumptionData.dataForPayment.brhKeyIndex,
       };
       window.RMS.save("savedTransData", value);
-    } else if (isActionEqual("merchant/cancel", action, params)) {
+    } else if (action == "msc/pay/consume/cancel") {
       var value = {
         "type": "reverse",
         "subType": "chexiaochongzheng",
         "data": params.data,
         "trans8583": params.data,
         "transDate": ConsumptionData.dataForCancellingOrder.transDate,
-      }
+        "brhKeyIndex":ConsumptionData.dataForPayment.brhKeyIndex,
+      };
       window.RMS.save("savedTransData", value);
-    };
+    }else if (action == "msc/pay/prepaid") {
+       var value = {
+        "type": "reverse",
+        "subType": "preauthreverse",
+        "data": params.data,
+        "trans8583": params.data,
+        "transDate": ConsumptionData.dataForCancellingOrder.transDate,
+        "brhKeyIndex":ConsumptionData.dataForPayment.brhKeyIndex,
+      };
+      window.RMS.save("savedTransData", value);
+    }else if (action == "msc/pay/prepaid/over") {
+      var value = {
+        "type": "reverse",
+        "subType": "preauthcompletereverse",
+        "data": params.data,
+        "trans8583": params.data,
+        "transDate": ConsumptionData.dataForCancellingOrder.transDate,
+        "brhKeyIndex":ConsumptionData.dataForPayment.brhKeyIndex,
+      };
+      window.RMS.save("savedTransData", value);
+    }else if (action == "msc/pay/prepaid/cancel") {
+      var value = {
+        "type": "reverse",
+        "subType": "preauthcancelreverse",
+        "data": params.data,
+        "trans8583": params.data,
+        "transDate": ConsumptionData.dataForCancellingOrder.transDate,
+        "brhKeyIndex":ConsumptionData.dataForPayment.brhKeyIndex,
+      };
+      window.RMS.save("savedTransData", value);
+    }else if (action == "msc/pay/prepaid/over/cancel") {
+      var value = {
+        "type": "reverse",
+        "subType": "preauthcompletecancelreverse",
+        "data": params.data,
+        "trans8583": params.data,
+        "transDate": ConsumptionData.dataForCancellingOrder.transDate,
+        "brhKeyIndex":ConsumptionData.dataForPayment.brhKeyIndex,
+      };
+      window.RMS.save("savedTransData", value);
+    }
   }
-
-  var _sessionId = "";
-  var _keyExchange = false;
-  var _callbackQueue = {};
-  var _customAction = "";
-
 
   function asynConnect(action, params, callbackfunc, isCustom) {
     connect(action, params, callbackfunc, isCustom, true);
@@ -68,8 +114,19 @@
   }
 
   function gotoConnect(action, params, callbackfunc, isCustom, isAsyn) {
-  	if(action == "merchant/transBatch"){
-  		action = "merchant/pay"
+  	if( action == "msc/pay/signin" ||
+  			action == "msc/pay/consume" ||
+  			action == "msc/pay/consume/cancel" ||
+  			action == "msc/pay/refund" ||
+  			action == "msc/pay/reverse" ||
+  			action == "msc/pay/signout" ||
+  			action == "msc/pay/batch/settle" ||
+  			action == "msc/pay/prepaid" ||
+  			action == "msc/pay/prepaid/over" ||
+  			action == "msc/pay/prepaid/over/offline" ||
+  			action == "msc/pay/prepaid/cancel" ||
+  			action == "msc/pay/prepaid/over/cancel"){
+  		action = "txn/"+ConsumptionData.dataForPayment.brhKeyIndex;
   	}
     var reqData = _request(action, params, callbackfunc);
     _customAction = isCustom ? action : "";
@@ -121,9 +178,9 @@
         if (data.action == null || data.action.length == 0) {
           if (_customAction == "") {
             if (data.errorMsg != null) {
-              Scene.alert(data.errorMsg)
+              Scene.alert(data.errorMsg,actionAfterError)
             } else {
-              Scene.alert("通信故障")
+              Scene.alert("通信故障",actionAfterError)
             }
           } else {
             var func = _callbackQueue[_customAction];
@@ -133,28 +190,21 @@
           };
           return;
         };
-
         var func = _callbackQueue[data.action];
-
         if (func) {
-          var delay = 10 + 300 * parseInt(index);
-          _responseForActionDelay(data, func, delay);
-        }
-
-        function _responseForActionDelay(data, func, delay) {
-          setTimeout(function() {
-            var result = _responseForAction(data, func);
-            if (result != "1") { //keep func
-              delete _callbackQueue[data.action];
-            };
-          }, delay);
+			delete _callbackQueue[data.action];
+			_responseForAction(data, func);
         }
       }
     }
   }
+  
+  function actionAfterError(){
+	  Scene.goBack("Home"); 
+  }
+  
 
   function _responseForAction(data, func) {
-
     if (data.action == _customAction) {
       return func(data)
     }
@@ -171,7 +221,7 @@
       "body": [],
     };
 	
-	if(action == "merchant/login")
+	if(action == "msc/user/login")
 	{
 		_sessionId = "-1";
 	}

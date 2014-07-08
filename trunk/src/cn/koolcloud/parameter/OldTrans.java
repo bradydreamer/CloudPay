@@ -3,51 +3,52 @@ package cn.koolcloud.parameter;
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.util.StringUtil;
 
-public class OldTrans implements Constant{
+public class OldTrans implements Constant {
 	final boolean GUANGDONG_CUP = true;
-	
-	private String oldPan;			//主帐号
-	
+
+	private String oldPan; // 主帐号
+
 	private int transType;
-	
-	// 原始交易信息 
-	private Integer oldTransAmount;//交易金额
-	private Integer oldTrace;		//流水号
-	private String oldTransYear; 	// YYYY
-    private String oldTransDate; 	// MMDD
-    private String oldTransTime;	// 
-    private String oldExpiry;		// 卡有效期(Date Of Expired)
-    private String oldAcquirerCode;// 受理方标识码(Acquiring Institution Identification Code)
-    private String oldRrn;			// 检索参考号(Retrieval Reference Number)
-    private String oldAuthCode = "";	// 授权标识应答码(Authorization Identification Response)
-    private byte[] oldResponseCode = null;//应答码
-    protected String oldAcquirerID;//收单机构标识码
-    protected String oldIssuerID;	//接收机构标识码  
-    private Integer oldBatch;		//批次号
-    private String oldTID;			//
-    private String oldMID;			//
-    private String koolCloudTID;			//KoolCloud terminal id
-    private String koolCloudMID;			//KoolCloud merchant id
-    private String oldMertName;				//Merchant Name
-    private String paymentName;				//payment Name
-    private String paymentId;				//payment ID
-    private String alipayPId;				//alipay PID
-    private String alipayAccount;			//alipay account
-    private String alipayTransactionID;		//alipay Transaction ID
+
+	// 原始交易信息
+	private Long oldTransAmount;// 交易金额
+	private Integer oldTrace; // 流水号
+	private String oldTransYear; // YYYY
+	private String oldTransDate; // MMDD
+	private String oldTransTime; //
+	private String oldExpiry; // 卡有效期(Date Of Expired)
+	private String oldAcquirerCode;// 受理方标识码(Acquiring Institution
+									// Identification Code)
+	private String oldRrn; // 检索参考号(Retrieval Reference Number)
+	private String oldAuthCode = ""; // 授权标识应答码(Authorization Identification
+										// Response)
+	private byte[] oldResponseCode = null;// 应答码
+	protected String oldAcquirerID;// 收单机构标识码
+	protected String oldIssuerID; // 接收机构标识码
+	private Integer oldBatch = 0; // 批次号
+	private String oldTID; //
+	private String oldMID; //
+	private String koolCloudTID; // KoolCloud terminal id
+	private String koolCloudMID; // KoolCloud merchant id
+	private String oldMertName; // Merchant Name
+	private String paymentName; // payment Name
+	private String paymentId; // payment ID
+	private String alipayPId; // alipay PID
+	private String alipayAccount; // alipay account
+	private String alipayTransactionID; // alipay Transaction ID
 
 	private byte oldEntryMode;
 	private byte oldPinMode;
 
-    private String oldPayOrderBatch = "";	//通联订单批次号。
-    private String oldApOrderId = "";		//通联订单号
-    private String oldSale_F40_Type;	//交易类型
-    private String oldOpenBrh = "";		//机构号
-    private String oldCardId = "";		//其他卡号
+	private String oldPayOrderBatch = ""; // 通联订单批次号。
+	private String oldApOrderId = ""; // 通联订单号
+	private String oldSale_F40_Type; // 交易类型
+	private String oldOpenBrh = ""; // 机构号
+	private String oldCardId = ""; // 其他卡号
 
-    private String oldCardOrganization; //国际卡组织: 
-    
-    private String oper;				//操作员
-    
+	private String oldCardOrganization; // 国际卡组织:
+
+	private String oper; // 操作员
 
 	public String getKoolCloudTID() {
 		return koolCloudTID;
@@ -190,7 +191,7 @@ public class OldTrans implements Constant{
 	}
 
 	private String oldProcesscode;
-    
+
 	public String getOldProcesscode() {
 		return oldProcesscode;
 	}
@@ -207,7 +208,6 @@ public class OldTrans implements Constant{
 		this.oldPan = oldPan;
 	}
 
-
 	public String getOldTID() {
 		return oldTID;
 	}
@@ -216,9 +216,10 @@ public class OldTrans implements Constant{
 		this.oldTID = oldTID;
 	}
 
-	// For Reversal 
-    private byte reversalTimes;
-    public Integer getOldBatch() {
+	// For Reversal
+	private byte reversalTimes;
+
+	public Integer getOldBatch() {
 		return oldBatch;
 	}
 
@@ -227,7 +228,7 @@ public class OldTrans implements Constant{
 	}
 
 	private byte reversalReason;
-    
+
 	public byte getReversalTimes() {
 		return reversalTimes;
 	}
@@ -245,16 +246,15 @@ public class OldTrans implements Constant{
 	}
 
 	// responseCode
-    public byte[] getResponseCode()
-    {
-    	return oldResponseCode;
-    }
-    
-    public Integer getOldTransAmount() {
+	public byte[] getResponseCode() {
+		return oldResponseCode;
+	}
+
+	public Long getOldTransAmount() {
 		return oldTransAmount;
 	}
 
-	public void setOldTransAmount(Integer oldTransAmount) {
+	public void setOldTransAmount(Long oldTransAmount) {
 		this.oldTransAmount = oldTransAmount;
 	}
 
@@ -267,10 +267,10 @@ public class OldTrans implements Constant{
 	}
 
 	public String getOldTransYear() {
-		if(oldTransYear == null){
+		if (oldTransYear == null) {
 			oldTransYear = "" + UtilFor8583.getInstance().currentYear;
 		}
-		
+
 		return oldTransYear;
 	}
 
@@ -279,7 +279,7 @@ public class OldTrans implements Constant{
 	}
 
 	public String getOldTransDate() {
-		
+
 		return oldTransDate;
 	}
 

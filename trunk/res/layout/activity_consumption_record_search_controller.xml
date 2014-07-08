@@ -1,17 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
    	xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
     android:orientation="vertical"
-     >
+    android:background="@drawable/main_page_bg_bitmap" >
 
 	<TextView 
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="10dp"
 	    android:layout_marginBottom="10dp"
-	    android:textSize="30sp"
+	    android:textSize="@dimen/consumption_record_search_textview_size"
 	    android:textColor="@color/color_for_historical_consumption_search_text"
         android:text="@string/consumption_record_search_tv_startDate"
         />
@@ -23,7 +23,7 @@
 	    android:layout_marginBottom="50dp"
 	    android:paddingLeft="40dp"
 	    android:background="@drawable/datetimeinput"
-	    android:textSize="30sp"
+	    android:textSize="@dimen/consumption_record_search_edittext_size"
 	    android:textColor="@color/color_for_historical_consumption_search_edittext"
         android:focusable="false"
         android:inputType="date"
@@ -36,7 +36,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="10dp"
 	    android:layout_marginBottom="10dp"
-	    android:textSize="30sp"
+	    android:textSize="@dimen/consumption_record_search_textview_size"
         android:text="@string/consumption_record_search_tv_endDate"
         android:textColor="@color/color_for_historical_consumption_search_text"
         />
@@ -47,7 +47,7 @@
 	    android:layout_height="wrap_content"
 	    android:paddingLeft="40dp"
 	    android:background="@drawable/datetimeinput"
-	    android:textSize="30sp"
+	    android:textSize="@dimen/consumption_record_search_edittext_size"
 	    android:textColor="@color/color_for_historical_consumption_search_edittext"
         android:focusable="false"
         android:inputType="date"
@@ -56,13 +56,13 @@
 
     
     <Button 
-        android:layout_width="540dp"
-	    android:layout_height="80dp"
+        android:layout_width="@dimen/login_search_btn_width"
+	    android:layout_height="@dimen/login_search_btn_height"
         android:layout_marginTop="100dp"
         android:text="@string/consumption_record_search_btn_confirm_text"
         android:textColor="@android:color/white"
-        android:textSize="30sp"
-        android:background="@drawable/historical_consumption_button_ok_background"
+        android:textSize="@dimen/login_search_btn_text_size"
+        android:background="@drawable/button_blue_background"
         android:onClick="onConfirm"
         />
    

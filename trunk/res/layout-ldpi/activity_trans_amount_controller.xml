@@ -4,6 +4,7 @@
    	android:layout_height="match_parent"
     android:orientation="horizontal"
    	android:gravity="center"
+   	android:background="@drawable/main_page_bg_bitmap"
     >
  <!--     
     <ImageView 
@@ -37,7 +38,7 @@
 		        android:gravity="right|center_vertical"
 		        android:paddingRight="20dp"
 		        android:textColor="@android:color/white"
-		        android:maxLength="8"
+		        android:maxLength="9"
 		        />
 	    	
 	        <include 

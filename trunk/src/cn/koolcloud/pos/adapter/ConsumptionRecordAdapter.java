@@ -36,13 +36,11 @@ public class ConsumptionRecordAdapter  extends LoadMoreAdapter {
 		JSONObject recordData = this.list.get(position);
 		recordViewHolder.tv_transType.setText(recordData.optString("transTypeDesc"));
 		recordViewHolder.tv_payType.setText(recordData.optString("payTypeDesc"));
-		recordViewHolder.tv_rrn.setText(recordData.optString("ref"));
+		recordViewHolder.tv_rrn.setText(recordData.optString("refNo"));
 		recordViewHolder.tv_transDate.setText(recordData.optString("tDate"));
 		recordViewHolder.tv_transTime.setText(recordData.optString("tTime"));
 		recordViewHolder.tv_transAmount.setText(recordData.optString("transAmount"));
 		recordViewHolder.tv_orderStatus.setText(recordData.optString("orderStateDesc"));
-		
-		convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
 		
 		return convertView;
 	}

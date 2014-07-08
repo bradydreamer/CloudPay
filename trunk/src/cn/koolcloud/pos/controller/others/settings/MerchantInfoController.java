@@ -1,15 +1,33 @@
 package cn.koolcloud.pos.controller.others.settings;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.widget.ListView;
 import android.widget.TextView;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.adapter.AcquireListAdapter;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.entity.AcquireInstituteBean;
+import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForJSON;
 
 public class MerchantInfoController extends BaseController {
-
+	
+	private final int HANDLE_ACQUIRE_INSTITUTES = 0;
 	private boolean removeJSTag = true;
+	private ListView acquireInstituteList;
+	
+	private List<AcquireInstituteBean> dataSource = new ArrayList<AcquireInstituteBean>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,13 +36,11 @@ public class MerchantInfoController extends BaseController {
 			finish();
 			return;
 		}
-		JSONObject data = formData
-				.optJSONObject(getString(R.string.formData_key_data));
+		JSONObject data = formData.optJSONObject(getString(R.string.formData_key_data));
 		if (null != data) {
 			String merchId = data.optString("merchId");
 			String machineId = data.optString("machineId");
 			String merchName = data.optString("merchName");
-			String merchAccount = data.optString("merchAccount");
 
 			TextView tv_merchId = (TextView) findViewById(R.id.merchant_info_tv_merchId);
 			tv_merchId.setText(merchId);
@@ -32,9 +48,34 @@ public class MerchantInfoController extends BaseController {
 			tv_machineId.setText(machineId);
 			TextView tv_merchName = (TextView) findViewById(R.id.merchant_info_tv_merchName);
 			tv_merchName.setText(merchName);
-			TextView tv_merchAccount = (TextView) findViewById(R.id.merchant_info_tv_merchAccount);
-			tv_merchAccount.setText(merchAccount);
 		}
+		
+		findViews();
+	}
+	
+	private Handler mHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case HANDLE_ACQUIRE_INSTITUTES:
+				if (null != dataSource && dataSource.size() > 0) {
+					AcquireListAdapter acquireListAdapter = new AcquireListAdapter(dataSource, MerchantInfoController.this);
+					acquireInstituteList.setAdapter(acquireListAdapter);
+					acquireListAdapter.notifyDataSetChanged();
+				}
+				
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
+	
+	private void findViews() {
+		acquireInstituteList = (ListView) findViewById(R.id.acquireInstituteList);
+		new LoadAcquireInstitutesThread().start();
 	}
 
 	@Override
@@ -69,6 +110,29 @@ public class MerchantInfoController extends BaseController {
 	protected boolean getRemoveJSTag() {
 		// TODO Auto-generated method stub
 		return removeJSTag;
+	}
+	
+	class LoadAcquireInstitutesThread extends Thread {
+
+		@Override
+		public void run() {
+			Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(MerchantInfoController.this, "merchSettings");
+			JSONArray jsonArray = null;
+			if (map.containsKey("settingString")) {
+				String jsArrayStr = String.valueOf(map.get("settingString"));
+				try {
+					jsonArray = new JSONArray(jsArrayStr);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				dataSource = UtilForJSON.parseJsonArray2AcquireInstitute(jsonArray);
+			}
+			
+			Message msg = mHandler.obtainMessage();
+			msg.what = HANDLE_ACQUIRE_INSTITUTES;
+			msg.obj = dataSource;
+			mHandler.sendMessage(msg);
+		}
 	}
 
 }

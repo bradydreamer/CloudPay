@@ -2,15 +2,20 @@ package cn.koolcloud.pos.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +24,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
+import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -29,15 +36,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public abstract class BaseHomeController extends BaseController {
 
 	protected LinearLayout layout_funcModule;
-	private View selectedBtn;
+	public View selectedBtn;
 
 	protected LinearLayout home_layout;
 
 	protected ViewPager viewPager;
 	protected ViewPagerIndicator pageIndicator;
 
-	private final String INIT = "init";
+	public final String INIT = "init";
 	private Map<Integer, String> recordMap = new HashMap<Integer, String>();
+	public static List<Activity> activityList = new LinkedList<Activity>();
 
 	private int drawableId[] = new int[4];
 
@@ -50,23 +58,43 @@ public abstract class BaseHomeController extends BaseController {
 		super.onCreate(savedInstanceState);
 
 		initHomeTitlebar();
-
+		// activity collections
+		activityList.add(this);
 		layout_funcModule = (LinearLayout) findViewById(R.id.home_layout_funcModule);
 		home_layout = (LinearLayout) findViewById(R.id.home_layout);
 
 		viewPager = (ViewPager) findViewById(R.id.home_viewpager);
 		pageIndicator = (ViewPagerIndicator) findViewById(R.id.home_indicator);
 
-		onCall("Home.updateTransInfo", null);
+		// start update trans info after devices checking on 23th May -- start
+		// onCall("Home.updateTransInfo", null);
+		// start update trans info after devices checking on 23th May -- end
 	}
 
-	private void initHomeTitlebar() {
+	protected void initHomeTitlebar() {
 
 		/*
 		 * home activity hide left and right title button.
 		 */
-		setLeftButtonHidden();
+		setTitleHidden();
+		setLeftButton(R.drawable.ic_launcher_home_48);
 		setRightButtonHidden();
+	}
+
+	@Override
+	protected void setLeftButton(int resourceId) {
+		Drawable leftPic = getResources().getDrawable(resourceId);
+		leftPic.setBounds(0, 0, leftPic.getIntrinsicWidth(),
+				leftPic.getMinimumHeight());
+		titlebar_btn_left.setCompoundDrawables(leftPic, null, null, null);
+		titlebar_btn_left.setText(getTitlebarTitle());
+		titlebar_btn_left.setVisibility(View.VISIBLE);
+		titlebar_btn_left.setBackgroundDrawable(null);
+	}
+
+	@Override
+	public void onClickLeftButton(View view) {
+
 	}
 
 	@Override
@@ -102,7 +130,7 @@ public abstract class BaseHomeController extends BaseController {
 		super.setView(view, key, value);
 	}
 
-	private void updateLayoutFuncModule(JSONArray mDataArray) {
+	protected void updateLayoutFuncModule(JSONArray mDataArray) {
 		layout_funcModule.removeAllViews();
 		for (int i = 0; i < mDataArray.length(); i++) {
 			Button btnFuncModule = (Button) LayoutInflater.from(this).inflate(
@@ -126,7 +154,7 @@ public abstract class BaseHomeController extends BaseController {
 		}
 	}
 
-	private void setMethods(JSONArray mDataArray) {
+	protected void setMethods(JSONArray mDataArray) {
 		Log.d(TAG, "setMethods mDataArray : " + mDataArray);
 		int count = mDataArray.length();
 		int index = 0;
@@ -173,7 +201,7 @@ public abstract class BaseHomeController extends BaseController {
 		viewPager.setAdapter(new HomePagerAdapter(viewList));
 	}
 
-	private void updateMethodBtn(LinearLayout methodBtn, JSONObject data) {
+	protected void updateMethodBtn(LinearLayout methodBtn, JSONObject data) {
 		for (int i = 0; i < methodBtn.getChildCount(); i++) {
 			View v = methodBtn.getChildAt(i);
 			if (v instanceof ImageView) {
@@ -203,8 +231,16 @@ public abstract class BaseHomeController extends BaseController {
 						iv.setImageResource(R.drawable.logo_quickpay);
 					} else if (imageName.startsWith("logo_search_balance")) {
 						iv.setImageResource(R.drawable.logo_search_balance);
+					} else if (imageName.startsWith("logo_test")) {
+						iv.setImageResource(R.drawable.logo_test);
+					} else if (imageName.startsWith("logo_unionpay")) {
+						iv.setImageResource(R.drawable.logo_unionpay);
+					} else if (imageName.startsWith("logo_wechat")) {
+						iv.setImageResource(R.drawable.logo_wechat);
+					} else if (imageName.startsWith("logo_fufeitong")) {
+						iv.setImageResource(R.drawable.logo_fufeitong);
 					}
-					iv.setBackgroundResource(R.drawable.icon_bg);
+					// iv.setBackgroundResource(R.drawable.icon_bg);
 				}
 			} else {
 				TextView tv = (TextView) v;
@@ -218,14 +254,50 @@ public abstract class BaseHomeController extends BaseController {
 		@Override
 		public void onClick(View view) {
 			String tag = view.getTag().toString();
+			// get index no (90) from tag then using for mispos --start mod by
+			// Teddy on 1th July
 
+			String indexNo = "";
+			String tranType = "";
+			String paymentId = "";
 			JSONObject msg = new JSONObject();
 			try {
+				JSONObject tagObj = new JSONObject(tag);
+				// indexNo = "90";
+				indexNo = tagObj.getString("brhKeyIndex");
+				tranType = tagObj.getString(MisposController.KEY_TRAN_TYPE);
+				paymentId = tagObj.getString("paymentId");
+
 				msg.put("tag", tag);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			onCall("PayMethod.onConfirmMethod", msg);
+			if (!TextUtils.isEmpty(indexNo)
+					&& indexNo.equals(ConstantUtils.MISPOS_INDEX)) {
+				// Intent mIntent = new Intent(BaseHomeController.this,
+				// MisposController.class);
+				// mIntent.putExtra(MisposController.KEY_TRAN_TYPE, tranType);
+				// mIntent.putExtra(MisposController.KEY_INDEX_NO, indexNo);
+				// mIntent.putExtra(MisposController.KEY_PAYMENT_ID, paymentId);
+				// startActivity(mIntent);
+
+				try {
+					JSONObject paramObj = new JSONObject();
+					paramObj.put("typeId", tranType);
+					paramObj.put("payKeyIndex", indexNo);
+					paramObj.put("paymentId", paymentId);
+
+					onCall("window.util.showMisposWithLoginChecked", paramObj);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+			} else {
+				onCall("PayMethod.onConfirmMethod", msg);
+			}
+
+			// get index no (90) from tag then using for mispos --end mod by
+			// Teddy on 1th July
 		}
 	};
 
@@ -265,7 +337,7 @@ public abstract class BaseHomeController extends BaseController {
 	 * @param key
 	 * @param value
 	 */
-	private void addButtonRecording(Integer key, String value) {
+	protected void addButtonRecording(Integer key, String value) {
 		recordMap.put(key, value);
 	}
 
@@ -292,7 +364,7 @@ public abstract class BaseHomeController extends BaseController {
 	 * 
 	 * @param value
 	 */
-	private void changeButtonBackground(String value, int count) {
+	protected void changeButtonBackground(String value, int count) {
 
 		if (value.equals(INIT)) {
 			switch (count) {
@@ -333,6 +405,18 @@ public abstract class BaseHomeController extends BaseController {
 			case 5:
 			default:
 				break;
+			}
+		}
+	}
+
+	protected void exit() {
+		if (activityList != null && activityList.size() > 0) {
+
+			for (int i = 0; i < activityList.size(); i++) {
+				Activity activity = activityList.get(i);
+				if (activity != null) {
+					activity.finish();
+				}
 			}
 		}
 	}

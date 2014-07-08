@@ -213,6 +213,10 @@
     }
     Global.callObjcHandler("readLocal", params, callbackfunc);
   }
+  
+  function readLocalBatch(callbackfunc) {
+    Global.callObjcHandler("readLocalBatch", null, callbackfunc);
+  }
 
   function saveLocal(key, value) {
     var params = {
@@ -228,10 +232,16 @@
     }
     Global.callObjcHandler("clearLocal", params, callbackfunc);
   }
+  
+  function rmBatchByTxnId(data) {
+	Global.callObjcHandler("rmBatchTask", data);
+  }
 
   window.RMS = {
     "read": readLocal,
     "save": saveLocal,
-    "clear": clearLocal
+    "clear": clearLocal,
+    "rmBatchByTxnId": rmBatchByTxnId,
+    "readLocalBatch": readLocalBatch
   };
 })();

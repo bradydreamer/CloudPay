@@ -32,13 +32,27 @@ public class NetEngine {
 	private final static String PREFERENCES_NAME_HTTPCONNECT = "httpconnet";
 	private final static String PREFERENCES_KEY_TERMINAL_ID = "terminalId";
 
-	private static final String HEADER_SESSION_ID = "X-APSessionID"; // sessionid
-	private static final String HEADER_VERSION = "X-APVersion"; // version, the new version is 1.0
-	private static final String HEADER_SIGNATURE = "X-APSignature"; // The data checksum
-	private static final String HEADER_TERMINAL_ID = "X-APTerminalID"; // client user ID
-	private static final String HEADER_CRYPT = "X-APCrypt"; // "" or 0:No Encryption 1:Encryption
-	private static final String HEADER_KEY_EXCHANGE = "X-APKeyExchange"; // The key exchange data
-	private static final String HEADER_KEY_APChannel = "X-APChannel";// channel id
+	private static final String HEADER_SESSION_ID = "X-APSessionID"
+			.toLowerCase(); // sessionid
+	private static final String HEADER_VERSION = "X-APVersion".toLowerCase(); // version,
+																				// the
+																				// new
+																				// version
+																				// is
+																				// 1.0
+	private static final String HEADER_SIGNATURE = "X-APSignature"
+			.toLowerCase(); // The data checksum
+	private static final String HEADER_TERMINAL_ID = "X-APTerminalID"
+			.toLowerCase(); // client user ID
+	private static final String HEADER_CRYPT = "X-APCrypt".toLowerCase(); // ""
+																			// or
+																			// 0:No
+																			// Encryption
+																			// 1:Encryption
+	private static final String HEADER_KEY_EXCHANGE = "X-APKeyExchange"
+			.toLowerCase(); // The key exchange data
+	private static final String HEADER_KEY_APChannel = "X-APChannel"
+			.toLowerCase();// channel id
 
 	private static final int PARAM_ENCRYPT = 0;
 	private static final int PARAM_DECRYPT = 1;
@@ -120,10 +134,10 @@ public class NetEngine {
 		if (null != keyExchange && keyExchange.length() > 0) {
 			SecureEngine se = ClientEngine.engineInstance().secureEngine();
 
-			String kcvStr = keyExchange.substring(0, 32);
+			String kcvStr = keyExchange.substring(0, 64);
 			isKeyExchangeSucc = se.keyCheckValue(kcvStr);
-			if (isKeyExchangeSucc && keyExchange.length() > 32) {
-				String snStr = keyExchange.substring(32);
+			if (isKeyExchangeSucc && keyExchange.length() > 64) {
+				String snStr = keyExchange.substring(64);
 				se.setSn(snStr);
 			}
 		}

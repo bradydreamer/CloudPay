@@ -2,8 +2,12 @@ package cn.koolcloud.pos.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -182,6 +186,48 @@ public class Env {
 	public static Intent getLaunchIntent(Context ctx, String packageName, Map<String, PackageInfo> installedPackage) {
 		return ctx.getPackageManager().getLaunchIntentForPackage(
 				installedPackage.get(packageName).packageName);
+	}
+	
+	public static String getResourceString(Context context, int strId) {
+		return context.getResources().getString(strId);
+	}
+	
+	/**
+	 * @Title: isAppRunning
+	 * @Description: TODO Checks if the application is being sent in the background (i.e behind another application's Activity)
+	 * @param context
+	 * @return true if another application will be above this one.
+	 * @return: boolean
+	 */
+	public static boolean isAppRunning(Context context) {
+	    // check with the first task(task in the foreground)
+	    // in the returned list of tasks
+	    ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+	    List<RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
+	    if (services.get(0).topActivity.getPackageName().toString().equalsIgnoreCase(context.getPackageName().toString())) {
+	        return true;
+	    }
+	    return false;
+	}
+	
+	/**
+	 * @Title: checkApkExist
+	 * @Description: TODO check if the app is installed.
+	 * @param context
+	 * @param packageName
+	 * @return
+	 * @return: boolean
+	 */
+	public static boolean checkApkExist(Context context, String packageName) {
+		if (packageName == null || "".equals(packageName))
+			return false;
+		try {
+//			ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+			context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+			return true;
+		} catch (NameNotFoundException e) {
+			return false;
+		}
 	}
 	
 	public static String getDeviceInfo(Context ctx) {

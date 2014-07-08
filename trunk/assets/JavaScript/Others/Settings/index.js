@@ -11,10 +11,22 @@
 
 		logoutTag = true;
 	  if(window.user.userStatus == null){
-	  	Scene.alert("已签退！");
+	  	Scene.alert("已退出！");
 	  	return;
 	  }
-    transBatch()
+    //transBatch()
+		var req = {      	
+		};
+		Net.connect("msc/user/logout", req, actionAfterLogout);
+		function actionAfterLogout(data){
+			
+			if(data.responseCode == "0"){
+				window.user.init({});
+				Scene.alert("退出成功！");
+			}else{
+				Scene.alert(data.errorMsg);				
+			}
+		}
 	}
 
 	function transBatch(){
@@ -24,11 +36,23 @@
     window.data8583.get8583(data, actionAfterGet)
 	}
 	
-	function actionAfterGet(data) {
-      var req = {      	
+	function actionAfterGet(params) {
+      var req = {
+	  	"data": params.data8583,
+		"paymentId": params.paymentId,
+		"transType": params.transType,
+		"batchNo": params.batchNo,
+		"traceNo": params.traceNo,
+		"transTime": params.transTime,
+		"cardNo": params.cardNo,
+		"transAmount": params.transAmount,
+		"oriTxnId": params.oriTxnId,
+		"oriBatchNo": params.oriBatchNo,
+		"oriTraceNo": params.oriTraceNo,
+		"oriTransTime": params.oriTransTime,
       }
-      req.data = data.data8583
-      Net.connect("merchant/transBatch", req, actionAfterTransBatch)
+
+      Net.connect("txn/00", req, actionAfterTransBatch)
   }
 
 	function actionAfterTransBatch(data){
@@ -46,7 +70,8 @@
   	} else {
   		if(logoutTag){
 	    	window.user.init({})
-		    Scene.alert("签退成功！");
+			logoutTag = false;
+		    Scene.alert("退出成功！");
 	  	}else{
 	  		Scene.alert("批结算成功！",TransBatch.gotoHome);
 	  	}
@@ -71,18 +96,12 @@
 		})
 	}
 
-	function gotoSetMerchId() {
-		window.user.setMerchIdResult(function() {
-			Scene.goBack()
-		})
-		Scene.showScene("SetMerchId")
+	function gotoCreateUser(){
+		window.util.showSceneWithLoginChecked("CreateUser", null, null);	
 	}
-
-	function gotoSetMachineId() {
-		window.user.setMachineIdResult(function() {
-			Scene.goBack()
-		})
-		Scene.showScene("SetMachineId")
+	
+	function gotoModifyPwd(){
+		window.util.showSceneWithLoginChecked("ModifyPwd", null, null);
 	}
 
 	function gotoMerchantInfo() {
@@ -90,10 +109,7 @@
 	}
 
 	function getMerchantInfo() {
-		var req = {
-			merchId : window.user.merchId,
-		}
-		Net.connect("merchant/getInfo", req, actionAfterGetMerchantInfo)
+		RMS.read("merchant", actionAfterGetMerchantInfo);
 	}
 
 	function actionAfterGetMerchantInfo(data) {
@@ -101,35 +117,10 @@
 			merchId : window.user.merchId,
 			machineId : window.user.machineId,
 			merchName : data.merchName,
-			merchAccount : data.merchAccount,
 		}
 		Scene.showScene("MerchantInfo", "", params)
 	}
 	
-	//Get merchant info after login
-	function getMerchantInfoAfterLogin() {
-		window.util.exeActionWithLoginChecked(getMerchantInfoOnLogin);
-	}
-	
-	//get merchant info from interface
-	function getMerchantInfoOnLogin() {
-		var req = {
-			merchId : window.user.merchId,
-		};
-		Net.asynConnect("merchant/getInfo", req, actionAfterLoginGetMerchantInfo);
-	}
-	
-	//save merchant info
-	function actionAfterLoginGetMerchantInfo(data) {
-		var params = {
-			merchId : window.user.merchId,
-			machineId : window.user.machineId,
-			merchName : data.merchName,
-			merchAccount : data.merchAccount,
-		};
-		RMS.save("merchant", params);
-	}
-
 	function downloadMerchData() {
 		window.util.showSceneWithLoginChecked("SettingsDownload");
 	}
@@ -146,13 +137,12 @@
 		"gotoLogin" : gotoLogin,
 		"gotoLogout" : gotoLogout,
 		"gotoMerchantInfo" : gotoMerchantInfo,
-		"getMerchantInfoAfterLogin" : getMerchantInfoAfterLogin,
-		"gotoSetMerchId" : gotoSetMerchId,
-		"gotoSetMachineId" : gotoSetMachineId,
 		"clearReverseData" : clearReverseData,
 		"downloadMerchData" : downloadMerchData,
 		"gotoSetTransId": gotoSetTransId,
 		"gotoTransBatch": gotoTransBatch,
+		"gotoCreateUser": gotoCreateUser,
+		"gotoModifyPwd": gotoModifyPwd,
 		"transBatch":	transBatch,
 	};
 

@@ -6,6 +6,48 @@ Pay.gotoPayFlow = function() {
 	Pay.gotoFlow();
 };
 
+Pay.gotoAuthFlow = function(){
+	Pay.cacheData = ConsumptionData.dataForPayment;
+	Pay.flowEndFunction = Pay.preAuthReq;
+	Pay.flowRestartFunction = Pay.restart;
+	Pay.gotoFlow();
+};
+
+Pay.gotoPreAuthCompleteFlow = function(){
+	Pay.cacheData = ConsumptionData.dataForPayment;
+	Pay.flowEndFunction = Pay.preAuthCompleteReq;
+	Pay.flowRestartFunction = function () {
+		Scene.goBack("OrderDetail");
+	};
+	Pay.gotoFlow();
+};
+
+Pay.gotoPreAuthSettlementFlow = function(){
+	Pay.cacheData = ConsumptionData.dataForPayment;
+	Pay.flowEndFunction = Pay.preAuthSettlementReq;
+	Pay.flowRestartFunction = function () {
+		Scene.goBack("OrderDetail");
+	};
+	Pay.gotoFlow();
+};
+
+Pay.gotoPreAuthCancelFlow = function(){
+	Pay.cacheData = ConsumptionData.dataForPayment;
+	Pay.flowEndFunction = Pay.preAuthCancelReq;
+	Pay.flowRestartFunction = function () {
+		Scene.goBack("OrderDetail");
+	};
+	Pay.gotoFlow();
+};
+Pay.gotoPreAuthCompleteCancelFlow = function(){
+	Pay.cacheData = ConsumptionData.dataForPayment;
+	Pay.flowEndFunction = Pay.preAuthCompleteCancelReq;
+	Pay.flowRestartFunction = function () {
+		Scene.goBack("OrderDetail");
+	};
+	Pay.gotoFlow();
+};
+
 Pay.gotoCancelFlow = function() {
 	Pay.cacheData = ConsumptionData.dataForCancellingOrder;
 	Pay.flowEndFunction = Pay.cancelOrderConvertReq;
@@ -97,11 +139,13 @@ Pay.gotoFlow = function() {
 		sceneName = "PayAccount";
 		initPayAccountData();
 	} else if(method == "04"){
-		sceneName = "Login"	
-		formData = {"Login":"LoginIndex.refundConfirmLogin"};
+		sceneName = "LoginVerify"	
+		formData = {"Login":"LoginIndex.refundConfirmLogin",
+					"merchId": cacheData.merchId};
 	} else if(method == "05"){
-		sceneName = "Login"		
-		formData = {"Login":"LoginIndex.voidConfirmLogin"};
+		sceneName = "LoginVerify"		
+		formData = {"Login":"LoginIndex.voidConfirmLogin",
+					"merchId": cacheData.merchId};
 	} else if (method == "10") {
 		sceneName = "InputAmount";
 		initAmountData();
@@ -119,8 +163,14 @@ Pay.gotoFlow = function() {
 		formData.shouldRemoveCurCtrl = true;
 		cacheData.preScene = null;
 	}
-	
-	window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
+	formData.openBrhName = cacheData.openBrhName;
+	formData.brhMchtId = cacheData.brhMchtId;
+	formData.brhTermId = cacheData.brhTermId;
+	formData.merchId = cacheData.merchId;
+	formData.iposId = cacheData.iposId;
+	formData.printType = cacheData.printType;
+	//window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
+	window.util.showSceneWithSigninChecked(sceneName, formData, flow.desc);
 	cacheData.preScene = sceneName;
 
 	function checkExistField(packTag) {

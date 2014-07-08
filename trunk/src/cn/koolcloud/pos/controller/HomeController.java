@@ -1,14 +1,24 @@
 package cn.koolcloud.pos.controller;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
+import cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog;
+import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
+import cn.koolcloud.pos.util.Env;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
@@ -21,6 +31,13 @@ public class HomeController extends BaseHomeController implements
 	private Button aboutButton; // about button
 	private boolean removeJSTag = true;
 
+	private MyApplication application;
+	
+	private LayoutInflater inflater;
+	private View exitDialogView;
+	private long exitTime = 0;
+	private static final int EXIT_LAST_TIME = 2000;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,6 +59,29 @@ public class HomeController extends BaseHomeController implements
 
 		aboutButton = (Button) findViewById(R.id.abountBtn);
 		aboutButton.setOnClickListener(this);
+
+		// start checking devices
+		application = (MyApplication) getApplication();
+		boolean isFirstStart = application.isFirstStart();
+		/*
+		 * if (!isFirstStart) { startDeviceChecking();
+		 * application.setFirstStart(true); } else {
+		 * onCall("Home.updateTransInfo", null); }
+		 */
+		if (!isFirstStart) {
+			if (Env.checkApkExist(getApplicationContext(), ConstantUtils.APP_STORE_PACKAGE_NAME)) {
+				startAppVersionChecking();
+			} else {
+				startDeviceChecking();
+			}
+			application.setFirstStart(true);
+		} else {
+			onCall("Home.updateTransInfo", null);
+		}
+		
+		//exit dialog
+		inflater = LayoutInflater.from(this);
+		exitDialogView = inflater.inflate(R.layout.dialog_exit_layout, null);
 	}
 
 	@Override
@@ -56,10 +96,22 @@ public class HomeController extends BaseHomeController implements
 			JavaScriptEngine js = ClientEngine.engineInstance()
 					.javaScriptEngine();
 			js.loadJs(getString(R.string.controllerJSName_TransactionManageIndex));
-			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));			
+			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
 		}
 		super.loadRelatedJS();
 		setRemoveJSTag(false);
+	}
+
+	private void startDeviceChecking() {
+		Intent mIntent = new Intent(getApplicationContext(),
+				DevicesCheckingDialog.class);
+		startActivity(mIntent);
+	}
+
+	private void startAppVersionChecking() {
+		Intent mIntent = new Intent(getApplicationContext(),
+				CheckingUpdateDialog.class);
+		startActivity(mIntent);
 	}
 
 	@Override
@@ -129,7 +181,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void onClickMultiPay(View view) {
-		changeSelectedButton(view);
+		// changeSelectedButton(view);
 		onCall("Home.onClickMultiPay", null);
 	}
 
@@ -174,12 +226,12 @@ public class HomeController extends BaseHomeController implements
 		onCall("SettingsIndex.gotoLogout", null);
 	}
 
-	public void gotoSetMerchId(View view) {
-		onCall("SettingsIndex.gotoSetMerchId", null);
+	public void gotoCreateUser(View view) {
+		onCall("SettingsIndex.gotoCreateUser", null);
 	}
 
-	public void gotoSetMachineId(View view) {
-		onCall("SettingsIndex.gotoSetMachineId", null);
+	public void gotoModifyPwd(View view) {
+		onCall("SettingsIndex.gotoModifyPwd", null);
 	}
 
 	public void gotoMerchantInfo(View view) {
@@ -215,6 +267,22 @@ public class HomeController extends BaseHomeController implements
 		default:
 			break;
 		}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN){
+			//TODO:show exit dialog
+			if ((System.currentTimeMillis() - exitTime) > EXIT_LAST_TIME) {
+				Toast.makeText(getApplicationContext(), R.string.msg_exist_toast, Toast.LENGTH_SHORT).show();
+		        exitTime = System.currentTimeMillis();
+			} else {
+				exit();
+			}
+			return true;
+	    }
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override

@@ -169,7 +169,7 @@ public class ChongZheng implements Constant {
 			Log.i(APP_TAG, "F03_PROC: oldProcesscode is " + oldProcesscode + ", oldTransType = " + oldTransType);
 			break;
 		case ISOField.F04_AMOUNT:
-			int oldTransAmount = AppUtil.toAmount(tempBuffer);
+			Long oldTransAmount = AppUtil.toAmount(tempBuffer);
 			Log.i(APP_TAG, "F04_AMOUNT: oldTransAmount = " + oldTransAmount);
 			oldTrans.setOldTransAmount(oldTransAmount);
 			break;
@@ -323,56 +323,56 @@ public class ChongZheng implements Constant {
 				continue;
 			}
 			String flag = s.substring(0, 2);
-			if(flag.equals("08")){
+			if (flag.equals("08")) {
 				String oldPayOrderBatch = s.substring(8);
 				oldTrans.setOldPayOrderBatch(oldPayOrderBatch);
 				continue;
 			}
-			if(flag.equals("10")){
+			if (flag.equals("10")) {
 				String oldApOrderId = s.substring(8);
 				oldTrans.setOldApOrderId(oldApOrderId);
 				continue;
 			}
-			if(flag.equals("13")){
+			if (flag.equals("13")) {
 				String oldSale_F40_Type = s.substring(8);
 				oldTrans.setOldSale_F40_Type(oldSale_F40_Type);
 				continue;
 			}
-			if(flag.equals("20")){
+			if (flag.equals("20")) {
 				String oldOpenBrh = s.substring(8);
 				oldTrans.setOldOpenBrh(oldOpenBrh);
 				continue;
 			}
-			if(flag.equals("21")){
+			if (flag.equals("21")) {
 				String oldCardId = s.substring(8);
 				oldTrans.setOldCardId(oldCardId);
 				continue;
 			}
-			if(flag.equals("22")){
+			if (flag.equals("22")) {
 				String alipayPId = s.substring(8);
 				oldTrans.setAlipayPId(alipayPId);
 				oldTrans.setOldMID(alipayPId);
 				continue;
 			}
-			if(flag.equals("23")){
+			if (flag.equals("23")) {
 				String terminalId = s.substring(8);
 				oldTrans.setOldTID(terminalId);
 				continue;
 			}
-			if(flag.equals("26")){
+			if (flag.equals("26")) {
 				String alipayAccount = s.substring(8);
 				oldTrans.setAlipayAccount(alipayAccount);
 				continue;
 			}
-			if(flag.equals("27")){
+			if (flag.equals("27")) {
 				String alipayTransactionID = s.substring(8);
 				oldTrans.setAlipayTransactionID(alipayTransactionID);
 				continue;
 			}
 		}
-		
+
 	}
-	
+
 	private static void procB63_CUP(byte[] F63_Field, OldTrans trans) {
 
 		int offset = 0;
@@ -384,7 +384,7 @@ public class ChongZheng implements Constant {
 		offset += 3;
 		int textLength = F63_Field.length - offset;
 		if (textLength > 0) {
-			
+
 		}
 	}
 

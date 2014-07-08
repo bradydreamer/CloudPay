@@ -27,13 +27,12 @@
         <item name="android:layout_width">148dp</item>
         <item name="android:layout_height">148dp</item>
         <item name="android:layout_marginBottom">6dp</item>
-        <item name="android:background">@drawable/icon_bg</item>
     </style>
 
     <style name="module_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">19sp</item>
+        <item name="android:textSize">22px</item>
     </style>
 
     <style name="module_method_logo">
@@ -41,13 +40,6 @@
         <item name="android:layout_height">148dp</item>
         <item name="android:padding">6dp</item>
     </style>
-
-    <style name="module_method_title">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">19sp</item>
-    </style>
-
     <style name="consumption_index_btn_payType">
         <item name="android:layout_width">106dp</item>
         <item name="android:layout_height">106dp</item>
@@ -62,7 +54,7 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">@dimen/consumption_common_text_size</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -70,7 +62,7 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">@dimen/styles_common_text_size</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:gravity">center</item>
     </style>
@@ -92,28 +84,28 @@
     <style name="trade_statistics_summerize_tv_item_key">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">@dimen/styles_common_text_size</item>
         <item name="android:layout_marginRight">20dp</item>
     </style>
 
     <style name="trade_statistics_summerize_tv_item_value">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">@dimen/styles_common_text_size</item>
         <item name="android:textColor">@color/trade_statistics_textcolor_gray</item>
     </style>
 
     <style name="consumption_index_tv_amount_summerize">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">@dimen/consumption_common_text_size</item>
     </style>
 
     <style name="consumption_index_lv_tv">
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">@dimen/consumption_common_text_size</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -121,14 +113,14 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">@dimen/styles_common_text_size</item>
         <item name="android:padding">5dp</item>
         <item name="android:background">@drawable/frame_bg</item>
     </style>
 
     <style name="consumption_record_listTitle">
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">25px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/color_for_consumption_record_listTitle_text</item>
     </style>
@@ -136,7 +128,7 @@
     <style name="consumption_record_multi_pay_listTitle">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">25px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/color_for_consumption_record_listTitle_text</item>
     </style>
@@ -144,7 +136,7 @@
     <style name="consumption_record_paidAmountInfo">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">23px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
@@ -153,14 +145,14 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginLeft">40dp</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">23px</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/lv_row_highlight_bg_blue</item>
+        <item name="android:textColor">@color/dark_blue</item>
     </style>
 
     <style name="consumption_record_lv_tv">
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">23px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@drawable/lv_row_text_color</item>
     </style>
@@ -168,7 +160,7 @@
     <style name="consumption_record_multi_pay_lv_tv">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">23px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@drawable/lv_row_text_color</item>
     </style>
@@ -176,7 +168,7 @@
     <style name="manual_goods_lv_tv">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">30px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@drawable/lv_row_text_color</item>
     </style>
@@ -184,7 +176,7 @@
     <style name="del_voucher_record_lv_tv">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">28px</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@drawable/lv_row_text_color</item>
         <item name="android:singleLine">true</item>
@@ -197,7 +189,7 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">@dimen/consumption_common_text_size</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
@@ -224,14 +216,14 @@
     <style name="order_detail_summerize_tv_item_key">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">@dimen/styles_common_text_size</item>
         <item name="android:layout_marginRight">20dp</item>
     </style>
 
     <style name="order_detail_summerize_tv_item_value">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">@dimen/styles_common_text_size</item>
         <item name="android:textColor">@color/order_detail_textcolor_gray</item>
     </style>
 
@@ -239,42 +231,43 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">@dimen/consumption_common_text_size</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="calculator_num_key_display_style">
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
         <item name="android:layout_marginTop">15dp</item>
-        <item name="android:layout_marginBottom">15dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
     </style>
 
     <style name="calculator_display_screen_style">
         <item name="android:singleLine">true</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_height">111dp</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_marginBottom">30dp</item>
+        <item name="android:layout_width">750dp</item>
+        <item name="android:layout_marginBottom">22dp</item>
+        <item name="android:layout_marginTop">12dp</item>
         <item name="android:focusable">false</item>
     </style>
 
     <style name="table_number_input_btn_style_common">
-        <item name="android:layout_height">116dp</item>
+        <item name="android:layout_height">124dp</item>
     </style>
 
     <style name="table_number_input_btn_style_small" parent="@style/table_number_input_btn_style_common">
-        <item name="android:layout_marginRight">5dp</item>
-        <item name="android:layout_width">151dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_width">156dp</item>
     </style>
 
     <style name="table_number_input_btn_style_for_back" parent="@style/table_number_input_btn_style_common">
-        <item name="android:layout_width">151dp</item>
+        <item name="android:layout_width">156dp</item>
     </style>
 
     <style name="table_number_input_btn_style_big" parent="@style/table_number_input_btn_style_common">
-        <item name="android:layout_width">307dp</item>
+        <item name="android:layout_width">312dp</item>
     </style>
 
     <style name="custom_anim_dialog" parent="@android:style/Theme.Dialog">
@@ -288,7 +281,7 @@
         <item name="android:background">#0000</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">25px</item>
         <item name="android:textColor">@drawable/home_btn_textcolor</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:focusable">true</item>
@@ -299,17 +292,30 @@
         <item name="android:layout_height">116dp</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textSize">30sp</item>
-        <item name="android:textColor">@android:color/holo_blue_bright</item>
+        <item name="android:textSize">@dimen/consumption_common_text_size</item>
+        <item name="android:textColor">@color/blue</item>
         <item name="android:layout_margin">6dp</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
+    </style>
+    
+    <!-- bar multi info text style -->
+    <style name="bar_multi_info_text_style">
+        <item name="android:textSize">@dimen/bar_multi_info_text_size</item>
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="bar_multi_info_text_style_gray">
+        <item name="android:textSize">@dimen/bar_multi_info_text_size</item>
+        <item name="android:textColor">@color/order_detail_textcolor_gray</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="broadside_bg_style">
         <item name="android:layout_width">150dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@drawable/broadside_bg</item>
+        <item name="android:background">@color/home_navigation_bg</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
     </style>
@@ -328,6 +334,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">#0000</item>
         <item name="android:focusable">true</item>
+        <item name="android:textSize">@dimen/home_navigation_btn_text_size</item>
         <item name="android:textColor">@drawable/home_navigate_text_color</item>
     </style>
 

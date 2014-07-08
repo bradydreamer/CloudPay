@@ -26,8 +26,8 @@ public class ISO8583Engine {
 		Map<String, ?> map = UtilForDataStorage
 				.readPropertyBySharedPreferences(MyApplication.getContext(),
 						"merchant");
-		String mId = (String) map.get("merchId");
-		String tID = (String) map.get("machineId");
+		String mId = map.get("merchId").toString();
+		String tID = map.get("machineId").toString();
 		if (null == map.get("transId")) {
 			transId = 0;
 		} else {

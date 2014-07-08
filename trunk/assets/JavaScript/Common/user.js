@@ -40,8 +40,17 @@ UserInfo.prototype.setMachineIdResult = function(func){
     };
 };
 
+UserInfo.prototype.setSignInResult = function(func){
+    this.signInAction = function(data){
+        if(func){
+            func(data);
+        }
+    };
+};
+
+
 window.user = new UserInfo();
 window.merchSettings = null;
-window.saleTemplates = null;
+window.payTemplates = null;
 window.voidTemplates = null;
 window.refundTemplates = null;

@@ -28,8 +28,8 @@
     return;
   }
 
-  function printTrans(ref) {
-    window.Database.getTransData8583(ref, gotoPrint);
+  function printTrans(txnId) {
+    window.Database.getAndCheckTransData8583(txnId, gotoPrint);
   }
 
   function gotoPrint(data) {
@@ -50,7 +50,7 @@
       	}
     } 
     if ("" === data.req8583 || null == data.req8583) {
-		Scene.alert("未找到对应纪录");
+		Scene.alert("交易已经过期");
     }
     Global.callObjcHandler("printTrans", data);
   }
@@ -65,27 +65,63 @@
     return;
   }
 
-  function insertTransData8583(ref, req8583, res8583, callbackfunc) {
+  function getAndCheckTransData8583(txnId, callbackfunc){
+	  var data8583;
+	  window.Database.getTransData8583(txnId, checkTransData8583);
+	  function checkTransData8583(data){
+			data8583 = data;
+			if (data.res8583 == null || data.res8583 == "") {		
+				var req = {
+					"txnId":txnId,
+				}			
+				Net.connect("msc/txn/detail/query", req, afterGetDetail, true);
+			}else{
+				if(callbackfunc){
+					callbackfunc(data8583);
+				}
+			}		
+		}		
+		function afterGetDetail(resData){
+			if("0" == resData.responseCode){
+				var recordDisplayedList = resData.recordList;
+				if(recordDisplayedList.txnId == txnId){
+					recordDisplayedList.res8583 = recordDisplayedList.data;
+					window.Database.insertTransData8583(txnId, null, recordDisplayedList.res8583);
+					if(callbackfunc){
+						callbackfunc(recordDisplayedList);
+					}else{
+						Scene.alert("ERROR:NO Callback function！");
+					}				
+				}	
+			}else{
+				if(callbackfunc){
+					callbackfunc(data8583);
+				}
+			}		
+		}	
+  }
+
+  function insertTransData8583(txnId, req8583, res8583, callbackfunc) {
     var params = {
-      "ref": ref,
+      "txnId": txnId,
       "req8583": req8583,
       "res8583": res8583
     };
     Global.callObjcHandler("insertTransData8583", params, callbackfunc);
   }
 
-  function updateTransData8583(ref, req8583, res8583, callbackfunc) {
+  function updateTransData8583(txnId, req8583, res8583, callbackfunc) {
     var params = {
-      "ref": ref,
+      "txnId": txnId,
       "req8583": req8583,
       "res8583": res8583
     };
     Global.callObjcHandler("updateTransData8583", params, callbackfunc);
   }
 
-  function getTransData8583(ref, callbackfunc) {
+  function getTransData8583(txnId, callbackfunc) {
     var params = {
-      "ref": ref,
+      "txnId": txnId,
     };
     Global.callObjcHandler("getTransData8583", params, callbackfunc);
   }
@@ -94,5 +130,6 @@
     "insertTransData8583": insertTransData8583,
     "updateTransData8583": updateTransData8583,
     "getTransData8583": getTransData8583,
+    "getAndCheckTransData8583": getAndCheckTransData8583,
   };
 })();

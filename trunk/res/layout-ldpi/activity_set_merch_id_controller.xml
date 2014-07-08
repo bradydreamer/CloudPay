@@ -15,8 +15,10 @@
    		style="@style/calculator_num_key_display_style" >   
 	   	<EditText 
 	   	    android:id="@+id/set_merch_id_et_id"
-	   	    android:background="@android:drawable/edit_text"
+	   	    android:background="@drawable/number_input_edittext_bg"
 	        android:textSize="60sp"
+	        android:textColor="@color/white"
+	        android:gravity="center"
 	        style="@style/calculator_display_screen_style"
 	        android:maxLength="15"
 	        />

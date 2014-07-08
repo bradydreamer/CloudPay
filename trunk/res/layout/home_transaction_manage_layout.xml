@@ -14,7 +14,7 @@
             <ImageButton
                 style="@style/module_logo"
                 android:onClick="gotoConsumptionRecord"
-                android:src="@drawable/logo_consumption_record_today" />
+                android:background="@drawable/logo_consumption_record_today" />
 
             <TextView
                 style="@style/module_title"
@@ -26,7 +26,7 @@
             <ImageButton
                 style="@style/module_logo"
                 android:onClick="gotoConsumptionRecordSearch"
-                android:src="@drawable/logo_consumption_record_old" />
+                android:background="@drawable/logo_consumption_record_old" />
 
             <TextView
                 style="@style/module_title"
@@ -38,24 +38,24 @@
             <ImageButton
                 style="@style/module_logo"
                 android:onClick="gotoSingleRecordSearch"
-                android:src="@drawable/logo_trade_statistics_today" />
+                android:background="@drawable/logo_trade_statistics_today" />
 
             <TextView
                 style="@style/module_title"
                 android:text="@string/transaction_manage_module_title_single_record_search" />
         </LinearLayout>
 
-        <LinearLayout style="@style/module_layout" >
+        <!-- <LinearLayout style="@style/module_layout" >
 
             <ImageButton
                 style="@style/module_logo"
                 android:onClick="gotoDelVoucherRecordSearch"
-                android:src="@drawable/logo_delivery_voucher_record" />
+                android:background="@drawable/logo_delivery_voucher_record" />
 
             <TextView
                 style="@style/module_title"
                 android:text="@string/transaction_manage_module_title_delivery_voucher_record" />
-        </LinearLayout>
+        </LinearLayout> -->
     </TableRow>
 
 </TableLayout>

@@ -39,7 +39,7 @@
             android:gravity="center"
             android:text="撤销"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="@dimen/lv_del_voucher_record_button_text_size" />
 
         <TextView
             android:id="@+id/lv_del_voucher_record_tv_status"

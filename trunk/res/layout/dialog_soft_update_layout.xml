@@ -3,13 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/about_dialog_width"
     android:layout_height="@dimen/about_dialog_height"
-    android:background="@color/alert_dailog_background_color"
+    android:background="@drawable/main_page_bg_bitmap"
     android:orientation="vertical" >
 
     <include layout="@layout/dialog_title_other"
         android:id="@+id/titleLayout" />
 
    
+   	<TextView
+        android:id="@+id/dialog_common_waiting_text"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:layout_marginLeft="52.0px"
+        android:layout_marginRight="60.0px"
+        android:text="@string/msg_checking_version_waiting"
+        android:textSize="@dimen/dialog_title_text_size"
+        android:textColor="@color/gray"
+        android:textStyle="normal"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/titleLayout" />
+   	<TextView
+        android:id="@+id/dialogTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="52.0px"
+        android:layout_marginRight="60.0px"
+        android:textSize="@dimen/dialog_title_text_size"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/titleLayout" />
    	<TextView
         android:id="@+id/dialog_common_text"
         android:layout_width="wrap_content"
@@ -19,14 +43,13 @@
         android:textSize="@dimen/dialog_content_text_size"
         android:textColor="@color/about_gray_text"
         android:textStyle="normal"
-        android:layout_marginTop="40dp"
-        android:layout_below="@+id/titleLayout" />
+        android:layout_below="@+id/dialogTitleTextView" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="15.0px"
+        android:layout_marginBottom="20.0px"
         android:layout_marginLeft="15.0px"
         android:layout_marginRight="15.0px"
         android:layout_marginTop="5.0px"
@@ -45,10 +68,11 @@
                 android:id="@+id/ok"
                 android:layout_width="@dimen/dialog_soft_update_ok_button_width"
                 android:layout_height="wrap_content"
-                android:background="@drawable/btn_ok"
-                android:text="@string/str_ok"
-                android:textColor="@color/share_text_color"
-                android:textSize="20.0px" />
+                android:background="@drawable/button_blue_background"
+                android:text="@string/str_update"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dialog_btn_text_size"
+                android:visibility="invisible" />
         </RelativeLayout>
 
         <Button
@@ -56,12 +80,12 @@
             android:layout_width="@dimen/dialog_soft_update_cancel_button_width"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8.0px"
-            android:background="@drawable/btn_ok"
+            android:background="@drawable/button_blue_background"
             android:text="@string/str_check_update"
-            android:textColor="@color/share_text_color"
-            android:textSize="20.0px"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dialog_btn_text_size"
             android:layout_toRightOf="@+id/okLayout"
-            android:visibility="visible" />
+            android:visibility="gone" />
     </RelativeLayout>
 
 </RelativeLayout>

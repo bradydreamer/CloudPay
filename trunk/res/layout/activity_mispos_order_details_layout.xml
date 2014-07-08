@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:paddingLeft="@dimen/mispos_order_details_padding_left_right"
+    android:paddingRight="@dimen/mispos_order_details_padding_left_right"
+    android:orientation="vertical" >
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/order_details_content_item_height">
+        <TextView
+            android:id="@+id/order_detail_tv_transAmount_mark"
+            style="@style/order_detail_mark_style"
+            android:layout_marginRight="60dp"
+            android:layout_centerVertical="true"
+            android:text="@string/order_detail_tv_transAmount"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/order_details_content_text_size" />
+        <TextView
+	        android:id="@+id/order_detail_tv_transAmount"
+	        style="@style/order_detail_mark_style"
+	        android:layout_centerVertical="true"
+	        android:layout_toRightOf="@id/order_detail_tv_transAmount_mark"
+	        android:textColor="@color/black"
+	        android:textSize="@dimen/order_details_content_text_size" />
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/interval_line_color"
+            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/order_details_content_item_height">
+        <TextView
+            android:id="@+id/order_detail_tv_transData_mark"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="60dp"
+            android:text="@string/order_detail_tv_transDate"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/order_details_content_text_size" />
+
+        <TextView
+            android:id="@+id/order_detail_tv_transDate"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="60dp"
+            android:layout_toRightOf="@id/order_detail_tv_transData_mark"
+            android:textColor="@color/black"
+            android:textSize="@dimen/order_details_content_text_size" />
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/interval_line_color"
+            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/order_details_content_item_height">
+        <TextView
+            android:id="@+id/order_detail_tv_transType_mark"
+            style="@style/order_detail_mark_style"
+            android:layout_marginRight="60dp"
+            android:text="@string/order_detail_tv_transType"
+            android:layout_centerVertical="true"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/order_details_content_text_size" />
+
+        <TextView
+            android:id="@+id/order_detail_tv_transType"
+            style="@style/order_detail_mark_style"
+            android:layout_toRightOf="@id/order_detail_tv_transType_mark"
+            android:layout_centerVertical="true"
+            android:textColor="@color/black"
+            android:textSize="@dimen/order_details_content_text_size" />
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/interval_line_color"
+            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/order_details_content_item_height">
+        <TextView
+            android:id="@+id/order_detail_tv_payType_mark"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="60dp"
+            android:text="@string/order_detail_tv_payType"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/order_details_content_text_size" />
+
+        <TextView
+            android:id="@+id/order_detail_tv_payType"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/order_detail_tv_payType_mark"
+            android:textColor="@color/black"
+            android:textSize="@dimen/order_details_content_text_size" />
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/interval_line_color"
+            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/order_details_content_item_height">
+        <TextView
+            android:id="@+id/order_detail_tv_orderId_mark"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="60dp"
+            android:text="@string/order_detail_tv_orderId"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/order_details_content_text_size" />
+
+        <TextView
+            android:id="@+id/order_detail_tv_orderId"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
+            android:textColor="@color/black"
+            android:textSize="@dimen/order_details_content_text_size" />
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/interval_line_color"
+            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/order_details_content_item_height">
+        <TextView
+            android:id="@+id/order_detail_tv_orderStatus_mark"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="60dp"
+            android:text="@string/order_detail_tv_orderStatus"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/order_details_content_text_size" />
+
+        <TextView
+            android:id="@+id/order_detail_tv_orderStatus"
+            style="@style/order_detail_mark_style"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/order_detail_tv_orderStatus_mark"
+            android:textColor="@color/black"
+            android:textSize="@dimen/order_details_content_text_size" />
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/interval_line_color"
+            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
+    </RelativeLayout>
+</LinearLayout>

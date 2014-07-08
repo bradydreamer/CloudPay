@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-   	android:gravity="center"
-   	android:layout_gravity="center"
-   	android:background="@drawable/calculator_num_key_bg">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+	android:layout_gravity="center"
+    android:background="@drawable/main_page_bg_bitmap" >
     
-    <LinearLayout
-        android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:orientation="vertical"
-   		android:gravity="center"
-   		android:layout_gravity="center"
-   		style="@style/calculator_num_key_display_style" >  
-	   	<EditText 
-	   	    android:id="@+id/single_record_search_et_id"
-	   	    android:gravity="center"
-	   	    android:background="@android:drawable/edit_text"
-	        android:textSize="60sp"
-	        style="@style/calculator_display_screen_style"
-	        android:maxLength="12"
-	        />
-	   	
-      	<include 
-           layout="@layout/table_number_input"
-           />
-     </LinearLayout>   
+	<LinearLayout 
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	   	android:background="@drawable/calculator_num_key_bg">
+	    
+	    <LinearLayout
+	        android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:orientation="vertical"
+	   		android:gravity="center"
+	   		android:layout_gravity="center"
+	   		style="@style/calculator_num_key_display_style" >  
+		   	<EditText 
+		   	    android:id="@+id/single_record_search_et_id"
+		   	    android:gravity="center"
+		   	    android:background="@drawable/number_input_edittext_bg"
+		        android:textSize="@dimen/single_record_search_edittext_text_size"
+		        android:textColor="@color/white"
+		        style="@style/calculator_display_screen_style"
+		        android:maxLength="12"
+		        />
+		   	
+	      	<include 
+	           layout="@layout/table_number_input"
+	           />
+	     </LinearLayout>   
+	</LinearLayout>
 </LinearLayout>

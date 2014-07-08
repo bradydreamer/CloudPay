@@ -24,7 +24,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/shape_frame_rectangle"
+        android:background="@drawable/main_page_bg_bitmap"
         android:orientation="vertical" >
 
         <android.support.v4.view.ViewPager

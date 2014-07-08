@@ -55,18 +55,20 @@
     <string name="transaction_manage_module_title_consumption_record_today">今日消费记录</string>
     <string name="transaction_manage_module_title_consumption_record_old">历史消费记录</string>
     <string name="transaction_manage_module_title_delivery_voucher_record">提货记录</string>
-    <string name="transaction_manage_module_title_single_record_search">参考号查询</string>
+    <string name="transaction_manage_module_title_single_record_search">快速查询</string>
 
     <!-- activity_settings_index_controller.xml -->
-    <string name="settins_index_module_title_login">签到</string>
-    <string name="settins_index_module_title_logout">签退</string>
+    <string name="settins_index_module_title_login">登录</string>
+    <string name="settins_index_module_title_logout">退出</string>
     <string name="settins_index_module_title_merchant_info">客户信息</string>
     <string name="settins_index_module_title_setMerchId">设置客户号</string>
     <string name="settins_index_module_title_setMachineId">设置设备号</string>
     <string name="settins_index_module_title_clearReverseData">清除冲正数据</string>
-    <string name="settins_index_module_title_downloadMerchData">参数下载</string>
+    <string name="settins_index_module_title_downloadMerchData">手动参数更新</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
     <string name="settins_index_module_title_trans_batch">批结算</string>
+    <string name="settins_index_module_title_sign_up">创建用户</string>
+    <string name="settins_index_module_title_modify_pwd">修改密码</string>
     
     <!-- activity_others_index_controller.xml -->
     <string name="others_index_module_title_pre_authorization">预授权</string>
@@ -114,14 +116,30 @@
     <string name="order_detail_btn_operation_text_refund">退货</string>
     <string name="order_detail_btn_operation_text_print">打印</string>
     <string name="order_detail_btn_operation_text_cancel">撤销</string>
-    <string name="order_detail_btn_operation_text_confirm">完  成</string>
+    <string name="order_detail_btn_operation_text_auth_complete">联机完成</string>
+    <string name="order_detail_btn_operation_text_auth_settlement">离线完成</string>
+    <string name="order_detail_btn_operation_text_confirm">确定</string>
     <string name="order_detail_tv_payType">支付方式</string>
     <string name="order_detail_tv_orderId">参考号</string>
     <string name="order_detail_tv_orderStatus">支付状态</string>
+    <string name="order_detail_tv_authCode">授权码</string>
 
     <!-- activity_login_controller.xml -->
     <string name="login_tv_userName">操作员</string>
     <string name="login_tv_pwd">密码</string>
+    <string name="msg_login">登录</string>
+    <string name="msg_mod_pwd_submit">确定</string>
+    <string name="msg_mod_pwd_hint_pwd_origin_input">请输入原密码</string>
+    <string name="msg_mod_pwd_hint_pwd_input">请输入新密码</string>
+    <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认新密码</string>
+    <string name="msg_mod_pwd_hint_error_dialog">密码不一致，请重新输入</string>
+    <string name="msg_account_hint">请输入账号</string>
+    <string name="msg_pwd_hint">请输入密码</string>
+    <!-- activity_login_controller.xml -->
+    <string name="create_userName">请输入用户名</string>
+    <string name="create_userName_pwd_1st">请输入密码</string>
+    <string name="create_userName_pwd_2nd">请再次输入密码</string>
+    <string name="createOK">创建</string>
 
     <!-- activity_consumption_record_search_controller.xml -->
     <string name="consumption_record_search_tv_startDate">起始日期</string>
@@ -158,8 +176,8 @@
     <string name="waiting_dialog_msg_reverse">正在冲正</string>
 
     <!-- activity_merchant_info_controller.xml -->
-    <string name="merchant_info_tv_merchId">客户代码：</string>
-    <string name="merchant_info_tv_machineId">设备号：</string>
+    <string name="merchant_info_tv_merchId">酷云客户号：</string>
+    <string name="merchant_info_tv_machineId">酷云设备号：</string>
     <string name="merchant_info_tv_merchName">客户名称：</string>
     <string name="merchant_info_tv_merchAccount">客户结算账户：</string>
 
@@ -171,7 +189,7 @@
     <string name="pay_account_btn_qrcode">二维码</string>
     <string name="pay_account_btn_sound">声波</string>
     <string name="pay_account_btn_swiper">刷卡</string>
-    <string name="pay_account_btn_keyboard">键盘</string>
+    <string name="pay_account_btn_keyboard">手动输入</string>
     <string name="pay_account_tag_qrcode">qrcode</string>
     <string name="pay_account_tag_sound">sound</string>
     <string name="pay_account_tag_swiper">swiper</string>
@@ -204,8 +222,12 @@
     <string name="controllerJSName_DelVoucherInfo">DeliveryVoucher/DelVoucherInfo</string>
     <string name="controllerJSName_SetMerchId">Others/Settings/SetMerchId</string>
     <string name="controllerJSName_SetMachineId">Others/Settings/SetMachineId</string>
+    <string name="controllerJSName_ModifyPwd">Others/Settings/ModifyPwd</string>
+    <string name="controllerJSName_CreateUser">Others/Settings/CreateUser</string>
     <string name="controllerJSName_SetTransId">Others/Settings/SetTransId</string>
+    <string name="controllerJSName_PaymentMechanismInfo">Others/Settings/PaymentMechanismInfo</string>
     <string name="controllerJSName_TransBatch">Others/Settings/TransBatch</string>
+    <string name="controllerJSName_SignIn">Others/Settings/SignIn</string>
     <string name="controllerJSName_Login">Others/Settings/Login/index</string>
     <string name="controllerJSName_SettingsIndex">Others/Settings/index</string>
     <string name="controllerJSName_SettingsDownload">Others/Settings/settingsDownload</string>
@@ -227,6 +249,7 @@
     <string name="title_activity_multi_pay_controller">组合支付</string>
     <string name="title_activity_input_money_controller">请输入金额</string>
     <string name="title_activity_login_controller">签 到</string>
+    <string name="title_activity_configure_controller">登录</string>
     <string name="title_activity_consumption_record">消费记录</string>
     <string name="title_activity_order_detail">消费详情</string>
     <string name="title_activity_consumption_record_search_controller">历史消费记录</string>
@@ -242,6 +265,8 @@
     <string name="title_activity_del_voucher_way_chosen_controller">方式选择</string>
     <string name="title_activity_input_del_voucher_id_controller">输入提货券号</string>
     <string name="title_activity_set_machine_id_controller">设置设备号</string>
+    <string name="title_activity_modify_pwd_controller">修改密码</string>
+    <string name="title_activity_create_user_controller">创建用户</string>
     <string name="title_activity_del_voucher_record_search_controller">提货记录查询</string>
     <string name="title_activity_del_voucher_record_controller">提货记录</string>
     <string name="title_activity_del_voucher_info_controller">提货券信息</string>
@@ -257,12 +282,14 @@
     <string name="title_activity_single_record_search_controller">请输入参考号</string>
     <string name="title_activity_set_trans_id_controller">设置流水号</string>
     <string name="title_activity_set_trans_batch_controller">批结算</string>
+    <string name="title_activity_sign_in_controller">签到</string>
+    <string name="title_activity_pay_mechanism_controller">请选择支付机构</string>
     
     <!-- for home -->
-    <string name="home_activity_home">主页</string>
-    <string name="home_activity_setting">设置</string>
+    <string name="home_activity_home">单笔支付</string>
+    <string name="home_activity_setting">设置管理</string>
     <string name="home_activity_transaction_inquiries">交易查询</string>
-    <string name="home_activity_multi_pay">组合支付</string>
+    <string name="home_activity_multi_pay">拆单支付</string>
     <string name="home_activity_check_update">检查更新</string>
 
     <!-- for multi pay -->
@@ -276,13 +303,74 @@
 	<string name="str_check_update">检查更新</string>
     <string name="str_update_later">暂不更新</string>
     <string name="str_update_now">马上更新</string>
+    <string name="str_about_programme">关于程序</string>
     <string name="str_about">关于</string>
+    <string name="str_exit">退出</string>
     <string name="str_version_name">版本号：</string>
-    <string name="str_new_version">发现新版本：</string>
+    <string name="str_current_version_name">当前版本：</string>
+    <string name="str_new_version">最新版本：</string>
     <string name="str_install_appstore_first">安装应用中心以查检更新</string>
+    <string name="str_exit_message">您真的要退出收银通吗？</string>
     <string name="already_latest_version">已是最新版本</string>
-    <string name="about_info">酷云智能POS是新一代基于云POS的超级收银作业台，集刷卡，提货券，二维码等多种支付方式于一体，为商户打造全面的收银接入服务。</string>
+    <string name="about_info">收银通是新一代基于云POS的超级收银作业平台，集刷卡、二维码支付等多种支付方式于一体，为客户打造全面的收银接入服务。</string>
     
     <!-- for trans batch -->
     <string name="trans_batch_alert_content">正在批结算，请稍后！</string>
+    
+    <!-- Dialog devices checking msg -->
+    <string name="dialog_device_check_device_ok_msg">所有设备连接正常！</string>
+    <string name="dialog_device_checking_device_msg">正在检查外部设备状态，请稍候！</string>
+    <string name="dialog_device_checking_now">设备正在查检中，请稍候！</string>
+    <string name="dialog_device_check_devices_unusual">设备发现异常，请您及时处理！</string>
+    <string name="dialog_device_check_pinpad_unusual">密码键盘接口断开，请检查连接。</string>
+    <string name="dialog_device_check_pinpad_usual">密码键盘连接正常。</string>
+    <string name="dialog_device_check_printer_unusual">打印机未连接好。</string>
+    <string name="dialog_device_check_printer_usual">打印机连接正常。</string>
+    <string name="dialog_device_check_network_unusual">网络连接不通。</string>
+    <string name="dialog_device_check_network_usual">网络连接检测正常。</string>
+    <string name="dialog_device_check_self_checking">再次检验</string>
+    <string name="dialog_device_check_use_anyway">继续使用</string>
+    <string name="dialog_device_check_start_to_use">开始使用</string>
+    <string name="dialog_device_checking">设备检测中...</string>
+    <string name="ping_host_url">www.baidu.com</string>
+    <string name="msg_checking_version_waiting">正在检查新版本，请稍候...</string>
+    <string name="alert_common_warn_msg">提示</string>
+    <string name="msg_exist_toast">再按一次后退键退出程序</string>
+    
+    <!-- device, merchant bar msg -->
+    <string name="bar_koolcloud_merch_name_msg">客户号：</string>
+    <string name="bar_koolcloud_device_name_msg">设备号：</string>
+    <string name="bar_acquire_name_msg">收单机构：</string>
+    <string name="bar_acquire_merch_msg">商户号：</string>
+    <string name="bar_acquire_merch_msg_pid">PID：</string>
+    <string name="bar_acquire_terminal_msg">终端号：</string>
+    <string name="bar_acquire_terminal_msg_beneficiary_account_no">收款账号：</string>
+    <!-- for sign in -->
+    <string name="sign_in_alert_content">正在签到，请稍后！</string>
+    
+    <!-- for login -->
+    <string name="customer_id_content">请输入客户号</string>
+    <string name="operator_id_content">请输入账号</string>
+    <string name="pass_word_content">请输入密码</string>
+    <!-- merchant info -->
+    <string name="merchant_info_msg_acquire_institute_name_title">收单机构名称</string>
+    <string name="merchant_info_msg_acquire_institute_num_title">商户号/PID</string>
+    <string name="merchant_info_msg_acquire_institute_device_no_title">终端号/收款账号</string>
+    
+    <!-- MisPos -->
+    <string name="mispos_login_msg">签到</string>
+    <string name="mispos_logout_msg">签退</string>
+    <string name="mispos_consumption_msg">消费</string>
+    <string name="mispos_consumption_reverse_msg">消费撤销</string>
+    <string name="mispos_refund_msg">退货</string>
+    <string name="mispos_preauthorize_msg">预授权</string>
+    <string name="mispos_preauthorize_reverse_msg">预授权撤销</string>
+    <string name="mispos_preauthorize_finish_msg">预授权完成</string>
+    <string name="mispos_balance_msg">余额查询</string>
+    <string name="mispos_test_msg">通讯测试</string>
+    <string name="mispos_onperate_on_mispos">请在Mispos上进行操作</string>
+    <string name="mispos_str_mispos">MisPos</string>
+    <string name="mispos_tran_success">交易成功</string>
+    <string name="mispos_str_balance">当前余额：</string>
+    
 </resources>

@@ -4,20 +4,21 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import android.util.Log;
 import cn.koolcloud.APDefine;
 import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.RSAHelper;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.service.SecureInfo;
-
-import android.util.Log;
+import cn.koolcloud.security.util.CodeUtil;
 
 public class SecureEngine {
 	private final String TAG = "SecureEngine";
@@ -47,9 +48,10 @@ public class SecureEngine {
 		}
 		return instance;
 	}
-	
-	public boolean isOriginSn(){
-		return ClientEngine.engineInstance().getSecureInfo().getIsOriginSn().equalsIgnoreCase("1");
+
+	public boolean isOriginSn() {
+		return ClientEngine.engineInstance().getSecureInfo().getIsOriginSn()
+				.equalsIgnoreCase("1");
 	}
 
 	public boolean isValid() {
@@ -95,11 +97,16 @@ public class SecureEngine {
 		String exponent = "65537";
 		byte[] outdata;
 		try {
-			outdata = key.getBytes("UTF-8");
-			outdata = Utility.encodeRSAWithDecimalString(modulus, exponent,
-					outdata);
-			keyExchange = Utility.hexString(outdata);
-		} catch (UnsupportedEncodingException e) {
+			// outdata = key.getBytes("UTF-8");
+			// outdata = Utility.encodeRSAWithDecimalString(modulus, exponent,
+			// outdata);
+
+			PublicKey publicKey = RSAHelper.getPublicKey(modulus, exponent);
+			outdata = RSAHelper.encryptByPublicKey(key.getBytes("UTF-8"),
+					publicKey);
+			keyExchange = CodeUtil.byte2HexString(outdata);
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Log.d(TAG, "keyExchange : " + keyExchange);
@@ -122,7 +129,8 @@ public class SecureEngine {
 	}
 
 	public String fieldDecrypt(String src) {
-		byte[] workKey = ClientEngine.engineInstance().getSecureInfo().getWorkKey();
+		byte[] workKey = ClientEngine.engineInstance().getSecureInfo()
+				.getWorkKey();
 		return fieldDecrypt(src, workKey);
 	}
 
@@ -157,7 +165,8 @@ public class SecureEngine {
 	}
 
 	public String fieldEncrypt(String src) {
-		byte[] workKey = ClientEngine.engineInstance().getSecureInfo().getWorkKey();
+		byte[] workKey = ClientEngine.engineInstance().getSecureInfo()
+				.getWorkKey();
 		return fieldEncrypt(src, workKey);
 	}
 
@@ -172,8 +181,12 @@ public class SecureEngine {
 	}
 
 	public boolean keyCheckValue(String checkStr) {
-		byte[] workKey = ClientEngine.engineInstance().getSecureInfo().getWorkKey();
-		return keyCheckValue(checkStr, workKey);
+		// byte[] workKey =
+		// ClientEngine.engineInstance().getSecureInfo().getWorkKey();
+		// return keyCheckValue(checkStr, workKey);
+		byte[] zero = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		String kcvStr = signature(zero);
+		return checkStr.equalsIgnoreCase(kcvStr);
 	}
 
 	public boolean keyCheckValue(String checkStr, byte[] key) {
@@ -274,26 +287,36 @@ public class SecureEngine {
 	}
 
 	public String signature(String string) {
+		Log.d(TAG, "res: " + string);
+		try {
+			return signature(string.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String signature(byte[] res) {
 		Mac sha256_HMAC;
 		try {
-			byte[] workKey = ClientEngine.engineInstance().getSecureInfo().getWorkKey();
+			byte[] workKey = ClientEngine.engineInstance().getSecureInfo()
+					.getWorkKey();
 
 			SecretKeySpec secret_key = new javax.crypto.spec.SecretKeySpec(
 					workKey, "HmacSHA256");
 			sha256_HMAC = Mac.getInstance(secret_key.getAlgorithm());
 			sha256_HMAC.init(secret_key);
-			byte[] res = string.getBytes("UTF-8");
 			byte[] mac_data = sha256_HMAC.doFinal(res);
 			String macStr = Utility.hexString(mac_data);
 			Log.d(TAG, "workKey : " + Utility.hexString(workKey));
-			Log.d(TAG, "res: " + string);
+
 			Log.d(TAG, "res bytes: " + Utility.hexString(res));
 			Log.d(TAG, "mac : " + macStr);
 			return macStr;
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("Huh, HmacSHA256 should be supported?", e);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("Huh, UTF-8 should be supported?", e);
+			throw new RuntimeException("Huh, HmacSHA256 should be supported?",
+					e);
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		}

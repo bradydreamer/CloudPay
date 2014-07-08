@@ -12,6 +12,7 @@ import cn.koolcloud.pos.controller.BaseController;
 public class SingleRecordSearchController extends BaseController {
 
 	private EditText et_id;
+	private String paymentId;
 	private boolean removeJSTag = true;
 
 	@Override
@@ -21,6 +22,9 @@ public class SingleRecordSearchController extends BaseController {
 			finish();
 			return;
 		}
+		JSONObject data = formData
+				.optJSONObject(getString(R.string.formData_key_data));
+		paymentId = data.optString("paymentId");
 		et_id = (EditText) findViewById(R.id.single_record_search_et_id);
 		setCurrentNumberEditText(et_id);
 	}
@@ -34,6 +38,7 @@ public class SingleRecordSearchController extends BaseController {
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("id", id);
+			msg.put("paymentId", paymentId);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

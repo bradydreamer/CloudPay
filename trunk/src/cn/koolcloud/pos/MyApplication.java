@@ -11,6 +11,8 @@ public class MyApplication extends Application {
 
 	private static MyApplication instance;
 	private Context context;
+	
+	private boolean isFirstStart = false;
 
     public MyApplication() {
     	instance = this;
@@ -29,6 +31,14 @@ public class MyApplication extends Application {
         
         Intent secureService = new Intent(context, SecureService.class);
         context.startService(secureService);
+	}
+	
+	public boolean isFirstStart() {
+		return this.isFirstStart;
+	}
+	
+	public void setFirstStart(boolean firstStarted) {
+		this.isFirstStart = firstStarted;
 	}
 
 }

@@ -44,105 +44,167 @@ Util.prototype.formatDateTime = function(time) {
 	return newStr
 }
 
-Util.prototype.exeActionWithMerchIdChecked = function(destAction) {
-
-	RMS.read("merchant", loadMerchIdToUser);
-
-	function loadMerchIdToUser(data) {
-		if (null != data) {
-			window.user.merchId = data.merchId
-			window.user.machineId = data.machineId
-		};
-		if (null == window.user.merchId || "" == window.user.merchId) {
-			window.user.setMerchIdResult(function() {
-				showSetMachineIdIfNeeded(destAction, true)
-			})
-			Scene.showScene("SetMerchId")
-			return
-		}
-		if (null == window.user.machineId || "" == window.user.machineId) {
-			showSetMachineIdIfNeeded(destAction)
-			return
-		}
-		destAction()
-	}
-
-	function showSetMachineIdIfNeeded(destAction, mvSelf) {
-		if (null == window.user.machineId || "" == window.user.machineId) {
-			window.user.setMachineIdResult(function() {
-				destAction(true)
-			})
-			var params = null
-			if (mvSelf) {
-				params = {
-					shouldRemoveCurCtrl: true
-				}
-			}
-			Scene.showScene("SetMachineId", "", params)
-		} else {
-			destAction(true)
-		}
-	}
-
-}
-
 Util.prototype.showSceneWithLoginChecked = function(sceneName, params, sceneTitle) {
 	var data = params == null ? {} : params;
 	sceneTitle = sceneTitle == null ? "" : sceneTitle;
 
 	window.util.exeActionWithLoginChecked(function(shouldRmvLogin) {
+		
 		if (shouldRmvLogin) {
 			data.shouldRemoveCurCtrl = shouldRmvLogin;
 		};
+		if(sceneName == "CreateUser"){
+			if(window.user.gradeId != "1"){
+				Scene.alert("没有权限，请使用主管账户登录！",backHome);
+				return;
+			}			
+		}
 		Scene.showScene(sceneName, sceneTitle, data);
+	}, true);
+
+	function backHome(){
+		Scene.goBack("Home");
+	}
+
+}
+
+Util.prototype.showMisposWithLoginChecked = function(params) {
+	var data = JSON.parse(params);
+	var sceneName = "MisposController";
+	Scene.alert("JSLOG showMisposWithLoginChecked:1");
+	window.util.exeActionWithLoginChecked(function(shouldRmvLogin) {
+		if (shouldRmvLogin) {
+			data.shouldRemoveCurCtrl = shouldRmvLogin;
+		};
+		if(sceneName == "CreateUser"){
+			if(window.user.gradeId != "1"){
+				Scene.alert("没有权限，请使用主管账户登录！",backHome);
+				return;
+			}			
+		}
+		
+		if(ConsumptionData.dataForPayment.isExternalOrder != true){			
+			ConsumptionData.resetConsumptionData();
+		}else{
+			var transAmount = ConsumptionData.dataForPayment.transAmount;
+			data.transAmount = transAmount;
+			ConsumptionData.resetConsumptionData();
+			ConsumptionData.dataForPayment.isExternalOrder = true;
+			data.isExternalOrder = true;
+		}
+		
+		Scene.showScene(sceneName, "", data);
+	}, true);
+
+	function backHome(){
+		Scene.alert("JSLOG,BACKHOME");
+		Scene.goBack("Home");
+	}
+
+}
+
+Util.prototype.showSceneWithSigninChecked = function(sceneName, params, sceneTitle) {
+	var data = params == null ? {} : params;
+	sceneTitle = sceneTitle == null ? "" : sceneTitle;
+
+	window.util.exeActionWithSigninChecked(function(shouldRmvLogin) {
+		if (shouldRmvLogin) {
+			data.shouldRemoveCurCtrl = shouldRmvLogin;
+		};		
+		window.util.showSceneWithLoginChecked(sceneName, data,sceneTitle);
 	}, true)
 }
 
 Util.prototype.exeActionWithLoginChecked = function(actionWithLoginNeeded, needNotGoBack) {
+	var merchInfo;
 	if ("0" != window.user.userStatus) {
-		checkMerchId(exeDestAction)
+		RMS.read("merchant", loadMerchInfoToUser);
 	} else {
 		actionWithLoginNeeded()
 	}
 
-	function checkMerchId() {
-		window.util.exeActionWithMerchIdChecked(exeDestAction)
+	function loadMerchInfoToUser(data) {
+		merchInfo = data;
+		ServiceMerchInfo.getInfo(UserInfoCheck);
 	}
 
-	function exeDestAction(mvSelfWhenShowLogin) {
-		ServiceMerchInfo.getInfo(checkUserInfo);
-
-		function checkUserInfo(data) {
-			if (null != data) {
-				var transTime = data.transTime;
-				if (transTime != null && util.isReverseToday(transTime)) {
-					window.user.init(data);
-				};
+	function UserInfoCheck(data){
+		if (null != data) {
+			var transTime = data.transTime;
+			if (transTime != null && util.isReverseToday(transTime)) {
+				window.user.init(data);
 			};
+		};
 
-			if ("0" != window.user.userStatus) {
-				var callback = function() {
-					if (!needNotGoBack) {
-						Scene.goBack()
-					}
-					setTimeout(function() {
-						actionWithLoginNeeded(true);
-					}, 300)
+		if ("0" != window.user.userStatus) {
+			var callback = function() {
+				if (!needNotGoBack) {
+					Scene.goBack();
 				}
-				window.user.setLoginResult(callback)
-				var nextForm = null
-				if (true == mvSelfWhenShowLogin) {
-					nextForm = {
-						shouldRemoveCurCtrl: true
-					}
-				}
-				Scene.showScene("Login", "", nextForm);
-			} else {
-				actionWithLoginNeeded();
+				setTimeout(function() {
+					actionWithLoginNeeded(true);
+				}, 300);				
 			}
+			window.user.setLoginResult(callback)
+			var nextForm = null
+			var formData = {
+				"merchId": merchInfo.merchId,
+				"operator": merchInfo.operator
+			}
+			Scene.showScene("Login","", formData);
+		} else {
+			actionWithLoginNeeded();
+		}
+
+	}
+
+}
+
+Util.prototype.exeActionWithSigninChecked = function(actionWithLoginNeeded, needNotGoBack) {
+	if(ConsumptionData.dataForPayment.brhKeyIndex == null || ConsumptionData.dataForPayment.brhKeyIndex == ""){
+		if(ConsumptionData.isMultiPay)
+		{
+			actionWithLoginNeeded();
+		}else{
+			Scene.alert("Error! brhKeyIndex is null!");
+			return;
+		}
+	}else{
+		window.RMS.read(ConsumptionData.dataForPayment.brhKeyIndex,checkSignin);
+	}
+	
+	function checkSignin(data){
+		var params = data;
+		if(params.signature == "false"||params.signature == false) {
+			signInAction(false);
+		} else {
+			actionWithLoginNeeded();
 		}
 	}
+
+	function signInAction(mvSelfWhenShowLogin){
+
+		var callback = function() {
+			if (!needNotGoBack) {
+				Scene.goBack()
+			}
+			setTimeout(function() {
+				actionWithLoginNeeded(true);
+			}, 300)
+		}
+		window.user.setSignInResult(callback);
+		var nextForm = null;
+		if (true == mvSelfWhenShowLogin) {
+			nextForm = {
+				shouldRemoveCurCtrl: true
+			}
+		}
+		sceneName = "Signin";
+		window.util.showSceneWithLoginChecked(sceneName, null, null);
+
+	}
 }
+
 
 Util.prototype.stringlen = function(str) {
 	return str.replace(/[^\x00-\xff]/g, "aa").length;
@@ -155,6 +217,8 @@ Util.prototype.getTransType = function(transTypeKey) {
 		return "DELIVERY_VOUCHER";
 	} else if ("BALANCE" == transTypeKey) {
 		return "BALANCE";
+	} else if("PREPAID" == transTypeKey){
+		return "PREPAID";
 	}
 }
 

@@ -1,5 +1,7 @@
 package cn.koolcloud.pos.util;
 
+import java.io.IOException;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -116,6 +118,13 @@ public class NetUtil {
         return (info.getSubtypeName().equalsIgnoreCase("GPRS") || info.getSubtypeName().equalsIgnoreCase("EDGE"));
     }
 
+    /**
+     * @Title: isAvailable
+     * @Description: TODO Devices network connect is ok or not
+     * @param ctx
+     * @return
+     * @return: boolean
+     */
     public static boolean isAvailable(Context ctx) {
         return (isWifiConnected(ctx) || isMobileConnected(ctx) || isEthernetDataEnable(ctx));
     }
@@ -154,7 +163,7 @@ public class NetUtil {
         return (ret != -1);
     }
     
-    public static boolean isEthernetDataEnable(Context paramContext){
+    public static boolean isEthernetDataEnable(Context paramContext) {
         
         return ((ConnectivityManager)paramContext.getSystemService("connectivity"))
                 .getNetworkInfo(ConnectivityManager.TYPE_ETHERNET).isConnectedOrConnecting();
@@ -173,5 +182,32 @@ public class NetUtil {
         	}
         }
         return false;
+    }
+    
+    /**
+     * @Title: pingHost
+     * @Description: TODO check network
+     * @param str IP Address
+     * @return
+     * @return: boolean
+     */
+    public static boolean pingHost(String str) {
+        boolean result = false;
+        try {
+        	//ping -c 1 -w 100, -c ping command execute times (one time now),  -w timeout interval 100 seconds
+            Process process = Runtime.getRuntime().exec("ping -c 1 -w 100 " + str);
+            int status = process.waitFor();
+            if (status == 0) {
+                result = true;
+            } else {
+                result = false;
+            }
+        } catch (IOException e) {
+        	
+        } catch (InterruptedException e) {
+        	
+        }
+
+        return result;
     }
 }

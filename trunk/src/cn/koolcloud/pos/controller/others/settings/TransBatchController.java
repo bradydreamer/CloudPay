@@ -1,5 +1,6 @@
 package cn.koolcloud.pos.controller.others.settings;
 
+import android.os.Bundle;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
@@ -8,10 +9,16 @@ public class TransBatchController extends BaseController {
 	private boolean removeJSTag = true;
 
 	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		onCall("TransBatch.gotoTransBatch", null);
+	}
+
+	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		onCall("TransBatch.gotoTransBatch", null);
 	}
 
 	@Override

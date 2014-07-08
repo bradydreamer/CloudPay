@@ -1,6 +1,8 @@
 package cn.koolcloud.control;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import cn.koolcloud.constant.Constant;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.iso8583.ChongZheng;
 import cn.koolcloud.iso8583.ISOField;
 import cn.koolcloud.iso8583.ISOPackager;
@@ -17,6 +21,7 @@ import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
@@ -28,6 +33,10 @@ public class ISO8583Controller implements Constant {
 
 	private static final String ZHIFUCHONGZHENG = "zhifuchongzheng"; // 普通冲正
 	private static final String CHEXIAOCHONGZHENG = "chexiaochongzheng";// 撤销冲正
+	private static final String PREAUTHREVERSE = "preauthreverse";// 预授冲正
+	private static final String PREAUTHCOMPLETEREVERSE = "preauthcompletereverse";// 预授冲正
+	private static final String PREAUTHCANCELREVERSE = "preauthcancelreverse";// 预授冲正
+	private static final String PREAUTHCOMPLETECANCELREVERSE = "preauthcompletecancelreverse";// 预授冲正
 	private String mId = "";
 	private String tId = "";
 	private int transId = 0; // 流水号
@@ -66,9 +75,10 @@ public class ISO8583Controller implements Constant {
 	 * 
 	 * @return
 	 */
-	public boolean login() {
+	public boolean signin() {
 		// 默认传递参数都是正确的，暂时为加入校验
 		paramer.trans.setTransType(TRAN_LOGIN);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_SIGNIN);
 		// 设置POS终端交易流水 (11域）
 		paramer.terminalConfig.setTrace(transId);// 流水号
 		// 设置商户号 (41域）
@@ -96,6 +106,7 @@ public class ISO8583Controller implements Constant {
 	public boolean transBatch() {
 
 		paramer.trans.setTransType(TRAN_BATCH);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_BATCHSETTLE);
 		// 设置POS终端交易流水 (11域）
 		paramer.terminalConfig.setTrace(transId);// 流水号
 		// 设置商户号 (41域）
@@ -136,15 +147,16 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setTrack2Data(track2);
 		paramer.trans.setTrack3Data(track3);
 
-		paramer.trans.setEntryMode(HAVE_PIN);
+		// paramer.trans.setEntryMode(ConstantUtils.SEARCH_ENTRY_MODE);
+		paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 		paramer.paymentId = payment_id;
 		paramer.openBrh = open_brh;
 
 		// fix no pin block start
 		int[] bitMap = null;
 		if (!pinBlock.isEmpty()) {
-			if (pinBlock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
+			if (pinBlock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] {
 						ISOField.F02_PAN,
 						ISOField.F03_PROC,
@@ -165,6 +177,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F60, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinBlock(Utility.hex2byte(pinBlock));
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 						ISOField.F11_STAN, ISOField.F14_EXP, ISOField.F22_POSE,
 						ISOField.F23, ISOField.F25_POCC, ISOField.F26_CAPTURE,
@@ -197,6 +210,7 @@ public class ISO8583Controller implements Constant {
 
 	public boolean purchase(JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_SALE);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_CONSUME);
 		// fix no pin block original start
 		/*
 		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
@@ -213,8 +227,8 @@ public class ISO8583Controller implements Constant {
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
-			if (pinblock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] {
 						ISOField.F02_PAN,
 						ISOField.F03_PROC,
@@ -235,6 +249,8 @@ public class ISO8583Controller implements Constant {
 						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
 						ISOField.F60, ISOField.F64_MAC };
 			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 						ISOField.F04_AMOUNT, ISOField.F11_STAN,
 						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
@@ -272,8 +288,22 @@ public class ISO8583Controller implements Constant {
 		System.arraycopy(iso8583, 2, data, 0, data.length - 2);
 		if (name.equals(CHEXIAOCHONGZHENG)) {
 			paramer.trans.setTransType(TRAN_REVOCATION_REVERSAL);
+			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		} else if (name.equals(ZHIFUCHONGZHENG)) {
 			paramer.trans.setTransType(TRAN_SALE_REVERSAL);
+			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
+		} else if (name.equals(PREAUTHREVERSE)) {
+			paramer.trans.setTransType(TRAN_AUTH_REVERSAL);
+			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
+		} else if (name.equals(PREAUTHCOMPLETEREVERSE)) {
+			paramer.trans.setTransType(TRAN_AUTH_COMPLETE_REVERSAL);
+			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
+		} else if (name.equals(PREAUTHCANCELREVERSE)) {
+			paramer.trans.setTransType(TRAN_AUTH_CANCEL_REVERSAL);
+			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
+		} else if (name.equals(PREAUTHCOMPLETECANCELREVERSE)) {
+			paramer.trans.setTransType(TRAN_AUTH_COMPLETE_CANCEL_REVERSAL);
+			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		}
 
 		OldTrans oldTrans = new OldTrans();
@@ -311,6 +341,7 @@ public class ISO8583Controller implements Constant {
 	 */
 	public boolean cheXiao(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_VOID);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_CONSUMECANCE);
 		// fix no pin block original start
 		/*
 		 * int[] bitMap = { ISOField.F02_PAN,
@@ -328,8 +359,8 @@ public class ISO8583Controller implements Constant {
 		int[] bitMap = null;
 		String pinblock = jsonObject.optString("F52");
 		if (!pinblock.isEmpty()) {
-			if (pinblock.equals(STR_NULL_PIN)) {
-				paramer.trans.setPinMode(NO_PIN);
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
 				bitMap = new int[] {
 						ISOField.F02_PAN,
 						ISOField.F03_PROC,
@@ -351,6 +382,8 @@ public class ISO8583Controller implements Constant {
 						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
 						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
 				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
 						ISOField.F04_AMOUNT, ISOField.F11_STAN,
 						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
@@ -380,6 +413,310 @@ public class ISO8583Controller implements Constant {
 	}
 
 	/**
+	 * 预授权
+	 * 
+	 * @param jsonObject
+	 * @return
+	 */
+	public boolean preAuth(JSONObject jsonObject) {
+		paramer.trans.setTransType(TRAN_AUTH);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_PREAUTH);
+		/*
+		 * F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN, F14_EXP, F22_POSE, F23,
+		 * F25_POCC, F26_CAPTURE, F35_TRACK2, F36_TRACK3, F38_AUTH, F39_RSP,
+		 * F41_TID, F42_ACCID, F49_CURRENCY, F52_PIN, F53_SCI, F55_ICC, F60,
+		 * F64_MAC
+		 */
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+						ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						/*
+						 * ISOField.F52_PIN, ISOField.F53_SCI,
+						 */
+						ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
+			} else {
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+						ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+						ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+						ISOField.F60, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
+					ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F49_CURRENCY, ISOField.F52_PIN, ISOField.F53_SCI,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
+		}
+		// fix no pin block end
+		return mapAndPack(jsonObject, bitMap);
+	}
+
+	/**
+	 * 预授权完成联机
+	 * 
+	 * @param iso8583
+	 * @param jsonObject
+	 * @return
+	 */
+	public boolean preAuthComplete(byte[] iso8583, JSONObject jsonObject) {
+		paramer.trans.setTransType(TRAN_AUTH_COMPLETE);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_PRAUTHCOMPLETE);
+		/*
+		 * FOR preAuthComplete field. F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN,
+		 * F14_EXP, F22_POSE, F23, F25_POCC, F26_CAPTURE, F35_TRACK2,
+		 * F36_TRACK3, F38_AUTH, F39_RSP, F41_TID, F42_ACCID, F49_CURRENCY,
+		 * F52_PIN, F53_SCI, F55_ICC, F60, F61, F64_MAC
+		 */
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+					ISOField.F60, ISOField.F61, ISOField.F64_MAC };
+		}
+		// fix no pin block end
+
+		jsonObject = updateMapAndOldTrans(iso8583, jsonObject);
+		return mapAndPack(jsonObject, bitMap);
+	}
+
+	/**
+	 * 预授权完成离线
+	 * 
+	 * @param iso8583
+	 * @param jsonObject
+	 * @return
+	 */
+	public boolean preAuthSettlement(byte[] iso8583, JSONObject jsonObject) {
+		paramer.trans.setTransType(TRAN_AUTH_SETTLEMENT);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_PRAUTHSETTLEMENT);
+		/*
+		 * F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN, F14_EXP, F22_POSE, F23,
+		 * F25_POCC, F26_CAPTURE, F35_TRACK2, F36_TRACK3, F38_AUTH, F39_RSP,
+		 * F41_TID, F42_ACCID, F49_CURRENCY, F52_PIN, F53_SCI, F55_ICC, F60,
+		 * F61, F64_MAC
+		 */
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					ISOField.F64_MAC };
+		}
+		// fix no pin block end
+
+		jsonObject = updateMapAndOldTrans(iso8583, jsonObject);
+		return mapAndPack(jsonObject, bitMap);
+	}
+
+	/**
+	 * 预授权撤销
+	 * 
+	 * @param iso8583
+	 * @param jsonObject
+	 * @return
+	 */
+	public boolean preAuthCancel(byte[] iso8583, JSONObject jsonObject) {
+		paramer.trans.setTransType(this.TRAN_AUTH_CANCEL);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_PRAUTHCANCEL);
+		/*
+		 * F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN, F14_EXP, F22_POSE, F23,
+		 * F25_POCC, F26_CAPTURE, F35_TRACK2, F36_TRACK3, F38_AUTH, F39_RSP,
+		 * F41_TID, F42_ACCID, F49_CURRENCY, F52_PIN, F53_SCI, F55_ICC, F60,
+		 * F61, F64_MAC
+		 */
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					ISOField.F64_MAC };
+		}
+		// fix no pin block end
+
+		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
+		return mapAndPack(jsonObject, bitMap);
+	}
+
+	/**
+	 * 预授权完成撤销
+	 * 
+	 * @param iso8583
+	 * @param jsonObject
+	 * @return
+	 */
+	public boolean preAuthCompleteCancel(byte[] iso8583, JSONObject jsonObject) {
+		paramer.trans.setTransType(this.TRAN_AUTH_COMPLETE_CANCEL);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_PREAUTHCOMPLETECANCEL);
+		/*
+		 * F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN, F14_EXP, F22_POSE, F23,
+		 * F25_POCC, F26_CAPTURE, F35_TRACK2, F36_TRACK3, F37_RRN, F38_AUTH,
+		 * F39_RSP, F41_TID, F42_ACCID, F49_CURRENCY, F52_PIN, F53_SCI, F55_ICC,
+		 * F60, F61, F64_MAC
+		 */
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
+						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F61, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
+					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					ISOField.F64_MAC };
+		}
+		// fix no pin block end
+
+		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
+		return mapAndPack(jsonObject, bitMap);
+	}
+
+	/**
 	 * 退货
 	 * 
 	 * @param iso8583
@@ -390,16 +727,62 @@ public class ISO8583Controller implements Constant {
 	 */
 	public boolean refund(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_REFUND);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_REFUND);
 		/* 03 REFUND */
-		int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
-				ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-				ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-				ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-				ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
-				ISOField.F41_TID, ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-				ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60, ISOField.F61,
-				ISOField.F63, ISOField.F64_MAC };
+		// fix no pin block original start on 4th June
+		/*
+		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
+		 * ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+		 * ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+		 * ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40, ISOField.F41_TID,
+		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
+		 * ISOField.F53_SCI, ISOField.F60, ISOField.F61, ISOField.F63,
+		 * ISOField.F64_MAC };
+		 */
+		// fix no pin block original end on 4th June
 
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F60,
+						ISOField.F61, ISOField.F63, ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F60, ISOField.F61,
+						ISOField.F63, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
+					ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F49_CURRENCY, ISOField.F52_PIN, ISOField.F53_SCI,
+					ISOField.F60, ISOField.F61, ISOField.F63, ISOField.F64_MAC };
+		}
+		// fix no pin block end
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
 		return mapAndPack(jsonObject, bitMap);
 	}
@@ -434,6 +817,29 @@ public class ISO8583Controller implements Constant {
 		return jsonObject;
 	}
 
+	public JSONObject updateMapAndOldTrans(byte[] iso8583, JSONObject jsonObject) {
+		byte[] data = new byte[iso8583.length - 2];
+		System.arraycopy(iso8583, 2, data, 0, data.length - 2);
+		OldTrans oldTrans = new OldTrans();
+		ChongZheng.chongzhengUnpack(data, oldTrans);
+		paramer.oldTrans = oldTrans;
+		try {
+			jsonObject.put("F40_6F10", oldTrans.getOldApOrderId());
+			jsonObject.put("F40_6F08", oldTrans.getOldPayOrderBatch());
+			jsonObject.put("F40_6F20", oldTrans.getOldOpenBrh());
+			jsonObject.put("F40_6F21", oldTrans.getOldCardId());
+
+			String paymentId = jsonObject.optString("paymentId");
+			if (!paymentId.isEmpty()) {
+				jsonObject.put("F60.6", paymentId);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return jsonObject;
+	}
+
 	public boolean mapAndPack(JSONObject jsonObject, int[] bitMap) {
 		List<Integer> purchaseMap = new ArrayList<Integer>();
 		for (int i = 0; i < bitMap.length; i++) {
@@ -445,7 +851,7 @@ public class ISO8583Controller implements Constant {
 				break;
 			case ISOField.F04_AMOUNT:
 				// 消费金额 F04
-				paramer.trans.setTransAmount(Integer.parseInt(jsonObject
+				paramer.trans.setTransAmount(Long.parseLong(jsonObject
 						.optString("F04")));
 				break;
 			case ISOField.F11_STAN:
@@ -493,7 +899,7 @@ public class ISO8583Controller implements Constant {
 				String pinblock = jsonObject.optString("F52");
 				if (!pinblock.isEmpty()) {
 					paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
-					paramer.trans.setPinMode(HAVE_PIN);
+					paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				} else {
 					save = false;
 				}
@@ -501,6 +907,8 @@ public class ISO8583Controller implements Constant {
 			case ISOField.F60:
 				// 支付活动号 F60.6
 				paramer.paymentId = jsonObject.optString("F60.6");
+				paramer.paymentId = paramer.paymentId
+						.substring(paramer.paymentId.length() - 4);
 
 			default:
 				break;
@@ -585,7 +993,15 @@ public class ISO8583Controller implements Constant {
 			switch (paramer.trans.getTransType()) {
 			case TRAN_LOGIN:
 				if (updateWorkingKey(paramer)) {
-					ISO8583Engine.getInstance().updateLocalBatchNumber(paramer);
+					Map<String, ?> map = UtilForDataStorage
+							.readPropertyBySharedPreferences(
+									MyApplication.getContext(), "merchant");
+					int oldBatchId = ((Integer) map.get("batchId")).intValue();
+					int newBatchId = paramer.trans.getBatchNumber();
+					if (newBatchId > oldBatchId) {
+						ISO8583Engine.getInstance().updateLocalBatchNumber(
+								paramer);
+					}
 				} else {
 					paramer.trans.setResponseCode("F0".getBytes());
 				}
@@ -963,8 +1379,16 @@ public class ISO8583Controller implements Constant {
 
 		// get print type
 		Map<String, ?> map = UtilForDataStorage
-				.readPropertyBySharedPreferences(context, "printType");
-		String printType = (String) map.get(paymentId);
+				.readPropertyBySharedPreferences(context, "paymentInfo");
+		String paymentStr = (String) map.get(paymentId);
+		
+		String prdtNo = "";
+		try {
+			JSONObject jsonObj = new JSONObject(paymentStr);
+			prdtNo = jsonObj.getString("prdtNo");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
 		// get merchant name
 		Map<String, ?> merchMap = UtilForDataStorage
@@ -976,7 +1400,7 @@ public class ISO8583Controller implements Constant {
 		oldTrans.setPaymentName(paymentName);
 		oldTrans.setPaymentId(paymentId);
 
-		if (printType.equals(Constant.PRINT_TYPE_ALIPAY)) {
+		if (!TextUtils.isEmpty(prdtNo) && prdtNo.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
 		} else {
 			PrinterHelper.getInstance(context).printReceipt(oldTrans);
@@ -1009,30 +1433,61 @@ public class ISO8583Controller implements Constant {
 
 	public String getPaymentId() {
 		String paymentId = paramer.paymentId;
-		return paymentId;
+		if (paymentId.equals("")) {
+			return null;
+		} else {
+			return paymentId;
+		}
 	}
 
 	public String getTransTime() {
 		String transTime = paramer.trans.getTransYear();
+		paramer.getCurrentDateTime();
 		if (transTime == null || transTime.isEmpty()) {
 			transTime = "" + paramer.currentYear;
 		}
-		transTime += paramer.trans.getTransDate()
-				+ paramer.trans.getTransTime();
+		if (paramer.trans.getTransDate().equals("0000")
+				|| paramer.trans.getTransTime().equals("000000")) {
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");// 可以方便地修改日期格式
+			// dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+			System.setProperty("user.timezone", "GMT+8");
+			transTime = dateFormat.format(now);
+		} else {
+			transTime += paramer.trans.getTransDate();
+			transTime += paramer.trans.getTransTime();
+		}
+		return transTime;
+	}
+
+	public String getCurrentTime() {
+		String transTime;
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");// 可以方便地修改日期格式
+		System.setProperty("user.timezone", "GMT+8");
+		transTime = dateFormat.format(now);
 		return transTime;
 	}
 
 	public String getBankCardNum() {
-		String cardNum = null;
-		String pan = paramer.trans.getPAN();
-		cardNum = pan.substring(0, 4) + "*******"
-				+ pan.substring(pan.length() - 4, pan.length());
-		return cardNum;
+		if (paramer.trans.getPAN().equals("")) {
+			return null;
+		} else {
+			return paramer.trans.getPAN();
+		}
 	}
 
 	public String getIssuerName() {
 		String issuerName = paramer.trans.getIssuerName();
 		return issuerName;
+	}
+
+	public String getIssuerId() {
+		if (paramer.trans.getIssuerID().equals("")) {
+			return null;
+		} else {
+			return paramer.trans.getIssuerID();
+		}
 	}
 
 	public String getAlipayAccount() {
@@ -1045,5 +1500,98 @@ public class ISO8583Controller implements Constant {
 
 	public String getAlipayTransactionID() {
 		return paramer.alipayTransactionID;
+	}
+
+	public String getApmpTransType() {
+		return paramer.trans.getApmpTransType();
+	}
+
+	public String getBatchNum() {
+
+		return IntegerOne2StringSix(paramer.trans.getBatchNumber());
+	}
+
+	public String getTraceNum() {
+		return IntegerOne2StringSix(paramer.trans.getTrace());
+	}
+
+	public Long getTransAmount() {
+		return paramer.trans.getTransAmount();
+	}
+
+	public String getOriBatchNum() {
+		if (paramer.oldTrans == null) {
+			return null;
+		} else {
+			return IntegerOne2StringSix(paramer.oldTrans.getOldBatch());
+		}
+	}
+
+	public String getOriTraceNum() {
+		if (paramer.oldTrans == null) {
+			return null;
+		} else {
+			return IntegerOne2StringSix(paramer.oldTrans.getOldTrace());
+		}
+	}
+
+	public String getOriTransTime() {
+		if (paramer.oldTrans == null) {
+			return null;
+		} else {
+			String transTime = paramer.oldTrans.getOldTransYear();
+			if (transTime == null || transTime.isEmpty()) {
+				transTime = "" + paramer.currentYear;
+			}
+
+			if (paramer.oldTrans.getOldTransDate() == null
+					|| paramer.oldTrans.getOldTransTime() == null) {
+				Date now = new Date();
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						"yyyyMMddHHmmss");// 可以方便地修改日期格式
+				// dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+				System.setProperty("user.timezone", "GMT+8");
+				transTime = dateFormat.format(now);
+			} else {
+				transTime += paramer.oldTrans.getOldTransDate()
+						+ paramer.oldTrans.getOldTransTime();
+			}
+			return transTime;
+		}
+	}
+
+	public String getDateExpiry() {
+		if (paramer.trans.getExpiry().equals("")) {
+			return null;
+		} else {
+			return paramer.trans.getExpiry();
+		}
+	}
+
+	public String getSettlementTime() {
+		if (paramer.trans.getSettlementTime().equals("")) {
+			return null;
+		} else {
+			return paramer.trans.getSettlementTime();
+		}
+	}
+
+	public String getAuthCode() {
+		if (paramer.trans.getAuthCode().equals("")) {
+			return null;
+		} else {
+			return paramer.trans.getAuthCode();
+		}
+	}
+
+	public void setAuthCode(String authCode) {
+		paramer.trans.setAuthCode(authCode);
+	}
+
+	public String IntegerOne2StringSix(int num) {
+		int covertNum = num;
+		String str = "000000" + String.valueOf(covertNum);
+		String convertNumStr = str.substring(str.length() - 6);
+		return convertNumStr;
 	}
 }

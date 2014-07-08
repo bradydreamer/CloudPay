@@ -1,67 +1,73 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="20dp"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="20dp"
-    tools:context=".NearFieldController" >
-
-    <LinearLayout 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/near_field_playout"
-        android:orientation="horizontal"
-        >
-        
+    tools:context=".NearFieldController"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/main_page_bg_bitmap" >
+    
+	<RelativeLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:paddingBottom="20dp"
+	    android:paddingLeft="@dimen/activity_horizontal_margin"
+	    android:paddingRight="@dimen/activity_horizontal_margin"
+	    android:paddingTop="20dp" >
+	
 	    <LinearLayout 
 	        android:layout_width="wrap_content"
-	        android:layout_height="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_centerInParent="true"
+	        android:id="@+id/near_field_playout"
 	        android:orientation="horizontal"
 	        >
 	        
-	        <RelativeLayout 
-	            android:layout_width="wrap_content"
-	            android:layout_height="300dp"
-	            android:layout_gravity="center_vertical"
-	            >
-	            <ImageView 
-	                android:id="@+id/near_field_iv_base"
-	                android:layout_width="139dp"
-	                android:layout_height="217dp"
-	                android:layout_alignParentBottom="true"
-	                android:layout_centerHorizontal="true"
-	                android:src="@drawable/sound_wave_iv_base"
-	                />
-	            <ImageView 
-	                android:id="@+id/near_field_iv_phone"
-	                android:layout_width="100dp"
-	                android:layout_height="196dp"
-	                android:layout_alignParentTop="true"
-	                android:layout_centerHorizontal="true"
-	                android:src="@drawable/sound_wave_iv_phone"
-	                />
-	        </RelativeLayout>
-	        
-	        <ImageView 
-	            android:id="@+id/near_field_iv_arrow"
-	            android:layout_width="20dp"
-	            android:layout_height="84dp"
-	            android:src="@drawable/sound_wave_iv_arrow"
-	            android:layout_marginLeft="20dp"
-	            />
-	        
-	    </LinearLayout>
-    
-	    <com.wizarpos.barcode.scanner.ScannerRelativeLayout
-	        android:layout_width="300dp"
-	        android:layout_height="300dp"
-	        android:id="@+id/scanner"
-	        android:layout_marginLeft="100dp"
-	        />
+		    <LinearLayout 
+		        android:layout_width="wrap_content"
+		        android:layout_height="match_parent"
+		        android:orientation="horizontal"
+		        >
+		        
+		        <RelativeLayout 
+		            android:layout_width="wrap_content"
+		            android:layout_height="300dp"
+		            android:layout_gravity="center_vertical"
+		            >
+		            <ImageView 
+		                android:id="@+id/near_field_iv_base"
+		                android:layout_width="139dp"
+		                android:layout_height="217dp"
+		                android:layout_alignParentBottom="true"
+		                android:layout_centerHorizontal="true"
+		                android:src="@drawable/sound_wave_iv_base"
+		                />
+		            <ImageView 
+		                android:id="@+id/near_field_iv_phone"
+		                android:layout_width="100dp"
+		                android:layout_height="196dp"
+		                android:layout_alignParentTop="true"
+		                android:layout_centerHorizontal="true"
+		                android:src="@drawable/sound_wave_iv_phone"
+		                />
+		        </RelativeLayout>
+		        
+		        <ImageView 
+		            android:id="@+id/near_field_iv_arrow"
+		            android:layout_width="20dp"
+		            android:layout_height="84dp"
+		            android:src="@drawable/sound_wave_iv_arrow"
+		            android:layout_marginLeft="20dp"
+		            />
+		        
+		    </LinearLayout>
 	    
-    </LinearLayout>
-    
-</RelativeLayout>
+		    <com.wizarpos.barcode.scanner.ScannerRelativeLayout
+		        android:layout_width="300dp"
+		        android:layout_height="300dp"
+		        android:id="@+id/scanner"
+		        android:layout_marginLeft="100dp"
+		        />
+		    
+	    </LinearLayout>
+	    
+	</RelativeLayout>
+</LinearLayout>
