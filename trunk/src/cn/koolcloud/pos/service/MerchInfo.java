@@ -6,12 +6,21 @@ import android.os.Parcelable;
 public class MerchInfo implements Parcelable{
 	private String merchId;
 	private String terminalId;
-	private String userTypeName;
-	private String userType;
+	private String merchName;
 	
-	public MerchInfo(String merchId, String terminalId) {
+	public String getMerchName() {
+		return merchName;
+	}
+
+	public void setMerchName(String merchName) {
+		this.merchName = merchName;
+	}
+
+	
+	public MerchInfo(String merchName, String merchId, String terminalId) {
 		this.merchId = merchId;
 		this.terminalId = terminalId;
+		this.merchName = merchName;
 	}
 
 	public MerchInfo(Parcel source) {
@@ -28,15 +37,13 @@ public class MerchInfo implements Parcelable{
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeString(merchId);
 		parcel.writeString(terminalId);
-		parcel.writeString(userTypeName);
-		parcel.writeString(userType);
+		parcel.writeString(merchName);
 	}
 	
 	public void readFromParcel(Parcel in) {
 		merchId = in.readString();
 		terminalId = in.readString();
-		userTypeName = in.readString();
-		userType = in.readString();
+		merchName = in.readString();
 	}
 	
 	public String getMerchId() {
@@ -53,22 +60,6 @@ public class MerchInfo implements Parcelable{
 
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
-	}
-
-	public String getUserTypeName() {
-		return userTypeName;
-	}
-
-	public void setUserTypeName(String userTypeName) {
-		this.userTypeName = userTypeName;
-	}
-
-	public String getUserType() {
-		return userType;
-	}
-
-	public void setUserType(String userType) {
-		this.userType = userType;
 	}
 
 	public static final Parcelable.Creator<MerchInfo> CREATOR = new Parcelable.Creator<MerchInfo>() {  

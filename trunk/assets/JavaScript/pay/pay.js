@@ -153,12 +153,17 @@ Pay.payResult = function(params) {
 	if ("00" != params.resCode) {
 		if ("98" != params.resCode) {
 			window.RMS.clear("savedTransData");
-			
-			setTimeout(function() {
-				Scene.alert(params.resMessage, function(){
-					Pay.restart();
-				});
-			}, 300);
+			if("22" == params.resCode){
+				Scene.alert(params.resMessage,batchErroProcess);
+			}else if("A0 == params.resCode"){
+				Scene.alert(params.resMessage,reSignAction);
+			}else{				
+				setTimeout(function() {
+					Scene.alert(params.resMessage, function(){
+						Pay.restart();
+					});
+				}, 300);
+			}
 		} else {
 			Pay.reverseOrder(Pay.restart);
 		}
@@ -173,6 +178,20 @@ Pay.payResult = function(params) {
 		}, 300);
 		showDetail();
 	}
+
+	function reSignAction(){
+		var indexParams = {
+				"signature" : false,
+			}
+		RMS.save(ConsumptionData.dataForPayment.brhKeyIndex, indexParams);
+		window.util.exeActionWithSigninChecked(function(){
+			Scene.goBack("Home");
+		});
+	}
+	
+	function batchErroProcess(){
+		SettingsIndex.allTransBatch(SignIn.gotoSignOut);
+	}	
 
 	function showDetail() {
 		var payTypeDesc = "" + ConsumptionData.dataForPayment.paymentName;
@@ -217,7 +236,7 @@ Pay.succRestart = function() {
 
 Pay.errRestart = function(){
 	Pay.restart();
-}
+};
 
 Pay.misposSuccRestart = function(params) {
 	var data = JSON.parse(params);
@@ -239,12 +258,68 @@ Pay.misposErrRestart = function(params){
 	Pay.restart();
 };
 
+Pay.cashSuccRestart = function(params){
+	var cashData = JSON.parse(params);
+	ConsumptionData.dataForPayment.cashPay = true;
+	ConsumptionData.dataForPayment.result = "success";
+	//ConsumptionData.dataForPayment.transAmount = cashData.transAmount;
+	//ConsumptionData.dataForPayment.paidAmount = cashData.cashPaidAmount;
+	//ConsumptionData.dataForPayment.changeAmount = cashData.changeAmount;
+	//ConsumptionData.dataForPayment.transTime = cashData.transTime;
+	var req = {
+		"paymentId": cashData.paymentId,
+		"transType": cashData.transType,
+		"batchNo": cashData.batchNo,
+		"traceNo": cashData.traceNo,
+		"transTime": cashData.transTime,
+		"transAmount": cashData.transAmount,
+		"oriTxnId": cashData.oriTxnId,
+		"resCode": cashData.resCode,
+		"resMsg": cashData.resMsg
+	}
+	Net.asynConnect("txn/"+cashData.keyIndex,req,afterUpdateInfo);	
+
+	function afterUpdateInfo(data){
+		//var data = JSON.parse(params);
+		Scene.alert("JSLOG,cash AfterUpdateInfo,data=" + JSON.stringify(data));
+		var transTime = cashData.transTime;
+		var tDate = transTime.substring(0, 8);
+		var tTime = transTime.substring(8);
+		tDate = tDate.substring(0,4) + "-" + tDate.substring(4,6) + "-" + tDate.substring(6);
+		tTime = tTime.substring(0, 2) + ":" + tTime.substring(2, 4) + ":" + tTime.substring(4);
+		transTime = tDate + " " + tTime;
+		if("0" == data.responseCode){
+			ConsumptionData.dataForPayment.rrn = data.refNo;
+			var msg = {
+				"refNo": ConsumptionData.dataForPayment.rrn,
+				"orderStateDesc": "成功",
+				"payTypeDesc": cashData.paymentName,
+				"transAmount": util.formatAmountStr(cashData.transAmount),
+				"transTime": transTime,
+				"transTypeDesc": cashData.typeName,
+				"openBrh": cashData.openBrh,
+				"paymentId": cashData.paymentId,
+				"paymentOrder": 1,
+				"openBrhName": cashData.openBrhName,
+				"brhMchtId": cashData.brhMchtId,
+				"brhTermId": cashData.brhTermId,
+				"merchId": cashData.merchId,
+				"iposId": cashData.iposId,
+				"transType": cashData.transType,
+			};
+			msg.confirm = "Pay.restart";
+			Scene.showScene("OrderDetail", "", msg);
+		}else{
+			Scene.alert(data.errorMsg,Pay.restart);
+		}
+	}
+};
+
 
 Pay.restart = function(params) {
 
 	var order = {
 		"refNo" : ConsumptionData.dataForPayment.rrn,
-		//"result" : ConsumptionData.dataForPayment.result,
 		"orderStateDesc" : ConsumptionData.dataForPayment.result == "success" ? "完成" : "失败",
 		"payTime" : ConsumptionData.dataForPayment.transTime,
 		"payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
@@ -255,7 +330,6 @@ Pay.restart = function(params) {
 		"alipayPID" : ConsumptionData.dataForPayment.alipayPID,
 		"orderID" : ConsumptionData.dataForPayment.apOrderId,
 		"alipayTransactionID" : ConsumptionData.dataForPayment.alipayTransactionID,
-		//"showAmount" : ConsumptionData.dataForPayment.transAmount,
 	};
 
 	if (ConsumptionData.isMultiPay == true) {
@@ -297,7 +371,16 @@ Pay.restart = function(params) {
 					"orderList" : ConsumptionData.dataForMultiPay.orderList,
 					});
 				ConsumptionData.resetMultiData();
-			} else {
+			} else if(ConsumptionData.dataForPayment.cashPay == true){
+			    Scene.alert("JSLOG,CASH PAY." + ConsumptionData.dataForPayment.transAmount + "#" + ConsumptionData.dataForPayment.paidAmount);
+				Scene.goBack("first", {
+					"totalAmount" : ConsumptionData.dataForPayment.transAmount,
+					"paidAmount" : ConsumptionData.dataForPayment.paidAmount,
+					"changeAmount": ConsumptionData.dataForPayment.changeAmount,
+					"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
+					"orderList" : [order],
+				});
+			}else {
 				Scene.goBack("first", {
 					"totalAmount" : ConsumptionData.dataForPayment.transAmount,
 					"paidAmount" : ConsumptionData.dataForPayment.transAmount,

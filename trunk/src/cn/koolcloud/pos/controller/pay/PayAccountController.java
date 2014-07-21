@@ -29,7 +29,7 @@ import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 
 public class PayAccountController extends BaseController implements
 		CardSwiperListener, SoundWaveListener, CodeScannerListener {
-	
+
 	private final int PAY_ACOUNT_MAX_LENGTH = 20;
 	protected LinearLayout layout_qrcode;
 	protected LinearLayout layout_sound;
@@ -48,6 +48,7 @@ public class PayAccountController extends BaseController implements
 	protected String func_swipeCard;
 	protected String func_inputAccount;
 	protected String func_nearfieldAccount;
+	private String transType;
 	private boolean removeJSTag = true;
 
 	// muilti info bar components
@@ -65,6 +66,20 @@ public class PayAccountController extends BaseController implements
 	private TextView amountMarkTextView;
 	private TextView amountTextView;
 
+	private final String APMP_TRAN_PREAUTH = "1011";
+	private final String APMP_TRAN_CONSUME = "1021";
+	private final String APMP_TRAN_PRAUTHCOMPLETE = "1031";
+	private final String APMP_TRAN_PRAUTHSETTLEMENT = "1091";
+	private final String APMP_TRAN_PRAUTHCANCEL = "3011";
+	private final String APMP_TRAN_CONSUMECANCE = "3021";
+	private final String APMP_TRAN_PREAUTHCOMPLETECANCEL = "3031";
+	private final String APMP_TRAN_REFUND = "3051";
+	private final String APMP_TRAN_OFFSET = "4000";
+	private final String APMP_TRAN_SIGNIN = "8011";
+	private final String APMP_TRAN_SIGNOUT = "8021";
+	private final String APMP_TRAN_BATCHSETTLE = "8031";
+
+	private String transAmount;
 	// private Typeface faceTypeLanTing;
 
 	private JSONObject data;
@@ -86,9 +101,17 @@ public class PayAccountController extends BaseController implements
 
 		et_id = (EditText) findViewById(R.id.pay_account_et_id);
 		setCurrentNumberEditText(et_id);
+		transType = data.optString("transType");
 
 		amountTextView = (TextView) findViewById(R.id.pay_account_tv_amount);
-		amountTextView.setText(data.optString("transAmount"));
+		if (transType.equals(APMP_TRAN_CONSUMECANCE)
+				|| transType.equals(APMP_TRAN_PRAUTHCANCEL)
+				|| transType.equals(APMP_TRAN_PREAUTHCOMPLETECANCEL)) {
+			transAmount = "-" + data.optString("transAmount");
+		} else {
+			transAmount = data.optString("transAmount");
+		}
+		amountTextView.setText(transAmount);
 
 		func_swipeCard = data.optString("swipeCard");
 		func_inputAccount = data.optString("inputAccount");
@@ -119,7 +142,7 @@ public class PayAccountController extends BaseController implements
 		amountMarkTextView = (TextView) findViewById(R.id.amountMarkTextView);
 		String merchId = data.optString("merchId");
 		String operationType = data.optString("operationType");
-		
+
 		if (TextUtils.isEmpty(merchId)) {
 			barTitleLayout.setVisibility(View.INVISIBLE);
 		}
@@ -129,7 +152,7 @@ public class PayAccountController extends BaseController implements
 		} else {
 			amountMarkTextView.setVisibility(View.VISIBLE);
 			amountTextView.setVisibility(View.VISIBLE);
-			
+
 		}
 		koolCloudMerchNumNameTextView = (TextView) findViewById(R.id.koolCloudMerchNumNameTextView);
 		// koolCloudMerchNumNameTextView.setTypeface(faceTypeLanTing);

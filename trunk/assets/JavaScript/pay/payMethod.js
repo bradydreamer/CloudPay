@@ -59,8 +59,9 @@
 	function confirmMethod(product, payList) {
 		if(payList != null && typeof(payList) == "string"){
 			payList = JSON.parse(payList);
+			payList = JSON.parse(payList);
 		}
-
+		
 		RMS.read("merchant", afterGetMerchData);
 		function afterGetMerchData(data){
 			window.user.merchId = data.merchId;
@@ -112,6 +113,7 @@
 				
 				//add brhKeyIndex on balance --start by Teddy on 26th June
 				formData.brhKeyIndex = brhKeyIndex;
+				ConsumptionData.dataForPayment.brhKeyIndex = brhKeyIndex;
 				//add brhKeyIndex on balance --end by Teddy on 26th June
 				window.util.showSceneWithLoginChecked("PayAccount", formData, product.typeName);
 				return;

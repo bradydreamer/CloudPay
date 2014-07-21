@@ -1,11 +1,23 @@
 package cn.koolcloud.pos.controller.others.settings;
 
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.controller.others.settings.MerchantInfoController.InsertAcquireInstitutesThread;
+import cn.koolcloud.pos.database.CacheDB;
+import cn.koolcloud.pos.entity.AcquireInstituteBean;
+import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForJSON;
 
 public class SettingsDownloadController extends BaseController {
 	private ProgressBar progressBar;
@@ -79,6 +91,37 @@ public class SettingsDownloadController extends BaseController {
 	protected boolean getRemoveJSTag() {
 		// TODO Auto-generated method stub
 		return removeJSTag;
+	}
+	
+	
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		new LoadAcquireInstitutesThread().start();
+	}
+
+	class LoadAcquireInstitutesThread extends Thread {
+
+		@Override
+		public void run() {
+			Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(SettingsDownloadController.this, "merchSettings");
+			JSONArray jsonArray = null;
+			if (map.containsKey("settingString")) {
+				String jsArrayStr = String.valueOf(map.get("settingString"));
+				try {
+					jsonArray = new JSONArray(jsArrayStr);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				List<AcquireInstituteBean> acquireList = UtilForJSON.parseJsonArray2AcquireInstitute(jsonArray);
+				if (acquireList != null && acquireList.size() > 0) {
+					CacheDB cacheDB = CacheDB.getInstance(SettingsDownloadController.this);
+					cacheDB.insertAcquireInstitute(acquireList);
+				}
+			}
+			
+		}
 	}
 
 }

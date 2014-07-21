@@ -1,7 +1,8 @@
 function External() {};
 
 External.onGetMerchId = function() {
-	window.util.exeActionWithMerchIdChecked(function() {
+	// window.util.exeActionWithMerchIdChecked(function() {
+	window.util.exeActionWithLoginChecked(function() {
 		var formData = {
 			"merchId": window.user.merchId,
 			"machineId": window.user.machineId,
@@ -40,6 +41,10 @@ External.onPay = function(data) {
 	};
 	ConsumptionData.dataForPayment.isExternalOrder = true;
 	ConsumptionData.dataForPayment.transAmount = transAmount;
+	//save more info to consumption data
+	ConsumptionData.dataForPayment.packageName = packageName;
+	ConsumptionData.dataForPayment.orderNo = orderNo;
+	ConsumptionData.dataForPayment.orderDesc = orderDesc;
 
 	if (params.openBrh == null || params.openBrh == "") {
 		Scene.showScene("Home", "");

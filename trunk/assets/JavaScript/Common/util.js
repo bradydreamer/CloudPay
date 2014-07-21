@@ -15,6 +15,12 @@ Util.prototype.formatAmountStr = function(fen) {
 		return fen.substring(0, length - 2) + "." + fen.substring(length - 2, length)
 	}
 }
+Util.prototype.yuan2fenStr = function(yuan) {
+	yuan = "" + yuan;
+	var length = yuan.length;
+	var fen = yuan.substring(0,length - 3) + yuan.substring(length - 2,length);
+	return fen;
+}
 
 Util.prototype.formatDateTime = function(time) {
 	var length = time.length
@@ -68,14 +74,38 @@ Util.prototype.showSceneWithLoginChecked = function(sceneName, params, sceneTitl
 
 }
 
+Util.prototype.clearReverseDataWithLoginChecked = function(sceneName, params, sceneTitle) {
+	var data = params == null ? {} : params;
+	sceneTitle = sceneTitle == null ? "" : sceneTitle;
+	var sceneName = "clearReverseData";
+	window.util.exeActionWithLoginChecked(function(shouldRmvLogin) {
+		
+		if (shouldRmvLogin) {
+			data.shouldRemoveCurCtrl = shouldRmvLogin;
+		}
+		if(sceneName == "clearReverseData"){
+			if(window.user.gradeId != "1"){
+				Scene.alert("没有权限，请使用主管账户登录！",backHome);
+				return;
+			}			
+		}
+		// Scene.showScene(sceneName, sceneTitle, data);
+		SettingsIndex.clearReverseData();
+	}, true);
+
+	function backHome(){
+		Scene.goBack("Home");
+	}
+
+};
+
 Util.prototype.showMisposWithLoginChecked = function(params) {
 	var data = JSON.parse(params);
 	var sceneName = "MisposController";
-	Scene.alert("JSLOG showMisposWithLoginChecked:1");
 	window.util.exeActionWithLoginChecked(function(shouldRmvLogin) {
 		if (shouldRmvLogin) {
 			data.shouldRemoveCurCtrl = shouldRmvLogin;
-		};
+		}
 		if(sceneName == "CreateUser"){
 			if(window.user.gradeId != "1"){
 				Scene.alert("没有权限，请使用主管账户登录！",backHome);
@@ -97,11 +127,10 @@ Util.prototype.showMisposWithLoginChecked = function(params) {
 	}, true);
 
 	function backHome(){
-		Scene.alert("JSLOG,BACKHOME");
 		Scene.goBack("Home");
 	}
 
-}
+};
 
 Util.prototype.showSceneWithSigninChecked = function(sceneName, params, sceneTitle) {
 	var data = params == null ? {} : params;

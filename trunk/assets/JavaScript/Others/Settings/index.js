@@ -4,17 +4,25 @@
 		return
 	}
 
-  var g_transBatchRes
-  var logoutTag = false;
+	var g_transBatchRes
+	var logoutTag = false;
+	var currentIndex = 0;
+	var merchSettings = {};
+	var transTag = {};
+	var keyIndex = -1;
+	var MISTAG = true;
   
 	function gotoLogout() {
 
 		logoutTag = true;
-	  if(window.user.userStatus == null){
-	  	Scene.alert("已退出！");
-	  	return;
-	  }
-    //transBatch()
+		if(window.user.userStatus == null){
+			Scene.alert("已退出！");
+			return;
+		}		
+		allTransBatch(errorOkprocess);		
+	}
+	
+	function actionLogout(){
 		var req = {      	
 		};
 		Net.connect("msc/user/logout", req, actionAfterLogout);
@@ -22,18 +30,108 @@
 			
 			if(data.responseCode == "0"){
 				window.user.init({});
-				Scene.alert("退出成功！");
+				if(!MISTAG){
+					logoutTag = false;
+					Scene.alert("退出成功！");
+				}else{
+					var formData = {
+						typeId : "LOGOUT"					
+					};
+					Scene.showScene("MisposController", "", formData);
+				}
 			}else{
+				logoutTag = false;
 				Scene.alert(data.errorMsg);				
 			}
 		}
 	}
+	
+	var afterTransBatchCallback = function(){
+		};
+		
+	function errorOkprocess(){
+		Scene.goBack("Home");
+	}
+	
+	
+	function allTransBatch(callBack){	
+		afterTransBatchCallback = callBack;
+		merchSettings = {};
+		transTag = {};
+		currentIndex = 0;
+		keyIndex = -1;
+		if (window.merchSettings == null) {
+			window.RMS.read("merchSettings", afterGetTransInfo);
+		} else {
+			afterGetTransInfo(window.merchSettings);
+		}
+		
+		function afterGetTransInfo(data){
+			window.merchSettings = data;
+			var settingString = data.settingString;
+			if (settingString == null || settingString.length == 0) {
+				window.util.showSceneWithLoginChecked("SettingsDownload");
+				return;
+			};
+			merchSettings = JSON.parse(settingString);
+			if (merchSettings == null || merchSettings.length == 0) {
+				return;
+			};		
+			parseMerchSettings();
+		}	
+	}
+	
+	function parseMerchSettings(){			
+		if(currentIndex < merchSettings.length){
+			keyIndex = merchSettings[currentIndex].brhKeyIndex;
+			Scene.alert("JSLOG,parseMerchSettings,transTag[keyIndex]=" + transTag[keyIndex]);
+			if(transTag[keyIndex] == "" || transTag[keyIndex] == null){
+				transBatch(keyIndex);
+				transTag[keyIndex] = true;
+				Scene.alert("JSLOG,parseMerchSettings,keyIndex=" + keyIndex);
+			}else{
+				currentIndex++;
+				parseMerchSettings();
+			}
+			
+		}else{
+			if(logoutTag){
+				actionLogout();
+		    }else{
+		    	if(!MISTAG){
+			    	Scene.alert("批结算完成！",afterTransBatchCallback);
+		    	}else{
+			    	var formData = {
+						typeId : "LOGOUT"					
+					};
+					Scene.showScene("MisposController", "", formData);
+		    	}
+		    }
+		}			
+	}	
+	
+	function batchCallBack() {
+		if (logoutTag) {
+			logoutTag = false;
+			Scene.alert("退出成功！");
+		} else {
+			Scene.alert("批结算完成！",afterTransBatchCallback);
+		}
+	}
 
-	function transBatch(){
+	function transBatch(keyIndex){
+		//通联MISpos方案，这里进行滤掉
+		if(keyIndex == "90" || keyIndex == "91"){
+			currentIndex++;
+			parseMerchSettings();
+			return;
+		}
+		
+		ConsumptionData.dataForPayment.brhKeyIndex = keyIndex;
 		var data = {
       		typeOf8583: "transBatch"
-    }
-    window.data8583.get8583(data, actionAfterGet)
+		}
+		window.data8583.get8583(data, actionAfterGet)
 	}
 	
 	function actionAfterGet(params) {
@@ -52,7 +150,7 @@
 		"oriTransTime": params.oriTransTime,
       }
 
-      Net.connect("txn/00", req, actionAfterTransBatch)
+      Net.connect("msc/pay/batch/settle", req, actionAfterTransBatch)
   }
 
 	function actionAfterTransBatch(data){
@@ -64,24 +162,19 @@
 	}
 	
 	function actionAfterConvertTransBatchRes(data){
-    if ("00" != data.resCode) {
-	    Scene.alert(data.resMessage)
-	    return
-  	} else {
-  		if(logoutTag){
-	    	window.user.init({})
-			logoutTag = false;
-		    Scene.alert("退出成功！");
-	  	}else{
-	  		Scene.alert("批结算成功！",TransBatch.gotoHome);
-	  	}
-  	}	
+	    if ("00" != data.resCode) {
+		    Scene.alert(data.resMessage,TransBatch.gotoHome);
+		    return
+	  	} else {		
+	  		currentIndex++;
+	  		parseMerchSettings();
+		}	
 	}
 	
 	function clearReverseData() {
 		window.util.exeActionWithLoginChecked(function() {
-			window.RMS.clear("savedTransData", afterClearReverseData)
-		})
+			window.RMS.clear("savedTransData", afterClearReverseData);
+		});
 	}
 
 	function afterClearReverseData() {
@@ -144,6 +237,8 @@
 		"gotoCreateUser": gotoCreateUser,
 		"gotoModifyPwd": gotoModifyPwd,
 		"transBatch":	transBatch,
+		"allTransBatch": allTransBatch,
+		"batchCallBack": batchCallBack
 	};
 
 })();

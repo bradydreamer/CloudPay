@@ -2,6 +2,7 @@ package cn.koolcloud.pos;
 
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +16,7 @@ import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForJSON;
 
 public class PayExScreen extends WelcomeScreen {
 	private PayInfo payInfo;
@@ -43,7 +45,10 @@ public class PayExScreen extends WelcomeScreen {
 			String paymentId = intent.getStringExtra("paymentId");
 			String packageName = intent.getStringExtra("packageName");
 			String orderNo = intent.getStringExtra("orderNo");
-			initPay(pMethod, transAmount, openBrh, paymentId, packageName, orderNo);
+			String orderDesc = intent.getStringExtra("orderDesc");
+			initPay(pMethod, transAmount, openBrh, paymentId, packageName,
+					orderNo, orderDesc);
+			((MyApplication) getApplication()).setPkgName(packageName);
 		} else if (ACTION_MERCH_INFO.equalsIgnoreCase(action)) {
 
 		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
@@ -157,7 +162,7 @@ public class PayExScreen extends WelcomeScreen {
 	}
 
 	public void initPay(String pMethod, String transAmount, String openBrh,
-			String paymentId, String packageName, String orderNo) {
+			String paymentId, String packageName, String orderNo, String orderDesc) {
 		payInfo = new PayInfo();
 		payInfo.pMethod = pMethod;
 		payInfo.transAmount = transAmount;
@@ -165,6 +170,7 @@ public class PayExScreen extends WelcomeScreen {
 		payInfo.paymentId = paymentId;
 		payInfo.packageName = packageName;
 		payInfo.orderNo = orderNo;
+		payInfo.orderDesc = orderDesc;
 	}
 
 	private void startPay() {
@@ -185,6 +191,9 @@ public class PayExScreen extends WelcomeScreen {
 			if (!TextUtils.isEmpty(payInfo.orderNo)) {
 				msg.put("orderNo", payInfo.orderNo);
 			}
+			if (!TextUtils.isEmpty(payInfo.orderDesc)) {
+				msg.put("orderDesc", payInfo.orderDesc);
+			}
 		} catch (Exception e) {
 
 		}
@@ -198,26 +207,37 @@ public class PayExScreen extends WelcomeScreen {
 		Intent i = new Intent();
 		String totalAmount = null;
 		String paidAmount = null;
+		String changeAmount = null;
 		String resultValue = null;
 		String detailList = null;
 
 		try {
 			totalAmount = result.getString("totalAmount");
 		} catch (JSONException e1) {
-			totalAmount = "null";
+			totalAmount = "0";
 		}
 		try {
 			paidAmount = result.getString("paidAmount");
 		} catch (JSONException e1) {
-			paidAmount = "null";
+			paidAmount = "0";
+		}
+		try {
+			changeAmount = result.getString("changeAmount");
+		} catch (JSONException e2) {
+			// TODO Auto-generated catch block
+			changeAmount = "0";
 		}
 		try {
 			resultValue = result.getString("result");
 		} catch (JSONException e1) {
 			resultValue = "0";
 		}
+		JSONArray jsArray = null;
 		try {
 			detailList = result.getJSONArray("orderList").toString();
+			jsArray = new JSONArray(detailList);
+			String packageName = ((MyApplication) getApplication()).getPkgName();
+			UtilForJSON.parseCardNumberByPackageName(packageName, jsArray, PayExScreen.this);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,8 +245,9 @@ public class PayExScreen extends WelcomeScreen {
 		i.putExtra(ACTION, action);
 		i.putExtra("totalAmount", totalAmount);
 		i.putExtra("paidAmount", paidAmount);
+		i.putExtra("changeAmount", changeAmount);
 		i.putExtra("result", resultValue);
-		i.putExtra("detailList", detailList);
+		i.putExtra("detailList", jsArray.toString());
 
 		setResult(RESULT_CODE, i);
 	}
@@ -245,7 +266,8 @@ public class PayExScreen extends WelcomeScreen {
 						"merchant");
 		String mId = (String) map.get("merchId");
 		String tID = (String) map.get("machineId");
-		ms.setMerchInfo(new MerchInfo(mId, tID));
+		String merchName = (String) map.get("merchName");
+		ms.setMerchInfo(new MerchInfo(merchName, mId, tID));
 		setResult(RESULT_CODE, null);
 	}
 
@@ -287,5 +309,6 @@ public class PayExScreen extends WelcomeScreen {
 		public String paymentId;
 		public String packageName;
 		public String orderNo;
+		public String orderDesc;
 	}
 }

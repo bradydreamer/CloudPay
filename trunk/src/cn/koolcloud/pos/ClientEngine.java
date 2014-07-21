@@ -180,6 +180,10 @@ public class ClientEngine {
 			mMerchService = null;
 		}
 	};
+	
+	public ISecureService getSecureService() {
+		return mSecureService;
+	}
 
 	private ISecureService mSecureService;
 	private ServiceConnection secureConnection = new ServiceConnection() {
@@ -279,6 +283,8 @@ public class ClientEngine {
 		jsEngine.loadJs("pay/payFlow");
 		jsEngine.loadJs("pay/payReverse");
 		jsEngine.loadJs("pay/payMethod");
+		jsEngine.loadJs("Others/Settings/SignIn");
+		jsEngine.loadJs("Others/Settings/TransBatch");
 	}
 
 	public JavaScriptEngine javaScriptEngine() {
@@ -289,16 +295,48 @@ public class ClientEngine {
 		return secureEngine;
 	}
 
-	public void serviceMerchInfo(JSONObject data, String identifier) {
+	public void serviceMerchantInfo(JSONObject data, String identifier) {
+		String action = data.optString("action");
+		boolean isSetAction = action.equalsIgnoreCase("set");
+		
+		JSONObject result = null;
+		if (isSetAction) {
+			
+			String valueStr = data.optString("value");
+			if (!TextUtils.isEmpty(valueStr)) {
+				try {
+					JSONObject valueObj = new JSONObject(valueStr);
+					String merchName = valueObj.optString("merchName");
+					String merchId = valueObj.optString("merchId");
+					String terminalId = valueObj.optString("machineId");
+					MerchInfo merchInfo = new MerchInfo(merchName, merchId, terminalId);
+					setMerchInfo(merchInfo);
+					callBack(identifier, null);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		} else {
+			//FIXME: get merchant info from service
+			result = getServiceSecureInfo();
+		}
+		
+		if (!identifier.isEmpty()) {
+			callBack(identifier, result);
+		}
+	}
+	
+	public void serviceSecureInfo(JSONObject data, String identifier) {
 		String action = data.optString("action");
 		boolean isSetAction = action.equalsIgnoreCase("set");
 
 		JSONObject result = null;
 		if (isSetAction) {
-			setServiceMerchInfo(data.optJSONObject("value"));
+			setServiceSecureInfo(data.optJSONObject("value"));
 			callBack(identifier, null);
 		} else {
-			result = getServiceMerchInfo();
+			result = getServiceSecureInfo();
 		}
 
 		if (!identifier.isEmpty()) {
@@ -306,7 +344,7 @@ public class ClientEngine {
 		}
 	}
 
-	private void setServiceMerchInfo(JSONObject value) {
+	private void setServiceSecureInfo(JSONObject value) {
 		if (mSecureService != null && value != null) {
 			try {
 				mSecureService.setUserInfo(value.toString());
@@ -316,7 +354,7 @@ public class ClientEngine {
 		}
 	}
 
-	private JSONObject getServiceMerchInfo() {
+	private JSONObject getServiceSecureInfo() {
 		JSONObject msgObj = null;
 		if (mSecureService != null) {
 			try {
@@ -872,6 +910,8 @@ public class ClientEngine {
 				iso8583Controller.preAuth(jsonObject);
 			} else if (typeOf8583.equals("signin")) {
 				iso8583Controller.signin();
+			} else if (typeOf8583.equals("signout")) {
+				iso8583Controller.signout();
 			} else if (typeOf8583.equals("transBatch")) {
 				iso8583Controller.transBatch();
 			} else if (typeOf8583.equals("chongZheng")) {

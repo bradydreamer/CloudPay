@@ -2,15 +2,16 @@ package cn.koolcloud.pos.service;
 
 import java.util.Map;
 
-import cn.koolcloud.pos.MyApplication;
-import cn.koolcloud.pos.util.UtilForDataStorage;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
+import cn.koolcloud.pos.MyApplication;
+import cn.koolcloud.pos.util.UtilForDataStorage;
 
 public class MerchService extends IntentService {
 	protected final String TAG = "MerchService";
@@ -77,6 +78,7 @@ public class MerchService extends IntentService {
 			if (loginStatus != "0") {
 				Intent intent = getExIntent();
 				intent.putExtra(ACTION, ACTION_LOGIN);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intent);
 				isSettingLogin = true;
 				return -1;
@@ -92,29 +94,29 @@ public class MerchService extends IntentService {
 
 		@Override
 		public MerchInfo getMerchInfo() throws RemoteException {
-			if (loginStatus != "0") {
-				logIn();
-				return null;
-			}
-
-			if (isSettingMerchInfo) {
-				return null;
-			}
+			/*
+			 * if (loginStatus != "0") { logIn(); return null; }
+			 * 
+			 * if (isSettingMerchInfo) { return null; }
+			 */
 
 			if (merchInfo == null) {
 				Map<String, ?> map = UtilForDataStorage
 						.readPropertyBySharedPreferences(
 								MyApplication.getContext(), "merchant");
-				String mId = (String) map.get("merchId");
-				String tID = (String) map.get("machineId");
+				String mId = String.valueOf(map.get("merchId"));
+				String tID = String.valueOf(map.get("machineId"));
+				String merchName = String.valueOf(map.get("merchName"));
 
-				if (mId == null || mId.isEmpty() || tID == null || tID.isEmpty()) {
+				if (TextUtils.isEmpty(merchName) || TextUtils.isEmpty(mId)
+						|| TextUtils.isEmpty(tID)) {
 					Intent intent = getExIntent();
 					intent.putExtra(ACTION, ACTION_MERCH_INFO);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(intent);
 					isSettingMerchInfo = true;
 				} else {
-					merchInfo = new MerchInfo(mId, tID);
+					merchInfo = new MerchInfo(merchName, mId, tID);
 				}
 				return null;
 			}

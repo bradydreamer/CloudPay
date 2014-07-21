@@ -39,11 +39,11 @@
 	ConsumptionData.dataForPayment.txnId = params.txnId;
 	window.data8583.convert8583(convertData, afterConvertMsg);
 	}else{
-		Scene.alert(params.errorMsg,errProcess);
+		Scene.alert(params.errorMsg,errOKProcess);
 	}   
   }  
 
-  function errProcess(){
+  function errOKProcess(){
 	Scene.goBack("Home");
   }
   
@@ -79,8 +79,109 @@
       window.user.signInAction();
   }
   
- window.SignIn = {
- 	"gotoSignIn" : gotoSignIn,
+  var currentIndex = 0;
+  var keyIndex = -1;
+  var signTag = {};
+  var merchSettings = {};
+  
+  function gotoSignOut(){	  
+	currentIndex = 0;
+  	keyIndex = -1;
+  	signTag = {};
+  	merchSettings = {};
+	if (window.merchSettings == null) {
+		window.RMS.read("merchSettings", afterGetTransInfo);
+	} else {
+		afterGetTransInfo(window.merchSettings);
+	}
+	
+	function afterGetTransInfo(data){
+		window.merchSettings = data;
+		var settingString = data.settingString;
+		if (settingString == null || settingString.length == 0) {
+			window.util.showSceneWithLoginChecked("SettingsDownload");
+			return;
+		};
+		merchSettings = JSON.parse(settingString);
+		if (merchSettings == null || merchSettings.length == 0) {
+			return;
+		};		
+		parseMerchSettings();
+	}	
+  }
+  function parseMerchSettings(){			
+	if(currentIndex < merchSettings.length){
+		keyIndex = merchSettings[currentIndex].brhKeyIndex;
+		Scene.alert("JSLOG,parseMerchSettings,signTag[keyIndex]=" + signTag[keyIndex]);
+		if(signTag[keyIndex] == "" || signTag[keyIndex] == null){
+			signOut(keyIndex);
+			signTag[keyIndex] = true;
+			Scene.alert("JSLOG,parseMerchSettings,keyIndex=" + keyIndex);
+		}else{
+			currentIndex++;
+			parseMerchSettings();
+		}		
+	}else{
+	    Scene.alert("签退完成！",errOKProcess);
+	}			
+  }	
+  
+  function signOut(keyIndex){
+	//通联MISpos方案，这里进行滤掉
+	if(keyIndex == "90"){
+		currentIndex++;
+		parseMerchSettings();
+		return;
+	}	
+	ConsumptionData.dataForPayment.brhKeyIndex = keyIndex;
+	var data = {
+  		typeOf8583: "signout",
+	}
+	window.data8583.get8583(data, actionAfterGet)
+  }  
+  function actionAfterGet(params) {
+      var req = {
+	  	"data": params.data8583,
+		"paymentId": params.paymentId,
+		"transType": params.transType,
+		"batchNo": params.batchNo,
+		"traceNo": params.traceNo,
+		"transTime": params.transTime,
+		"cardNo": params.cardNo,
+		"transAmount": params.transAmount,
+		"oriTxnId": params.oriTxnId,
+		"oriBatchNo": params.oriBatchNo,
+		"oriTraceNo": params.oriTraceNo,
+		"oriTransTime": params.oriTransTime,
+      }
+
+      Net.connect("msc/pay/signout", req, actionAfterSignout);
+  }
+  
+  function actionAfterSignout(data){
+	var params = {
+			data8583: data.data
+    }
+    window.data8583.convert8583(params, actionAfterConvertSignoutRes)		
+	}
+	
+	function actionAfterConvertSignoutRes(data){
+	    if ("00" != data.resCode) {
+		    Scene.alert(data.resMessage,errOKProcess);
+		    return;
+	  	} else {
+	  		var _params = {
+	  		 				"signature" : false,
+	  		 		  }
+	  		RMS.save(keyIndex, _params);
+	  		currentIndex++;
+	  		parseMerchSettings();
+		}	
+	}
+  
+  window.SignIn = {
+	"gotoSignIn": gotoSignIn,
+ 	"gotoSignOut": gotoSignOut,
   }
   
 })()

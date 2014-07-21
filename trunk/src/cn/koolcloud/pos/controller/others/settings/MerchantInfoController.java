@@ -17,6 +17,7 @@ import android.widget.TextView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.AcquireListAdapter;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForJSON;
@@ -63,6 +64,8 @@ public class MerchantInfoController extends BaseController {
 					AcquireListAdapter acquireListAdapter = new AcquireListAdapter(dataSource, MerchantInfoController.this);
 					acquireInstituteList.setAdapter(acquireListAdapter);
 					acquireListAdapter.notifyDataSetChanged();
+					
+					new InsertAcquireInstitutesThread().start();
 				}
 				
 				break;
@@ -110,6 +113,16 @@ public class MerchantInfoController extends BaseController {
 	protected boolean getRemoveJSTag() {
 		// TODO Auto-generated method stub
 		return removeJSTag;
+	}
+	
+	class InsertAcquireInstitutesThread extends Thread {
+
+		@Override
+		public void run() {
+			CacheDB cacheDB = CacheDB.getInstance(MerchantInfoController.this);
+			cacheDB.insertAcquireInstitute(dataSource);
+		}
+		
 	}
 	
 	class LoadAcquireInstitutesThread extends Thread {

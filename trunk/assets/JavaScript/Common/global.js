@@ -131,7 +131,7 @@
     var params = {
       "action": "get",
     }
-    Global.callObjcHandler("ServiceMerchInfo", params, callbackfunc)
+    Global.callObjcHandler("ServiceSecureInfo", params, callbackfunc)
   }
 
   function setInfo(value, callbackfunc) {
@@ -139,12 +139,21 @@
       "action": "set",
       "value": value,
     }
-    Global.callObjcHandler("ServiceMerchInfo", params, callbackfunc)
+    Global.callObjcHandler("ServiceSecureInfo", params, callbackfunc)
+  }
+  
+  function setMerchInfo(value, callbackfunc) {
+    var params = {
+      "action": "set",
+      "value": value,
+    };
+    Global.callObjcHandler("ServiceMerchInfo", params, callbackfunc);
   }
 
   window.ServiceMerchInfo = {
     "getInfo": getInfo,
     "setInfo": setInfo,
+    "setMerchInfo": setMerchInfo
   };
 })();
 

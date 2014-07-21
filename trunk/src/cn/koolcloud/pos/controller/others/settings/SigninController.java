@@ -31,7 +31,7 @@ public class SigninController extends BaseController {
 
 	@Override
 	protected String getControllerJSName() {
-		return getString(R.string.controllerJSName_SignIn);
+		return null;
 	}
 
 	@Override

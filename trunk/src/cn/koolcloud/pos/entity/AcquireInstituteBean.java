@@ -10,14 +10,50 @@ public class AcquireInstituteBean {
 	private String productNo;
 	private String productTitle;
 	private String productDesc;
-	private int productType;
+	private String productType;
 	private String imgName;
 	private String typeName;
-	private int printType;
+	private String printType;
 	private String typeId;
 	private String brhMchtId;
 	private String brhTermId;
+	private String brhKeyIndex;
+	private String brhMsgType;
+	private String brhMchtMcc;
+	private String jsonItem;
 	
+	public String getJsonItem() {
+		return jsonItem;
+	}
+
+	public void setJsonItem(String jsonItem) {
+		this.jsonItem = jsonItem;
+	}
+
+	public String getBrhKeyIndex() {
+		return brhKeyIndex;
+	}
+
+	public void setBrhKeyIndex(String brhKeyIndex) {
+		this.brhKeyIndex = brhKeyIndex;
+	}
+
+	public String getBrhMsgType() {
+		return brhMsgType;
+	}
+
+	public void setBrhMsgType(String brhMsgType) {
+		this.brhMsgType = brhMsgType;
+	}
+
+	public String getBrhMchtMcc() {
+		return brhMchtMcc;
+	}
+
+	public void setBrhMchtMcc(String brhMchtMcc) {
+		this.brhMchtMcc = brhMchtMcc;
+	}
+
 	public String getBrhMchtId() {
 		return brhMchtId;
 	}
@@ -97,14 +133,6 @@ public class AcquireInstituteBean {
 		this.productDesc = productDesc;
 	}
 	
-	public int getProductType() {
-		return productType;
-	}
-	
-	public void setProductType(int productType) {
-		this.productType = productType;
-	}
-	
 	public String getImgName() {
 		return imgName;
 	}
@@ -121,14 +149,22 @@ public class AcquireInstituteBean {
 		this.typeName = typeName;
 	}
 	
-	public int getPrintType() {
+	public String getProductType() {
+		return productType;
+	}
+
+	public void setProductType(String productType) {
+		this.productType = productType;
+	}
+
+	public String getPrintType() {
 		return printType;
 	}
-	
-	public void setPrintType(int printType) {
+
+	public void setPrintType(String printType) {
 		this.printType = printType;
 	}
-	
+
 	public String getTypeId() {
 		return typeId;
 	}

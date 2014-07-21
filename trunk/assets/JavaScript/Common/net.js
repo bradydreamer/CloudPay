@@ -23,8 +23,9 @@
         && !isActionEqual("msc/user/login", action, params)
         && !isActionEqual("msc/pay/reverse", action, params)
         && !isActionEqual("msc/pay/signin", action, params)
+        && !isActionEqual("msc/pay/signout", action, params)
         && !isActionEqual("msc/pay/consume/cancel", action, params)
-        && !isActionEqual("merchant/transBatch", action, params)
+        && !isActionEqual("msc/pay/batch/settle", action, params)
         && !isActionEqual("msc/txn/update",action, params)
         && !isActionEqual("msc/payment/info/query", action, params)
 	&& !isActionEqual("msc/payment/template/query", action, params)
@@ -115,6 +116,7 @@
 
   function gotoConnect(action, params, callbackfunc, isCustom, isAsyn) {
   	if( action == "msc/pay/signin" ||
+			action == "msc/balance" ||
   			action == "msc/pay/consume" ||
   			action == "msc/pay/consume/cancel" ||
   			action == "msc/pay/refund" ||
@@ -259,7 +261,9 @@
 
   function _checkServerErr(data) {
     //服务器重启
-    if (data.responseCode == "90") {
+    if (data.responseCode == "90"
+		||data.responseCode == "91"
+		||data.responseCode == "92") {
       
       _sessionId = "-1";
       _keyExchange = true;

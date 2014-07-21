@@ -1,6 +1,6 @@
 ;(function(){
 	if (window.PaymentMechanismInfo) { return }
-  
+  	var transInfoList = {};
 	function updateTransInfo() {
 		if (window.merchSettings == null) {
 			window.RMS.read("merchSettings", initTransInfo);
@@ -71,7 +71,7 @@
 		var formData = {
 			"paymentId": product.paymentId,
 		}
-		window.util.showSceneWithSigninChecked("SingleRecordSearch", formData,null);	
+		window.util.showSceneWithLoginChecked("SingleRecordSearch", formData,null);	
 	}
 	
 	window.PaymentMechanismInfo = {

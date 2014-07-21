@@ -94,15 +94,15 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 				StringBuffer strBuffer = new StringBuffer();
 				if (null != localParcelableApp) {
 //					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
-					strBuffer.append(getResources().getString(R.string.str_current_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
+					strBuffer.append(getResources().getString(R.string.str_current_version_name) + Env.getVersionName(CheckingUpdateDialog.this) + "\n");
 					strBuffer.append(getResources().getString(R.string.str_new_version) + localParcelableApp.getVersion() + "\n");
 					strBuffer.append(getResources().getString(R.string.about_info) + "\n");
 					okButton.setText(getResources().getString(R.string.str_update));
 					
 				} else {
 //					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
-					strBuffer.append(getResources().getString(R.string.str_current_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
-					strBuffer.append(getResources().getString(R.string.str_new_version) + Env.getVersionName(getApplicationContext()) + "\n");
+					strBuffer.append(getResources().getString(R.string.str_current_version_name) + Env.getVersionName(CheckingUpdateDialog.this) + "\n");
+					strBuffer.append(getResources().getString(R.string.str_new_version) + Env.getVersionName(CheckingUpdateDialog.this) + "\n");
 					strBuffer.append(getResources().getString(R.string.about_info) + "\n");
 					okButton.setText(getResources().getString(R.string.alert_btn_positive));
 				}
@@ -117,7 +117,7 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 	};
 	
 	private void startDeviceChecking() {
-		Intent mIntent = new Intent(getApplicationContext(), DevicesCheckingDialog.class);
+		Intent mIntent = new Intent(CheckingUpdateDialog.this, DevicesCheckingDialog.class);
 		startActivity(mIntent);
 	}
 	
@@ -171,7 +171,7 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 			try {
 				if (null != mIService) {
 					
-					localParcelableApp = mIService.checkUpdate(Env.getPackageName(getApplicationContext()), Env.getVersionCode(getApplicationContext()));
+					localParcelableApp = mIService.checkUpdate(Env.getPackageName(CheckingUpdateDialog.this), Env.getVersionCode(CheckingUpdateDialog.this));
 					if (localParcelableApp != null) {
 						Logger.i("appId:" + localParcelableApp.getId()
 								+ " appName:" + localParcelableApp.getName()

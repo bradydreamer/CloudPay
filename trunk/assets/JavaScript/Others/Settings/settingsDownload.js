@@ -190,7 +190,8 @@
 				machineId : window.user.machineId,
 				merchName : data.mer_name,
 			};
-			RMS.save("merchant", params);		
+			RMS.save("merchant", params);
+			ServiceMerchInfo.setMerchInfo(params);
 			_currentStep++;
 			_currentType++;	
 			run();	
@@ -205,9 +206,11 @@
 	function save() {
 		switch (_saveStep) {
 			case 0:
-				RMS.save("merchSettings", {
+				RMS.clear("merchSettings",function(){
+					RMS.save("merchSettings", {
 					"settingString" : JSON.stringify(_settingParams),
-				});	
+				})});	
+					
 				RMS.clear("paymentInfo", function() {
 					RMS.save("paymentInfo", _paymentInfo);
 				});

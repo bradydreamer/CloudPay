@@ -36,6 +36,7 @@ public class OldTrans implements Constant {
 	private String alipayPId; // alipay PID
 	private String alipayAccount; // alipay account
 	private String alipayTransactionID; // alipay Transaction ID
+	private String pocc;
 
 	private byte oldEntryMode;
 	private byte oldPinMode;
@@ -72,6 +73,14 @@ public class OldTrans implements Constant {
 
 	public void setAlipayTransactionID(String alipayTransactionID) {
 		this.alipayTransactionID = alipayTransactionID;
+	}
+
+	public String getOldPocc() {
+		return pocc;
+	}
+
+	public void setOldPocc(String pocc) {
+		this.pocc = pocc;
 	}
 
 	public String getAlipayAccount() {
@@ -367,207 +376,120 @@ public class OldTrans implements Constant {
 		this.oldPinMode = oldPinMode;
 	}
 
-	public void setResponseCode(byte[] responseCode)
-    {
-    	if(responseCode != null && responseCode.length == 2)
-    	{
-    		this.oldResponseCode = new byte[2];
-    		System.arraycopy(responseCode, 0, this.oldResponseCode, 0, 2);
-    	}
-    }
-	
+	public void setResponseCode(byte[] responseCode) {
+		if (responseCode != null && responseCode.length == 2) {
+			this.oldResponseCode = new byte[2];
+			System.arraycopy(responseCode, 0, this.oldResponseCode, 0, 2);
+		}
+	}
+
 	// issuerName
-    public String getIssuerName(String issuerID)
-    {
-    	String issuerName = getBankNameFromID(issuerID);
-    	return issuerName;
-    }
-    public String getAcquirerName(String acquirerID){
-    	String oldAcquirerName = getBankNameFromID(acquirerID);
-    	return oldAcquirerName;
-    }
-	
-	private String getBankNameFromID(String id)
-    {
-    	if(id.length()  > 0)
-    	{
-            String headerID = id.substring(0, 4);
-    		if(headerID.equals("0100"))
-            {
-            	return "邮储银行"; 
-            }
-            else if(headerID.equals("0102"))
-	        {
-            	return "工商银行"; 
-	        }
-            else if(headerID.equals("0103"))
-	        {
-            	return "农业银行"; 
-	        }
-            else if(   headerID.equals("0104")
-            		|| headerID.equals("6104")
-            	   )
-	        {
-            	return "中国银行"; 
-	        }
-            else if(headerID.equals("0105"))
-	        {
-            	return "建设银行"; 
-	        }
-            else if(headerID.equals("0301"))
-	        {
-            	return "交通银行"; 
-	        }
-            else if(headerID.equals("0302"))
-	        {
-            	return "中信银行"; 
-	        }
-            else if(headerID.equals("0303"))
-	        {
-            	return "光大银行"; 
-	        }
-            else if(headerID.equals("0304"))
-	        {
-            	return "华夏银行"; 
-	        }
-            else if(headerID.equals("0305"))
-	        {
-            	return "民生银行"; 
-	        }
-            else if(headerID.equals("0306"))
-	        {
-            	return "广发银行"; 
-	        }
-            else if(   headerID.equals("0307")
-            		|| headerID.equals("0410")
-            	   )
-	        {
-            	return "平安银行"; 
-	        }
-            else if(   headerID.equals("0308")
-            		|| headerID.equals("6308")
-            	   )
-	        {
-            	return "招商银行"; 
-	        }
-            else if(headerID.equals("0309"))
-	        {
-            	return "兴业银行"; 
-	        }
-            else if(headerID.equals("0310"))
-	        {
-            	return "浦发银行"; 
-	        }
-            else if(headerID.equals("0320"))
-	        {
-            	return "东亚银行"; 
-	        }
-            else{
-	        	if(GUANGDONG_CUP)
-	        	{
-	        		if(   headerID.equals("0413")
-	        		   || headerID.equals("6413")
-	        		  )
-	        		{
-	        			return "广州银行";
-	        		}
-	        		else if(   headerID.equals("0425")
-	        				|| headerID.equals("0505")
-	        			   )
-	        		{
-	        			return "东莞银行";
-	        		}
-	        		else if(headerID.equals("0437"))
-	        		{
-	        			return "华润银行";
-	        		}
-	        		else if(  headerID.equals("0489")
-	        				||headerID.equals("6489")
-	        			   )
-	        		{
-	        			return "南粤银行";
-	        		}
-	        		else if(headerID.equals("0495"))
-	        		{
-	        			return "柳州商行";
-	        		}
-	        		else if(headerID.equals("0578"))
-	        		{
-	        			return "华兴银行";
-	        		}
-	        		else if(  headerID.equals("1405")
-	        				||headerID.equals("6505")
-	        			   )
-	        		{
-	        			return "广州农商";
-	        		}
-	        		else if(headerID.equals("1407"))
-	        		{
-	        			return "南海农信";
-	        		}
-	        		else if(  headerID.equals("1408")
-	        				||headerID.equals("6508")
-	        			   )
-	        		{
-	        			return "顺德农商";
-	        		}
-	        		else if(headerID.equals("1415"))
-	        		{
-	        			return "东莞农商";
-	        		}
-	        		else if(headerID.equals("1421"))
-	        		{
-	        			return "三水农信";
-	        		}
-	        		else if(headerID.equals("1425"))
-	        		{
-	        			return "新会农商";
-	        		}
-	        		else if(headerID.equals("1426"))
-	        		{
-	        			return "肇庆农信";
-	        		}
-	        		else if(headerID.equals("1427"))
-	        		{
-	        			return "佛山农信";
-	        		}
-	        		else if(headerID.equals("1431"))
-	        		{
-	        			return "珠海农信";
-	        		}
-	        		else if(headerID.equals("1432"))
-	        		{
-	        			return "中山农信";
-	        		}
-	        		else if(headerID.equals("1450"))
-	        		{
-	        			return "广东农信";
-	        		}
-	        	}
-	        }
-    	}
-    	return id;
-    }
-	
+	public String getIssuerName(String issuerID) {
+		String issuerName = getBankNameFromID(issuerID);
+		return issuerName;
+	}
+
+	public String getAcquirerName(String acquirerID) {
+		String oldAcquirerName = getBankNameFromID(acquirerID);
+		return oldAcquirerName;
+	}
+
+	private String getBankNameFromID(String id) {
+		if (id.length() > 0) {
+			String headerID = id.substring(0, 4);
+			if (headerID.equals("0100")) {
+				return "邮储银行";
+			} else if (headerID.equals("0102")) {
+				return "工商银行";
+			} else if (headerID.equals("0103")) {
+				return "农业银行";
+			} else if (headerID.equals("0104") || headerID.equals("6104")) {
+				return "中国银行";
+			} else if (headerID.equals("0105")) {
+				return "建设银行";
+			} else if (headerID.equals("0301")) {
+				return "交通银行";
+			} else if (headerID.equals("0302")) {
+				return "中信银行";
+			} else if (headerID.equals("0303")) {
+				return "光大银行";
+			} else if (headerID.equals("0304")) {
+				return "华夏银行";
+			} else if (headerID.equals("0305")) {
+				return "民生银行";
+			} else if (headerID.equals("0306")) {
+				return "广发银行";
+			} else if (headerID.equals("0307") || headerID.equals("0410")) {
+				return "平安银行";
+			} else if (headerID.equals("0308") || headerID.equals("6308")) {
+				return "招商银行";
+			} else if (headerID.equals("0309")) {
+				return "兴业银行";
+			} else if (headerID.equals("0310")) {
+				return "浦发银行";
+			} else if (headerID.equals("0320")) {
+				return "东亚银行";
+			} else {
+				if (GUANGDONG_CUP) {
+					if (headerID.equals("0413") || headerID.equals("6413")) {
+						return "广州银行";
+					} else if (headerID.equals("0425")
+							|| headerID.equals("0505")) {
+						return "东莞银行";
+					} else if (headerID.equals("0437")) {
+						return "华润银行";
+					} else if (headerID.equals("0489")
+							|| headerID.equals("6489")) {
+						return "南粤银行";
+					} else if (headerID.equals("0495")) {
+						return "柳州商行";
+					} else if (headerID.equals("0578")) {
+						return "华兴银行";
+					} else if (headerID.equals("1405")
+							|| headerID.equals("6505")) {
+						return "广州农商";
+					} else if (headerID.equals("1407")) {
+						return "南海农信";
+					} else if (headerID.equals("1408")
+							|| headerID.equals("6508")) {
+						return "顺德农商";
+					} else if (headerID.equals("1415")) {
+						return "东莞农商";
+					} else if (headerID.equals("1421")) {
+						return "三水农信";
+					} else if (headerID.equals("1425")) {
+						return "新会农商";
+					} else if (headerID.equals("1426")) {
+						return "肇庆农信";
+					} else if (headerID.equals("1427")) {
+						return "佛山农信";
+					} else if (headerID.equals("1431")) {
+						return "珠海农信";
+					} else if (headerID.equals("1432")) {
+						return "中山农信";
+					} else if (headerID.equals("1450")) {
+						return "广东农信";
+					}
+				}
+			}
+		}
+		return id;
+	}
+
 	@Override
-	public String toString(){
-		String msg = "oldPan = " + oldPan +"\n" +
-				"oldTransAmount = " + oldTransAmount  +"\n" +
-				"oldTrace = " + oldTrace  +"\n" +
-				"oldTransYear = " + oldTransYear  +"\n" +
-				"oldTransDate = " + oldTransDate  +"\n" +
-				"oldTransTime = " + oldTransTime  +"\n" +
-				"oldExpiry = " + oldExpiry  +"\n" +
-				"oldAcquirerCode = " + oldAcquirerCode  +"\n" +
-				"oldRrn = " + oldRrn  +"\n" +
-				"oldAuthCode = " + oldAuthCode  +"\n" +
-				"oldResponseCode = " + StringUtil.toBestString(oldResponseCode)  +"\n" +
-				"oldAcquirerID = " + oldAcquirerID  +"\n" +
-				"oldIssuerID = " + oldIssuerID  +"\n" +
-				"oldBatch = " + oldBatch  +"\n" +
-				"oldTID = " + oldTID  +"\n" +
-				"oldMID = " + oldMID;
-//		System.out.println(msg);
+	public String toString() {
+		String msg = "oldPan = " + oldPan + "\n" + "oldTransAmount = "
+				+ oldTransAmount + "\n" + "oldTrace = " + oldTrace + "\n"
+				+ "oldTransYear = " + oldTransYear + "\n" + "oldTransDate = "
+				+ oldTransDate + "\n" + "oldTransTime = " + oldTransTime + "\n"
+				+ "oldExpiry = " + oldExpiry + "\n" + "oldAcquirerCode = "
+				+ oldAcquirerCode + "\n" + "oldRrn = " + oldRrn + "\n"
+				+ "oldAuthCode = " + oldAuthCode + "\n" + "oldResponseCode = "
+				+ StringUtil.toBestString(oldResponseCode) + "\n"
+				+ "oldAcquirerID = " + oldAcquirerID + "\n" + "oldIssuerID = "
+				+ oldIssuerID + "\n" + "oldBatch = " + oldBatch + "\n"
+				+ "oldTID = " + oldTID + "\n" + "oldMID = " + oldMID;
+		// System.out.println(msg);
 		return msg;
 	}
 }

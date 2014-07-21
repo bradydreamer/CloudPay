@@ -619,9 +619,10 @@ public class ISOPackager implements Constant {
 
 				// 60.6
 				if (!appState.paymentId.isEmpty()) {
-					F60_last += appState.paymentId;
-				}
+					F60_last += appState.paymentId.substring(appState.paymentId
+							.length() - 4);
 
+				}
 				F60_Length += 4;
 			} else {
 
@@ -2211,8 +2212,9 @@ public class ISOPackager implements Constant {
 			if (appState.trans.getTransType() == TRAN_RESERV_SALE) {
 				int panLength = ((llvar[0] >> 4) & 0x0F) * 10
 						+ (llvar[0] & 0x0F);
-				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber)
-						.substring(0, panLength));
+//				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber)
+//						.substring(0, panLength));
+				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber));
 			} else {
 				// if( appState.getProcessType() != PROCESS_REVERSAL
 				// && appState.trans.getTransType() != TRAN_VOID_SALE

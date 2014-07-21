@@ -1,11 +1,11 @@
 package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +13,7 @@ import android.widget.ListView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.util.UtilForJSON;
 
 public class ConsumptionRecordController extends BaseController {
@@ -21,6 +22,10 @@ public class ConsumptionRecordController extends BaseController {
 	private ConsumptionRecordAdapter adapter;
 	private List<JSONObject> recordDataList;
 	private boolean removeJSTag = true;
+	
+	private String startDate;
+	private String endDate;
+	private boolean hasMore;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +42,13 @@ public class ConsumptionRecordController extends BaseController {
 		lv_record = (ListView) findViewById(R.id.consumption_record_lv_record);
 		adapter = new ConsumptionRecordAdapter(this);
 		adapter.setList(recordDataList);
-		boolean hasMore = data.optBoolean("hasMore");
+		hasMore = data.optBoolean("hasMore");
 		adapter.setHasMore(hasMore);
 		lv_record.setAdapter(adapter);
+		
+		//init startDate and endDate
+		startDate = data.optString("start_date");
+		endDate = data.optString("end_date");
 		
 		lv_record.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -56,7 +65,12 @@ public class ConsumptionRecordController extends BaseController {
 				}
 			}
 		});
-
+		
+		//cache record to sqlite --start by Teddy 17th July
+		if (recordDataList != null && recordDataList.size() > 0) {
+			new CacheRecordThread().start();
+		}
+		//cache record to sqlite --end by Teddy 17th July
 	}
 
 	@Override
@@ -75,12 +89,24 @@ public class ConsumptionRecordController extends BaseController {
 		if ("addList".equals(key)) {
 			JSONObject data = (JSONObject) value;
 			JSONArray dataArray = data.optJSONArray("recordList");
+			
+			//cache record to sqlite --start by Teddy 17th July
+			List<JSONObject> tmpList = new ArrayList<JSONObject>();
+			//cache record to sqlite --end by Teddy 17th July
+			
 			for (int i = 0; i < dataArray.length(); i++) {
 				recordDataList.add(dataArray.optJSONObject(i));
+				tmpList.add(dataArray.optJSONObject(i));
 			}
 			boolean hasMore = data.optBoolean("hasMore");
 			adapter.setHasMore(hasMore);
 			adapter.notifyDataSetChanged();
+			
+			//cache record to sqlite --start by Teddy 17th July
+			if (tmpList != null && tmpList.size() > 0) {
+				new CacheRecordThread().start();
+			}
+			//cache record to sqlite --end by Teddy 17th July
 		}
 		super.setView(view, key, value);
 	}
@@ -121,5 +147,14 @@ public class ConsumptionRecordController extends BaseController {
 	protected boolean getRemoveJSTag() {
 		// TODO Auto-generated method stub
 		return removeJSTag;
+	}
+	
+	class CacheRecordThread extends Thread {
+
+		@Override
+		public void run() {
+			ConsumptionRecordDB cacheDB = ConsumptionRecordDB.getInstance(ConsumptionRecordController.this);
+			cacheDB.insertConsumptionRecord(recordDataList);
+		}
 	}
 }

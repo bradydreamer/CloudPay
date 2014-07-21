@@ -72,6 +72,7 @@
 		params.tDate = tDate;
 		params.tTime = tTime;
 		params.transTime = util.formatDateTime(transTime);
+		params.oriTransTime = transTime;
 		params.transAmount = util.formatAmountStr(params.transAmount);
 
 		var cancelEnable = false;

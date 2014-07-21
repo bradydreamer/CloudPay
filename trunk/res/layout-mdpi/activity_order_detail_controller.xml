@@ -127,18 +127,22 @@
 			</RelativeLayout>
 		</LinearLayout>
 	
-	    <ScrollView
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:layout_above="@id/btnsRootLayout"
-	        android:layout_marginLeft="100dp" >
+		<LinearLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:layout_above="@id/btnsRootLayout"
+        	android:layout_marginLeft="100dp"
+        	android:layout_marginRight="100dp"
+		    android:orientation="vertical">
 			<LinearLayout 
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
-			    android:orientation="vertical">
+			    android:orientation="horizontal">
+			    
 			    <RelativeLayout 
-			        android:layout_width="fill_parent"
-			        android:layout_height="@dimen/order_details_content_item_height">
+			        android:layout_width="0dp"
+			        android:layout_height="@dimen/order_details_content_item_height"
+			        android:layout_weight="1">
 			        <TextView
 		                android:id="@+id/order_detail_tv_transAmount_mark"
 		                style="@style/order_detail_mark_style"
@@ -159,26 +163,26 @@
 			            android:layout_height="1dp"
 			            android:layout_alignParentBottom="true"
 			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>/>
+			            />
 			    </RelativeLayout>
 			    <RelativeLayout 
-			        android:layout_width="fill_parent"
+			        android:layout_width="0dp"
+			        android:layout_weight="1"
 			        android:layout_height="@dimen/order_details_content_item_height">
 			        <TextView
-		                android:id="@+id/order_detail_tv_transData_mark"
+		                android:id="@+id/order_detail_operator_mark"
 		                style="@style/order_detail_mark_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
-		                android:text="@string/order_detail_tv_transDate"
+		                android:layout_marginRight="90dp"
+		                android:text="@string/order_detail_operator"
 		                android:textColor="@color/gray"
 		                android:textSize="@dimen/order_details_content_text_size" />
 		
 		            <TextView
-		                android:id="@+id/order_detail_tv_transDate"
+		                android:id="@+id/order_detail_tv_operator"
 		                style="@style/order_detail_mark_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
-		                android:layout_toRightOf="@id/order_detail_tv_transData_mark"
+		                android:layout_toRightOf="@id/order_detail_operator_mark"
 		                android:textColor="@color/black"
 		                android:textSize="@dimen/order_details_content_text_size" />
 			        <TextView 
@@ -186,10 +190,17 @@
 			            android:layout_height="1dp"
 			            android:layout_alignParentBottom="true"
 			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>/>
+			            />
 			    </RelativeLayout>
+			    
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal">
 			    <RelativeLayout 
-			        android:layout_width="fill_parent"
+			        android:layout_width="0dp"
+			        android:layout_weight="1"
 			        android:layout_height="@dimen/order_details_content_item_height">
 			        <TextView
 		                android:id="@+id/order_detail_tv_transType_mark"
@@ -212,10 +223,11 @@
 			            android:layout_height="1dp"
 			            android:layout_alignParentBottom="true"
 			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>/>
+			            />
 			    </RelativeLayout>
 			    <RelativeLayout 
-			        android:layout_width="fill_parent"
+			        android:layout_width="0dp"
+			        android:layout_weight="1"
 			        android:layout_height="@dimen/order_details_content_item_height">
 			        <TextView
 		                android:id="@+id/order_detail_tv_payType_mark"
@@ -238,90 +250,118 @@
 			            android:layout_height="1dp"
 			            android:layout_alignParentBottom="true"
 			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>/>
+			            />
 			    </RelativeLayout>
-			    <RelativeLayout 
-			        android:layout_width="fill_parent"
-			        android:layout_height="@dimen/order_details_content_item_height">
-			        <TextView
-		                android:id="@+id/order_detail_tv_orderId_mark"
-		                style="@style/order_detail_mark_style"
-		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
-		                android:text="@string/order_detail_tv_orderId"
-		                android:textColor="@color/gray"
-		                android:textSize="@dimen/order_details_content_text_size" />
-		
-		            <TextView
-		                android:id="@+id/order_detail_tv_orderId"
-		                style="@style/order_detail_mark_style"
-		                android:layout_centerVertical="true"
-		                android:layout_marginLeft="30dp"
-		                android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
-		                android:textColor="@color/black"
-		                android:textSize="@dimen/order_details_content_text_size" />
-			        <TextView 
-			            android:layout_width="fill_parent"
-			            android:layout_height="1dp"
-			            android:layout_alignParentBottom="true"
-			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>/>
-			    </RelativeLayout>
-			    <RelativeLayout 
-			        android:layout_width="fill_parent"
-			        android:layout_height="@dimen/order_details_content_item_height">
-			        <TextView
-		                android:id="@+id/order_detail_tv_authcode_mark"
-		                style="@style/order_detail_mark_style"
-		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
-		                android:text="@string/order_detail_tv_authCode"
-		                android:textColor="@color/gray"
-		                android:textSize="@dimen/order_details_content_text_size" />
-		
-		            <TextView
-		                android:id="@+id/order_detail_tv_authcode"
-		                style="@style/order_detail_mark_style"
-		                android:layout_centerVertical="true"
-		                android:layout_marginLeft="30dp"
-		                android:layout_toRightOf="@id/order_detail_tv_authcode_mark"
-		                android:textColor="@color/black"
-		                android:textSize="@dimen/order_details_content_text_size" />
-			        <TextView 
-			            android:layout_width="fill_parent"
-			            android:layout_height="1dp"
-			            android:layout_alignParentBottom="true"
-			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>/>
-			    </RelativeLayout>
-			    <RelativeLayout 
-			        android:layout_width="fill_parent"
-			        android:layout_height="@dimen/order_details_content_item_height">
-			        <TextView
-		                android:id="@+id/order_detail_tv_orderStatus_mark"
-		                style="@style/order_detail_mark_style"
-		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
-		                android:text="@string/order_detail_tv_orderStatus"
-		                android:textColor="@color/gray"
-		                android:textSize="@dimen/order_details_content_text_size" />
-		
-		            <TextView
-		                android:id="@+id/order_detail_tv_orderStatus"
-		                style="@style/order_detail_mark_style"
-		                android:layout_centerVertical="true"
-		                android:layout_toRightOf="@id/order_detail_tv_orderStatus_mark"
-		                android:textColor="@color/black"
-		                android:textSize="@dimen/order_details_content_text_size" />
-			        <TextView 
-			            android:layout_width="fill_parent"
-			            android:layout_height="1dp"
-			            android:layout_alignParentBottom="true"
-			            android:background="@color/interval_line_color"
-			            android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
-			    </RelativeLayout>				    
 			</LinearLayout>
-	    </ScrollView>
+	        <RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/order_details_content_item_height">
+		        <TextView
+	                android:id="@+id/order_detail_tv_orderId_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="60dp"
+	                android:text="@string/order_detail_tv_orderId"
+	                android:textColor="@color/gray"
+	                android:textSize="@dimen/order_details_content_text_size" />
+	
+	            <TextView
+	                android:id="@+id/order_detail_tv_orderId"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginLeft="30dp"
+	                android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
+	                android:textColor="@color/black"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>
+		    <RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/order_details_content_item_height">
+		        <TextView
+	                android:id="@+id/order_detail_tv_authcode_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="60dp"
+	                android:text="@string/order_detail_tv_authCode"
+	                android:textColor="@color/gray"
+	                android:textSize="@dimen/order_details_content_text_size" />
+	
+	            <TextView
+	                android:id="@+id/order_detail_tv_authcode"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginLeft="30dp"
+	                android:layout_toRightOf="@id/order_detail_tv_authcode_mark"
+	                android:textColor="@color/black"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>
+		    <RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/order_details_content_item_height">
+		        <TextView
+	                android:id="@+id/order_detail_tv_transData_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="60dp"
+	                android:text="@string/order_detail_tv_transDate"
+	                android:textColor="@color/gray"
+	                android:textSize="@dimen/order_details_content_text_size" />
+	
+	            <TextView
+	                android:id="@+id/order_detail_tv_transDate"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="60dp"
+	                android:layout_toRightOf="@id/order_detail_tv_transData_mark"
+	                android:textColor="@color/black"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>
+		    
+		  	<RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/order_details_content_item_height">
+		        <TextView
+	                android:id="@+id/order_detail_tv_orderStatus_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="60dp"
+	                android:text="@string/order_detail_tv_orderStatus"
+	                android:textColor="@color/gray"
+	                android:textSize="@dimen/order_details_content_text_size" />
+	
+	            <TextView
+	                android:id="@+id/order_detail_tv_orderStatus"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_toRightOf="@id/order_detail_tv_orderStatus_mark"
+	                android:textColor="@color/black"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>
+		</LinearLayout>
 	
 	</RelativeLayout>
 </LinearLayout>

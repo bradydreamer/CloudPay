@@ -17,7 +17,7 @@
 		    android:layout_height="wrap_content"
 		    android:gravity="center"
 		    android:text="@string/trans_batch_alert_content"
-		    android:textSize="45px"
+		    android:textSize="50px"
 		    />
 	</LinearLayout>
 </LinearLayout>

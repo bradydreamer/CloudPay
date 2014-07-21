@@ -163,4 +163,15 @@
             android:background="@color/interval_line_color"
             android:layout_marginRight="@dimen/order_detail_interval_margin_right"/>
     </RelativeLayout>
+    <Button
+        android:id="@+id/order_detail_btn_confirm"
+        android:layout_width="220dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_green_background"
+        android:text="@string/order_detail_btn_operation_text_confirm"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/order_details_content_text_size"
+        android:layout_gravity="right"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="60dp" />
 </LinearLayout>

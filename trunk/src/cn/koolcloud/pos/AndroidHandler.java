@@ -86,8 +86,10 @@ public class AndroidHandler {
 					clientEngine.getTransData8583(jsonObjData, callBackId);
 				} else if ("getBalance".equals(androidHandlerName)) {
 					clientEngine.getBalance(callBackId);
+				} else if ("ServiceSecureInfo".equals(androidHandlerName)) {
+					clientEngine.serviceSecureInfo(jsonObjData, callBackId);
 				} else if ("ServiceMerchInfo".equals(androidHandlerName)) {
-					clientEngine.serviceMerchInfo(jsonObjData, callBackId);
+					clientEngine.serviceMerchantInfo(jsonObjData, callBackId);
 				}
 			}
 		});

@@ -1,8 +1,15 @@
 package cn.koolcloud.pos.controller;
 
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +25,9 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
 import cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog;
 import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
+import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.util.UtilForDataStorage;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
@@ -69,7 +78,7 @@ public class HomeController extends BaseHomeController implements
 		 * onCall("Home.updateTransInfo", null); }
 		 */
 		if (!isFirstStart) {
-			if (Env.checkApkExist(getApplicationContext(), ConstantUtils.APP_STORE_PACKAGE_NAME)) {
+			if (Env.checkApkExist(HomeController.this, ConstantUtils.APP_STORE_PACKAGE_NAME)) {
 				startAppVersionChecking();
 			} else {
 				startDeviceChecking();
@@ -82,6 +91,51 @@ public class HomeController extends BaseHomeController implements
 		//exit dialog
 		inflater = LayoutInflater.from(this);
 		exitDialogView = inflater.inflate(R.layout.dialog_exit_layout, null);
+		
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		//FIXME: init merchant nickname and login name
+		setRightButtonVisible();
+		setTitleVisible();
+		// get merchant name
+		/*Map<String, ?> merchMap = UtilForDataStorage
+				.readPropertyBySharedPreferences(HomeController.this, "merchant");
+		String merchName = (String) merchMap.get("merchName");
+		String operatorName = (String) merchMap.get("operator");*/
+		try {
+			String merchName = "";
+			String operatorName = "";
+			String userInfo = ClientEngine.engineInstance().getSecureService().getUserInfo();
+			MerchInfo merchInfo = ClientEngine.engineInstance().getMerchService().getMerchInfo();
+			if (merchInfo != null) {
+				
+				merchName = merchInfo.getMerchName();
+			}
+			
+			if (!TextUtils.isEmpty(userInfo)) {
+				try {
+					JSONObject userInfoObj = new JSONObject(userInfo);
+					operatorName = userInfoObj.optString("userName");
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				merchName = getResources().getString(R.string.app_name);
+				operatorName = "";
+			}
+			
+			setTitle(merchName);
+			setRightButtonTitle(operatorName);
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -103,13 +157,13 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	private void startDeviceChecking() {
-		Intent mIntent = new Intent(getApplicationContext(),
+		Intent mIntent = new Intent(HomeController.this,
 				DevicesCheckingDialog.class);
 		startActivity(mIntent);
 	}
 
 	private void startAppVersionChecking() {
-		Intent mIntent = new Intent(getApplicationContext(),
+		Intent mIntent = new Intent(HomeController.this,
 				CheckingUpdateDialog.class);
 		startActivity(mIntent);
 	}
@@ -239,7 +293,8 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void clearReverseData(View view) {
-		onCall("SettingsIndex.clearReverseData", null);
+//		onCall("SettingsIndex.clearReverseData", null);
+		onCall("window.util.clearReverseDataWithLoginChecked", null);
 	}
 
 	public void downloadMerchData(View view) {
@@ -258,7 +313,7 @@ public class HomeController extends BaseHomeController implements
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.abountBtn:
-			Intent mIntent = new Intent(getApplicationContext(),
+			Intent mIntent = new Intent(HomeController.this,
 					AboutDialog.class);
 			startActivity(mIntent);
 
@@ -275,7 +330,7 @@ public class HomeController extends BaseHomeController implements
 				&& event.getAction() == KeyEvent.ACTION_DOWN){
 			//TODO:show exit dialog
 			if ((System.currentTimeMillis() - exitTime) > EXIT_LAST_TIME) {
-				Toast.makeText(getApplicationContext(), R.string.msg_exist_toast, Toast.LENGTH_SHORT).show();
+				Toast.makeText(HomeController.this, R.string.msg_exist_toast, Toast.LENGTH_SHORT).show();
 		        exitTime = System.currentTimeMillis();
 			} else {
 				exit();

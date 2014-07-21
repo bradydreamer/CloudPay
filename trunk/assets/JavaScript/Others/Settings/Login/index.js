@@ -11,7 +11,7 @@
 
 	function onLogin(msg) {
 	  var params = JSON.parse(msg)
-	
+      window.user.init({});
 	  gotoLogin(params)
 	}
 
@@ -123,27 +123,31 @@
 		
 		/*
 		gradeId为："1":高权限，"2":低
-    */
-    if(data.gradeId == "1"){
-    	if (ConsumptionData.dataForPayment.payKeyIndex == "90") {
-    		
-	    	Scene.alert("权限确认成功",function(){
-		    	var sceneName = "MisposController";
-  				Scene.goBack("Home");
-  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
-	    	});
-    	} else {
-    		
-	    	Scene.alert("权限确认成功",function(){
-	    	currentStep = Pay.cacheData.step;
-	    	currentTag = Pay.cacheData.flowList[currentStep].packTag;
-	    	Pay.cacheData.step = currentStep + 1;
-	    	Pay.gotoFlow();});
-    	}
-    }else{
-    	Scene.alert("权限确认失败！",goback);
-    	
-    }
+	    */
+	    if(data.gradeId == "1"){
+	    	if (ConsumptionData.dataForPayment.payKeyIndex == "90") {
+	    		
+		    	Scene.alert("权限确认成功",function(){
+			    	var sceneName = "MisposController";
+	  				Scene.goBack("Home");
+	  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
+		    	});
+	    	} else if(ConsumptionData.dataForPayment.payKeyIndex == "91"){
+	    		Scene.alert("权限确认成功",function(){
+	    			Pay.cashCancelOrder(ConsumptionData.dataForPayment.cashdata,Pay.updataListCashCancel);
+	    		});
+	    		
+	    	}else {    		
+		    	Scene.alert("权限确认成功",function(){
+		    	currentStep = Pay.cacheData.step;
+		    	currentTag = Pay.cacheData.flowList[currentStep].packTag;
+		    	Pay.cacheData.step = currentStep + 1;
+		    	Pay.gotoFlow();});
+	    	}
+	    }else{
+	    	Scene.alert("权限确认失败！",goback);
+	    	
+	    }
 	}
 	
 	function confirmLogin(params){

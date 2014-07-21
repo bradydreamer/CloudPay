@@ -46,6 +46,7 @@ public class LoginController extends BaseController {
 			customerId.setText(str_customerId);
 			customerId.setTextColor(color.gray);
 			customerId.setInputType(InputType.TYPE_NULL);
+			customerId.setFocusable(false);
 		}
 		configuration_userName.setText(str_userName);
 	}
@@ -58,7 +59,7 @@ public class LoginController extends BaseController {
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
 		String pwdStr = configuration_pwd.getText().toString();
 		// String pwd = se.fieldDecrypt(se.md5(pwdStr));
-		String pwd = se.md5(pwdStr).toLowerCase();
+		String pwd = "_TDS_" + se.md5(pwdStr).toLowerCase();
 		String ssn = android.os.Build.SERIAL;
 
 		JSONObject msg = new JSONObject();

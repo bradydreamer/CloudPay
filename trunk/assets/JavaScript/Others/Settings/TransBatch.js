@@ -2,8 +2,7 @@
  if (window.TransBatch) { return; }
   
   function gotoTransBatch() {
-		SettingsIndex.transBatch();
-  	//setTimeout(Scene.goBack,1000);
+		SettingsIndex.allTransBatch(gotoHome);
   }
   
   function gotoHome(){

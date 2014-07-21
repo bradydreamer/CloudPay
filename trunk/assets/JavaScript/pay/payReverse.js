@@ -61,13 +61,20 @@ Pay.reverseResult = function(params) {
 			data8583 : params.data,
 		};		
 		window.data8583.convert8583(params, afterConvertBackup);
-	} else {
+	} else if(params.responseCode == "1"){
+		window.RMS.clear("savedTransData");
+		if (Pay.reverseCallBack) {
+			Pay.reverseCallBack();
+			Pay.reverseCallBack = null;
+		};
+	}else{		
 		Scene.alert("冲正失败，请联系代理机构");
 		if (Pay.reverseCallBack) {
 			Pay.reverseCallBack();
 			Pay.reverseCallBack = null;
 		};
 	}
+	
 	function afterConvertBackup(params){
 		Pay.transBackup(params);
 		afterConvertReverseRes(params);
@@ -212,13 +219,15 @@ Pay.getProductInfo = function(data){
 	function confirmMethod(product, flowList) {
 		if (flowList != null && typeof (flowList) == "string") {
 			flowList = JSON.parse(flowList);
+			flowList = JSON.parse(flowList);
 		}
 		if(oriData.transType == transType_ConsumeCancel){
 			ConsumptionData.dataForCancellingOrder.rrn = oriData.params.rrn;
 			ConsumptionData.dataForCancellingOrder.transDate = oriData.params.transTime.substring(4, 8);
 			ConsumptionData.dataForCancellingOrder.transData8583 = oriData.params.transData8583;
 			ConsumptionData.dataForCancellingOrder.transAmount = oriData.params.transAmount;
-			ConsumptionData.dataForCancellingOrder.paymentId = oriData.params.paymentId;	
+			ConsumptionData.dataForCancellingOrder.paymentId = oriData.params.paymentId;
+			ConsumptionData.dataForCancellingOrder.transType = oriData.params.transType;
 			ConsumptionData.dataForCancellingOrder.typeOf8583 = "cheXiao";
 			ConsumptionData.dataForCancellingOrder.flowList = flowList;	
 			ConsumptionData.dataForCancellingOrder.step = 0;
@@ -228,8 +237,9 @@ Pay.getProductInfo = function(data){
 			ConsumptionData.dataForPayment.rrn = oriData.params.rrn;
 			ConsumptionData.dataForPayment.transDate = oriData.params.transTime.substring(4, 8);
 			ConsumptionData.dataForPayment.transData8583 = oriData.params.transData8583;
-			ConsumptionData.dataForPayment.transAmount = oriData.params.transAmount;
+			//ConsumptionData.dataForPayment.transAmount = oriData.params.transAmount;
 			ConsumptionData.dataForPayment.paymentId = oriData.params.paymentId;	
+			ConsumptionData.dataForPayment.transType = oriData.params.transType;
 			ConsumptionData.dataForPayment.flowList = flowList;	
 			ConsumptionData.dataForPayment.step = 0;
 			Pay.gotoPreAuthCompleteFlow();
@@ -238,8 +248,9 @@ Pay.getProductInfo = function(data){
 			ConsumptionData.dataForPayment.rrn = oriData.params.rrn;
 			ConsumptionData.dataForPayment.transDate = oriData.params.transTime.substring(4, 8);
 			ConsumptionData.dataForPayment.transData8583 = oriData.params.transData8583;
-			ConsumptionData.dataForPayment.transAmount = oriData.params.transAmount;
-			ConsumptionData.dataForPayment.paymentId = oriData.params.paymentId;	
+			//ConsumptionData.dataForPayment.transAmount = oriData.params.transAmount;
+			ConsumptionData.dataForPayment.paymentId = oriData.params.paymentId;
+			ConsumptionData.dataForPayment.transType = oriData.params.transType;
 			ConsumptionData.dataForPayment.flowList = flowList;	
 			ConsumptionData.dataForPayment.step = 0;
 			Pay.gotoPreAuthSettlementFlow();
@@ -249,7 +260,8 @@ Pay.getProductInfo = function(data){
 			ConsumptionData.dataForPayment.transDate = oriData.params.transTime.substring(4, 8);
 			ConsumptionData.dataForPayment.transData8583 = oriData.params.transData8583;
 			ConsumptionData.dataForPayment.transAmount = oriData.params.transAmount;
-			ConsumptionData.dataForPayment.paymentId = oriData.params.paymentId;	
+			ConsumptionData.dataForPayment.paymentId = oriData.params.paymentId;
+			ConsumptionData.dataForPayment.transType = oriData.params.transType;
 			ConsumptionData.dataForPayment.flowList = flowList;	
 			ConsumptionData.dataForPayment.step = 0;
 			Pay.gotoPreAuthCancelFlow();
@@ -260,6 +272,7 @@ Pay.getProductInfo = function(data){
 			ConsumptionData.dataForPayment.transData8583 = oriData.params.transData8583;
 			ConsumptionData.dataForPayment.transAmount = oriData.params.transAmount;
 			ConsumptionData.dataForPayment.paymentId = oriData.params.paymentId;	
+			ConsumptionData.dataForPayment.transType = oriData.params.transType;
 			ConsumptionData.dataForPayment.flowList = flowList;	
 			ConsumptionData.dataForPayment.step = 0;
 			Pay.gotoPreAuthCompleteCancelFlow();
@@ -317,7 +330,32 @@ Pay.cancelOrderExe = function(params) {
 
 };
 
-
+Pay.cashCancelOrder = function(params,cashCancelCallback){
+	var transAmount = util.yuan2fenStr(params.transAmount);
+	var req ={
+			"transType": params.transType,
+			"paymentId": params.paymentId,
+			"batchNo": params.batchNo,
+			"traceNo": params.traceNo,
+			"transTime": params.oriTransTime,
+			"transAmount": transAmount,
+			"oriTxnId": params.txnId,
+			"resCode": params.resCode,
+			"resMsg": params.resMsg
+		}
+	Net.asynConnect("txn/"+params.payKeyIndex,req,afterCashCancelOrder);
+	
+	function afterCashCancelOrder(params){
+		if(params.responseCode == "0"){
+			if(cashCancelCallback){
+				cashCancelCallback();
+			}		
+		}else{
+			Scene.goBack("OrderDetail");
+			Scene.alert(params.resMessage);
+		}			
+	}	
+}
 
 Pay.cancelOrderResult = function(params) {
 	window.Database.insertTransData8583(ConsumptionData.dataForCancellingOrder.txnId, ConsumptionData.dataForCancellingOrder.req8583, ConsumptionData.dataForCancellingOrder.res8583);
@@ -339,8 +377,6 @@ Pay.cancelOrderResult = function(params) {
 			Scene.alert(params.resMessage);
 		}, 300);
 	}
-	;
-
 };
 
 Pay.cancelEnd = function() {

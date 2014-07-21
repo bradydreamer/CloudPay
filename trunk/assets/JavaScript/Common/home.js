@@ -62,10 +62,15 @@
 	function onSwitchFuncModule(data) {
 		var params = JSON.parse(data);
 		var typeId = params.typeId;
+		var transAmount = null;
+		if(typeId == "cash"){
+			transAmount = ConsumptionData.dataForPayment.transAmount;
+		}
 		var propertyList = [{
 			"name": "viewPager",
 			"key": "data",
 			"value": transInfoList[typeId],
+			"transAmount": transAmount,
 		}];
 		Scene.setProperty("", propertyList);
 	}
@@ -119,7 +124,7 @@
 		Global.clearGlobal();
 		window.user.token = "";
 		if (Home.needVerifyVersion == true) {
-			setTimeout(reqVerifyVer, 300);
+			//setTimeout(reqVerifyVer, 300);
 		}
 		if (Home.needUpdateUI == true) {
 			setTimeout(updateTransInfo, 50);

@@ -34,7 +34,7 @@
 		}
 		window.user.init({});
 		window.user.setLoginResult(function(){
-			Scene.goBack();
+			Scene.goBack("Home");
 		});
 		
 		RMS.read("merchant", getMerchInfo);		

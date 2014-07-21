@@ -11,6 +11,7 @@ public class MyApplication extends Application {
 
 	private static MyApplication instance;
 	private Context context;
+	private String pkgName;
 	
 	private boolean isFirstStart = false;
 
@@ -39,6 +40,14 @@ public class MyApplication extends Application {
 	
 	public void setFirstStart(boolean firstStarted) {
 		this.isFirstStart = firstStarted;
+	}
+	
+	public String getPkgName() {
+		return pkgName;
+	}
+
+	public void setPkgName(String packageName) {
+		this.pkgName = packageName;
 	}
 
 }

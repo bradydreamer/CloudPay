@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/home_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent"    
     android:orientation="vertical"
     android:visibility="visible" >
 
@@ -13,8 +13,8 @@
 
         <LinearLayout
             android:id="@+id/home_layout_funcModule"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/funcmodule_button_bg"
             android:orientation="horizontal" >

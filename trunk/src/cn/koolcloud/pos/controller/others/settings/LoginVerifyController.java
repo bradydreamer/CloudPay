@@ -30,7 +30,7 @@ public class LoginVerifyController extends BaseController {
 		if (data != null && !data.isNull("Login")) {
 			loginType = data.optString("Login");
 		} else {
-			loginType = "LoginIndex.onLogin";
+			loginType = "";
 		}
 		et_userName = (EditText) findViewById(R.id.login_et_userName);
 		// setCurrentNumberEditText(et_userName);
@@ -61,7 +61,7 @@ public class LoginVerifyController extends BaseController {
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
 		String userName = et_userName.getText().toString();
 		String pwdStr = et_pwd.getText().toString();
-		String pwd = se.md5(pwdStr).toLowerCase();
+		String pwd = "_TDS_" + se.md5(pwdStr).toLowerCase();
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("userName", userName);

@@ -169,6 +169,7 @@ Pay.gotoFlow = function() {
 	formData.merchId = cacheData.merchId;
 	formData.iposId = cacheData.iposId;
 	formData.printType = cacheData.printType;
+	formData.transType = cacheData.transType;
 	//window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
 	window.util.showSceneWithSigninChecked(sceneName, formData, flow.desc);
 	cacheData.preScene = sceneName;

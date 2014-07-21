@@ -2,7 +2,6 @@ package cn.koolcloud.pos.database;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,22 +11,24 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
 
 /**
  * <p>Title: CacheDB.java </p>
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2014</p>
- * <p>Company: All In Pay</p>
+ * <p>Company: KoolCloud</p>
  * @author 		Teddy
- * @date 		2014-6-23
+ * @date 		2014-7-11
  * @version 	
  */
 public class CacheDB extends BaseSqlAdapter {
 
 	private final static String DATABASE_NAME = "Cache.db";
-    private final static int DATABASE_VERSION = 0;
+	private final static int DATABASE_VERSION = 1;
     private final static String BATCH_PROCESSING_TABLE_NAME = "batch_processing_table";
+    private final static String ACQUIRE_INSTITUTE_TABLE_NAME = "acquire_institute_table";
     
     private Context context;
     private String dbName;
@@ -50,6 +51,26 @@ public class CacheDB extends BaseSqlAdapter {
     private final static String ISSUER_ID = "issuer_id";
     private final static String EXP_DATE = "exp_date";										//format YYMM
     private final static String SETTLEMENT_DATE = "settlement_date";						//settlement date format MMDD
+    
+    //TODO:acquire institute table columns
+    private final static String ACQUIRE_MERCHANT_ID = "brhMchtId";
+    private final static String ACQUIRE_TERMINAL_ID = "brhTermId";
+    private final static String ACQUIRE_DEVICE_NUM_OF_MERCH = "openBrh";
+    private final static String ACQUIRE_IMG_NAME = "imgName";
+    private final static String ACQUIRE_INSTITUTE_NAME = "openBrhName";
+    private final static String ACQUIRE_MERCH_NUM_OF_MERCH = "mch_no";
+    private final static String ACQUIRE_PAYMENT_ID = "paymentId";
+    private final static String ACQUIRE_PAYMENT_NAME = "paymentName";
+    private final static String ACQUIRE_PRINT_TYPE = "printType";
+    private final static String ACQUIRE_PRODUCT_DESC = "prdtDesc";
+    private final static String ACQUIRE_PRODUCT_NO = "prdtNo";
+    private final static String ACQUIRE_PRODUCT_TITLE = "prdtTitle";
+    private final static String ACQUIRE_PRODUCT_TYPE = "prdtType";
+    private final static String ACQUIRE_TYPE_ID = "typeId";
+    private final static String ACQUIRE_TYPE_NAME = "typeName";
+    private final static String ACQUIRE_BRH_KEY_INDEX = "brhKeyIndex";
+    private final static String ACQUIRE_BRH_MSG_TYPE = "brhMsgType";
+    private final static String ACQUIRE_BRH_MCHT_MCC = "brhMchtMcc";
   
     private CacheDB(Context ctx, int version) {
     	this.context = ctx;
@@ -67,36 +88,9 @@ public class CacheDB extends BaseSqlAdapter {
     	return cacheDB;
     }
   
-   /* private void createCacheDB() {
-    	try {
-    		File file = new File(dbName);
-    		
-    		//create file
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-    		
-			SQLiteDatabase sdbVersion = SQLiteDatabase.openOrCreateDatabase(file, null);
-			String createBatchTableSql = "CREATE TABLE IF NOT EXISTS " + BATCH_PROCESSING_TABLE_NAME + " (" 
-				+ TXN_ID + " varchar primary key, " 
-		        + RETRIEVAL_REFERENCE_NUMBER + " varchar, " 
-		        + AUTH_CODE + " varchar, " 
-		        + RESPONSE_CODE + " varchar, " 
-		        + RESPONSE_MESSAGE + " varchar, " 
-		        + EXP_DATE + " varchar, " 
-		        + SETTLEMENT_DATE + " varchar, " 
-		        + ISSUER_ID + " varchar);";
-	        
-			sdbVersion.execSQL(createBatchTableSql);
-			sdbVersion.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }*/
-    
     /**
      * @Title: insertBatchTask
-     * @Description: TODO insert batch record
+     * @Description: insert batch record
      * @param batchTask
      * @return: void
      */
@@ -147,6 +141,98 @@ public class CacheDB extends BaseSqlAdapter {
 		}
     }
     
+    /**
+     * @Title: insertAcquireInstitute
+     * @Description: insert acquire institute
+     * @param acquireInstituteBean
+     * @return: void
+     */
+    public void insertAcquireInstitute(List<AcquireInstituteBean> acquireInstituteList) {
+    	
+    	ArrayList<SQLEntity> sqlList = new ArrayList<SQLEntity>();
+    	Cursor cursor = null;
+    	boolean isExist = false;
+    	try {
+    		String sql = "INSERT INTO "+ ACQUIRE_INSTITUTE_TABLE_NAME +"(" +
+    				ACQUIRE_MERCHANT_ID + ", " +
+    				ACQUIRE_TERMINAL_ID + ", " +
+    				ACQUIRE_DEVICE_NUM_OF_MERCH + ", " +
+    				ACQUIRE_IMG_NAME + ", " +
+    				ACQUIRE_INSTITUTE_NAME + ", " +
+    				ACQUIRE_MERCH_NUM_OF_MERCH + ", " +
+    				ACQUIRE_PAYMENT_ID + ", " +
+    				ACQUIRE_PAYMENT_NAME + ", " +
+    				ACQUIRE_PRINT_TYPE + ", " +
+    				ACQUIRE_PRODUCT_DESC + ", " +
+    				ACQUIRE_PRODUCT_NO + ", " +
+    				ACQUIRE_PRODUCT_TITLE + ", " +
+    				ACQUIRE_PRODUCT_TYPE + ", " +
+    				ACQUIRE_TYPE_ID + ", " +
+    				ACQUIRE_TYPE_NAME + ", " +
+    				ACQUIRE_BRH_KEY_INDEX + ", " +
+    				ACQUIRE_BRH_MSG_TYPE + ", " +
+    				ACQUIRE_BRH_MCHT_MCC + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    		
+    		/*if (acquireInstituteBean != null) {
+    			
+    			cursor = selectAcquireInstituteByMerchantId(acquireInstituteBean.getBrhMchtId());
+    			if (cursor.getCount() > 0) {
+    				isExist = true;
+    			}
+    			cursor.close();
+    			if (isExist) {
+    				return;
+    			} else {
+    				
+    				String[] params = new String[] { acquireInstituteBean.getBrhMchtId(), acquireInstituteBean.getBrhTermId(),
+    						acquireInstituteBean.getDeviceNumOfMerch(), acquireInstituteBean.getImgName(),
+    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getMerchNumOfMerch(),
+    						acquireInstituteBean.getPaymentId(), acquireInstituteBean.getPaymentName(),
+    						acquireInstituteBean.getPrintType(), acquireInstituteBean.getProductDesc(),
+    						acquireInstituteBean.getProductNo(), acquireInstituteBean.getProductTitle(),
+    						acquireInstituteBean.getProductType(), acquireInstituteBean.getTypeId(),
+    						acquireInstituteBean.getTypeName(), acquireInstituteBean.getBrhKeyIndex(),
+    						acquireInstituteBean.getBrhMsgType(), acquireInstituteBean.getBrhMchtMcc()
+    					};
+    				sqlList.add(new SQLEntity(sql, params));
+    			}
+    		}
+    		excuteSql(sqlList);*/
+    		
+    		if (acquireInstituteList != null && acquireInstituteList.size() > 0) {
+				for (int i = 0; i < acquireInstituteList.size(); i++) {
+					AcquireInstituteBean acquireInstituteBean = acquireInstituteList.get(i);
+					cursor = selectAcquireInstituteByMerchantId(acquireInstituteBean.getBrhMchtId());
+					if (cursor.getCount() > 0) {
+						continue;
+					}
+					cursor.close();
+					String[] params = new String[] { acquireInstituteBean.getBrhMchtId(), acquireInstituteBean.getBrhTermId(),
+    						acquireInstituteBean.getDeviceNumOfMerch(), acquireInstituteBean.getImgName(),
+    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getMerchNumOfMerch(),
+    						acquireInstituteBean.getPaymentId(), acquireInstituteBean.getPaymentName(),
+    						acquireInstituteBean.getPrintType(), acquireInstituteBean.getProductDesc(),
+    						acquireInstituteBean.getProductNo(), acquireInstituteBean.getProductTitle(),
+    						acquireInstituteBean.getProductType(), acquireInstituteBean.getTypeId(),
+    						acquireInstituteBean.getTypeName(), acquireInstituteBean.getBrhKeyIndex(),
+    						acquireInstituteBean.getBrhMsgType(), acquireInstituteBean.getBrhMchtMcc()
+    					};
+					sqlList.add(new SQLEntity(sql, params));
+				}
+				excuteSql(sqlList);
+			}
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		if (cursor != null) {
+    			
+    			cursor.close();
+    		}
+    		closeDB();
+    	}
+    }
+    
     public void clearBatchTableData() {
     	String sql = "delete from " + BATCH_PROCESSING_TABLE_NAME;
     	
@@ -159,8 +245,6 @@ public class CacheDB extends BaseSqlAdapter {
 		closeDB();
     }
     
-  
-    // delete operations by id
     public void deleteBatchTaskByTxnId(String txnId) { 
         
         String sql = "delete from " + BATCH_PROCESSING_TABLE_NAME + " where " + TXN_ID + "='" + txnId + "'";
@@ -177,6 +261,29 @@ public class CacheDB extends BaseSqlAdapter {
     	String sql = "select * from " + BATCH_PROCESSING_TABLE_NAME + " where " + TXN_ID + " = " + txnId;
     	Cursor cursor = getCursor(sql, null);
     	return cursor; 
+    }
+    
+    public boolean isExistMerchantIdTermId(String merchantId, String terminalId) {
+    	boolean result = false;
+    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + 
+    				" where " + ACQUIRE_MERCHANT_ID + " = '" + merchantId + "'" + " and " +
+    				ACQUIRE_TERMINAL_ID + " = '" + terminalId + "'";
+    	
+    	Cursor cursor = getCursor(sql, null);
+    	if (cursor.getCount() > 0) {
+    		result = true;
+    	}
+    	cursor.close();
+    	return result;
+    }
+    
+    public Cursor selectAcquireInstituteByMerchantId(String merchantId) { 
+    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = '" + merchantId + "'";
+//    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = ?";
+    	
+    	Cursor cursor = getCursor(sql, null);
+//    	Cursor cursor = getCursor(sql, new String[] { merchantId });
+    	return cursor;
     }
     
     public JSONArray selectAllBatchStack() {
@@ -270,9 +377,9 @@ public class CacheDB extends BaseSqlAdapter {
      * <p>Title: CacheDB.java </p>
      * <p>Description: </p>
      * <p>Copyright: Copyright (c) 2014</p>
-     * <p>Company: All In Pay</p>
+     * <p>Company: KoolCloud</p>
      * @author 		Teddy
-     * @date 		2014-6-24
+     * @date 		2014-7-11
      * @version 	
      */
     class CacheHelper extends SQLiteOpenHelper {
@@ -293,6 +400,7 @@ public class CacheDB extends BaseSqlAdapter {
 			if (oldVersion == 1 && newVersion == 2) {
 				// Drop tables  
 		        db.execSQL("DROP TABLE IF EXISTS " + BATCH_PROCESSING_TABLE_NAME);
+		        db.execSQL("DROP TABLE IF EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME);
 		        // Create tables  
 		        onCreate(db); 
 			}
@@ -307,9 +415,51 @@ public class CacheDB extends BaseSqlAdapter {
 			        + RESPONSE_MESSAGE + " varchar, " 
 			        + EXP_DATE + " varchar, " 
 			        + SETTLEMENT_DATE + " varchar, " 
-			        + ISSUER_ID + " varchar);";	
+			        + ISSUER_ID + " varchar);";
+			
+			/*String createAcquireInstituteSql = "CREATE TABLE IF NOT EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME + " ("
+					+ ACQUIRE_MERCHANT_ID + " varchar primary key, " 
+					+ ACQUIRE_TERMINAL_ID + " varchar, " 
+					+ ACQUIRE_DEVICE_NUM_OF_MERCH + " varchar, " 
+					+ ACQUIRE_IMG_NAME + " varchar, " 
+					+ ACQUIRE_INSTITUTE_NAME + " varchar, " 
+					+ ACQUIRE_MERCH_NUM_OF_MERCH + " varchar, " 
+					+ ACQUIRE_PAYMENT_ID + " varchar, " 
+					+ ACQUIRE_PAYMENT_NAME + " varchar, " 
+					+ ACQUIRE_PRINT_TYPE + " varchar, " 
+					+ ACQUIRE_PRODUCT_DESC + " varchar, " 
+					+ ACQUIRE_PRODUCT_NO + " varchar, " 
+					+ ACQUIRE_PRODUCT_TITLE + " varchar, " 
+					+ ACQUIRE_PRODUCT_TYPE + " varchar, " 
+					+ ACQUIRE_TYPE_ID + " varchar, " 
+					+ ACQUIRE_TYPE_NAME + " varchar, " 
+					+ ACQUIRE_BRH_KEY_INDEX + " varchar, " 
+					+ ACQUIRE_BRH_MSG_TYPE + " varchar, " 
+					+ ACQUIRE_BRH_MCHT_MCC + " varchar);";*/
+			String createAcquireInstituteSql = "CREATE TABLE IF NOT EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME + " ("
+					+ ACQUIRE_MERCHANT_ID + " varchar, " 
+					+ ACQUIRE_TERMINAL_ID + " varchar, " 
+					+ ACQUIRE_DEVICE_NUM_OF_MERCH + " varchar, " 
+					+ ACQUIRE_IMG_NAME + " varchar, " 
+					+ ACQUIRE_INSTITUTE_NAME + " varchar, " 
+					+ ACQUIRE_MERCH_NUM_OF_MERCH + " varchar, " 
+					+ ACQUIRE_PAYMENT_ID + " varchar, " 
+					+ ACQUIRE_PAYMENT_NAME + " varchar, " 
+					+ ACQUIRE_PRINT_TYPE + " varchar, " 
+					+ ACQUIRE_PRODUCT_DESC + " varchar, " 
+					+ ACQUIRE_PRODUCT_NO + " varchar, " 
+					+ ACQUIRE_PRODUCT_TITLE + " varchar, " 
+					+ ACQUIRE_PRODUCT_TYPE + " varchar, " 
+					+ ACQUIRE_TYPE_ID + " varchar, " 
+					+ ACQUIRE_TYPE_NAME + " varchar, " 
+					+ ACQUIRE_BRH_KEY_INDEX + " varchar, " 
+					+ ACQUIRE_BRH_MSG_TYPE + " varchar, " 
+					+ ACQUIRE_BRH_MCHT_MCC + " varchar, "
+					+ " CONSTRAINT PK_ACQUIRE_INSTITUTE PRIMARY KEY (" + ACQUIRE_MERCHANT_ID + ", " + ACQUIRE_TERMINAL_ID + ", " + ACQUIRE_DEVICE_NUM_OF_MERCH + ")" +
+					");";
 	        
 	        db.execSQL(createBatchProcessSql);
+	        db.execSQL(createAcquireInstituteSql);
 			setmDb(db);
 		}
 	}

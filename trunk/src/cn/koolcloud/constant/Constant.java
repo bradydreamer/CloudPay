@@ -26,6 +26,7 @@ public interface Constant {
 	final String APMP_TRAN_SIGNIN = "8011";
 	final String APMP_TRAN_SIGNOUT = "8021";
 	final String APMP_TRAN_BATCHSETTLE = "8031";
+	final String APMP_TRAN_BALANCE = "1041";
 
 	/*-----  TRANSACTION TYPES  ---------------------------------*/
 	final byte TRAN_BALANCE = 0; // 余额查询

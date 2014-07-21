@@ -132,4 +132,11 @@
 	<dimen name="mispos_common_text_size">32px</dimen>
 	<dimen name="mispos_balance_text_size">60px</dimen>
 	<dimen name="mispos_order_details_padding_left_right">80px</dimen>
+	
+	<!-- cash -->
+	<dimen name="cash_amount_textsize">40px</dimen>
+	<dimen name="cash_btn_width">540dp</dimen>
+	<dimen name="cash_btn_height">80dp</dimen>
+	<dimen name="cash_btn_textsize">40px</dimen>
+	
 </resources>

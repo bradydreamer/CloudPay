@@ -1,6 +1,9 @@
 package cn.koolcloud.pos.controller;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,26 +18,37 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.jni.PrinterInterface;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
 import cn.koolcloud.pos.controller.mispos.MisposController;
+import cn.koolcloud.pos.database.ConsumptionRecordDB;
+import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
+import cn.koolcloud.printer.PrinterHelper;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public abstract class BaseHomeController extends BaseController {
 
+	private static final String CASHCONSUME = "cash";
 	protected LinearLayout layout_funcModule;
 	public View selectedBtn;
 
@@ -48,6 +62,20 @@ public abstract class BaseHomeController extends BaseController {
 	public static List<Activity> activityList = new LinkedList<Activity>();
 
 	private int drawableId[] = new int[4];
+	private String cashAmount = "0";
+	private String changeAmountStr = "0.00";
+	private String paymentId = null;
+	private String paymentName = null;
+	private String openBrh = null;
+	private String openBrhName = null;
+	private String brhMchtId = null;
+	private String brhTermId = null;
+	private String keyIndex = null;
+	private EditText sumPayable = null;
+	private EditText paidAmount = null;
+	private TextView cashChange = null;
+	private String paidHint = null;
+	private String sumPayableHint = null;
 
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory(true).cacheOnDisc(true)
@@ -115,7 +143,18 @@ public abstract class BaseHomeController extends BaseController {
 		if (viewPager.equals(view)) {
 			if ("data".equals(key)) {
 				JSONArray data = (JSONArray) value;
-				setMethods(data);
+				JSONObject jsonData = null;
+				try {
+					jsonData = data.getJSONObject(0);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if ((jsonData.optString("typeId")).equals(CASHCONSUME)) {
+					setMethods(data, cashAmount);
+				} else {
+					setMethods(data);
+				}
 			}
 		} else if (layout_funcModule.equals(view)) {
 			if ("data".equals(key)) {
@@ -123,11 +162,17 @@ public abstract class BaseHomeController extends BaseController {
 				/**
 				 * init button background
 				 */
-				changeButtonBackground(INIT, data.length());
+				// changeButtonBackground(INIT, data.length());
 				updateLayoutFuncModule(data);
 			}
 		}
 		super.setView(view, key, value);
+	}
+
+	@Override
+	protected void setCashAmount(String cashAmount) {
+		// TODO Auto-generated method stub
+		this.cashAmount = cashAmount;
 	}
 
 	protected void updateLayoutFuncModule(JSONArray mDataArray) {
@@ -149,6 +194,8 @@ public abstract class BaseHomeController extends BaseController {
 			addButtonRecording(i, funcModuleId);
 			if (0 == i) {
 				selectedBtn = btnFuncModule;
+				selectedBtn
+						.setBackgroundResource(R.drawable.main_page_bg_bitmap);
 				btnFuncModule.setSelected(true);
 			}
 		}
@@ -159,6 +206,7 @@ public abstract class BaseHomeController extends BaseController {
 		int count = mDataArray.length();
 		int index = 0;
 		int pages = 0;
+		LayoutInflater inflater = LayoutInflater.from(this);
 
 		ArrayList<View> viewList = new ArrayList<View>();
 		while (index < count) {
@@ -189,7 +237,6 @@ public abstract class BaseHomeController extends BaseController {
 				}
 			}
 		}
-
 		pageIndicator.setViewPager(viewPager);
 		pageIndicator.setPageSize(pages);
 		pageIndicator.setCurrentPage(0);
@@ -199,6 +246,120 @@ public abstract class BaseHomeController extends BaseController {
 			pageIndicator.setVisibility(View.VISIBLE);
 		}
 		viewPager.setAdapter(new HomePagerAdapter(viewList));
+	}
+
+	protected void setMethods(JSONArray mDataArray, String cashAmount) {
+		int pages = 0;
+		JSONObject mData = mDataArray.optJSONObject(0);
+		paymentId = mData.optString("paymentId");
+		paymentName = mData.optString("paymentName");
+		openBrh = mData.optString("openBrh");
+		openBrhName = mData.optString("openBrhName");
+		brhMchtId = mData.optString("brhMchtId");
+		brhTermId = mData.optString("brhTermId");
+		keyIndex = mData.optString("brhKeyIndex");
+		LayoutInflater inflater = LayoutInflater.from(this);
+		ArrayList<View> viewList = new ArrayList<View>();
+		View myView = inflater.inflate(R.layout.cash_consume, null);
+		sumPayable = (EditText) myView.findViewById(R.id.cash_sum_payable);
+		paidAmount = (EditText) myView.findViewById(R.id.cash_paid_amount);
+		cashChange = (TextView) myView.findViewById(R.id.cash_change_amount);
+		paidHint = paidAmount.getHint().toString();
+		sumPayableHint = sumPayable.getHint().toString();
+		paidAmount.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				Float change = (float) 0.00;
+				String paidAmountStr = paidAmount.getText().toString();
+				String sumPayableStr = sumPayable.getText().toString();
+				if (sumPayableStr.equals("")) {
+					sumPayableStr = "0.00";
+				}
+				if (paidAmountStr.equals("")) {
+					paidAmountStr = "0.00";
+					change = (float) 0.00;
+				} else {
+					change = Float.valueOf(paidAmountStr)
+							- Float.valueOf(sumPayableStr);
+				}
+				changeAmountStr = String.valueOf(change);
+				cashChange.setText(changeAmountStr);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+			}
+
+		});
+
+		paidAmount.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (!hasFocus) {
+					paidAmount.setHint(paidHint);
+				} else {
+					paidAmount.setCursorVisible(true);
+					paidAmount.setHint("");
+				}
+			}
+
+		});
+		sumPayable.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				// TODO Auto-generated method stub
+				if (!hasFocus) {
+					sumPayable.setHint(sumPayableHint);
+				} else {
+					sumPayable.setCursorVisible(true);
+					sumPayable.setHint("");
+				}
+			}
+
+		});
+
+		if (cashAmount != null) {
+			if (!cashAmount.equals("0")) {
+				sumPayable.setText(UtilForMoney.fen2yuan(cashAmount));
+			}
+		}
+		viewList.add(myView);
+		pages++;
+		pageIndicator.setViewPager(viewPager);
+		pageIndicator.setPageSize(pages);
+		pageIndicator.setCurrentPage(0);
+		if (pages == 1) {
+			pageIndicator.setVisibility(View.INVISIBLE);
+		} else {
+			pageIndicator.setVisibility(View.VISIBLE);
+		}
+		viewPager.setAdapter(new HomePagerAdapter(viewList));
+	}
+
+	private void openCashBox() {
+		byte[] openCashBox = { 0x1B, 0x70, 0x00, (byte) 0xC8, (byte) 0xC8 };
+		try {
+			PrinterInterface.open();
+			PrinterInterface.set(1);
+			PrinterInterface.begin();
+			PrinterInterface.end();
+			PrinterInterface.begin();
+			PrinterHelper.getInstance(this).printerWrite(openCashBox);//
+		} finally {
+			PrinterInterface.end();
+			PrinterInterface.close();
+		}
 	}
 
 	protected void updateMethodBtn(LinearLayout methodBtn, JSONObject data) {
@@ -301,6 +462,91 @@ public abstract class BaseHomeController extends BaseController {
 		}
 	};
 
+	public void onClickBtnOK(View view) {
+		JSONObject msg = new JSONObject();
+		String transTime = null;
+		String transType = null;
+		String batchNo = null;
+		String traceNo = null;
+		int traceId = 0;
+		String resCode = "00";
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");// 可以方便地修改日期格式
+		System.setProperty("user.timezone", "GMT+8");
+		transTime = dateFormat.format(now);
+		transType = "1021";
+		DecimalFormat dataFormat = new DecimalFormat("000000");
+
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
+		if (null == map.get("transId")) {
+			traceNo = "0";
+		} else {
+			traceId = ((Integer) map.get("transId")).intValue();
+			traceNo = dataFormat.format(traceId);
+		}
+		if (null == map.get("batchId")) {
+			batchNo = "0";
+		} else {
+			batchNo = dataFormat.format(((Integer) map.get("batchId"))
+					.intValue());
+		}
+
+		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
+		newMerchantMap.put("transId", Integer.valueOf(traceId + 1));
+		UtilForDataStorage.savePropertyBySharedPreferences(
+				MyApplication.getContext(), "merchant", newMerchantMap);
+		String sumPayableStr = sumPayable.getText().toString();
+		String paidAmountStr = paidAmount.getText().toString();
+		if (paidAmountStr.equals("")) {
+			return;
+		}
+		if (sumPayableStr.equals("")) {
+			sumPayableStr = "0.00";
+		}
+		if (paidAmountStr.equals("")) {
+			paidAmountStr = "0.00";
+		}
+		openCashBox();
+		try {
+			msg.put("transAmount", UtilForMoney.yuan2fen(sumPayableStr));
+			msg.put("cashPaidAmount", UtilForMoney.yuan2fen(paidAmountStr));
+			msg.put("changeAmount", UtilForMoney.yuan2fen(changeAmountStr));
+			msg.put("transTime", transTime);
+			msg.put("transType", transType);
+			msg.put("batchNo", batchNo);
+			msg.put("traceNo", traceNo);
+			msg.put("resCode", resCode);
+			msg.put("keyIndex", keyIndex);
+			msg.put("paymentId", paymentId);
+			msg.put("paymentName", paymentName);
+			msg.put("openBrh", openBrh);
+			msg.put("openBrhName", openBrhName);
+			msg.put("brhMchtId", brhMchtId);
+			msg.put("brhTermId", brhTermId);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		sumPayable.setText("");
+		sumPayable.setHint(sumPayableHint);
+		paidAmount.setText("");
+		paidAmount.setHint(paidHint);
+		paidAmount.setCursorVisible(false);
+		onCall("Pay.cashSuccRestart", msg);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		if (paidAmount != null) {
+			paidAmount.setCursorVisible(true);
+			paidAmount.setHint("");
+		}
+		super.onResume();
+	}
+
 	public void onSwitchFuncModule(View view) {
 		if (selectedBtn == view) {
 			return;
@@ -310,15 +556,18 @@ public abstract class BaseHomeController extends BaseController {
 
 		if (selectedBtn != null) {
 			selectedBtn.setSelected(false);
+			selectedBtn
+					.setBackgroundResource(R.drawable.main_btn_release_bitmap);
 			preTag = selectedBtn.getTag().toString();
 		}
 
 		view.setSelected(true);
+		view.setBackgroundResource(R.drawable.main_page_bg_bitmap);
 		selectedBtn = view;
 		/*
 		 * change button background
 		 */
-		changeButtonBackground(tag, 0);
+		// changeButtonBackground(tag, 0);
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("typeId", tag);
@@ -419,5 +668,12 @@ public abstract class BaseHomeController extends BaseController {
 				}
 			}
 		}
+		// clear temporary package name cache
+		((MyApplication) getApplication()).setPkgName("");
+
+		// clear consumption record table data
+		ConsumptionRecordDB cacheDB = ConsumptionRecordDB
+				.getInstance(BaseHomeController.this);
+		cacheDB.clearRecordTableData();
 	}
 }

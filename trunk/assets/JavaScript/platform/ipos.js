@@ -84,11 +84,11 @@
 		function afterGetDetail(resData){
 			if("0" == resData.responseCode){
 				var recordDisplayedList = resData.recordList;
-				if(recordDisplayedList.txnId == txnId){
-					recordDisplayedList.res8583 = recordDisplayedList.data;
-					window.Database.insertTransData8583(txnId, null, recordDisplayedList.res8583);
+				if(recordDisplayedList[0].txnId == txnId){
+					recordDisplayedList[0].res8583 = recordDisplayedList[0].data;
+					window.Database.insertTransData8583(txnId, null, recordDisplayedList[0].res8583);
 					if(callbackfunc){
-						callbackfunc(recordDisplayedList);
+						callbackfunc(recordDisplayedList[0]);
 					}else{
 						Scene.alert("ERROR:NO Callback function！");
 					}				

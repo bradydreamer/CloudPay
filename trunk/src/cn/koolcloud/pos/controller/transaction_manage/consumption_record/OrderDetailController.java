@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.entity.MisposData;
@@ -28,10 +30,12 @@ public class OrderDetailController extends BaseController {
 	private final static int TRAN_TYPE_REVERSE = 3021;
 	private final static int TRAN_TYPE_REFUND = 3051;
 	private final static int TRAN_TYPE_AUTH = 1011;
+
 	private boolean cancelEnable;
 	private String rrn;
 	private String transTime;
 	private String transAmount;
+	private String oriTransTime;
 	private String func_confirm;
 	private String openBrh;
 	private String paymentId;
@@ -42,13 +46,13 @@ public class OrderDetailController extends BaseController {
 	private int paymentOrder = -1;
 	private boolean removeJSTag = true;
 	private JSONObject data;
-	
-	//add new item 
+
+	// add new item
 	private String batchNo;
 	private String traceNo;
 	private String payKeyIndex;
-	
-	//muilti info bar components
+
+	// muilti info bar components
 	private RelativeLayout barTitleLayout;
 	private TextView koolCloudMerchNumNameTextView;
 	private TextView koolCloudMerchNumTextView;
@@ -81,12 +85,32 @@ public class OrderDetailController extends BaseController {
 		initTextView(R.id.order_detail_tv_transDate, data, "transTime");
 		initTextView(R.id.order_detail_tv_transType, data, "transTypeDesc");
 		initTextView(R.id.order_detail_tv_authcode, data, "authNo");
+		
+		String operator = data.optString("operator");
+		if (TextUtils.isEmpty(operator)) {
+			try {
+				String userInfo = ClientEngine.engineInstance().getSecureService().getUserInfo();
+				if (!TextUtils.isEmpty(userInfo)) {
+					try {
+						JSONObject userInfoObj = new JSONObject(userInfo);
+						operator = userInfoObj.getString("userName");
+						data.put("operator", operator);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		initTextView(R.id.order_detail_tv_operator, data, "operator");
 
 		// faceTypeLanTing = Typeface.createFromAsset(getAssets(),
 		// "font/fzltxhk.ttf");
 
 		rrn = data.optString("refNo");
 		transTime = data.optString("transTime");
+		oriTransTime = data.optString("oriTransTime");
 		transAmount = data.optString("transAmount");
 		func_confirm = data.optString("confirm");
 		txnId = data.optString("txnId");
@@ -102,9 +126,9 @@ public class OrderDetailController extends BaseController {
 		paymentName = data.optString("paymentName");
 		paymentOrder = data.optInt("paymentOrder");
 		authCode = data.optString("authNo");
-		
-		//get batch no. and trace no.
-		//set default value
+
+		// get batch no. and trace no.
+		// set default value
 		batchNo = data.optString("batchNo");
 		traceNo = data.optString("traceNo");
 		payKeyIndex = data.optString("payKeyIndex");
@@ -218,11 +242,16 @@ public class OrderDetailController extends BaseController {
 			msg.put("txnId", txnId);
 			msg.put("authNo", authCode);
 			msg.put("transType", transType);
-			
-			//put new items
+
+			// put new items
 			msg.put("batchNo", batchNo);
 			msg.put("traceNo", traceNo);
 			msg.put("payKeyIndex", payKeyIndex);
+			msg.put("formatedTransDate",
+					transTime.split(" ")[0].replace("-", ","));
+			// for cash
+			msg.put("resCode", "00");
+			msg.put("oriTransTime", oriTransTime);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -293,12 +322,13 @@ public class OrderDetailController extends BaseController {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		// get print type
 		Map<String, ?> map = UtilForDataStorage
-				.readPropertyBySharedPreferences(getApplicationContext(), "paymentInfo");
+				.readPropertyBySharedPreferences(OrderDetailController.this,
+						"paymentInfo");
 		String paymentStr = (String) map.get(paymentId);
-		
+
 		String printType = "";
 		String openBrhName = "";
 		String brhMchtId = "";
@@ -312,27 +342,30 @@ public class OrderDetailController extends BaseController {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
-		if (!TextUtils.isEmpty(printType) && printType.equals(ConstantUtils.PRINT_TYPE_MISPOS)) {
-			//TODO:organize mispos data then print receipt
+
+		if (!TextUtils.isEmpty(printType)
+				&& printType.equals(ConstantUtils.PRINT_TYPE_MISPOS)) {
+			// TODO:organize mispos data then print receipt
 			MisposData beanData = new MisposData();
-			
-			//get operator
+
+			// get operator
 			Map<String, ?> merchantMap = UtilForDataStorage
-					.readPropertyBySharedPreferences(getApplicationContext(), "merchant");
+					.readPropertyBySharedPreferences(
+							OrderDetailController.this, "merchant");
 			String operatorName = (String) merchantMap.get("operator");
 			beanData.setOperatorId(operatorName);
-			
+
 			beanData.setPaymentName(paymentName);
 			beanData.setCardNo(data.optString("cardNo"));
 			beanData.setTransType(String.valueOf(transType));
-			beanData.setAmount(transAmount.replace(".", "").replaceFirst("^0+", ""));
+			beanData.setAmount(transAmount.replace(".", "").replaceFirst("^0+",
+					""));
 			beanData.setBatchNo(batchNo);
 			beanData.setTranDate(transTime.split(" ")[0].replace("-", ""));
 			beanData.setTranTime(transTime.split(" ")[1].replace(":", ""));
 			beanData.setRefNo(rrn);
 			beanData.setVoucherNo(traceNo);
-			
+
 			beanData.setMerchantName(openBrhName);
 			beanData.setMerchantId(brhMchtId);
 			beanData.setTerminalId(brhTermId);
@@ -441,10 +474,11 @@ public class OrderDetailController extends BaseController {
 		@Override
 		public void run() {
 			try {
-				PrinterHelper.getInstance(getApplicationContext()).printMisposReceipt(beanData);
+				PrinterHelper.getInstance(OrderDetailController.this)
+						.printMisposReceipt(beanData);
 			} catch (PrinterException e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 	}
 }

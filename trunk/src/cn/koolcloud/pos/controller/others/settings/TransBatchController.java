@@ -38,7 +38,8 @@ public class TransBatchController extends BaseController {
 
 	@Override
 	protected String getControllerJSName() {
-		return getString(R.string.controllerJSName_TransBatch);
+		//return getString(R.string.controllerJSName_TransBatch);
+		return null;
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public abstract class BaseController extends Activity {
 	private final int TIME_FOR_CONTROLLER_LOADED = 50;
 	private boolean isContollerVisible;
 	private boolean hasControllerResumed;
-	private Button titlebar_btn_right;
+	private TextView titlebar_btn_right;
 	private TextView titlebar_btn_title;
 	protected Button titlebar_btn_left;
 	protected final String TAG = "BaseController";
@@ -150,7 +150,7 @@ public abstract class BaseController extends Activity {
 			return;
 		} else if (resultCode == TransAmountController.RESULT_CODE_AMOUNT) {
 			setResult(resultCode, data);
-//			finish();
+			// finish();
 		} else {
 			notifyWillshow();
 		}
@@ -216,12 +216,20 @@ public abstract class BaseController extends Activity {
 		titlebar_btn_right.setVisibility(View.INVISIBLE);
 	}
 
+	protected void setRightButtonVisible() {
+		titlebar_btn_right.setVisibility(View.VISIBLE);
+	}
+
 	protected void setRightButtonEnabled(boolean enabled) {
 		titlebar_btn_right.setEnabled(enabled);
 	}
 
 	protected void setTitleHidden() {
 		titlebar_btn_title.setVisibility(View.INVISIBLE);
+	}
+
+	protected void setTitleVisible() {
+		titlebar_btn_title.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -232,6 +240,10 @@ public abstract class BaseController extends Activity {
 	@Override
 	public void setTitle(int titleId) {
 		setTitle(getString(titleId));
+	}
+
+	public void setRightButtonTitle(CharSequence title) {
+		titlebar_btn_right.setText(title);
 	}
 
 	@Override
@@ -315,6 +327,11 @@ public abstract class BaseController extends Activity {
 			JSONObject item = data.optJSONObject(i);
 			View view = viewForIdentifier(item.optString("name"));
 			if (null != view) {
+				String cashAmount = item.optString("transAmount");
+				if (cashAmount == null || cashAmount.equals("")) {
+					cashAmount = "0";
+				}
+				setCashAmount(cashAmount);
 				setView(view, item.optString("key"), item.opt("value"));
 				updateViews(item);
 			}
@@ -324,10 +341,10 @@ public abstract class BaseController extends Activity {
 	protected View viewForIdentifier(String name) {
 		return null;
 	}
-	
-	//update more views
+
+	// update more views
 	protected void updateViews(JSONObject item) {
-		//children class Override this method to refresh views
+		// children class Override this method to refresh views
 	}
 
 	protected void setView(View view, String key, Object value) {
@@ -353,6 +370,10 @@ public abstract class BaseController extends Activity {
 		} else if (key.equals("enable")) {
 			view.setEnabled((Boolean) value);
 		}
+	}
+
+	protected void setCashAmount(String cashAmount) {
+
 	}
 
 	public void onCall(String jsHandler, JSONObject msg) {

@@ -134,12 +134,12 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 			case HANDLE_PINPAD_STATUS:
 				
 				if (status) {
-					pinpadTextView.setText(Env.getResourceString(getApplicationContext(),
+					pinpadTextView.setText(Env.getResourceString(DevicesCheckingDialog.this,
 							R.string.dialog_device_check_pinpad_usual));
 					
 					pinpadTextView.setCompoundDrawables(checkPassDrawable, null, null, null);
 				} else {
-					pinpadTextView.setText(Env.getResourceString(getApplicationContext(),
+					pinpadTextView.setText(Env.getResourceString(DevicesCheckingDialog.this,
 							R.string.dialog_device_check_pinpad_unusual));
 					pinpadTextView.setCompoundDrawables(checkFailDrawable, null, null, null);
 				}
@@ -147,11 +147,11 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 			case HANDLE_PRINTER_STATUS:
 				
 				if (status) {
-					printerTextView.setText(Env.getResourceString(getApplicationContext(), 
+					printerTextView.setText(Env.getResourceString(DevicesCheckingDialog.this, 
 							R.string.dialog_device_check_printer_usual));
 					printerTextView.setCompoundDrawables(checkPassDrawable, null, null, null);
 				} else {
-					printerTextView.setText(Env.getResourceString(getApplicationContext(), 
+					printerTextView.setText(Env.getResourceString(DevicesCheckingDialog.this, 
 							R.string.dialog_device_check_printer_unusual));
 					printerTextView.setCompoundDrawables(checkFailDrawable, null, null, null);
 				}
@@ -159,11 +159,11 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 			case HANDLE_NETWORK_STATUS:
 				
 				if (status) {
-					networkTextView.setText(Env.getResourceString(getApplicationContext(), 
+					networkTextView.setText(Env.getResourceString(DevicesCheckingDialog.this, 
 							R.string.dialog_device_check_network_usual));
 					networkTextView.setCompoundDrawables(checkPassDrawable, null, null, null);
 				} else {
-					networkTextView.setText(Env.getResourceString(getApplicationContext(), 
+					networkTextView.setText(Env.getResourceString(DevicesCheckingDialog.this, 
 							R.string.dialog_device_check_network_unusual));
 					networkTextView.setCompoundDrawables(checkFailDrawable, null, null, null);
 				}
@@ -173,14 +173,14 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 				summaryLayout.setVisibility(View.VISIBLE);
 				progressBarLayout.setVisibility(View.GONE);
 				if (devicesStatusTag) {
-					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
+					titleTextView.setText(Env.getResourceString(DevicesCheckingDialog.this, 
 							R.string.dialog_device_check_device_ok_msg));
 //					titleTextView.setCompoundDrawables(titleCheckPassDrawable, null, null, null);
 					summaryImageView.setImageResource(R.drawable.dialog_device_checking_title_usual);
 					exitButton.setText(getResources().getString(R.string.dialog_device_check_start_to_use));
 					exitButton.setBackgroundResource(R.drawable.button_green_background);
 				} else {
-					titleTextView.setText(Env.getResourceString(getApplicationContext(), 
+					titleTextView.setText(Env.getResourceString(DevicesCheckingDialog.this, 
 							R.string.dialog_device_check_devices_unusual));
 //					titleTextView.setCompoundDrawables(titleCheckFailDrawable, null, null, null);
 					summaryImageView.setImageResource(R.drawable.dialog_device_checking_title_unusual);
@@ -208,8 +208,8 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 			break;
 		case R.id.selfCheckButton:
 			if (deviceCheckingLock) {
-				Toast.makeText(getApplicationContext(),
-						Env.getResourceString(getApplicationContext(),
+				Toast.makeText(DevicesCheckingDialog.this,
+						Env.getResourceString(DevicesCheckingDialog.this,
 								R.string.dialog_device_checking_now), Toast.LENGTH_SHORT).show();
 			} else {
 				checkDevices();

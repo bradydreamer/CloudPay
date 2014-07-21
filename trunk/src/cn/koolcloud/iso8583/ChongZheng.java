@@ -1,10 +1,8 @@
 package cn.koolcloud.iso8583;
 
-
 import java.util.Locale;
 
 import android.util.Log;
-
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.util.AppUtil;
@@ -14,7 +12,7 @@ import cn.koolcloud.util.StringUtil;
 public class ChongZheng implements Constant {
 	private static final String APP_TAG = "CUP";
 	public static byte[] F_MessageType = new byte[2];
-//	private static byte[] F3_ProcessingCode;// 第三域的processCode
+	// private static byte[] F3_ProcessingCode;// 第三域的processCode
 	private static ISOData iso = new ISOData();
 
 	private static final byte FFIX = 0x00;
@@ -46,8 +44,9 @@ public class ChongZheng implements Constant {
 		iso.setOffset((short) 0);
 		iso.setDataBuffer(databuf, offset, databuf.length - offset);
 		System.arraycopy(databuf, offset, F_MessageType, 0, 2);
-		Log.d(APP_TAG, "F_MessageType = " + StringUtil.toBestString(F_MessageType));
-		
+		Log.d(APP_TAG,
+				"F_MessageType = " + StringUtil.toBestString(F_MessageType));
+
 		offset += 2;
 		byte[] F_Bitmap = new byte[8];
 		System.arraycopy(databuf, offset, F_Bitmap, 0, 8);
@@ -82,10 +81,9 @@ public class ChongZheng implements Constant {
 		}
 		return ret;
 	}
-	
-	public void getTransType(){
-		
-		
+
+	public void getTransType() {
+
 	}
 
 	private static boolean saveData(int bit) {
@@ -150,8 +148,8 @@ public class ChongZheng implements Constant {
 			byte[] F2_AccountNumber = new byte[tempBuffer.length * 2];
 			ByteUtil.bcdToAscii(tempBuffer, 0, F2_AccountNumber, 0, 20, 0);
 			String oldPan = StringUtil.toString(F2_AccountNumber);
-			if(oldPan.length() == 20){
-				oldPan = oldPan.substring(0,19);
+			if (oldPan.length() == 20) {
+				oldPan = oldPan.substring(0, 19);
 			}
 			oldTrans.setOldPan(oldPan);
 			Log.i(APP_TAG, "F2_AccountNumber : oldPan = " + oldPan);
@@ -159,14 +157,17 @@ public class ChongZheng implements Constant {
 		case ISOField.F03_PROC:
 			String oldProcesscode = StringUtil.getFormatString(tempBuffer);
 			oldTrans.setOldProcesscode(oldProcesscode);
-			System.out.println("****************** oldProcesscode = " + oldProcesscode);
-			int oldTransType = MessageType.getTransType(oldProcesscode, F_MessageType);
-			if(oldTransType == -1){
-				
-			}else{
-				oldTrans.setTransType(oldTransType);
-			}
-			Log.i(APP_TAG, "F03_PROC: oldProcesscode is " + oldProcesscode + ", oldTransType = " + oldTransType);
+			System.out.println("****************** oldProcesscode = "
+					+ oldProcesscode);
+			// int oldTransType = MessageType.getTransType(oldProcesscode,
+			// F_MessageType);
+			// if (oldTransType == -1) {
+			//
+			// } else {
+			// oldTrans.setTransType(oldTransType);
+			// }
+			// Log.i(APP_TAG, "F03_PROC: oldProcesscode is " + oldProcesscode
+			// + ", oldTransType = " + oldTransType);
 			break;
 		case ISOField.F04_AMOUNT:
 			Long oldTransAmount = AppUtil.toAmount(tempBuffer);
@@ -179,41 +180,52 @@ public class ChongZheng implements Constant {
 			Log.i(APP_TAG, "F11_STAN: oldTrace = " + oldTrace);// Trace
 			break;
 		case ISOField.F12_TIME:
-			
-			String oldTransTime = StringUtil.toBestString(ByteUtil.bcdToAscii(tempBuffer));
+
+			String oldTransTime = StringUtil.toBestString(ByteUtil
+					.bcdToAscii(tempBuffer));
 			oldTrans.setOldTransTime(oldTransTime);
-			Log.i(APP_TAG,"F12_TIME: oldTransTime = " + oldTransTime);
+			Log.i(APP_TAG, "F12_TIME: oldTransTime = " + oldTransTime);
 			// appState.trans.setTransTime(StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer)));
 			break;
 		case ISOField.F13_DATE:
-			
-			String oldTransDate = StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer));
+
+			String oldTransDate = StringUtil.toString(ByteUtil
+					.bcdToAscii(tempBuffer));
 			oldTrans.setOldTransDate(oldTransDate);
-			Log.i(APP_TAG,"F13_DATE: oldTransDate = "+ oldTransDate);
+			Log.i(APP_TAG, "F13_DATE: oldTransDate = " + oldTransDate);
 			break;
 		case ISOField.F14_EXP:
-			
-			String oldExpiry = StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer));//　　卡有效期(Date Of Expired)
+
+			String oldExpiry = StringUtil.toString(ByteUtil
+					.bcdToAscii(tempBuffer));// 　　卡有效期(Date Of Expired)
 			oldTrans.setOldExpiry(oldExpiry);
-			Log.i(APP_TAG,"F14_EXP: oldExpiry = "+ oldExpiry);
+			Log.i(APP_TAG, "F14_EXP: oldExpiry = " + oldExpiry);
 			break;
 		case ISOField.F15_SETTLE_DATE:
 			break;
 		case ISOField.F22_POSE:
 			oldTrans.setOldEntryMode(tempBuffer[0]);
 			oldTrans.setOldPinMode(tempBuffer[1]);
-			Log.i(APP_TAG,"F22_POSE = "+ StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer)));
+			Log.i(APP_TAG,
+					"F22_POSE = "
+							+ StringUtil.toString(ByteUtil
+									.bcdToAscii(tempBuffer)));
 			break;
 		case ISOField.F24_NII:
 			break;
 		case ISOField.F25_POCC:
-			Log.i(APP_TAG,"F25_POCC = "+ StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer)));
+			String pocc = StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer));
+			Log.i(APP_TAG, "F25_POCC = " + pocc);
+			oldTrans.setOldPocc(pocc);
 			break;
 		case ISOField.F26_CAPTURE:
-			Log.i(APP_TAG,"F26_POCC = "+ StringUtil.toString(ByteUtil.bcdToAscii(tempBuffer)));
+			Log.i(APP_TAG,
+					"F26_POCC = "
+							+ StringUtil.toString(ByteUtil
+									.bcdToAscii(tempBuffer)));
 			break;
 		case ISOField.F32_ACQUIRER:
-			 String oldAcquirerCode = StringUtil.getFormatString(tempBuffer);
+			String oldAcquirerCode = StringUtil.getFormatString(tempBuffer);
 			oldTrans.setOldAcquirerCode(oldAcquirerCode);
 			Log.i(APP_TAG, "F32_ACQUIRER = " + oldAcquirerCode);
 			// appState.trans.setAcquirerCode(StringUtil.toString(tempBuffer));
@@ -237,13 +249,13 @@ public class ChongZheng implements Constant {
 			break;
 		case ISOField.F41_TID:
 			String oldTID = StringUtil.toString(tempBuffer);
-//			oldTrans.setOldTID(oldTID);
+			// oldTrans.setOldTID(oldTID);
 			oldTrans.setKoolCloudTID(oldTID);
 			Log.i(APP_TAG, "F41_TID: oldTID = :" + oldTID);
 			break;
 		case ISOField.F42_ACCID:
 			String oldMID = StringUtil.toString(tempBuffer);
-//			oldTrans.setOldMID(oldMID);
+			// oldTrans.setOldMID(oldMID);
 			oldTrans.setKoolCloudMID(oldMID);
 			Log.i(APP_TAG, "F42_ACCID: oldMID = :" + oldMID);
 			break;
@@ -256,7 +268,7 @@ public class ChongZheng implements Constant {
 			Log.i(APP_TAG, "Acquirer is :" + StringUtil.toString(acqID));
 			oldTrans.setOldIssuerID(StringUtil.toString(issID));
 			oldTrans.setOldAcquirerID(StringUtil.toString(acqID));
-//			20202020202020202020202020202020202020202020
+			// 20202020202020202020202020202020202020202020
 			break;
 		case ISOField.F48:
 			// procB48_CUP(tempBuffer, appState);
@@ -290,7 +302,7 @@ public class ChongZheng implements Constant {
 			Log.i(APP_TAG, "F61 is :" + StringUtil.toString(tempBuffer));
 			break;
 		case ISOField.F62:
-//			 procB62_CUP(tempBuffer, oldTrans);
+			// procB62_CUP(tempBuffer, oldTrans);
 			break;
 		case ISOField.F63:
 			// procB63_CUP(tempBuffer, appState);
@@ -306,6 +318,18 @@ public class ChongZheng implements Constant {
 	}
 
 	private static void procB60_CUP(byte[] F60_Field) {
+		byte[] transTypeCode = new byte[1];
+		System.arraycopy(F60_Field, 0, transTypeCode, 0, 1);
+		String transTypeCodeStr = StringUtil.toString(ByteUtil
+				.bcdToAscii(transTypeCode));
+		int oldTransType = MessageType.getTransType(
+				oldTrans.getOldProcesscode(), F_MessageType,
+				oldTrans.getOldPocc(), transTypeCodeStr);
+		if (oldTransType == -1) {
+
+		} else {
+			oldTrans.setTransType(oldTransType);
+		}
 		byte[] batchNumber = new byte[3];
 		System.arraycopy(F60_Field, 1, batchNumber, 0, 3);
 		int oldBatch = ByteUtil.bcdToInt(batchNumber);
@@ -313,13 +337,14 @@ public class ChongZheng implements Constant {
 		Log.d(APP_TAG, "F60_Field is :" + StringUtil.getFormatString(F60_Field));
 		Log.d(APP_TAG, "oldBatch = " + oldBatch);
 	}
-	
+
 	private static void procB40_CUP(byte[] F40_Field) {
-		
-		String temp_F40 = StringUtil.toString(F40_Field).toUpperCase(Locale.getDefault());
-		String [] strs = temp_F40.split("6F");
-		for(String s : strs){
-			if(s.length()<2){
+
+		String temp_F40 = StringUtil.toString(F40_Field).toUpperCase(
+				Locale.getDefault());
+		String[] strs = temp_F40.split("6F");
+		for (String s : strs) {
+			if (s.length() < 2) {
 				continue;
 			}
 			String flag = s.substring(0, 2);
@@ -379,8 +404,10 @@ public class ChongZheng implements Constant {
 		byte[] cardOrg = new byte[3];
 		System.arraycopy(F63_Field, 0, cardOrg, 0, 3);
 		trans.setOldCardOrganization(StringUtil.toString(cardOrg));
-		
-		Log.i(APP_TAG,"B63_CUP : cardOrganization = " + trans.getOldCardOrganization());
+
+		Log.i(APP_TAG,
+				"B63_CUP : cardOrganization = "
+						+ trans.getOldCardOrganization());
 		offset += 3;
 		int textLength = F63_Field.length - offset;
 		if (textLength > 0) {

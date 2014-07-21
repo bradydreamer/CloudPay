@@ -78,7 +78,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 		dialogTitleTextView.setText(getResources().getString(R.string.app_name));
 		
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
-		strBuffer.append(getResources().getString(R.string.str_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
+		strBuffer.append(getResources().getString(R.string.str_version_name) + Env.getVersionName(AboutDialog.this) + "\n");
 		strBuffer.append(getResources().getString(R.string.about_info) + "\n");
 		
 		msgBodyTextView.setText(strBuffer.toString());
@@ -140,7 +140,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 		try {
 			if (null != mIService) {
 				
-				localParcelableApp = mIService.checkUpdate(Env.getPackageName(getApplicationContext()), Env.getVersionCode(getApplicationContext()));
+				localParcelableApp = mIService.checkUpdate(Env.getPackageName(AboutDialog.this), Env.getVersionCode(AboutDialog.this));
 				if (localParcelableApp != null) {
 					Logger.i("appId:" + localParcelableApp.getId()
 							+ " appName:" + localParcelableApp.getName()
@@ -148,7 +148,7 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 					StringBuffer strBuffer = new StringBuffer();
 					
 					strBuffer.append(getResources().getString(R.string.app_name) + "\n");
-					strBuffer.append(getResources().getString(R.string.str_version_name) + Env.getVersionName(getApplicationContext()) + "\n");
+					strBuffer.append(getResources().getString(R.string.str_version_name) + Env.getVersionName(AboutDialog.this) + "\n");
 					strBuffer.append(getResources().getString(R.string.str_new_version) + localParcelableApp.getVersion() + "\n");
 					
 					msgBodyTextView.setText(strBuffer.toString());
@@ -158,13 +158,13 @@ public class AboutDialog extends Activity implements View.OnClickListener {
 					titleTextView.setText(getResources().getString(R.string.str_update));
 				} else {
 					if (paramBoolean) {
-						Toast.makeText(getApplicationContext(), getResources().getString(R.string.already_latest_version), Toast.LENGTH_SHORT).show();
+						Toast.makeText(AboutDialog.this, getResources().getString(R.string.already_latest_version), Toast.LENGTH_SHORT).show();
 					}
-					Logger.i(getApplicationContext().getResources().getString(R.string.already_latest_version));
+					Logger.i(AboutDialog.this.getResources().getString(R.string.already_latest_version));
 					finish();
 				}
 			} else {//service not exist or bind service failure
-				Toast.makeText(getApplicationContext(), getResources().getString(R.string.str_install_appstore_first), Toast.LENGTH_SHORT).show();
+				Toast.makeText(AboutDialog.this, getResources().getString(R.string.str_install_appstore_first), Toast.LENGTH_SHORT).show();
 				finish();
 			}
 		} catch (RemoteException localRemoteException) {

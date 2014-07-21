@@ -11,6 +11,7 @@ public class MisposOperationUtil {
 	
 	public static final String RESPONSE_CODE_SUCCESS = "00";							//success
 	public static final String TRAN_TYPE_SIGN_IN = "8011";								//sign in
+	public static final String TRAN_TYPE_SIGN_OUT = "8081";								//sign out
 	public static final String TRAN_TYPE_CONSUMPTION = "1021";							//consumption
 	public static final String TRAN_TYPE_CONSUMPTION_REVERSE = "3021";					//consumption reverse	
 	public static final String TRAN_TYPE_PRE_AUTHORIZATION = "1011";					//pre authorization	
@@ -146,98 +147,102 @@ public class MisposOperationUtil {
 		//sign in:0x01, consumption:0x02, consumption reverse:0x03
 		if (bTransType[0] == 0x01 || bTransType[0] == 0x02 
 				|| bTransType[0] == 0x03 || bTransType[0] == 0x12) {
+			getTagValue(beanData);
 			
-			byte[] bMerchantId = new byte[100];
-			int iMerchantIdLen = MisPosInterface.getTagValue(0x9F04, bMerchantId);
-			String strMerchantId = new String(bMerchantId, 0, iMerchantIdLen);
-			Log.i(TAG, "MerchantId: " + strMerchantId);
-			beanData.setMerchantId(InputStreamUtils.byteTOString(bMerchantId));
-			
-			byte[] bMerchantName = new byte[100];
-			int iMerchantNameLen = MisPosInterface.getTagValue(0x9F03, bMerchantName);
-			String strMerchantName = new String(bMerchantName, 0, iMerchantNameLen);
-			Log.i(TAG, "MerchantName: " + InputStreamUtils.byteTOString(bMerchantName));
-			beanData.setMerchantName(InputStreamUtils.byteTOString(bMerchantName));
-			
-			byte[] bAmount = new byte[100];
-			int iAmountLen = MisPosInterface.getTagValue(0x9F02, bAmount);
-			String strAmount = new String(bAmount, 0, iAmountLen);
-			Log.i(TAG, "Amount: " + strAmount);
-			beanData.setAmount(InputStreamUtils.byteTOString(bAmount).replaceFirst("^0+", ""));
-			
-			byte[] bTerminalId = new byte[100];
-			int iTerminalIdLen = MisPosInterface.getTagValue(0x9F05, bTerminalId);
-			String strTerminalId = new String(bTerminalId, 0, iTerminalIdLen);
-			Log.i(TAG, "TerminalId: " + strTerminalId);
-			beanData.setTerminalId(InputStreamUtils.byteTOString(bTerminalId));
-			
-			byte[] bOperatorId = new byte[100];
-			int iOperatorIdLen = MisPosInterface.getTagValue(0x9F06, bOperatorId);
-			String strOperatorId = new String(bOperatorId, 0, iOperatorIdLen);
-			Log.i(TAG, "OperatorId: " + strOperatorId);
-			beanData.setOperatorId(InputStreamUtils.byteTOString(bOperatorId));
-			
-			byte[] bAcquirerId = new byte[100];
-			int iAcquirerIdLen = MisPosInterface.getTagValue(0x9F07, bAcquirerId);
-			String strAcquirerId = new String(bAcquirerId, 0, iAcquirerIdLen);
-			Log.i(TAG, "AcquirerId: " + strAcquirerId);
-			beanData.setAcquirerId(InputStreamUtils.byteTOString(bAcquirerId));
-			
-			byte[] bIssuerId = new byte[100];
-			int iIssuerIdLen = MisPosInterface.getTagValue(0x9F08, bIssuerId);
-			String strIssuerId = new String(bIssuerId, 0, iIssuerIdLen);
-			Log.i(TAG, "IssuerId: " + strIssuerId);
-			beanData.setIssuerId(InputStreamUtils.byteTOString(bIssuerId).substring(2));
-			
-			byte[] bIssuerName = new byte[100];
-			int iIssuerNameLen = MisPosInterface.getTagValue(0x9F09, bIssuerName);
-			String strIssuerName = new String(bIssuerName, 0, iIssuerNameLen);
-			Log.i(TAG, "IssuerName: " + strIssuerName);
-			beanData.setIssuerName(InputStreamUtils.byteTOString(bIssuerName));
-			
-			byte[] bCardNo = new byte[100];
-			int iCardNoLen = MisPosInterface.getTagValue(0x9F0B, bCardNo);
-			String strCardNo = new String(bCardNo, 0, iCardNoLen);
-			Log.i(TAG, "CardNo: " + strCardNo);
-			beanData.setCardNo(InputStreamUtils.byteTOString(bCardNo));
-			
-			byte[] bBatchNo = new byte[100];
-			int iBatchNoLen = MisPosInterface.getTagValue(0x9F0D, bBatchNo);
-			String strBatchNo = new String(bBatchNo, 0, iBatchNoLen);
-			Log.i(TAG, "BatchNo: " + strBatchNo);
-			beanData.setBatchNo(InputStreamUtils.byteTOString(bBatchNo));
-			
-			byte[] bVoucherNo = new byte[100];
-			int iVoucherNoLen = MisPosInterface.getTagValue(0x9F0E, bVoucherNo);
-			String strVoucherNo = new String(bVoucherNo, 0, iVoucherNoLen);
-			Log.i(TAG, "VoucherNo: " + strVoucherNo);
-			beanData.setVoucherNo(InputStreamUtils.byteTOString(bVoucherNo));
-			
-			byte[] bAuthNo = new byte[100];
-			int iAuthNoLen = MisPosInterface.getTagValue(0x9F0F, bAuthNo);
-			String strAuthNo = new String(bAuthNo, 0, iAuthNoLen);
-			Log.i(TAG, "AuthNo: " + strAuthNo);
-			beanData.setAuthNo(InputStreamUtils.byteTOString(bAuthNo));
-			
-			byte[] bRefNo = new byte[100];
-			int iRefNoLen = MisPosInterface.getTagValue(0x9F10, bRefNo);
-			String strRefNo = new String(bRefNo, 0, iRefNoLen);
-			Log.i(TAG, "RefNo: " + strRefNo);
-			beanData.setRefNo(InputStreamUtils.byteTOString(bRefNo));
-			
-			byte[] bDate = new byte[100];
-			int iDateLen = MisPosInterface.getTagValue(0x9F11, bDate);
-			String strDate = new String(bDate, 0, iDateLen);
-			Log.i(TAG, "Date: " + strDate);
-			beanData.setTranDate(InputStreamUtils.byteTOString(bDate));
-			
-			byte[] bTime = new byte[100];
-			int iTimeLen = MisPosInterface.getTagValue(0x9F12, bTime);
-			String strTime = new String(bTime, 0, iTimeLen);
-			Log.i(TAG, "Time: " + strTime);
-			beanData.setTranTime(InputStreamUtils.byteTOString(bTime));
 		}
 		return beanData;
+	}
+	
+	private static void getTagValue(MisposData beanData) {
+		byte[] bMerchantId = new byte[100];
+		int iMerchantIdLen = MisPosInterface.getTagValue(0x9F04, bMerchantId);
+		String strMerchantId = new String(bMerchantId, 0, iMerchantIdLen);
+		Log.i(TAG, "MerchantId: " + strMerchantId);
+		beanData.setMerchantId(InputStreamUtils.byteTOString(bMerchantId));
+		
+		byte[] bMerchantName = new byte[100];
+		int iMerchantNameLen = MisPosInterface.getTagValue(0x9F03, bMerchantName);
+		String strMerchantName = new String(bMerchantName, 0, iMerchantNameLen);
+		Log.i(TAG, "MerchantName: " + InputStreamUtils.byteTOString(bMerchantName));
+		beanData.setMerchantName(InputStreamUtils.byteTOString(bMerchantName));
+		
+		byte[] bAmount = new byte[100];
+		int iAmountLen = MisPosInterface.getTagValue(0x9F02, bAmount);
+		String strAmount = new String(bAmount, 0, iAmountLen);
+		Log.i(TAG, "Amount: " + strAmount);
+		beanData.setAmount(InputStreamUtils.byteTOString(bAmount).replaceFirst("^0+", ""));
+		
+		byte[] bTerminalId = new byte[100];
+		int iTerminalIdLen = MisPosInterface.getTagValue(0x9F05, bTerminalId);
+		String strTerminalId = new String(bTerminalId, 0, iTerminalIdLen);
+		Log.i(TAG, "TerminalId: " + strTerminalId);
+		beanData.setTerminalId(InputStreamUtils.byteTOString(bTerminalId));
+		
+		byte[] bOperatorId = new byte[100];
+		int iOperatorIdLen = MisPosInterface.getTagValue(0x9F06, bOperatorId);
+		String strOperatorId = new String(bOperatorId, 0, iOperatorIdLen);
+		Log.i(TAG, "OperatorId: " + strOperatorId);
+		beanData.setOperatorId(InputStreamUtils.byteTOString(bOperatorId));
+		
+		byte[] bAcquirerId = new byte[100];
+		int iAcquirerIdLen = MisPosInterface.getTagValue(0x9F07, bAcquirerId);
+		String strAcquirerId = new String(bAcquirerId, 0, iAcquirerIdLen);
+		Log.i(TAG, "AcquirerId: " + strAcquirerId);
+		beanData.setAcquirerId(InputStreamUtils.byteTOString(bAcquirerId));
+		
+		byte[] bIssuerId = new byte[100];
+		int iIssuerIdLen = MisPosInterface.getTagValue(0x9F08, bIssuerId);
+		String strIssuerId = new String(bIssuerId, 0, iIssuerIdLen);
+		Log.i(TAG, "IssuerId: " + strIssuerId);
+		beanData.setIssuerId(InputStreamUtils.byteTOString(bIssuerId).substring(2));
+		
+		byte[] bIssuerName = new byte[100];
+		int iIssuerNameLen = MisPosInterface.getTagValue(0x9F09, bIssuerName);
+		String strIssuerName = new String(bIssuerName, 0, iIssuerNameLen);
+		Log.i(TAG, "IssuerName: " + strIssuerName);
+		beanData.setIssuerName(InputStreamUtils.byteTOString(bIssuerName));
+		
+		byte[] bCardNo = new byte[100];
+		int iCardNoLen = MisPosInterface.getTagValue(0x9F0B, bCardNo);
+		String strCardNo = new String(bCardNo, 0, iCardNoLen);
+		Log.i(TAG, "CardNo: " + strCardNo);
+		beanData.setCardNo(InputStreamUtils.byteTOString(bCardNo));
+		
+		byte[] bBatchNo = new byte[100];
+		int iBatchNoLen = MisPosInterface.getTagValue(0x9F0D, bBatchNo);
+		String strBatchNo = new String(bBatchNo, 0, iBatchNoLen);
+		Log.i(TAG, "BatchNo: " + strBatchNo);
+		beanData.setBatchNo(InputStreamUtils.byteTOString(bBatchNo));
+		
+		byte[] bVoucherNo = new byte[100];
+		int iVoucherNoLen = MisPosInterface.getTagValue(0x9F0E, bVoucherNo);
+		String strVoucherNo = new String(bVoucherNo, 0, iVoucherNoLen);
+		Log.i(TAG, "VoucherNo: " + strVoucherNo);
+		beanData.setVoucherNo(InputStreamUtils.byteTOString(bVoucherNo));
+		
+		byte[] bAuthNo = new byte[100];
+		int iAuthNoLen = MisPosInterface.getTagValue(0x9F0F, bAuthNo);
+		String strAuthNo = new String(bAuthNo, 0, iAuthNoLen);
+		Log.i(TAG, "AuthNo: " + strAuthNo);
+		beanData.setAuthNo(InputStreamUtils.byteTOString(bAuthNo));
+		
+		byte[] bRefNo = new byte[100];
+		int iRefNoLen = MisPosInterface.getTagValue(0x9F10, bRefNo);
+		String strRefNo = new String(bRefNo, 0, iRefNoLen);
+		Log.i(TAG, "RefNo: " + strRefNo);
+		beanData.setRefNo(InputStreamUtils.byteTOString(bRefNo));
+		
+		byte[] bDate = new byte[100];
+		int iDateLen = MisPosInterface.getTagValue(0x9F11, bDate);
+		String strDate = new String(bDate, 0, iDateLen);
+		Log.i(TAG, "Date: " + strDate);
+		beanData.setTranDate(InputStreamUtils.byteTOString(bDate));
+		
+		byte[] bTime = new byte[100];
+		int iTimeLen = MisPosInterface.getTagValue(0x9F12, bTime);
+		String strTime = new String(bTime, 0, iTimeLen);
+		Log.i(TAG, "Time: " + strTime);
+		beanData.setTranTime(InputStreamUtils.byteTOString(bTime));
 	}
 	
 	private static String parseTranTypeStr(byte tranId) {
@@ -263,6 +268,9 @@ public class MisposOperationUtil {
 			break;
 		case 0x0B:
 			tranType = TRAN_TYPE_PRE_AUTHORIZATION_COMPLETE_REVERSE;
+			break;
+		case 0x0E:
+			tranType = TRAN_TYPE_SIGN_OUT;
 			break;
 		case 0x12:
 			tranType = TRAN_TYPE_BALANCE;
@@ -298,6 +306,9 @@ public class MisposOperationUtil {
 			break;
 		case 0x0B:
 			tranType = "预授权完成撤消";
+			break;
+		case 0x0E:
+			tranType = "签退";
 			break;
 		case 0x12:
 			tranType = "查询余额";

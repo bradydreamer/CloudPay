@@ -270,14 +270,16 @@
         <item name="android:windowBackground">@color/transparent</item>
     </style>
 
+    <!-- <item name="android:background">#0000</item>,<item name="android:layout_width">190dp</item> -->
     <style name="home_btn_style_common">
-        <item name="android:layout_width">190dp</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:background">#0000</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:textSize">25px</item>
         <item name="android:textColor">@drawable/home_btn_textcolor</item>
+        <item name="android:background">@drawable/main_btn_release_bitmap</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:focusable">true</item>
     </style>

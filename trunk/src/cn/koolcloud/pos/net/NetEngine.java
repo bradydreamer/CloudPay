@@ -16,14 +16,12 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-
 import cn.koolcloud.APDefine;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.secure.SecureEngine;
 import cn.koolcloud.pos.service.SecureInfo;
 import cn.koolcloud.pos.util.UtilForDataStorage;
-
 
 public class NetEngine {
 
@@ -53,6 +51,8 @@ public class NetEngine {
 			.toLowerCase(); // The key exchange data
 	private static final String HEADER_KEY_APChannel = "X-APChannel"
 			.toLowerCase();// channel id
+	private static final String HEADER_KEY_APPKey = "X-APPKey".toLowerCase();// channel
+																				// id
 
 	private static final int PARAM_ENCRYPT = 0;
 	private static final int PARAM_DECRYPT = 1;
@@ -61,7 +61,7 @@ public class NetEngine {
 	// private static final int CONNECT_RESULT_FAIL = 1;
 	private static final int CONNECT_RESULT_NO_CONNECTION = -1;
 
-	 private static final String APPSERVER = APDefine.APPSERVER;
+	private static final String APPSERVER = APDefine.APPSERVER;
 
 	private static HashMap<String, String> getRequestHeader(Context context,
 			Map<String, String> headerMap) {
@@ -69,10 +69,11 @@ public class NetEngine {
 		requestHeaders.put(HEADER_VERSION, "1.0");
 		requestHeaders.put(HEADER_TERMINAL_ID, "");
 		requestHeaders.put(HEADER_SIGNATURE, "");
-		requestHeaders.put(HEADER_CRYPT, "");
+		requestHeaders.put(HEADER_CRYPT, "1");
 		requestHeaders.put(HEADER_KEY_EXCHANGE, "");
 		requestHeaders.put(HEADER_SESSION_ID, "");
 		requestHeaders.put(HEADER_KEY_APChannel, "AP03");
+		requestHeaders.put(HEADER_KEY_APPKey, "kc-ips01");
 
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
 		boolean isWorktimeValid = se.isValid();
@@ -106,11 +107,12 @@ public class NetEngine {
 					requestHeaders.put(HEADER_CRYPT, entry.getValue());
 				}
 			}
-			
+
 			String session = requestHeaders.get(HEADER_SESSION_ID);
-			if(session.isEmpty()){
-				requestHeaders.put(HEADER_SESSION_ID, ClientEngine.engineInstance().getSecureInfo().getSession());
-			}else if(session.equalsIgnoreCase("-1")){
+			if (session.isEmpty()) {
+				requestHeaders.put(HEADER_SESSION_ID, ClientEngine
+						.engineInstance().getSecureInfo().getSession());
+			} else if (session.equalsIgnoreCase("-1")) {
 				updateSession("");
 				requestHeaders.put(HEADER_SESSION_ID, "");
 			}
@@ -160,8 +162,8 @@ public class NetEngine {
 		}
 		return responseHeader;
 	}
-	
-	private static void updateSession(String session){
+
+	private static void updateSession(String session) {
 		SecureInfo si = ClientEngine.engineInstance().getSecureInfo();
 		si.setSession(session);
 		ClientEngine.engineInstance().setSecureInfo(si);
@@ -179,7 +181,8 @@ public class NetEngine {
 			postStr = cryptPamrams(postStr, PARAM_ENCRYPT);
 		}
 
-		String signature = ClientEngine.engineInstance().secureEngine().signature(postStr);
+		String signature = ClientEngine.engineInstance().secureEngine()
+				.signature(postStr);
 		requestHeaders.put(HEADER_SIGNATURE, signature);
 
 		postStr = String.format("params=%s", Uri.encode(postStr));
@@ -231,11 +234,12 @@ public class NetEngine {
 					if ("".equals(reex)) {
 						resHeaderJsonObject.remove("keyExchange");
 					} else {
-						if (ClientEngine.engineInstance().secureEngine().isOriginSn()) {
-							String session = "";
-							resHeaderJsonObject.put("session", session);
-							updateSession(session);
-						}
+						// if (ClientEngine.engineInstance().secureEngine()
+						// .isOriginSn()) {
+						// String session = "";
+						// resHeaderJsonObject.put("session", session);
+						// updateSession(session);
+						// }
 					}
 					resJsonObject.put("header", resHeaderJsonObject);
 				}

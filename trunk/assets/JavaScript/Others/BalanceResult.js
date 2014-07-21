@@ -7,9 +7,20 @@
   function reqBalance(data) {
     var msg = JSON.parse(data)
     var req = {
-      data: msg.data8583
+	  	"data": msg.data8583,
+		"paymentId": msg.paymentId,
+		"transType": msg.transType,
+		"batchNo": msg.batchNo,
+		"traceNo": msg.traceNo,
+		"transTime": msg.transTime,
+		"cardNo": msg.cardNo,
+		"transAmount": msg.transAmount,
+		"oriTxnId": msg.oriTxnId,
+		"oriBatchNo": msg.oriBatchNo,
+		"oriTraceNo": msg.oriTraceNo,
+		"oriTransTime": msg.oriTransTime,
     }
-    Net.connect("merchant/balance", req, actionAfterReqBalance, true)
+    Net.connect("msc/balance", req, actionAfterReqBalance, true)
   }
 
   function actionAfterReqBalance(data) {

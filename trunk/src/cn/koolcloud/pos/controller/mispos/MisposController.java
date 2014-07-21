@@ -16,12 +16,15 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import cn.koolcloud.jni.MisPosInterface;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
+import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.util.MisposOperationUtil;
 import cn.koolcloud.pos.util.UtilForDataStorage;
@@ -48,11 +51,13 @@ public class MisposController extends BaseHomeController implements View.OnClick
 	private TextView order_detail_tv_payType;
 	private TextView order_detail_tv_orderId;
 	private TextView order_detail_tv_orderStatus;
+	private Button order_detail_btn_confirm;
 	
 	public static final String SALE_TRAN_CONSTANT 					= "SALE";
 	public static final String SALE_REVERSE_TRAN_CONSTANT 			= "REVERSE";
 	public static final String PRE_AUTHORIZATION_TRAN_CONSTANT 		= "PREPAID";
 	public static final String BALANCE_TRAN_CONSTANT 				= "BALANCE";
+	public static final String LOGOUT_TRAN_CONSTANT 				= "LOGOUT";
 	
 	public static final int GET_AMOUNT_REQUEST_CODE 				= 70;
 	
@@ -108,14 +113,16 @@ public class MisposController extends BaseHomeController implements View.OnClick
 		}
 		
 		// communication open
-		MisPosInterface.communicationOpen();
-		
+		int openResult = MisPosInterface.communicationOpen();
+		if (openResult < 0) {
+			batchCallBack();
+		}
 		findViews();
 
 		thread = new DaemonThread();
 		thread.start();
-		checkTranTypeFlow();
-//		mHandler.sendEmptyMessageDelayed(SEND_DELAYED_COMMAND_HANDLER, 1000);
+//		checkTranTypeFlow();
+		mHandler.sendEmptyMessageDelayed(SEND_DELAYED_COMMAND_HANDLER, 1000);
 	}
 	
 	private void checkTranTypeFlow() {
@@ -132,6 +139,8 @@ public class MisposController extends BaseHomeController implements View.OnClick
 			MisposOperationUtil.getBalance();
 		} else if (deliveryTranType.equals(SALE_REVERSE_TRAN_CONSTANT)) {
 			MisposOperationUtil.consumeRevoke(amount, traceNo);
+		} else if (deliveryTranType.equals(LOGOUT_TRAN_CONSTANT)) {
+			MisposOperationUtil.unregistration();
 		}
 	}
 	
@@ -150,6 +159,9 @@ public class MisposController extends BaseHomeController implements View.OnClick
 		order_detail_tv_payType = (TextView) findViewById(R.id.order_detail_tv_payType);
 		order_detail_tv_orderId = (TextView) findViewById(R.id.order_detail_tv_orderId);
 		order_detail_tv_orderStatus = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
+		
+		order_detail_btn_confirm = (Button) findViewById(R.id.order_detail_btn_confirm);
+		order_detail_btn_confirm.setOnClickListener(this);
 	}
 	
 	private Handler mHandler = new Handler() {
@@ -168,12 +180,15 @@ public class MisposController extends BaseHomeController implements View.OnClick
 					
 					//get payment name
 					Map<String, ?> map = UtilForDataStorage
-							.readPropertyBySharedPreferences(getApplicationContext(), "paymentInfo");
+							.readPropertyBySharedPreferences(MisposController.this, "paymentInfo");
 					String paymentStr = (String) map.get(paymentId);
 					String paymentName = "";
 					try {
-						JSONObject jsonObj = new JSONObject(paymentStr);
-						paymentName = jsonObj.getString("paymentName");
+						if (!TextUtils.isEmpty(paymentStr)) {
+							
+							JSONObject jsonObj = new JSONObject(paymentStr);
+							paymentName = jsonObj.getString("paymentName");
+						}
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -181,7 +196,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 					
 					//get operator
 					Map<String, ?> merchantMap = UtilForDataStorage
-							.readPropertyBySharedPreferences(getApplicationContext(), "merchant");
+							.readPropertyBySharedPreferences(MisposController.this, "merchant");
 					String operatorName = (String) merchantMap.get("operator");
 					beanData.setOperatorId(operatorName);
 					
@@ -189,6 +204,20 @@ public class MisposController extends BaseHomeController implements View.OnClick
 						//Separate tran type
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_SIGN_IN)) {
 							//FIXME: write sign in state to local
+							CacheDB cacheDB = CacheDB.getInstance(MisposController.this);
+							if (cacheDB.isExistMerchantIdTermId(beanData.getMerchantId(), beanData.getTerminalId())) {
+								checkTranTypeFlow();
+							} else {
+								beanData.setResponseMsg(getResources().getString(R.string.mispos_check_bind_config_msg));
+								showCommonMessage(beanData);
+							}
+						}
+						
+						//logout
+						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_SIGN_OUT)) {
+							if (!TextUtils.isEmpty(deliveryTranType) && deliveryTranType.equals(LOGOUT_TRAN_CONSTANT)) {
+								batchCallBack();
+							}
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_CONSUMPTION)) {
@@ -196,6 +225,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
+							handleExtenalOrder(beanData);
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_CONSUMPTION_REVERSE)) {
@@ -203,6 +233,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
+//							handleExtenalOrder(beanData);
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_PRE_AUTHORIZATION)) {
@@ -210,6 +241,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
+							handleExtenalOrder(beanData);
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_PRE_AUTHORIZATION_REVERSE)) {
@@ -217,6 +249,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
+							handleExtenalOrder(beanData);
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_PRE_AUTHORIZATION_COMPLETE)) {
@@ -224,6 +257,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
+							handleExtenalOrder(beanData);
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_PRE_AUTHORIZATION_COMPLETE_REVERSE)) {
@@ -231,13 +265,14 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
+							handleExtenalOrder(beanData);
 						}
 						
 						if (beanData.getTransType().equals(MisposOperationUtil.TRAN_TYPE_BALANCE)) {
 							showBalance(beanData);
 						}
 					}
-					if (isExternalOrder) {
+					/*if (isExternalOrder) {
 						JSONObject jsObj = new JSONObject();
 						try {
 							jsObj.put("refNo", beanData.getRefNo());
@@ -249,7 +284,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 							e.printStackTrace();
 						}
 						onCall("Pay.misposSuccRestart", jsObj);
-					}
+					}*/
 				} else {
 					if (isExternalOrder) {
 						JSONObject jsObj = new JSONObject();
@@ -261,6 +296,10 @@ public class MisposController extends BaseHomeController implements View.OnClick
 						onCall("Pay.misposErrRestart", jsObj);
 					}
 					showCommonMessage(beanData);
+					
+					if (!TextUtils.isEmpty(deliveryTranType) && deliveryTranType.equals(LOGOUT_TRAN_CONSTANT)) {
+						batchCallBack();
+					}
 				}
 				
 				break;
@@ -337,7 +376,8 @@ public class MisposController extends BaseHomeController implements View.OnClick
 		hiddenLayouts();
 		balanceLayout.setVisibility(View.VISIBLE);
 		balanceAmountTextView.setText(getResources().getString(R.string.mispos_str_balance) +
-				AppUtil.formatAmount(Long.parseLong(beanData.getAmount())));
+				AppUtil.formatAmount(Long.parseLong(beanData.getAmount())) +
+				getResources().getString(R.string.mispos_str_dollar));
 	}
 	
 	private void showCommonMessage(MisposData beanData) {
@@ -351,6 +391,22 @@ public class MisposController extends BaseHomeController implements View.OnClick
 		commonMisposLayout.setVisibility(View.GONE);
 		balanceLayout.setVisibility(View.GONE);
 		orderDetailslayout.setVisibility(View.GONE);
+	}
+	
+	private void handleExtenalOrder(MisposData beanData) {
+		if (isExternalOrder) {
+			JSONObject jsObj = new JSONObject();
+			try {
+				jsObj.put("refNo", beanData.getRefNo());
+				jsObj.put("transTime", beanData.getTranDate() + beanData.getTranTime());
+				jsObj.put("paymentName", beanData.getPaymentName());
+				jsObj.put("transAmount", beanData.getAmount());
+				jsObj.put("bankCardNum", beanData.getCardNo());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			onCall("Pay.misposSuccRestart", jsObj);
+		}
 	}
 
 	@Override
@@ -374,7 +430,25 @@ public class MisposController extends BaseHomeController implements View.OnClick
 
 	@Override
 	public void onClick(View view) {
-//		showLoading();
+		switch (view.getId()) {
+		case R.id.order_detail_btn_confirm:
+			finish();
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	private void batchCallBack() {
+		if (!TextUtils.isEmpty(deliveryTranType) && deliveryTranType.equals(LOGOUT_TRAN_CONSTANT)) {
+			//FIXME:sign out
+			onCall("SettingsIndex.batchCallBack", null);
+			finish();
+		} else {
+			Toast.makeText(MisposController.this, getResources().getString(R.string.mispos_str_reconnected), Toast.LENGTH_SHORT).show();
+			finish();
+		}
 	}
 	
 	@Override
@@ -441,7 +515,7 @@ public class MisposController extends BaseHomeController implements View.OnClick
 		@Override
 		public void run() {
 			try {
-				PrinterHelper.getInstance(getApplicationContext()).printMisposReceipt(beanData);
+				PrinterHelper.getInstance(MisposController.this).printMisposReceipt(beanData);
 			} catch (PrinterException e) {
 				e.printStackTrace();
 			}

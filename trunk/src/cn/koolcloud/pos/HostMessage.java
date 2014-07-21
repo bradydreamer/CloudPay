@@ -1,4 +1,5 @@
 package cn.koolcloud.pos;
+
 import java.util.Hashtable;
 
 public class HostMessage {
@@ -26,7 +27,7 @@ public class HostMessage {
 			messageMap.put("14", "无效卡号");
 			messageMap.put("15", "此卡无对应发卡方");
 			messageMap.put("21", "该卡未初始化或睡眠卡");
-			messageMap.put("22", "请批结并重新登录和签到");
+			messageMap.put("22", "请在批结、签退之后重新操作");
 			messageMap.put("25", "无原始交易，请联系发卡行");
 			messageMap.put("30", "请重试");
 			messageMap.put("34", "作弊卡");

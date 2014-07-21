@@ -98,6 +98,29 @@ public class ISO8583Controller implements Constant {
 
 	}
 
+	public boolean signout() {
+
+		// 默认传递参数都是正确的，暂时为加入校验
+		paramer.trans.setTransType(this.TRAN_LOGOUT);
+		paramer.trans.setApmpTransType(this.APMP_TRAN_SIGNOUT);
+		// 设置POS终端交易流水 (11域）
+		paramer.terminalConfig.setTrace(transId);// 流水号
+		// 设置商户号 (41域）
+		paramer.terminalConfig.setMID(mId);
+		// 设置终端号 (42域）
+		paramer.terminalConfig.setTID(tId);
+		// 批次号 (60.2)
+		// 600001暂时写死了。
+		// 操作员代码01?02 (63域）
+		boolean isSuccess = pack8583(paramer);
+		if (isSuccess) {
+			Log.d(APP_TAG, "pack 8583 ok!");
+		} else {
+			Log.e(APP_TAG, "pack 8583 failed!");
+		}
+		return isSuccess;
+	}
+
 	/**
 	 * 批结
 	 * 
@@ -143,6 +166,7 @@ public class ISO8583Controller implements Constant {
 			String pinBlock, String open_brh, String payment_id) {
 
 		paramer.trans.setTransType(TRAN_BALANCE);
+		paramer.trans.setApmpTransType(APMP_TRAN_BALANCE);
 		paramer.trans.setPAN(account); // 设置主帐号
 		paramer.trans.setTrack2Data(track2);
 		paramer.trans.setTrack3Data(track3);
@@ -1381,7 +1405,7 @@ public class ISO8583Controller implements Constant {
 		Map<String, ?> map = UtilForDataStorage
 				.readPropertyBySharedPreferences(context, "paymentInfo");
 		String paymentStr = (String) map.get(paymentId);
-		
+
 		String prdtNo = "";
 		try {
 			JSONObject jsonObj = new JSONObject(paymentStr);
@@ -1400,7 +1424,8 @@ public class ISO8583Controller implements Constant {
 		oldTrans.setPaymentName(paymentName);
 		oldTrans.setPaymentId(paymentId);
 
-		if (!TextUtils.isEmpty(prdtNo) && prdtNo.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+		if (!TextUtils.isEmpty(prdtNo)
+				&& prdtNo.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
 		} else {
 			PrinterHelper.getInstance(context).printReceipt(oldTrans);

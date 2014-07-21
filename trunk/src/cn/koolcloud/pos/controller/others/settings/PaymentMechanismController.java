@@ -81,6 +81,8 @@ public class PaymentMechanismController extends BaseHomeController {
 					iv.setImageResource(R.drawable.logo_wechat);
 				} else if (imageName.startsWith("logo_fufeitong")) {
 					iv.setImageResource(R.drawable.logo_fufeitong);
+				} else if (imageName.startsWith("logo_cash")) {
+					iv.setImageResource(R.drawable.logo_consumption_record_old);
 				}
 				// iv.setBackgroundResource(R.drawable.icon_bg);
 			} else {
@@ -103,28 +105,9 @@ public class PaymentMechanismController extends BaseHomeController {
 		} else if (layout_funcModule.equals(view)) {
 			if ("data".equals(key)) {
 				JSONArray data = (JSONArray) value;
-				if (checkDataValue(data) == true) {
-					changeButtonBackground(INIT, (data.length() - 1));
-				} else {
-					changeButtonBackground(INIT, data.length());
-				}
 				updateLayoutFuncModule(data);
 			}
 		}
-		// super.setView(view, key, value);
-	}
-
-	private Boolean checkDataValue(JSONArray dataArray) {
-		Boolean checkTag = false;
-		for (int i = 0; i < dataArray.length(); i++) {
-			JSONObject moduleData = dataArray.optJSONObject(i);
-			String funcModuleId = moduleData.optString("typeId");
-			if (funcModuleId.equals("BALANCE")) {
-				checkTag = true;
-			}
-		}
-		return checkTag;
-
 	}
 
 	@Override
@@ -150,8 +133,41 @@ public class PaymentMechanismController extends BaseHomeController {
 			addButtonRecording(i, funcModuleId);
 			if (0 == i) {
 				selectedBtn = btnFuncModule;
+				selectedBtn
+						.setBackgroundResource(R.drawable.main_page_bg_bitmap);
 				btnFuncModule.setSelected(true);
 			}
+		}
+	}
+
+	@Override
+	public void onSwitchFuncModule(View view) {
+		if (selectedBtn == view) {
+			return;
+		}
+		String tag = view.getTag().toString();
+		String preTag = "";
+
+		if (selectedBtn != null) {
+			selectedBtn.setSelected(false);
+			selectedBtn
+					.setBackgroundResource(R.drawable.main_btn_release_bitmap);
+			preTag = selectedBtn.getTag().toString();
+		}
+
+		view.setSelected(true);
+		view.setBackgroundResource(R.drawable.main_page_bg_bitmap);
+		selectedBtn = view;
+
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("typeId", tag);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		if (tag != preTag) {
+			onCall("PaymentMechanismInfo.onSwitchFuncModule", msg);
 		}
 	}
 
