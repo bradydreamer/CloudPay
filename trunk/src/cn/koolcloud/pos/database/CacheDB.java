@@ -29,6 +29,7 @@ public class CacheDB extends BaseSqlAdapter {
 	private final static int DATABASE_VERSION = 1;
     private final static String BATCH_PROCESSING_TABLE_NAME = "batch_processing_table";
     private final static String ACQUIRE_INSTITUTE_TABLE_NAME = "acquire_institute_table";
+    private final static String PAYMENT_ACTIVITY_TABLE_NAME = "payment_activity_table";
     
     private Context context;
     private String dbName;
@@ -71,6 +72,8 @@ public class CacheDB extends BaseSqlAdapter {
     private final static String ACQUIRE_BRH_KEY_INDEX = "brhKeyIndex";
     private final static String ACQUIRE_BRH_MSG_TYPE = "brhMsgType";
     private final static String ACQUIRE_BRH_MCHT_MCC = "brhMchtMcc";
+    
+    private final static String PAYMENT_ACTIVITY_JSON = "payment_json";
   
     private CacheDB(Context ctx, int version) {
     	this.context = ctx;
@@ -233,6 +236,62 @@ public class CacheDB extends BaseSqlAdapter {
     	}
     }
     
+    /**
+     * @Title: insertPayment
+     * @Description: TODO
+     * @param paymentActivity
+     * @return: void
+     */
+    public void insertPayment(List<AcquireInstituteBean> paymentActivity) {
+    	
+    	ArrayList<SQLEntity> sqlList = new ArrayList<SQLEntity>();
+    	Cursor cursor = null;
+    	try {
+    		String sql = "INSERT INTO "+ PAYMENT_ACTIVITY_TABLE_NAME +"(" +
+    				ACQUIRE_PAYMENT_ID + ", " +
+    				ACQUIRE_PAYMENT_NAME + ", " +
+    				ACQUIRE_BRH_KEY_INDEX + ", " +
+    				ACQUIRE_MERCHANT_ID + ", " +
+    				ACQUIRE_TERMINAL_ID + ", " +
+    				ACQUIRE_PRINT_TYPE + ", " +
+    				ACQUIRE_PRODUCT_NO + ", " +
+    				ACQUIRE_PRODUCT_TITLE + ", " +
+    				ACQUIRE_PRODUCT_DESC + ", " +
+    				ACQUIRE_INSTITUTE_NAME + ", " +
+    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    		
+    		if (paymentActivity != null && paymentActivity.size() > 0) {
+    			for (int i = 0; i < paymentActivity.size(); i++) {
+    				AcquireInstituteBean acquireInstituteBean = paymentActivity.get(i);
+    				cursor = selectPaymentByPaymentId(acquireInstituteBean.getPaymentId());
+    				if (cursor.getCount() > 0) {
+    					continue;
+    				}
+    				cursor.close();
+    				String[] params = new String[] { acquireInstituteBean.getPaymentId(), acquireInstituteBean.getPaymentName(),
+    						acquireInstituteBean.getBrhKeyIndex(), acquireInstituteBean.getBrhMchtId(),
+    						acquireInstituteBean.getBrhTermId(),
+    						acquireInstituteBean.getPrintType(), acquireInstituteBean.getProductNo(),
+    						acquireInstituteBean.getProductTitle(), acquireInstituteBean.getProductDesc(),
+    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getJsonItem(),
+    						
+    				};
+    				sqlList.add(new SQLEntity(sql, params));
+    			}
+    			excuteSql(sqlList);
+    		}
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		if (cursor != null) {
+    			
+    			cursor.close();
+    		}
+    		closeDB();
+    	}
+    }
+    
     public void clearBatchTableData() {
     	String sql = "delete from " + BATCH_PROCESSING_TABLE_NAME;
     	
@@ -243,6 +302,18 @@ public class CacheDB extends BaseSqlAdapter {
 		}
 		
 		closeDB();
+    }
+    
+    public void clearPaymentActivityTableData() {
+    	String sql = "delete from " + PAYMENT_ACTIVITY_TABLE_NAME;
+    	
+    	try {
+    		excuteWriteAbleSql(sql);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	closeDB();
     }
     
     public void deleteBatchTaskByTxnId(String txnId) { 
@@ -277,12 +348,31 @@ public class CacheDB extends BaseSqlAdapter {
     	return result;
     }
     
+    public boolean isMisposConfiged() {
+    	boolean result = false;
+    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_BRH_KEY_INDEX + " = '90'";
+    	
+    	Cursor cursor = getCursor(sql, null);
+    	if (cursor.getCount() > 0) {
+    		result = true;
+    	}
+    	cursor.close();
+    	return result;
+    }
+    
     public Cursor selectAcquireInstituteByMerchantId(String merchantId) { 
     	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = '" + merchantId + "'";
 //    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = ?";
     	
     	Cursor cursor = getCursor(sql, null);
 //    	Cursor cursor = getCursor(sql, new String[] { merchantId });
+    	return cursor;
+    }
+    
+    public Cursor selectPaymentByPaymentId(String paymentId) { 
+    	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
+    	
+    	Cursor cursor = getCursor(sql, null);
     	return cursor;
     }
     
@@ -457,9 +547,27 @@ public class CacheDB extends BaseSqlAdapter {
 					+ ACQUIRE_BRH_MCHT_MCC + " varchar, "
 					+ " CONSTRAINT PK_ACQUIRE_INSTITUTE PRIMARY KEY (" + ACQUIRE_MERCHANT_ID + ", " + ACQUIRE_TERMINAL_ID + ", " + ACQUIRE_DEVICE_NUM_OF_MERCH + ")" +
 					");";
+			
+			//FIXME: payment activity
+			String paymentActivitySql = "CREATE TABLE IF NOT EXISTS " + PAYMENT_ACTIVITY_TABLE_NAME + " ("
+					+ ACQUIRE_PAYMENT_ID + " varchar, " 
+					+ ACQUIRE_PAYMENT_NAME + " varchar, " 
+					+ ACQUIRE_BRH_KEY_INDEX + " varchar, " 
+					+ ACQUIRE_MERCHANT_ID + " varchar, " 
+					+ ACQUIRE_TERMINAL_ID + " varchar, " 
+					+ ACQUIRE_PRINT_TYPE + " varchar, " 
+					+ ACQUIRE_PRODUCT_NO + " varchar, " 
+					+ ACQUIRE_PRODUCT_TITLE + " varchar, " 
+					+ ACQUIRE_PRODUCT_DESC + " varchar, " 
+					+ ACQUIRE_INSTITUTE_NAME + " varchar, " 
+					+ PAYMENT_ACTIVITY_JSON + " nvarchar, " 
+					+ " CONSTRAINT PK_PAYMENT_ACTIVITY PRIMARY KEY (" + ACQUIRE_PAYMENT_ID + ")" +
+					");";
+					
 	        
 	        db.execSQL(createBatchProcessSql);
 	        db.execSQL(createAcquireInstituteSql);
+	        db.execSQL(paymentActivitySql);
 			setmDb(db);
 		}
 	}

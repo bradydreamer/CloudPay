@@ -112,15 +112,15 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 						continue;
 					}
 					cursor.close();
-					String[] params = new String[] { jsonObj.getString(TXN_ID_RECORD), jsonObj.getString(TRANS_TYPE_RECORD),
-    						jsonObj.getString(TRANS_TYPE_DESC_RECORD), jsonObj.getString(PAYMENT_ID_RECORD),
-    						jsonObj.getString(PAYMENT_NAME_RECORD), jsonObj.getString(REF_NO_RECORD),
-    						jsonObj.getString(TRANS_AMOUNT_RECORD), jsonObj.getString(PAY_KEY_INDEX_RECORD),
-    						jsonObj.getString(PAY_TYPE_DESC_RECORD), jsonObj.getString(BATCH_NO_RECORD),
-    						jsonObj.getString(TRACE_NO_RECORD), jsonObj.getString(ORDER_STATE_RECORD),
-    						jsonObj.getString(ORDER_STATE_DESC_RECORD), jsonObj.getString(CARD_NO_RECORD),
-    						jsonObj.getString(OPEN_BRH_RECORD), jsonObj.getString(OPERATOR_RECORD),
-    						jsonObj.getString("transTime"), jsonObj.getString("tDate"), jsonObj.getString("tTime")
+					String[] params = new String[] { jsonObj.optString(TXN_ID_RECORD), jsonObj.optString(TRANS_TYPE_RECORD),
+    						jsonObj.optString(TRANS_TYPE_DESC_RECORD), jsonObj.optString(PAYMENT_ID_RECORD),
+    						jsonObj.optString(PAYMENT_NAME_RECORD), jsonObj.optString(REF_NO_RECORD),
+    						jsonObj.optString(TRANS_AMOUNT_RECORD), jsonObj.optString(PAY_KEY_INDEX_RECORD),
+    						jsonObj.optString(PAY_TYPE_DESC_RECORD), jsonObj.optString(BATCH_NO_RECORD),
+    						jsonObj.optString(TRACE_NO_RECORD), jsonObj.optString(ORDER_STATE_RECORD),
+    						jsonObj.optString(ORDER_STATE_DESC_RECORD), jsonObj.optString(CARD_NO_RECORD),
+    						jsonObj.optString(OPEN_BRH_RECORD), jsonObj.optString(OPERATOR_RECORD),
+    						jsonObj.optString("transTime"), jsonObj.optString("tDate"), jsonObj.optString("tTime")
     					};
 					sqlList.add(new SQLEntity(sql, params));
 				}

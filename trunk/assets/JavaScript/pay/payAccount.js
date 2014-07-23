@@ -46,6 +46,7 @@
     params.field0 = params.cardID;
     Pay.cacheData.track2 = params.track2;
     Pay.cacheData.track3 = params.track3;
+	Pay.cacheData.validTime = params.validTime;
 
     exePurchase(params);
   }

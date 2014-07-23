@@ -35,10 +35,12 @@
 		  	/*
 		  	此处跳转密码修改界面。密码界面修改完成后重新跳转至登录界面。
 		  	*/
-		  	var params = {
-					shouldRemoveCurCtrl: true
-				}
-		  	Scene.showScene("ModifyPwd","",params);
+			Scene.alert("首次登录需要修改密码!", function(){
+				var params = {
+								shouldRemoveCurCtrl: true
+							}
+				Scene.showScene("ModifyPwd","",params);
+			});	  	
 			return;
 		  }		
 		if ("0" == g_loginRes.responseCode) {

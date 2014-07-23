@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/indicatorTextView"
             android:layout_marginTop="30dp"
+            android:textColor="@color/red"
             android:text="@string/mispos_onperate_on_mispos"
             android:textSize="@dimen/mispos_common_text_size"/>
 
@@ -35,7 +36,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/commonTextView"
             android:text="@string/mispos_onperate_on_mispos"
-            android:textSize="@dimen/mispos_common_text_size"/>
+            android:textSize="@dimen/mispos_common_text_size"
+            android:textColor="@color/red"/>
 
     </LinearLayout>
     <LinearLayout 

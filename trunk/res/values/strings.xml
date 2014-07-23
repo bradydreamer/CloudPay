@@ -67,7 +67,7 @@
     <string name="settins_index_module_title_downloadMerchData">手动参数更新</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
     <string name="settins_index_module_title_trans_batch">批结算</string>
-    <string name="settins_index_module_title_sign_up">创建用户</string>
+    <string name="settins_index_module_title_sign_up">创建收银员</string>
     <string name="settins_index_module_title_modify_pwd">修改密码</string>
     
     <!-- activity_others_index_controller.xml -->
@@ -134,6 +134,7 @@
     <string name="msg_mod_pwd_hint_pwd_input">请输入新密码</string>
     <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认新密码</string>
     <string name="msg_mod_pwd_hint_error_dialog">密码不一致，请重新输入</string>
+    <string name="msg_mod_pwd_hint_diffent_pwd_dialog">请输入不同的密码</string>
     <string name="msg_account_hint">请输入账号</string>
     <string name="msg_pwd_hint">请输入密码</string>
     <!-- activity_login_controller.xml -->
@@ -369,13 +370,13 @@
     <string name="mispos_preauthorize_finish_msg">预授权完成</string>
     <string name="mispos_balance_msg">余额查询</string>
     <string name="mispos_test_msg">通讯测试</string>
-    <string name="mispos_onperate_on_mispos">请在Mispos上进行操作</string>
+    <string name="mispos_onperate_on_mispos">请按mispos界面提示进行操作；\n如取消本次交易，请在mispos上按取消按钮。</string>
     <string name="mispos_str_mispos">MisPos</string>
     <string name="mispos_str_dollar">￥</string>
     <string name="mispos_tran_success">交易成功</string>
     <string name="mispos_str_balance">当前余额：</string>
     <string name="mispos_str_reconnected">请检查Mispos连接正常后重试</string>
-    <string name="mispos_check_bind_config_msg">非本机Mispos或未在本机绑定Mispos，请检查更换或进行后台绑定配置</string>
+    <string name="mispos_check_bind_config_msg">该mispos未绑定本主机，请联系支付服务商。</string>
     
     <!-- 现金支付 -->
     <string name="sum_payable_mark">应付金额： </string>

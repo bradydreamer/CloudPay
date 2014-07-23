@@ -29,14 +29,22 @@ public class ModifyPWDController extends BaseController {
 	@Override
 	public void onClickBtnOK(View view) {
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
-		String origPwdStr = se.md5(origPwd.getText().toString()).toLowerCase();
-		String firstNewPwdStr = se.md5(firstNewPwd.getText().toString())
-				.toLowerCase();
-		String secondNewPwdStr = se.md5(secondNewPwd.getText().toString())
-				.toLowerCase();
+		String origPwdStr = "_TDS_"
+				+ se.md5(origPwd.getText().toString()).toLowerCase();
+		String firstNewPwdStr = "_TDS_"
+				+ se.md5(firstNewPwd.getText().toString()).toLowerCase();
+		String secondNewPwdStr = "_TDS_"
+				+ se.md5(secondNewPwd.getText().toString()).toLowerCase();
 
 		if (origPwdStr.isEmpty() || firstNewPwdStr.isEmpty()
 				|| secondNewPwdStr.isEmpty()) {
+			return;
+		}
+		if (origPwdStr.equals(firstNewPwdStr)) {
+			firstNewPwd.setText(null);
+			firstNewPwd.setHint(R.string.msg_mod_pwd_hint_diffent_pwd_dialog);
+			secondNewPwd.setText(null);
+			secondNewPwd.setHint(R.string.msg_mod_pwd_hint_pwd_input_confirm);
 			return;
 		}
 		if (!firstNewPwdStr.equals(secondNewPwdStr)) {
@@ -44,7 +52,6 @@ public class ModifyPWDController extends BaseController {
 			secondNewPwd.setHint(R.string.msg_mod_pwd_hint_error_dialog);
 			return;
 		}
-		// TODO:need MD5 and 3DES.
 
 		JSONObject msg = new JSONObject();
 		try {

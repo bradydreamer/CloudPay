@@ -155,7 +155,7 @@ Pay.payResult = function(params) {
 			window.RMS.clear("savedTransData");
 			if("22" == params.resCode){
 				Scene.alert(params.resMessage,batchErroProcess);
-			}else if("A0 == params.resCode"){
+			}else if("A0" == params.resCode){
 				Scene.alert(params.resMessage,reSignAction);
 			}else{				
 				setTimeout(function() {
@@ -216,6 +216,7 @@ Pay.payResult = function(params) {
 			"iposId": ConsumptionData.dataForPayment.iposId,
 			"transType": ConsumptionData.dataForPayment.transType,
 			"authNo": ConsumptionData.dataForPayment.authNo,
+			"txnId": ConsumptionData.dataForPayment.txnId,
 		};
 		
 		if(ConsumptionData.dataForPayment.preScene == "PayAccount" || ConsumptionData.dataForPayment.preScene == "PinPad"){
@@ -262,10 +263,11 @@ Pay.cashSuccRestart = function(params){
 	var cashData = JSON.parse(params);
 	ConsumptionData.dataForPayment.cashPay = true;
 	ConsumptionData.dataForPayment.result = "success";
-	//ConsumptionData.dataForPayment.transAmount = cashData.transAmount;
-	//ConsumptionData.dataForPayment.paidAmount = cashData.cashPaidAmount;
-	//ConsumptionData.dataForPayment.changeAmount = cashData.changeAmount;
-	//ConsumptionData.dataForPayment.transTime = cashData.transTime;
+	ConsumptionData.dataForPayment.transAmount = cashData.transAmount;
+	ConsumptionData.dataForPayment.paidAmount = cashData.cashPaidAmount;
+	ConsumptionData.dataForPayment.changeAmount = cashData.changeAmount;
+	ConsumptionData.dataForPayment.transTime = cashData.transTime;
+	ConsumptionData.dataForPayment.paymentName = cashData.paymentName;
 	var req = {
 		"paymentId": cashData.paymentId,
 		"transType": cashData.transType,

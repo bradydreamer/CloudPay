@@ -30,10 +30,10 @@ public class CreateUserController extends BaseController {
 	public void onClickBtnOK(View view) {
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
 		String userNameStr = userName.getText().toString();
-		String firstPasswordStr = se.md5(firstPassword.getText().toString())
-				.toLowerCase();
-		String secondPasswordStr = se.md5(secondPassword.getText().toString())
-				.toLowerCase();
+		String firstPasswordStr = "_TDS_"
+				+ se.md5(firstPassword.getText().toString()).toLowerCase();
+		String secondPasswordStr = "_TDS_"
+				+ se.md5(secondPassword.getText().toString()).toLowerCase();
 
 		if (userNameStr.isEmpty() || firstPasswordStr.isEmpty()
 				|| secondPasswordStr.isEmpty()) {

@@ -30,6 +30,9 @@ public class OrderDetailController extends BaseController {
 	private final static int TRAN_TYPE_REVERSE = 3021;
 	private final static int TRAN_TYPE_REFUND = 3051;
 	private final static int TRAN_TYPE_AUTH = 1011;
+	private final static int TRAN_TYPE_AUTH_CANCEL = 3011;
+	private final static int TRAN_TYPE_AUTH_COMPLETE_CANCEL = 3031;
+	private final static int TRAN_TYPE_AUTH_SETTLEMENT = 1091;
 
 	private boolean cancelEnable;
 	private String rrn;
@@ -85,11 +88,12 @@ public class OrderDetailController extends BaseController {
 		initTextView(R.id.order_detail_tv_transDate, data, "transTime");
 		initTextView(R.id.order_detail_tv_transType, data, "transTypeDesc");
 		initTextView(R.id.order_detail_tv_authcode, data, "authNo");
-		
+
 		String operator = data.optString("operator");
 		if (TextUtils.isEmpty(operator)) {
 			try {
-				String userInfo = ClientEngine.engineInstance().getSecureService().getUserInfo();
+				String userInfo = ClientEngine.engineInstance()
+						.getSecureService().getUserInfo();
 				if (!TextUtils.isEmpty(userInfo)) {
 					try {
 						JSONObject userInfoObj = new JSONObject(userInfo);
@@ -204,7 +208,10 @@ public class OrderDetailController extends BaseController {
 		if (paymentOrder == PAY_SUCCESS
 				|| orderState != ORDER_STATUS_SUCCESS
 				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_REVERSE)
-				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_REFUND)) {
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_REFUND)
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == this.TRAN_TYPE_AUTH_CANCEL)
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == this.TRAN_TYPE_AUTH_COMPLETE_CANCEL)
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == this.TRAN_TYPE_AUTH_SETTLEMENT)) {
 			if (transType == TRAN_TYPE_AUTH) {
 				layout_auth_complete.setVisibility(View.VISIBLE);
 				layout_auth_settlement.setVisibility(View.VISIBLE);

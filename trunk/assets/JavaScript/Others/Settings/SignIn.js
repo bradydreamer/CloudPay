@@ -48,23 +48,27 @@
   }
   
   function afterConvertMsg(params){
-	  var req = {
-	        "txnId": ConsumptionData.dataForPayment.txnId,
-			"resCode": params.resCode,
-			"resMsg": params.resMessage,
-			"refNo": params.rrn,
-			"authNo": params.authNo,
-			"issuerId": params.issuerId,
-			"dateExpr": params.dateExpr,
-			"stlmDate": params.stlmDate,
-		};
-	  var brhKeyIndex = ConsumptionData.dataForPayment.brhKeyIndex;
-	  var _params = {
- 				"signature" : true,
- 		  }
-	  RMS.save(brhKeyIndex, _params);
-	  actionAfterSet();
-	  Net.asynConnect("msc/txn/update",req,afterBackupInfo);
+	  if("00" == params.resCode){
+		  var req = {
+		        "txnId": ConsumptionData.dataForPayment.txnId,
+				"resCode": params.resCode,
+				"resMsg": params.resMessage,
+				"refNo": params.rrn,
+				"authNo": params.authNo,
+				"issuerId": params.issuerId,
+				"dateExpr": params.dateExpr,
+				"stlmDate": params.stlmDate,
+			};
+		  var brhKeyIndex = ConsumptionData.dataForPayment.brhKeyIndex;
+		  var _params = {
+	 				"signature" : true,
+	 		  }
+		  RMS.save(brhKeyIndex, _params);
+		  actionAfterSet();
+		  Net.asynConnect("msc/txn/update",req,afterBackupInfo);
+	  }else{
+		  Scene.alert(params.resMessage,errOKProcess);
+	  }	  
   }
   
   function afterBackupInfo(data){

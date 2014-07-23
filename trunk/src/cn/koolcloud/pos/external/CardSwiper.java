@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
-
 import cn.koolcloud.jni.MsrInterface;
 
 public class CardSwiper {
@@ -23,20 +22,21 @@ public class CardSwiper {
 		this.context = c;
 		this.listener = listener;
 
-		isPollCanceled = false;	
-		if(waitDataLooper == null){
-			HandlerThread waitDataThread = new HandlerThread("waitSwipeCardData");
+		isPollCanceled = false;
+		if (waitDataLooper == null) {
+			HandlerThread waitDataThread = new HandlerThread(
+					"waitSwipeCardData");
 			waitDataThread.start();
 			waitDataLooper = waitDataThread.getLooper();
 		}
 	}
 
-	public void onStart() {	
+	public void onStart() {
 		if (MsrInterface.open() < 0) {
 			MsrInterface.close();
 			MsrInterface.open();
 		}
-		
+
 		Handler handler = new Handler(waitDataLooper);
 		handler.post(new Runnable() {
 			@Override
@@ -69,10 +69,10 @@ public class CardSwiper {
 			gotoPoll(timeout);
 		}
 		if (0 == pollResult) {
-			if(isPollCanceled){
+			if (isPollCanceled) {
 				this.onDestroy();
 			}
-			
+
 			String track1 = msrGetTrackData(0);
 			String track2 = msrGetTrackData(1);
 			String track3 = msrGetTrackData(2);
@@ -88,10 +88,11 @@ public class CardSwiper {
 				trackData.put("track2", track2);
 				if (track3 != null) {
 					trackData.put("track3", track3);
-				}else{
+				} else {
 					trackData.put("track3", "");
 				}
 				trackData.put("cardID", getCardID(track2));
+				trackData.put("validTime", getCardValidTime(track2));
 				this.listener.onRecvTrackData(trackData);
 			}
 		}
@@ -102,13 +103,19 @@ public class CardSwiper {
 		return strs[0];
 	}
 
+	private String getCardValidTime(String msg) {
+		String[] strs = msg.split("=");
+		String str = strs[1].substring(0, 4);
+		return str;
+	}
+
 	private String msrGetTrackData(int trackIndex) {
 		int ret = MsrInterface.getTrackError(trackIndex);
-		if(ret < 0) {
-			Log.i(TAG, "msr track" + trackIndex + " error is = "+ret);
+		if (ret < 0) {
+			Log.i(TAG, "msr track" + trackIndex + " error is = " + ret);
 			return null;
 		}
-		
+
 		byte[] byteArry = new byte[255];
 		int result = MsrInterface.getTrackData(trackIndex, byteArry,
 				MsrInterface.getTrackDataLength(trackIndex));

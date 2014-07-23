@@ -37,7 +37,6 @@ import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
 import cn.koolcloud.pos.controller.mispos.MisposController;
-import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
@@ -143,6 +142,8 @@ public abstract class BaseHomeController extends BaseController {
 		if (viewPager.equals(view)) {
 			if ("data".equals(key)) {
 				JSONArray data = (JSONArray) value;
+				if (data == null)
+					return;
 				JSONObject jsonData = null;
 				try {
 					jsonData = data.getJSONObject(0);
@@ -671,9 +672,5 @@ public abstract class BaseHomeController extends BaseController {
 		// clear temporary package name cache
 		((MyApplication) getApplication()).setPkgName("");
 
-		// clear consumption record table data
-		ConsumptionRecordDB cacheDB = ConsumptionRecordDB
-				.getInstance(BaseHomeController.this);
-		cacheDB.clearRecordTableData();
 	}
 }

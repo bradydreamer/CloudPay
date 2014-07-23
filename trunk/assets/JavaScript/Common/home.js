@@ -64,7 +64,17 @@
 		var typeId = params.typeId;
 		var transAmount = null;
 		if(typeId == "cash"){
-			transAmount = ConsumptionData.dataForPayment.transAmount;
+			if(ConsumptionData.isMultiPay == true && ConsumptionData.dataForMultiPay.totalAmount != null){		
+				var totalAmount = parseInt(ConsumptionData.dataForMultiPay.totalAmount);
+				var paidAmount = parseInt(ConsumptionData.dataForMultiPay.paidAmount);
+				var balance = totalAmount - paidAmount;
+				if(balance < 0){
+					balance = 0.00;
+				}
+				transAmount = "" + balance;
+			}else{
+				transAmount = ConsumptionData.dataForPayment.transAmount;
+			}
 		}
 		var propertyList = [{
 			"name": "viewPager",
@@ -164,5 +174,5 @@
 		"onClickMultiPay": onClickMultiPay,
 	};
 	Home.needVerifyVersion = true;
-	Home.needUpdateUI = false;
+	Home.needUpdateUI = true;
 })();

@@ -82,7 +82,7 @@ public class PaymentMechanismController extends BaseHomeController {
 				} else if (imageName.startsWith("logo_fufeitong")) {
 					iv.setImageResource(R.drawable.logo_fufeitong);
 				} else if (imageName.startsWith("logo_cash")) {
-					iv.setImageResource(R.drawable.logo_consumption_record_old);
+					iv.setImageResource(R.drawable.logo_cash);
 				}
 				// iv.setBackgroundResource(R.drawable.icon_bg);
 			} else {

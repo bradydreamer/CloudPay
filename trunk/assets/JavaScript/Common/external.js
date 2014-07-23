@@ -32,12 +32,15 @@ External.onPay = function(data) {
 	window.ConsumptionData.resetConsumptionData();
 
 	var params = {};
-	var transAmount, openBrh, paymentId;
+	var transAmount, openBrh, paymentId, packageName, orderNo, orderDesc;
 	if (data != null) {
 		params = JSON.parse(data);
 		transAmount = params.transAmount;
 		openBrh = params.openBrh;
 		paymentId = params.paymentId;
+		packageName = params.packageName;
+		orderNo = params.orderNo;
+		orderDesc = params.orderDesc;
 	};
 	ConsumptionData.dataForPayment.isExternalOrder = true;
 	ConsumptionData.dataForPayment.transAmount = transAmount;

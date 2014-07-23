@@ -7,13 +7,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.controller.others.settings.MerchantInfoController.InsertAcquireInstitutesThread;
 import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.util.UtilForDataStorage;
@@ -29,6 +27,10 @@ public class SettingsDownloadController extends BaseController {
 		progressBar = (ProgressBar) findViewById(R.id.set_download_process_bar);
 		progressBar.setProgress(0);
 		onCall("SettingsDownload.start", null);
+		
+		//clear cached payment table
+		CacheDB cacheDB = CacheDB.getInstance(SettingsDownloadController.this);
+		cacheDB.clearPaymentActivityTableData();
 	}
 
 	@Override
@@ -109,6 +111,7 @@ public class SettingsDownloadController extends BaseController {
 			JSONArray jsonArray = null;
 			if (map.containsKey("settingString")) {
 				String jsArrayStr = String.valueOf(map.get("settingString"));
+				CacheDB cacheDB = CacheDB.getInstance(SettingsDownloadController.this);
 				try {
 					jsonArray = new JSONArray(jsArrayStr);
 				} catch (JSONException e) {
@@ -116,8 +119,12 @@ public class SettingsDownloadController extends BaseController {
 				}
 				List<AcquireInstituteBean> acquireList = UtilForJSON.parseJsonArray2AcquireInstitute(jsonArray);
 				if (acquireList != null && acquireList.size() > 0) {
-					CacheDB cacheDB = CacheDB.getInstance(SettingsDownloadController.this);
 					cacheDB.insertAcquireInstitute(acquireList);
+				}
+				
+				List<AcquireInstituteBean> acquireJsonList = UtilForJSON.parseJsonArray2AcquireInstituteWithJson(jsonArray);
+				if (acquireJsonList != null && acquireJsonList.size() > 0) {
+					cacheDB.insertPayment(acquireJsonList);
 				}
 			}
 			

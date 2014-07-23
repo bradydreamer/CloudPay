@@ -235,6 +235,7 @@ public class ISO8583Controller implements Constant {
 	public boolean purchase(JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_SALE);
 		paramer.trans.setApmpTransType(this.APMP_TRAN_CONSUME);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
 		// fix no pin block original start
 		/*
 		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
@@ -445,6 +446,7 @@ public class ISO8583Controller implements Constant {
 	public boolean preAuth(JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_AUTH);
 		paramer.trans.setApmpTransType(this.APMP_TRAN_PREAUTH);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
 		/*
 		 * F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN, F14_EXP, F22_POSE, F23,
 		 * F25_POCC, F26_CAPTURE, F35_TRACK2, F36_TRACK3, F38_AUTH, F39_RSP,
@@ -502,6 +504,7 @@ public class ISO8583Controller implements Constant {
 	public boolean preAuthComplete(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_AUTH_COMPLETE);
 		paramer.trans.setApmpTransType(this.APMP_TRAN_PRAUTHCOMPLETE);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
 		/*
 		 * FOR preAuthComplete field. F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN,
 		 * F14_EXP, F22_POSE, F23, F25_POCC, F26_CAPTURE, F35_TRACK2,
@@ -564,6 +567,7 @@ public class ISO8583Controller implements Constant {
 	public boolean preAuthSettlement(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_AUTH_SETTLEMENT);
 		paramer.trans.setApmpTransType(this.APMP_TRAN_PRAUTHSETTLEMENT);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
 		/*
 		 * F02_PAN, F03_PROC, F04_AMOUNT, F11_STAN, F14_EXP, F22_POSE, F23,
 		 * F25_POCC, F26_CAPTURE, F35_TRACK2, F36_TRACK3, F38_AUTH, F39_RSP,
@@ -1221,6 +1225,10 @@ public class ISO8583Controller implements Constant {
 
 		if (debug) {
 			String pik = "";
+			if (appState.PIK == null || appState.MAK == null
+					|| appState.TDK == null) {
+				return false;
+			}
 			for (byte b : appState.PIK) {
 				pik += String.format("%02X", b);
 			}
@@ -1248,12 +1256,12 @@ public class ISO8583Controller implements Constant {
 				temp += String.format("%02X", b);
 			}
 		}
-
 		if (appState.PIK == null || appState.MAK == null
 				|| appState.TDK == null) {
 			// appState.setErrorCode(R.string.error_key_check);
 			return false;
 		}
+
 		byte[] checkResult = new byte[8];
 
 		PinPadInterface.open();

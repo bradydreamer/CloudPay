@@ -185,6 +185,11 @@ public class CheckingUpdateDialog extends Activity implements View.OnClickListen
 				}
 			} catch (RemoteException localRemoteException) {
 				Logger.e(localRemoteException.getMessage());
+			} catch (Exception e) {
+				Message msg = mHandler.obtainMessage();
+				msg.obj = localParcelableApp;
+				msg.what = DEAL_WITH_CHECKING_APP_VERSION;
+				mHandler.sendMessage(msg);
 			}
 		}
 		

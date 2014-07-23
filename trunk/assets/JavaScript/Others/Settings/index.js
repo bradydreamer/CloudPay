@@ -12,8 +12,9 @@
 	var keyIndex = -1;
 	var MISTAG = true;
   
-	function gotoLogout() {
-
+	function gotoLogout(data) {
+		var params = JSON.parse(data);
+		window.SettingsIndex.existMispos = params.existMispos;
 		logoutTag = true;
 		if(window.user.userStatus == null){
 			Scene.alert("已退出！");
@@ -37,7 +38,12 @@
 					var formData = {
 						typeId : "LOGOUT"					
 					};
-					Scene.showScene("MisposController", "", formData);
+					if (window.SettingsIndex.existMispos) {
+						
+						Scene.showScene("MisposController", "", formData);
+					} else {
+						batchCallBack();
+					}
 				}
 			}else{
 				logoutTag = false;
@@ -104,7 +110,12 @@
 			    	var formData = {
 						typeId : "LOGOUT"					
 					};
-					Scene.showScene("MisposController", "", formData);
+					if (window.SettingsIndex.existMispos) {
+						
+						Scene.showScene("MisposController", "", formData);
+					} else {
+						batchCallBack();
+					}
 		    	}
 		    }
 		}			
@@ -184,9 +195,21 @@
 	}
 
 	function gotoLogin() {
-		window.user.init({})
-		window.util.exeActionWithLoginChecked(function() {
-		})
+		if("0" == window.user.userStatus){
+			Scene.alert("已登录，是否重新登录？",reLoginAction,"确定","取消");
+			return;
+		}else{
+			window.util.exeActionWithLoginChecked(function() {
+			});
+		}
+		
+		function reLoginAction(params){
+			if(params.isPositiveClicked == true){
+				window.user.init({});
+				window.util.exeActionWithLoginChecked(function() {
+				});
+			}
+		}		
 	}
 
 	function gotoCreateUser(){
@@ -222,7 +245,9 @@
 		window.util.showSceneWithLoginChecked("SetTransId");
 	}
 
-	function gotoTransBatch(){
+	function gotoTransBatch(data){
+		var params = JSON.parse(data);
+		window.SettingsIndex.existMispos = params.existMispos;
 		window.util.showSceneWithLoginChecked("TransBatch");
 	}
 
