@@ -7,18 +7,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import cn.koolcloud.interfaces.OrderHeaderInterface;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.widget.OrderContentHeader;
 
-public class ConsumptionRecordController extends BaseController {
+public class ConsumptionRecordController extends BaseController implements OrderHeaderInterface {
 
 	private ListView lv_record;
+	private OrderContentHeader orderContentHeader;
 	private ConsumptionRecordAdapter adapter;
 	private List<JSONObject> recordDataList;
 	private boolean removeJSTag = true;
@@ -26,6 +30,8 @@ public class ConsumptionRecordController extends BaseController {
 	private String startDate;
 	private String endDate;
 	private boolean hasMore;
+	
+	private ConsumptionRecordDB consumptionDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,10 @@ public class ConsumptionRecordController extends BaseController {
 			new CacheRecordThread().start();
 		}
 		//cache record to sqlite --end by Teddy 17th July
+		
+		consumptionDB = ConsumptionRecordDB.getInstance(ConsumptionRecordController.this);
+		orderContentHeader = (OrderContentHeader) findViewById(R.id.header);
+		orderContentHeader.setOrderHeaderInterface(this);
 	}
 
 	@Override
@@ -98,7 +108,7 @@ public class ConsumptionRecordController extends BaseController {
 				recordDataList.add(dataArray.optJSONObject(i));
 				tmpList.add(dataArray.optJSONObject(i));
 			}
-			boolean hasMore = data.optBoolean("hasMore");
+			hasMore = data.optBoolean("hasMore");
 			adapter.setHasMore(hasMore);
 			adapter.notifyDataSetChanged();
 			
@@ -155,6 +165,60 @@ public class ConsumptionRecordController extends BaseController {
 		public void run() {
 			ConsumptionRecordDB cacheDB = ConsumptionRecordDB.getInstance(ConsumptionRecordController.this);
 			cacheDB.insertConsumptionRecord(recordDataList);
+		}
+	}
+
+	@Override
+	public void clicked(int col, int sortType) {
+		List<JSONObject> sortedList = null;
+		String sortColumn;
+		switch (col) {
+		case OrderContentHeader.COL_1:
+			sortColumn = ConsumptionRecordDB.TRANS_TYPE_RECORD;
+			break;
+		case OrderContentHeader.COL_2:
+			sortColumn = ConsumptionRecordDB.PAYMENT_ID_RECORD;
+			break;
+		case OrderContentHeader.COL_3:
+			sortColumn = ConsumptionRecordDB.REF_NO_RECORD;
+			break;
+		case OrderContentHeader.COL_4:
+			sortColumn = ConsumptionRecordDB.TRANS_DATE_RECORD;
+			break;
+		case OrderContentHeader.COL_5:
+			sortColumn = ConsumptionRecordDB.TRANS_TIME_RECORD;
+			break;
+		case OrderContentHeader.COL_6:
+			sortColumn = ConsumptionRecordDB.TRANS_AMOUNT_RECORD;
+			break;
+		case OrderContentHeader.COL_7:
+			sortColumn = ConsumptionRecordDB.ORDER_STATE_RECORD;
+			
+			break;
+		default:
+			sortColumn = ConsumptionRecordDB.TRANS_TYPE_RECORD;
+		}
+		
+		boolean isDesc = false;
+		if (sortType == OrderContentHeader.SORT_DESCENDING) {
+			isDesc = true;
+		} else {
+			isDesc = false;
+			
+		}
+		String tmpStartDate = "";
+		String tmpEndDate = "";
+		if (!TextUtils.isEmpty(startDate) || !TextUtils.isEmpty(endDate)) {
+			tmpStartDate = startDate.substring(0, 8);
+			tmpEndDate = endDate.substring(0, 8);
+		}
+		
+		sortedList = consumptionDB.getSortedRecords(tmpStartDate, tmpEndDate, sortColumn, isDesc);
+		if (sortedList != null && sortedList.size() > 0) {
+			recordDataList.clear();
+			recordDataList.addAll(sortedList);
+			adapter.setHasMore(hasMore);
+			adapter.notifyDataSetChanged();
 		}
 	}
 }

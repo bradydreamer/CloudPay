@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@drawable/listview_title_background"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginTop="20dp"
+    android:orientation="horizontal"
+    >
+
+    <TextView 
+        android:layout_width="@dimen/listview_elements_small_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/transTypeHeader"
+        android:text="@string/consumption_record_tv_transType"
+        />
+    <TextView 
+        android:layout_width="@dimen/listview_elements_large_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/payTypeHeader"
+        android:text="@string/consumption_record_tv_payType"
+        />
+     <TextView 
+        android:layout_width="@dimen/listview_elements_large_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/refNoHeader"
+        android:text="@string/consumption_record_tv_rrn"
+        />
+     <TextView 
+        android:layout_width="@dimen/listview_elements_small_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/transDateHeader"
+        android:text="@string/consumption_record_tv_transDate"
+        /> 
+    <TextView 
+        android:layout_width="@dimen/listview_elements_small_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/transTimeHeader"
+        android:text="@string/consumption_record_tv_transTime"
+        />
+    <TextView 
+        android:layout_width="@dimen/listview_elements_large_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/transAmountHeader"
+        android:text="@string/consumption_record_tv_transAmount"
+        />
+    <TextView 
+        android:layout_width="@dimen/listview_elements_small_width"
+        style="@style/consumption_record_listTitle"
+        android:id="@+id/orderStatusHeader"
+        android:text="@string/consumption_record_tv_orderStatus"
+        />
+    
+</LinearLayout>

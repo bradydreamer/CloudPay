@@ -28,6 +28,7 @@ import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.util.MisposOperationUtil;
 import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
 import cn.koolcloud.util.AppUtil;
@@ -45,6 +46,7 @@ public class MisposController extends BaseHomeController implements
 	private LinearLayout balanceLayout;
 	private LinearLayout orderDetailslayout;
 	private TextView commonTextView;
+	private TextView amountTextView;
 	private TextView balanceAmountTextView;
 	private TextView order_detail_tv_transAmount;
 	private TextView order_detail_tv_transDate;
@@ -158,6 +160,13 @@ public class MisposController extends BaseHomeController implements
 		balanceLayout = (LinearLayout) findViewById(R.id.balanceLayout);
 		orderDetailslayout = (LinearLayout) findViewById(R.id.orderDetailslayout);
 		commonTextView = (TextView) findViewById(R.id.commonTextView);
+		amountTextView = (TextView) findViewById(R.id.amountTextView);
+		
+		if (isExternalOrder) {
+			amountTextView.setVisibility(View.VISIBLE);
+			amountTextView.setText(getResources().getString(R.string.mispos_amount_msg) + UtilForMoney.fen2yuan(amount));
+		}
+		
 		balanceAmountTextView = (TextView) findViewById(R.id.balanceAmountTextView);
 
 		// order details

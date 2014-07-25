@@ -1,5 +1,6 @@
 package cn.koolcloud.pos.service;
 
+import java.util.List;
 import java.util.Map;
 
 import android.app.IntentService;
@@ -11,6 +12,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import cn.koolcloud.pos.MyApplication;
+import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 
 public class MerchService extends IntentService {
@@ -176,6 +178,14 @@ public class MerchService extends IntentService {
 				Log.w("MerchService", "Unexpected remote exception", e);
 				throw e;
 			}
+		}
+
+		@Override
+		public List<PaymentInfo> getPaymentInfos() throws RemoteException {
+			CacheDB cacheDB = CacheDB.getInstance(MyApplication.getContext());
+			
+			List<PaymentInfo> paymentInfoList = cacheDB.selectAllPaymentInfo();
+			return paymentInfoList;
 		}
 
 	};

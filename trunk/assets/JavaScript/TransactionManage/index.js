@@ -32,12 +32,28 @@
 		req_loadMore.pageNo = req_loadMore.pageNo + 1;
 
 		var hasMore = (parseInt(pageNo) < parseInt("" + totalPages));
-		var params = {
+		/*var params = {
 			hasMore : hasMore,
 			recordList : recordDisplayedList,
 			start_date : msg.start_date,
 			end_date : msg.end_date
+		};*/
+		var params = {
+			hasMore : hasMore,
+			recordList : recordDisplayedList
 		};
+		//pass start date and end date to order details page --start mod by Teddy on 25th July
+		if ((null != window.TransactionManageIndex.params &&
+			undefined != window.TransactionManageIndex.params) &&
+			(null != window.TransactionManageIndex.params.startDate && 
+				null != window.TransactionManageIndex.params.endDate)) {
+			params.start_date = window.TransactionManageIndex.params.startDate;
+			params.end_date = window.TransactionManageIndex.params.endDate;
+		} else {
+			params.start_date = msg.start_date;
+			params.end_date = msg.end_date;
+		}
+		//pass start date and end date to order details page --end mod by Teddy on 25th July
 		if (window.TransactionManageIndex.refresh !== undefined) {
 			params.shouldRemoveCurCtrl = true;
 			Scene.showScene("ConsumptionRecord", "消费记录", params);

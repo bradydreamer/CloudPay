@@ -11,6 +11,14 @@
         android:gravity="center"
         android:id="@+id/indicatorMisposLayout"
         android:orientation="vertical">
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/amountTextView"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/pay_account_textview2_text_size"
+            android:textStyle="bold"
+            android:visibility="gone" />
         <ImageView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/indicatorTextView"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:textColor="@color/red"
             android:text="@string/mispos_onperate_on_mispos"
             android:textSize="@dimen/mispos_common_text_size"/>

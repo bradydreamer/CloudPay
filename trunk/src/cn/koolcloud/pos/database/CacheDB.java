@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
+import cn.koolcloud.pos.service.PaymentInfo;
 
 /**
  * <p>Title: CacheDB.java </p>
@@ -461,6 +462,37 @@ public class CacheDB extends BaseSqlAdapter {
     		}
     	}
     	return batchTaskList;
+    }
+    
+    public List<PaymentInfo> selectAllPaymentInfo() {
+    	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " order by " + ACQUIRE_PAYMENT_ID + " ASC";
+    	List<PaymentInfo> paymentList = null;
+    	Cursor cursor = null;
+    	try {
+    		cursor = getCursor(sql, null);
+    		paymentList = new ArrayList<PaymentInfo>();
+    		while (cursor.moveToNext()) {
+    			String paymentId = cursor.getString(cursor.getColumnIndex(ACQUIRE_PAYMENT_ID));
+    			String paymentName = cursor.getString(cursor.getColumnIndex(ACQUIRE_PAYMENT_NAME));
+    			String brhKeyIndex = cursor.getString(cursor.getColumnIndex(ACQUIRE_BRH_KEY_INDEX));
+    			String prdtNo = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_NO));
+    			String prdtDesc = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_DESC));
+    			String prdtTitle = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_TITLE));
+    			String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
+    			
+    			PaymentInfo batchTask = new PaymentInfo(paymentId, paymentName, brhKeyIndex, prdtNo,
+    					prdtDesc, prdtTitle, openBrhName);
+    			
+    			paymentList.add(batchTask);
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		if (cursor != null) {
+    			
+    			cursor.close();
+    		}
+    	}
+    	return paymentList;
     }
     
     /**

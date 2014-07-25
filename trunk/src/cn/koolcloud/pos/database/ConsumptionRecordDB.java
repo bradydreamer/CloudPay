@@ -36,25 +36,25 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
     private static ConsumptionRecordDB consumptionDB;
     
     //TODO:acquire institute table columns
-    private final static String TXN_ID_RECORD = "txnId";
-    private final static String TRANS_TYPE_RECORD = "transType";
-    private final static String TRANS_TYPE_DESC_RECORD = "transTypeDesc";
-    private final static String PAYMENT_ID_RECORD = "paymentId";
-    private final static String PAYMENT_NAME_RECORD = "paymentName";
-    private final static String REF_NO_RECORD = "refNo";
-    private final static String TRANS_AMOUNT_RECORD = "transAmount";
-    private final static String PAY_KEY_INDEX_RECORD = "payKeyIndex";
-    private final static String PAY_TYPE_DESC_RECORD = "payTypeDesc";
-    private final static String BATCH_NO_RECORD = "batchNo";
-    private final static String TRACE_NO_RECORD = "traceNo";
-    private final static String ORDER_STATE_RECORD = "orderState";
-    private final static String ORDER_STATE_DESC_RECORD = "orderStateDesc";
-    private final static String CARD_NO_RECORD = "cardNo";
-    private final static String OPEN_BRH_RECORD = "openBrh";
-    private final static String OPERATOR_RECORD = "operator";
-    private final static String TRANS_DATE_TIME_RECORD = "transDateTime";
-    private final static String TRANS_DATE_RECORD = "transDate";
-    private final static String TRANS_TIME_RECORD = "transTime";
+    public final static String TXN_ID_RECORD = "txnId";
+    public final static String TRANS_TYPE_RECORD = "transType";
+    public final static String TRANS_TYPE_DESC_RECORD = "transTypeDesc";
+    public final static String PAYMENT_ID_RECORD = "paymentId";
+    public final static String PAYMENT_NAME_RECORD = "paymentName";
+    public final static String REF_NO_RECORD = "refNo";
+    public final static String TRANS_AMOUNT_RECORD = "transAmount";
+    public final static String PAY_KEY_INDEX_RECORD = "payKeyIndex";
+    public final static String PAY_TYPE_DESC_RECORD = "payTypeDesc";
+    public final static String BATCH_NO_RECORD = "batchNo";
+    public final static String TRACE_NO_RECORD = "traceNo";
+    public final static String ORDER_STATE_RECORD = "orderState";
+    public final static String ORDER_STATE_DESC_RECORD = "orderStateDesc";
+    public final static String CARD_NO_RECORD = "cardNo";
+    public final static String OPEN_BRH_RECORD = "openBrh";
+    public final static String OPERATOR_RECORD = "operator";
+    public final static String TRANS_DATE_TIME_RECORD = "transDateTime";
+    public final static String TRANS_DATE_RECORD = "transDate";
+    public final static String TRANS_TIME_RECORD = "transTime";
     
     private ConsumptionRecordDB(Context ctx, int version) {
     	this.context = ctx;

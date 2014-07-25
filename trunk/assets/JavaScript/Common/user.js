@@ -41,7 +41,7 @@ UserInfo.prototype.setMachineIdResult = function(func){
 };
 
 UserInfo.prototype.setSignInResult = function(func){
-    this.signInAction = function(data){
+    this.afterSignInAction = function(data){
         if(func){
             func(data);
         }

@@ -80,7 +80,7 @@
   }  
   
   function actionAfterSet() {
-      window.user.signInAction();
+      window.user.afterSignInAction();
   }
   
   var currentIndex = 0;

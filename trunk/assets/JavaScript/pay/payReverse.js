@@ -296,7 +296,7 @@ Pay.cancelOrderExe = function(params) {
 		"transTime": params.transTime,
 		"cardNo": params.cardNo,
 		"transAmount": params.transAmount,
-		"oriTxnId": params.oriTxnId,
+		"oriTxnId": ConsumptionData.dataForCancellingOrder.txnId,
 		"oriBatchNo": params.oriBatchNo,
 		"oriTraceNo": params.oriTraceNo,
 		"oriTransTime": params.oriTransTime,

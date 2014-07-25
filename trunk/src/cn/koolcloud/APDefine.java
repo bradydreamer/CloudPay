@@ -5,10 +5,10 @@ public class APDefine {
 	/**
 	 * hongmei.miao for produce.
 	 */
-	 public static final String APPSERVER = "http://aop.koolyun.com/apmp/rest/";
+//	 public static final String APPSERVER = "http://aop.koolyun.com/apmp/rest/";
 	
 	//test server
-//	public static final String APPSERVER = "http://aop.koolyun.cn:8080/apmp/rest/";
+	public static final String APPSERVER = "http://aop.koolyun.cn:8080/apmp/rest/";
 //	public static final String APPSERVER = "http://192.168.70.104:8080/apmp/rest/";
 
 	/**

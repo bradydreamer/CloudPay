@@ -122,6 +122,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:textSize">25px</item>
         <item name="android:gravity">center</item>
+        <item name="android:paddingRight">10px</item>
         <item name="android:textColor">@color/color_for_consumption_record_listTitle_text</item>
     </style>
     
