@@ -132,6 +132,29 @@ Util.prototype.showMisposWithLoginChecked = function(params) {
 
 };
 
+Util.prototype.showCouponWithLoginChecked = function(params) {
+	var data = JSON.parse(params);
+	var sceneName = "Coupon";
+	window.util.exeActionWithLoginChecked(function(shouldRmvLogin) {
+		if (shouldRmvLogin) {
+			data.shouldRemoveCurCtrl = shouldRmvLogin;
+		}
+		
+		if (ConsumptionData.dataForPayment.isExternalOrder != true) {			
+			ConsumptionData.resetConsumptionData();
+		} else {
+			var transAmount = ConsumptionData.dataForPayment.transAmount;
+			data.transAmount = transAmount;
+			ConsumptionData.resetConsumptionData();
+			ConsumptionData.dataForPayment.isExternalOrder = true;
+			data.isExternalOrder = true;
+		}
+		
+		Scene.showScene(sceneName, "", null);
+	}, false);
+
+};
+
 Util.prototype.showSceneWithSigninChecked = function(sceneName, params, sceneTitle) {
 	var data = params == null ? {} : params;
 	sceneTitle = sceneTitle == null ? "" : sceneTitle;

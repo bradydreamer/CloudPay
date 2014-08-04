@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal" >
+
+		<TextView 
+		    android:layout_width="@dimen/listview_user_elements_width"
+		    android:id="@+id/lv_user_info_userName"
+		    style="@style/list_user_info_lv_tv"
+		    />
+		
+		<TextView 
+		    android:layout_width="150dp"
+		    android:id="@+id/lv_user_info_gradeId"
+		    style="@style/list_user_info_lv_tv"
+		    />
+		
+		<TextView 
+		    android:layout_width="@dimen/listview_user_elements_width"
+		    android:id="@+id/lv_user_info_aliasName"
+		    style="@style/list_user_info_lv_tv"
+		    />
+		
+		<TextView 
+		    android:layout_width="240dp"
+		    android:id="@+id/lv_user_info_lastLoginTime"
+		    style="@style/list_user_info_lv_tv"
+		    />
+		
+		<TextView 	         
+		    android:layout_width="150dp"   
+		    android:id="@+id/lv_user_info_loginCount"
+		    style="@style/list_user_info_lv_tv"
+		    />
+
+</LinearLayout>

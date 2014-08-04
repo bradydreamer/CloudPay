@@ -212,6 +212,76 @@
 		}		
 	}
 
+	function gotoSetMerchId() {
+		window.util.exeActionWithLoginChecked(function() {
+		
+			if(window.user.gradeId != "1"){
+				Scene.alert("没有权限，请使用主管账户登录！",errorOkprocess);
+				return;
+			}else{
+				window.user.init({});
+				var params = {
+				       merchId : ""
+				};
+				RMS.save("merchant",params);
+				Scene.alert("重置成功,请重新登录！",window.util.exeActionWithLoginChecked);
+			}	
+		});
+	}
+	var req_listMore = {};
+	function gotoListUsers(reqDataInfo){
+		var req;
+		if(null != reqDataInfo && reqDataInfo.reqMoreInfo){
+			req = req_listMore;
+		}else{		
+			req = {
+				pageNo : 1,
+				pageSize : 20
+			};
+		}
+		req_listMore = req;
+		Net.connect("msc/user/page/query", req, afterGetUsersInfo);
+
+		function afterGetUsersInfo(params){
+			var pageSize;
+			var totalSize;
+			var pageNo;
+			var totalPages;
+			var hasMore;
+			if(params.responseCode == "0"){	
+				pageSize = req_listMore.pageSize;
+				totalSize = params.totalSize == null ? params.userList.length : params.totalSize;
+				pageNo = req_listMore.pageNo;
+				if (totalSize % pageSize > 0) {
+					totalPages = totalSize / pageSize + 1;
+				} else {
+					totalPages = totalSize / pageSize;
+				}
+
+				req_listMore.pageNo = req_listMore.pageNo + 1;
+				hasMore = (parseInt(pageNo) < parseInt("" + totalPages));
+				var moreParams = {
+				  			hasMore : hasMore,
+				  			userList : params.userList
+				  		};
+				
+				if (1 == pageNo) {
+					Scene.showScene("UsersList", "", moreParams);
+				} else {
+					var propertyList = [{
+						name : "lv_userInfo",
+						key : "addList",
+						value : moreParams
+					}];
+					Scene.setProperty("ListUserInfo", propertyList);
+				};				
+			}else{
+				Scene.alert(params.errorMsg,errorOkprocess);
+			}
+
+		}
+	}
+
 	function gotoCreateUser(){
 		window.util.showSceneWithLoginChecked("CreateUser", null, null);	
 	}
@@ -263,7 +333,9 @@
 		"gotoModifyPwd": gotoModifyPwd,
 		"transBatch":	transBatch,
 		"allTransBatch": allTransBatch,
-		"batchCallBack": batchCallBack
+		"batchCallBack": batchCallBack,
+		"gotoSetMerchId": gotoSetMerchId,
+		"gotoListUsers": gotoListUsers,
 	};
 
 })();

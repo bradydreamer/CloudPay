@@ -23,7 +23,7 @@ public class AppInit {
 		clientEngine.setMainHandler(mainHandler);
 		clientEngine.setContext(context);
         clientEngine.initEngine();
-        initImageLoader(context);
+//        initImageLoader(context);
 	}
 	
 	public static void initImageLoader(Context context) {

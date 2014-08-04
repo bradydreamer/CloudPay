@@ -103,7 +103,7 @@ public class CardSwiper {
 		return strs[0];
 	}
 
-	private String getCardValidTime(String msg) {
+	public String getCardValidTime(String msg) {
 		String[] strs = msg.split("=");
 		String str = strs[1].substring(0, 4);
 		return str;

@@ -65,7 +65,7 @@ public class MerchantInfoController extends BaseController {
 					acquireInstituteList.setAdapter(acquireListAdapter);
 					acquireListAdapter.notifyDataSetChanged();
 					
-					new InsertAcquireInstitutesThread().start();
+//					new InsertAcquireInstitutesThread().start();
 				}
 				
 				break;
@@ -120,6 +120,10 @@ public class MerchantInfoController extends BaseController {
 		@Override
 		public void run() {
 			CacheDB cacheDB = CacheDB.getInstance(MerchantInfoController.this);
+			
+			//clear acquire institute table
+//			cacheDB.clearAcquireInstituteTableData();
+			
 			cacheDB.insertAcquireInstitute(dataSource);
 		}
 		

@@ -3,6 +3,7 @@ function UserInfo(){
 	this.machineId = "";
 	this.userName = "";
     this.userStatus = "";
+	this.gradeId = "";
     this.token = null;
     this.reloginAction = function(){};
     this.merchIdSetResultAction = function(){};
@@ -12,6 +13,7 @@ function UserInfo(){
 UserInfo.prototype.init =  function(data){
 	this.userName = data.userName;
     this.userStatus = data.userStatus;
+	this.gradeId = data.gradeId;
     this.token = data.token;
     ServiceMerchInfo.setInfo(data);
 };

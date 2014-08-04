@@ -1,23 +1,28 @@
 package cn.koolcloud.pos.controller;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.Toast;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.adapter.HomePagerAdapter;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
 import cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog;
 import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
@@ -25,6 +30,7 @@ import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.widget.ViewPagerIndicator;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
@@ -42,6 +48,8 @@ public class HomeController extends BaseHomeController implements
 	private LayoutInflater inflater;
 	private View exitDialogView;
 	private long exitTime = 0;
+	protected ViewPager settingViewPager;
+	protected ViewPagerIndicator settingPageIndicator;
 	private static final int EXIT_LAST_TIME = 2000;
 
 	@Override
@@ -51,7 +59,7 @@ public class HomeController extends BaseHomeController implements
 		/*
 		 * three layout which will changed each other
 		 */
-		settingsIndexController = (LinearLayout) findViewById(R.id.settingindexcontroller);
+		settingsIndexController = (LinearLayout) findViewById(R.id.home_setting_viewpages_layout);
 		transactionManageIndexController = (LinearLayout) findViewById(R.id.transactionmanageindexcontroller);
 		currentLayout = home_layout;
 
@@ -65,6 +73,9 @@ public class HomeController extends BaseHomeController implements
 
 		aboutButton = (Button) findViewById(R.id.abountBtn);
 		aboutButton.setOnClickListener(this);
+
+		settingViewPager = (ViewPager) findViewById(R.id.setting_viewpager);
+		settingPageIndicator = (ViewPagerIndicator) findViewById(R.id.setting_indicator);
 
 		// start checking devices
 		application = (MyApplication) getApplication();
@@ -206,6 +217,8 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void onClickSetting(View view) {
+		int index = 0;
+		int pages = 0;
 		/*
 		 * setting button selected state.
 		 */
@@ -217,6 +230,24 @@ public class HomeController extends BaseHomeController implements
 			return;
 		} else {
 			currentLayout.setVisibility(View.GONE);
+			ArrayList<View> viewList = new ArrayList<View>();
+			LayoutInflater lIf = getLayoutInflater().from(this);
+			TableLayout tableView_1st = (TableLayout) lIf.inflate(
+					R.layout.home_setting_layout_first, null);
+			TableLayout tableView_2nd = (TableLayout) lIf.inflate(
+					R.layout.home_setting_layout_second, null);
+			viewList.add(tableView_1st);
+			viewList.add(tableView_2nd);
+			pages = 2;
+			settingPageIndicator.setViewPager(settingViewPager);
+			settingPageIndicator.setPageSize(pages);
+			settingPageIndicator.setCurrentPage(0);
+			if (pages == 1) {
+				settingPageIndicator.setVisibility(View.INVISIBLE);
+			} else {
+				settingPageIndicator.setVisibility(View.VISIBLE);
+			}
+			settingViewPager.setAdapter(new HomePagerAdapter(viewList));
 			settingsIndexController.setVisibility(View.VISIBLE);
 			currentLayout = settingsIndexController;
 		}
@@ -334,6 +365,14 @@ public class HomeController extends BaseHomeController implements
 			e.printStackTrace();
 		}
 		onCall("SettingsIndex.gotoTransBatch", jsObj);
+	}
+
+	public void gotoSetMerchId(View view) {
+		onCall("SettingsIndex.gotoSetMerchId", null);
+	}
+
+	public void gotoListUsers(View view) {
+		onCall("SettingsIndex.gotoListUsers", null);
 	}
 
 	@Override

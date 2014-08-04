@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.service.PaymentInfo;
+import cn.koolcloud.pos.util.Logger;
 
 /**
  * <p>Title: CacheDB.java </p>
@@ -206,7 +207,7 @@ public class CacheDB extends BaseSqlAdapter {
     		if (acquireInstituteList != null && acquireInstituteList.size() > 0) {
 				for (int i = 0; i < acquireInstituteList.size(); i++) {
 					AcquireInstituteBean acquireInstituteBean = acquireInstituteList.get(i);
-					cursor = selectAcquireInstituteByMerchantId(acquireInstituteBean.getBrhMchtId());
+					cursor = selectAcquireInstituteByMerchantId(acquireInstituteBean.getBrhMchtId(), acquireInstituteBean.getBrhTermId());
 					if (cursor.getCount() > 0) {
 						continue;
 					}
@@ -258,8 +259,9 @@ public class CacheDB extends BaseSqlAdapter {
     				ACQUIRE_PRODUCT_NO + ", " +
     				ACQUIRE_PRODUCT_TITLE + ", " +
     				ACQUIRE_PRODUCT_DESC + ", " +
+    				ACQUIRE_DEVICE_NUM_OF_MERCH + ", " +
     				ACQUIRE_INSTITUTE_NAME + ", " +
-    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     		
     		if (paymentActivity != null && paymentActivity.size() > 0) {
     			for (int i = 0; i < paymentActivity.size(); i++) {
@@ -271,9 +273,9 @@ public class CacheDB extends BaseSqlAdapter {
     				cursor.close();
     				String[] params = new String[] { acquireInstituteBean.getPaymentId(), acquireInstituteBean.getPaymentName(),
     						acquireInstituteBean.getBrhKeyIndex(), acquireInstituteBean.getBrhMchtId(),
-    						acquireInstituteBean.getBrhTermId(),
-    						acquireInstituteBean.getPrintType(), acquireInstituteBean.getProductNo(),
-    						acquireInstituteBean.getProductTitle(), acquireInstituteBean.getProductDesc(),
+    						acquireInstituteBean.getBrhTermId(), acquireInstituteBean.getPrintType(), 
+    						acquireInstituteBean.getProductNo(), acquireInstituteBean.getProductTitle(), 
+    						acquireInstituteBean.getProductDesc(), acquireInstituteBean.getDeviceNumOfMerch(),
     						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getJsonItem(),
     						
     				};
@@ -303,6 +305,17 @@ public class CacheDB extends BaseSqlAdapter {
 		}
 		
 		closeDB();
+    }
+    public void clearAcquireInstituteTableData() {
+    	String sql = "delete from " + ACQUIRE_INSTITUTE_TABLE_NAME;
+    	
+    	try {
+    		excuteWriteAbleSql(sql);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	closeDB();
     }
     
     public void clearPaymentActivityTableData() {
@@ -361,8 +374,8 @@ public class CacheDB extends BaseSqlAdapter {
     	return result;
     }
     
-    public Cursor selectAcquireInstituteByMerchantId(String merchantId) { 
-    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = '" + merchantId + "'";
+    public Cursor selectAcquireInstituteByMerchantId(String merchantId, String termId) { 
+    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = '" + merchantId + "'" + " and " + ACQUIRE_TERMINAL_ID + " = '" + termId + "'";
 //    	String sql = "select * from " + ACQUIRE_INSTITUTE_TABLE_NAME + " where " + ACQUIRE_MERCHANT_ID + " = ?";
     	
     	Cursor cursor = getCursor(sql, null);
@@ -370,11 +383,29 @@ public class CacheDB extends BaseSqlAdapter {
     	return cursor;
     }
     
-    public Cursor selectPaymentByPaymentId(String paymentId) { 
+    private Cursor selectPaymentByPaymentId(String paymentId) { 
     	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
     	
     	Cursor cursor = getCursor(sql, null);
     	return cursor;
+    }
+    
+    public PaymentInfo getPaymentByPaymentId(String paymentId) { 
+    	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
+    	PaymentInfo paymentInfo = null;
+    	Cursor cursor = getCursor(sql, null);
+    	if (cursor.getCount() > 0) {
+    		cursor.moveToNext();
+    		String paymentName = cursor.getString(cursor.getColumnIndex(ACQUIRE_PAYMENT_NAME));
+    		String brhKeyIndex = cursor.getString(cursor.getColumnIndex(ACQUIRE_BRH_KEY_INDEX));
+    		String prodtNo = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_NO));
+    		String prdtTitle = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_TITLE));
+    		String prdtDesc = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_DESC));
+    		String openBrh = cursor.getString(cursor.getColumnIndex(ACQUIRE_DEVICE_NUM_OF_MERCH));
+    		String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
+    		paymentInfo = new PaymentInfo(paymentId, paymentName, brhKeyIndex, prodtNo, prdtTitle, prdtDesc, openBrh, openBrhName);
+    	}
+    	return paymentInfo;
     }
     
     public JSONArray selectAllBatchStack() {
@@ -478,12 +509,12 @@ public class CacheDB extends BaseSqlAdapter {
     			String prdtNo = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_NO));
     			String prdtDesc = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_DESC));
     			String prdtTitle = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_TITLE));
+    			String openBrh = cursor.getString(cursor.getColumnIndex(ACQUIRE_DEVICE_NUM_OF_MERCH));
     			String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
     			
-    			PaymentInfo batchTask = new PaymentInfo(paymentId, paymentName, brhKeyIndex, prdtNo,
-    					prdtDesc, prdtTitle, openBrhName);
-    			
-    			paymentList.add(batchTask);
+    			PaymentInfo paymentInfo = new PaymentInfo(paymentId, paymentName, brhKeyIndex, prdtNo,
+    					prdtTitle, prdtDesc, openBrh, openBrhName);
+    			paymentList.add(paymentInfo);
     		}
     	} catch (Exception e) {
     		e.printStackTrace();
@@ -591,6 +622,7 @@ public class CacheDB extends BaseSqlAdapter {
 					+ ACQUIRE_PRODUCT_NO + " varchar, " 
 					+ ACQUIRE_PRODUCT_TITLE + " varchar, " 
 					+ ACQUIRE_PRODUCT_DESC + " varchar, " 
+					+ ACQUIRE_DEVICE_NUM_OF_MERCH + " varchar, " 
 					+ ACQUIRE_INSTITUTE_NAME + " varchar, " 
 					+ PAYMENT_ACTIVITY_JSON + " nvarchar, " 
 					+ " CONSTRAINT PK_PAYMENT_ACTIVITY PRIMARY KEY (" + ACQUIRE_PAYMENT_ID + ")" +

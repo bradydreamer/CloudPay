@@ -401,6 +401,10 @@ public abstract class BaseHomeController extends BaseController {
 						iv.setImageResource(R.drawable.logo_wechat);
 					} else if (imageName.startsWith("logo_fufeitong")) {
 						iv.setImageResource(R.drawable.logo_fufeitong);
+					} else if (imageName.startsWith("logo_coupon")) {
+						iv.setImageResource(R.drawable.logo_coupon);
+					} else if (imageName.startsWith("logo_rm_coupon")) {
+						iv.setImageResource(R.drawable.logo_rm_coupon);
 					}
 					// iv.setBackgroundResource(R.drawable.icon_bg);
 				}
@@ -422,14 +426,16 @@ public abstract class BaseHomeController extends BaseController {
 			String indexNo = "";
 			String tranType = "";
 			String paymentId = "";
+			String typeId = "";
 			JSONObject msg = new JSONObject();
+			JSONObject tagObj = null;
 			try {
-				JSONObject tagObj = new JSONObject(tag);
+				tagObj = new JSONObject(tag);
 				// indexNo = "90";
 				indexNo = tagObj.getString("brhKeyIndex");
 				tranType = tagObj.getString(MisposController.KEY_TRAN_TYPE);
 				paymentId = tagObj.getString("paymentId");
-
+				typeId = tagObj.getString("typeId");
 				msg.put("tag", tag);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -454,6 +460,18 @@ public abstract class BaseHomeController extends BaseController {
 					e.printStackTrace();
 				}
 
+			} else if (!TextUtils.isEmpty(typeId) && typeId.equalsIgnoreCase("coupon")) {
+				JSONObject paramObj = null;
+				try {
+					paramObj = new JSONObject();
+					paramObj.put("typeId", tranType);
+					paramObj.put("payKeyIndex", indexNo);
+					paramObj.put("paymentId", paymentId);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				onCall("window.util.showCouponWithLoginChecked", paramObj);
 			} else {
 				onCall("PayMethod.onConfirmMethod", msg);
 			}

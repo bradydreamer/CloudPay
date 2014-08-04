@@ -1,7 +1,5 @@
 package cn.koolcloud.pos;
 
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,9 +11,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ValueCallback;
 import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.service.IMerchService;
-import cn.koolcloud.pos.service.MerchInfo;
-import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.database.CacheDB;
+import cn.koolcloud.pos.service.PaymentInfo;
 import cn.koolcloud.pos.util.UtilForJSON;
 
 public class PayExScreen extends WelcomeScreen {
@@ -30,7 +27,7 @@ public class PayExScreen extends WelcomeScreen {
 	public final static String ACTION_PAY = "pay";
 	public final static String ACTION_LOGIN = "login";
 	public final static String ACTION_LOGOUT = "logout";
-	public final static String ACTION_MERCH_INFO = "MERCH_INFO";
+	public final static String ACTION_REVERSE = "reverse";
 
 	private BaseController currentController;
 
@@ -49,8 +46,14 @@ public class PayExScreen extends WelcomeScreen {
 			initPay(pMethod, transAmount, openBrh, paymentId, packageName,
 					orderNo, orderDesc);
 			((MyApplication) getApplication()).setPkgName(packageName);
-		} else if (ACTION_MERCH_INFO.equalsIgnoreCase(action)) {
-
+		} else if (ACTION_REVERSE.equalsIgnoreCase(action)) {
+			String txnId = intent.getStringExtra("txnId");
+			String packageName = intent.getStringExtra("packageName");
+			payInfo = new PayInfo();
+			payInfo.txnId = txnId;
+			payInfo.packageName = packageName;
+			((MyApplication) getApplication()).setPkgName(packageName);
+			
 		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
 
 		} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
@@ -64,7 +67,7 @@ public class PayExScreen extends WelcomeScreen {
 	protected void setContentView() {
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
 			setContentView(R.layout.activity_loading_screen);
-		} else if (ACTION_MERCH_INFO.equalsIgnoreCase(action)) {
+		} else if (ACTION_REVERSE.equalsIgnoreCase(action)) {
 			setContentView(R.layout.activity_loading_screen);
 		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
 			setContentView(R.layout.activity_loading_screen);
@@ -101,8 +104,15 @@ public class PayExScreen extends WelcomeScreen {
 							startPay();
 						}
 					});
-		} else if (ACTION_MERCH_INFO.equalsIgnoreCase(action)) {
-			startGetMerchInfo();
+		} else if (ACTION_REVERSE.equalsIgnoreCase(action)) {
+			ClientEngine.engineInstance().showWaitingDialog(context, null,
+					new Runnable() {
+
+						@Override
+						public void run() {
+							startReverse();
+						}
+					});
 		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
 			startLogin();
 		} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
@@ -128,8 +138,8 @@ public class PayExScreen extends WelcomeScreen {
 					JSONObject result = new JSONObject(strResultData);
 					if (ACTION_PAY.equalsIgnoreCase(action)) {
 						endPay(result);
-					} else if (ACTION_MERCH_INFO.equalsIgnoreCase(action)) {
-						endGetMerchInfo(result);
+					} else if (ACTION_REVERSE.equalsIgnoreCase(action)) {
+						endReverse(result);
 					} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
 						endLogin(result);
 					} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
@@ -157,8 +167,8 @@ public class PayExScreen extends WelcomeScreen {
 
 	@Override
 	protected void onDestroy() {
-
 		super.onDestroy();
+		Log.i(TAG, "onDestroy()");
 	}
 
 	public void initPay(String pMethod, String transAmount, String openBrh,
@@ -242,7 +252,7 @@ public class PayExScreen extends WelcomeScreen {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		i.putExtra(ACTION, action);
+		i.putExtra(ACTION, ACTION_PAY);
 		i.putExtra("totalAmount", totalAmount);
 		i.putExtra("paidAmount", paidAmount);
 		i.putExtra("changeAmount", changeAmount);
@@ -252,23 +262,45 @@ public class PayExScreen extends WelcomeScreen {
 		setResult(RESULT_CODE, i);
 	}
 
-	private void startGetMerchInfo() {
-		Log.d(TAG, "startGetMerchInfo");
+	private void startReverse() {
+		Log.d(TAG, "startReverse");
+		
+		JSONObject msg = new JSONObject();
+//		CacheDB cacheDB = CacheDB.getInstance(PayExScreen.this);
+//		PaymentInfo paymentInfo = cacheDB.getPaymentByPaymentId(payInfo.paymentId);
+		try {
+			/*if (payInfo.txnId != null && paymentInfo != null) {
+				msg.put("txnId", payInfo.txnId);
+				msg.put("txnId", paymentInfo.getBrhKeyIndex());
+			}*/
+			if (payInfo.txnId != null) {
+				msg.put("txnId", payInfo.txnId);
+			}
+			if (!TextUtils.isEmpty(payInfo.packageName)) {
+				msg.put("packageName", payInfo.packageName);
+			}
+		} catch (Exception e) {
+			
+		}
+		
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.callJsHandler("External.onGetMerchId", null);
+		js.loadJs(getString(R.string.controllerJSName_OrderDetail));
+		js.callJsHandler("External.startReverse", msg);
 	}
 
-	private void endGetMerchInfo(JSONObject result) throws RemoteException {
-		Log.d(TAG, "endGetMerchInfo");
-		IMerchService ms = ClientEngine.engineInstance().getMerchService();
-		Map<String, ?> map = UtilForDataStorage
-				.readPropertyBySharedPreferences(MyApplication.getContext(),
-						"merchant");
-		String mId = (String) map.get("merchId");
-		String tID = (String) map.get("machineId");
-		String merchName = (String) map.get("merchName");
-		ms.setMerchInfo(new MerchInfo(merchName, mId, tID));
-		setResult(RESULT_CODE, null);
+	private void endReverse(JSONObject result) {
+		Log.d(TAG, "endReverse");
+		Intent intent = new Intent();
+		
+		intent.putExtra(ACTION, ACTION_REVERSE);
+		intent.putExtra("refNo", result.optString("refNo"));
+		intent.putExtra("reverse_status", result.optString("reverse_status", "0"));
+		intent.putExtra("orderStateDesc", result.optString("orderStateDesc"));
+		intent.putExtra("transTime", result.optString("transTime"));
+		intent.putExtra("operator", result.optString("operator"));
+		intent.putExtra("paymentId", result.optString("paymentId"));
+		intent.putExtra("paymentName", result.optString("paymentName"));
+		setResult(RESULT_CODE, intent);
 	}
 
 	private void startLogin() {
@@ -310,5 +342,6 @@ public class PayExScreen extends WelcomeScreen {
 		public String packageName;
 		public String orderNo;
 		public String orderDesc;
+		public String txnId;
 	}
 }

@@ -10,16 +10,18 @@ public class PaymentInfo implements Parcelable {
 	private String prdtNo;
 	private String prdtTitle;
 	private String prdtDesc;
+	private String openBrh;
 	private String openBrhName;
 	
 	public PaymentInfo(String paymentId, String paymentName, String brhKeyIndex,
-			String prodtNo, String prdtTitle, String prdtDesc, String openBrhName) {
+			String prodtNo, String prdtTitle, String prdtDesc, String openBrh, String openBrhName) {
 		this.paymentId = paymentId;
 		this.brhKeyIndex = brhKeyIndex;
 		this.paymentName = paymentName;
 		this.prdtNo = prodtNo;
 		this.prdtTitle = prdtTitle;
 		this.prdtDesc = prdtDesc;
+		this.openBrh = openBrh;
 		this.openBrhName = openBrhName;
 	}
 
@@ -41,6 +43,7 @@ public class PaymentInfo implements Parcelable {
 		parcel.writeString(prdtNo);
 		parcel.writeString(prdtTitle);
 		parcel.writeString(prdtDesc);
+		parcel.writeString(openBrh);
 		parcel.writeString(openBrhName);
 	}
 	
@@ -51,9 +54,18 @@ public class PaymentInfo implements Parcelable {
 		prdtNo = in.readString();
 		prdtTitle = in.readString();
 		prdtDesc = in.readString();
+		openBrh = in.readString();
 		openBrhName = in.readString();
 	}
 	
+	public String getOpenBrh() {
+		return openBrh;
+	}
+
+	public void setOpenBrh(String openBrh) {
+		this.openBrh = openBrh;
+	}
+
 	public String getPaymentId() {
 		return paymentId;
 	}

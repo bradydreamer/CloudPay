@@ -384,10 +384,26 @@ public class OrderDetailController extends BaseController {
 	}
 
 	public void onConfirm(View view) {
-		onCall(func_confirm, null);
 		// call research js
 		TextView orderStatusTextView = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
 		String orderStatus = orderStatusTextView.getText().toString();
+		
+		//mod for reverse status for 3th start reverse mod by Teddy on 1st August -- start 
+		
+		try {
+			if (!TextUtils.isEmpty(orderStatus) && orderStatus.equals(ConstantUtils.ALREADY_REVERSE)) {
+				data.put("reverse_status", 1);
+			} else {
+				data.put("reverse_status", 0);
+			}
+			data.put("orderStateDesc", orderStatus);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		onCall(func_confirm, data);
+		
+		//mod for reverse status for 3th start reverse mod by Teddy on 1st August -- end 
+		
 		// if (!TextUtils.isEmpty(orderStatus) && (orderStatus.equals("已撤销") ||
 		// orderStatus.equals("已退货"))) {
 		if (!orderStateSet.contains(orderStatus)) {// refresh the record list

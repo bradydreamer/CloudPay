@@ -23,6 +23,7 @@ import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.Utility;
+import cn.koolcloud.pos.external.CardSwiper;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
@@ -170,6 +171,7 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setPAN(account); // 设置主帐号
 		paramer.trans.setTrack2Data(track2);
 		paramer.trans.setTrack3Data(track3);
+		paramer.trans.setExpiry((new CardSwiper()).getCardValidTime(track2));
 
 		// paramer.trans.setEntryMode(ConstantUtils.SEARCH_ENTRY_MODE);
 		paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
@@ -367,6 +369,7 @@ public class ISO8583Controller implements Constant {
 	public boolean cheXiao(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_VOID);
 		paramer.trans.setApmpTransType(this.APMP_TRAN_CONSUMECANCE);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
 		// fix no pin block original start
 		/*
 		 * int[] bitMap = { ISOField.F02_PAN,
@@ -756,6 +759,7 @@ public class ISO8583Controller implements Constant {
 	public boolean refund(byte[] iso8583, JSONObject jsonObject) {
 		paramer.trans.setTransType(TRAN_REFUND);
 		paramer.trans.setApmpTransType(this.APMP_TRAN_REFUND);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
 		/* 03 REFUND */
 		// fix no pin block original start on 4th June
 		/*

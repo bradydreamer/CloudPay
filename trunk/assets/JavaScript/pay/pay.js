@@ -332,6 +332,10 @@ Pay.restart = function(params) {
 		"alipayPID" : ConsumptionData.dataForPayment.alipayPID,
 		"orderID" : ConsumptionData.dataForPayment.apOrderId,
 		"alipayTransactionID" : ConsumptionData.dataForPayment.alipayTransactionID,
+		"paymentId" : ConsumptionData.dataForPayment.paymentId,
+		"openBrh" : ConsumptionData.dataForPayment.openBrh,
+		"transType": ConsumptionData.dataForPayment.transType,
+		"txnId" : ConsumptionData.dataForPayment.txnId
 	};
 
 	if (ConsumptionData.isMultiPay == true) {

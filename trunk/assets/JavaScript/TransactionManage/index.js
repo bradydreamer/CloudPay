@@ -20,7 +20,7 @@
 		}
 		var pageSize = msg.pageSize == null ? 20 : msg.pageSize;
 		var totalSize = msg.totalSize == null ? recordDisplayedList.length : msg.totalSize;
-		var pageNo = msg.pageNo == null ? 1 : msg.pageNo;
+		var pageNo = req_loadMore.pageNo;
 
 		var totalPages;
 		if (totalSize % pageSize > 0) {

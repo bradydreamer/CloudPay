@@ -33,17 +33,21 @@
 	</developers>
 
 	<properties>
-		<android-platform>14</android-platform>
-		<android-maven-plugin-version>3.7.0</android-maven-plugin-version>
+		<android-platform>16</android-platform>
+		<!-- Available android-maven-plugin-version 3.4.0, 3.8.0, 3.8.1, 3.8.2, 3.7.0, 3.6.1 -->
+		<android-maven-plugin-version>3.8.2</android-maven-plugin-version>
 		
-		<!-- Available android-maven-plugin-version 3.4.0, 3.8.0, 3.7.0, 3.6.1 -->
-		<maven-compiler-plugin-version>2.5.1</maven-compiler-plugin-version>
+		<!-- Available maven-compiler-plugin-version 2.5, 2.5.1, 3.0, 3.1, 3.2 -->
+		<maven-compiler-plugin-version>3.1</maven-compiler-plugin-version>
 		<java-version>1.6</java-version>
+		
+		<!-- Available maven-eclipse-plugin-version 2.7, 2.8, 2.9 -->
 		<maven-eclipse-plugin-version>2.8</maven-eclipse-plugin-version>
-		<com.google.android-version>4.0.1.2</com.google.android-version>
+		
 		<!-- Available Android versions: 1.5_r3, 1.5_r4, 1.6_r2, 2.1.2, 2.1_r1, 
 			2.2.1, 2.3.1, 2.3.3, 4.0_r3, 4.0.3_r3, 4.0.1.2, 4.1_r2, 4.1.1.4, 4.2.2_r2, 
 			4.3_r2, 4.4, 4.4_r1 -->
+		<com.google.android-version>4.0.1.2</com.google.android-version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
@@ -222,7 +226,8 @@
 					<artifactId>android-maven-plugin</artifactId>
 					<version>${android-maven-plugin-version}</version>
 					<extensions>true</extensions>
-					<executions>
+					<!-- install apk to devices after compiled the source -->
+					<!-- <executions>
 						<execution>
 							<id>run</id>
 							<goals>
@@ -231,7 +236,7 @@
 							</goals>
 							<phase>install</phase>
 						</execution>
-					</executions>
+					</executions> -->
 					<!-- configuration>
 						<proguardConfig>proguard-project.txt</proguardConfig>
 						<proguardSkip>true</proguardSkip>
@@ -416,7 +421,7 @@
 						<configuration>
 							<artifacts>
 								<artifact>
-									<file>${project.build.directory}/${project.artifactId}-signed-aligned.apk</file>
+									<file>${project.build.directory}/${project.artifactId}-${timestamp}-${project.version}-aligned.apk</file>
 									<type>apk</type>
 									<classifier>signed-aligned</classifier>
 								</artifact>

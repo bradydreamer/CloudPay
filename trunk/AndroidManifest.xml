@@ -338,6 +338,14 @@
                 android:value=".controller.BaseHomeController" />
         </activity>
         <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.ListUserInfoController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.AboutDialog" android:theme="@style/dialog"/>
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog" android:theme="@style/dialog"/>

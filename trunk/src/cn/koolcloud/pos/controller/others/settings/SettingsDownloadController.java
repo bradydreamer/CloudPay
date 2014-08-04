@@ -27,10 +27,6 @@ public class SettingsDownloadController extends BaseController {
 		progressBar = (ProgressBar) findViewById(R.id.set_download_process_bar);
 		progressBar.setProgress(0);
 		onCall("SettingsDownload.start", null);
-		
-		//clear cached payment table
-		CacheDB cacheDB = CacheDB.getInstance(SettingsDownloadController.this);
-		cacheDB.clearPaymentActivityTableData();
 	}
 
 	@Override
@@ -117,11 +113,17 @@ public class SettingsDownloadController extends BaseController {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
+				
+				//clear acquire institute table
+				cacheDB.clearAcquireInstituteTableData();
+				
 				List<AcquireInstituteBean> acquireList = UtilForJSON.parseJsonArray2AcquireInstitute(jsonArray);
 				if (acquireList != null && acquireList.size() > 0) {
 					cacheDB.insertAcquireInstitute(acquireList);
 				}
 				
+				//clear cached payment table
+				cacheDB.clearPaymentActivityTableData();
 				List<AcquireInstituteBean> acquireJsonList = UtilForJSON.parseJsonArray2AcquireInstituteWithJson(jsonArray);
 				if (acquireJsonList != null && acquireJsonList.size() > 0) {
 					cacheDB.insertPayment(acquireJsonList);

@@ -61,7 +61,7 @@
     <string name="settins_index_module_title_login">登录</string>
     <string name="settins_index_module_title_logout">退出</string>
     <string name="settins_index_module_title_merchant_info">客户信息</string>
-    <string name="settins_index_module_title_setMerchId">设置客户号</string>
+    <string name="settins_index_module_title_setMerchId">重置客户号</string>
     <string name="settins_index_module_title_setMachineId">设置设备号</string>
     <string name="settins_index_module_title_clearReverseData">清除冲正数据</string>
     <string name="settins_index_module_title_downloadMerchData">手动参数更新</string>
@@ -69,6 +69,7 @@
     <string name="settins_index_module_title_trans_batch">批结算</string>
     <string name="settins_index_module_title_sign_up">创建收银员</string>
     <string name="settins_index_module_title_modify_pwd">修改密码</string>
+    <string name="settins_index_module_title_list_users">账户信息</string>
     
     <!-- activity_others_index_controller.xml -->
     <string name="others_index_module_title_pre_authorization">预授权</string>
@@ -96,6 +97,14 @@
     <string name="consumption_record_tv_paidAmount">已付金额</string>
     <string name="consumption_record_tv_balance">差额</string>
     <string name="consumption_record_tv_totalAmount">订单总金额</string>
+    
+    <!-- activity_list_user_info_controller.xml -->
+    <string name="users_user_name">用户名</string>
+    <string name="users_user_gradeId">等级</string>
+    <string name="users_user_aliasName">别名</string>
+    <string name="users_user_lastLoginTime">上次登录时间</string>
+    <string name="users_user_loginCount">登录次数</string>
+    <string name="users_username_choose">选择</string>
 
     <!-- activity_multipay_record_controller.xml -->
     <string name="multipay_record_tv_no">编号</string>
@@ -201,6 +210,7 @@
     <string name="controllerName_Home">Home</string>
     <string name="controllerName_DelVoucherRecord">DelVoucherRecord</string>
     <string name="controllerName_ConsumptionRecord">ConsumptionRecord</string>
+    <string name="controllerName_ListUserInfo">ListUserInfo</string>
     <string name="controllerName_OrderDetail">OrderDetail</string>
     <string name="controllerName_BalanceResult">BalanceResult</string>
     <string name="controllerName_OthersIndex">OthersIndex</string>
@@ -233,6 +243,7 @@
     <string name="controllerJSName_Login">Others/Settings/Login/index</string>
     <string name="controllerJSName_SettingsIndex">Others/Settings/index</string>
     <string name="controllerJSName_SettingsDownload">Others/Settings/settingsDownload</string>
+    <string name="controllerJSName_ListUserInfo">Others/Settings/ListUserInfo</string>
     <string name="controllerJSName_OthersIndex">Others/index</string>
     <string name="controllerJSName_BalanceResult">Others/BalanceResult</string>
     <string name="controllerJSName_TransactionManageIndex">TransactionManage/index</string>
@@ -286,6 +297,7 @@
     <string name="title_activity_set_trans_batch_controller">批结算</string>
     <string name="title_activity_sign_in_controller">签到</string>
     <string name="title_activity_pay_mechanism_controller">请选择支付机构</string>
+    <string name="title_activity_list_users_controller">用户详情</string>
     
     <!-- for home -->
     <string name="home_activity_home">首页</string>
@@ -324,7 +336,7 @@
     <string name="dialog_device_checking_device_msg">正在检查外部设备状态，请稍候！</string>
     <string name="dialog_device_checking_now">设备正在查检中，请稍候！</string>
     <string name="dialog_device_check_devices_unusual">设备发现异常，请您及时处理！</string>
-    <string name="dialog_device_check_pinpad_unusual">密码键盘接口断开，请检查连接。</string>
+    <string name="dialog_device_check_pinpad_unusual">密码键盘连接异常，mispos外接刷卡机请忽略。</string>
     <string name="dialog_device_check_pinpad_usual">密码键盘连接正常。</string>
     <string name="dialog_device_check_printer_unusual">打印机未连接好。</string>
     <string name="dialog_device_check_printer_usual">打印机连接正常。</string>

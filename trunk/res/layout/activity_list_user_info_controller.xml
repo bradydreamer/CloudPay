@@ -1,0 +1,95 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/main_page_bg_bitmap" >
+    
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    tools:context=".ConsumptionRecordController"
+	    android:layout_marginLeft="130dp"
+	    android:layout_marginRight="130dp"
+	    android:layout_marginTop="10dp"
+	    android:layout_marginBottom="10dp"
+	    android:orientation="vertical" >
+	
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="60dp"
+	        android:background="@drawable/listview_users_info_title_background"
+	        android:layout_marginLeft="20dp"
+	        android:layout_marginRight="20dp"
+	        android:layout_marginTop="20dp"
+	        android:orientation="horizontal"
+	        >
+			<LinearLayout
+			    android:layout_width="@dimen/listview_user_elements_width"
+			    android:layout_height="match_parent"
+			    android:gravity="center"
+			    android:orientation="horizontal">
+		        <TextView 
+		            android:layout_width="match_parent"
+		            style="@style/users_listview_title"
+		            android:text="@string/users_user_name"
+		            />
+	        </LinearLayout>
+			<LinearLayout
+			    android:layout_width="150dp"
+			    android:layout_height="match_parent"
+			    android:gravity="center"
+			    android:orientation="horizontal">
+		        <TextView 
+		            android:layout_width="match_parent"
+		            style="@style/users_listview_title"
+		            android:text="@string/users_user_gradeId"
+		            />
+	        </LinearLayout>
+			<LinearLayout
+			    android:layout_width="@dimen/listview_user_elements_width"
+			    android:layout_height="match_parent"
+			    android:gravity="center"
+			    android:orientation="horizontal">
+		        <TextView 
+		            android:layout_width="match_parent"
+		            style="@style/users_listview_title"
+		            android:text="@string/users_user_aliasName"
+		            />
+	        </LinearLayout>
+			<LinearLayout
+			    android:layout_width="240dp"
+			    android:layout_height="match_parent"
+			    android:gravity="center"
+			    android:orientation="horizontal">
+		        <TextView 
+		            android:layout_width="match_parent"
+		            style="@style/users_listview_title"
+		            android:text="@string/users_user_lastLoginTime"
+		            />
+	        </LinearLayout>
+			<LinearLayout
+			    android:layout_width="150dp"
+			    android:layout_height="match_parent"
+			    android:gravity="center"
+			    android:orientation="horizontal">
+		        <TextView 
+		            android:layout_width="match_parent"
+		            style="@style/users_listview_title"
+		            android:text="@string/users_user_loginCount"
+		            />
+	        </LinearLayout>
+        
+	    </LinearLayout>
+
+	    <ListView
+	        android:id="@+id/list_users_lv_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_marginLeft="20dp"
+	        android:layout_marginRight="20dp"
+	        android:background="@android:color/transparent"
+	        >
+	    </ListView>
+	    
+	</LinearLayout>
+</LinearLayout>

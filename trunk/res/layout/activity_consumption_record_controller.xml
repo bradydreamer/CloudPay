@@ -59,11 +59,11 @@
 	            />
 	        
 	    </LinearLayout> -->
-		<cn.koolcloud.pos.widget.OrderContentHeader
+		<cn.koolcloud.pos.widget.ContentHeader
 	        android:id="@+id/header"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content" >
-	    </cn.koolcloud.pos.widget.OrderContentHeader>
+	    </cn.koolcloud.pos.widget.ContentHeader>
 	    <ListView
 	        android:id="@+id/consumption_record_lv_record"
 	        android:layout_width="match_parent"

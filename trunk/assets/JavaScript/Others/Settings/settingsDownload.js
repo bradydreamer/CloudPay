@@ -94,6 +94,7 @@
 				"typeName" : prdtList[i]["classes"],
 				"typeId" : prdtList[i]["content"],	
 				"printType": prdtList[i]["print_type"],
+				"misc": prdtList[i]["misc"],
 			};
 			
 			var templates = prdtList[i].templates;			
@@ -118,6 +119,7 @@
 				"brhTermId" : prdtList[i]["brh_term_id"],
 				"prdtNo" : prdtList[i]["prdt_no"],
 				"printType": prdtList[i]["print_type"],
+				"misc": prdtList[i]["misc"],
 			})
 
 			var indexParams = {
@@ -129,7 +131,7 @@
 		};
 
 		_totalSteps = 1;
-		_totalSteps = _totalSteps + objLength(_templateList) + 1;
+		_totalSteps = _totalSteps + objLength(_templateList) + 1 + 4;
 
 		_currentStep++;
 		_currentType++;
@@ -233,10 +235,7 @@
 	}
 
 	function end() {
-		_templateList_sale = null;
-		_templateList_void = null;
-		_templateList_refund = null;
-		_settingParams = null;
+		_settingParams = [];
 		_currentStep = 0;
 		_totalSteps = 0;
 

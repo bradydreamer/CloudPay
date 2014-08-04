@@ -45,6 +45,7 @@ import cn.koolcloud.pos.controller.multipay.MultiPayRecord;
 import cn.koolcloud.pos.controller.others.BalanceResultController;
 import cn.koolcloud.pos.controller.others.OthersIndexController;
 import cn.koolcloud.pos.controller.others.settings.CreateUserController;
+import cn.koolcloud.pos.controller.others.settings.ListUserInfoController;
 import cn.koolcloud.pos.controller.others.settings.LoginController;
 import cn.koolcloud.pos.controller.others.settings.LoginVerifyController;
 import cn.koolcloud.pos.controller.others.settings.MerchantInfoController;
@@ -285,6 +286,8 @@ public class ClientEngine {
 		jsEngine.loadJs("pay/payMethod");
 		jsEngine.loadJs("Others/Settings/SignIn");
 		jsEngine.loadJs("Others/Settings/TransBatch");
+
+
 	}
 
 	public JavaScriptEngine javaScriptEngine() {
@@ -298,10 +301,10 @@ public class ClientEngine {
 	public void serviceMerchantInfo(JSONObject data, String identifier) {
 		String action = data.optString("action");
 		boolean isSetAction = action.equalsIgnoreCase("set");
-		
+
 		JSONObject result = null;
 		if (isSetAction) {
-			
+
 			String valueStr = data.optString("value");
 			if (!TextUtils.isEmpty(valueStr)) {
 				try {
@@ -309,7 +312,8 @@ public class ClientEngine {
 					String merchName = valueObj.optString("merchName");
 					String merchId = valueObj.optString("merchId");
 					String terminalId = valueObj.optString("machineId");
-					MerchInfo merchInfo = new MerchInfo(merchName, merchId, terminalId);
+					MerchInfo merchInfo = new MerchInfo(merchName, merchId,
+							terminalId);
 					setMerchInfo(merchInfo);
 					callBack(identifier, null);
 				} catch (JSONException e) {
@@ -318,15 +322,15 @@ public class ClientEngine {
 			}
 			
 		} else {
-			//FIXME: get merchant info from service
+			// FIXME: get merchant info from service
 			result = getServiceSecureInfo();
 		}
-		
+
 		if (!identifier.isEmpty()) {
 			callBack(identifier, result);
 		}
 	}
-	
+
 	public void serviceSecureInfo(JSONObject data, String identifier) {
 		String action = data.optString("action");
 		boolean isSetAction = action.equalsIgnoreCase("set");
@@ -732,6 +736,10 @@ public class ClientEngine {
 								BaseController.RESULT_ORDER_END, intent);
 						currentController.finish();
 					}
+				} else if ("Coupon".equals(name)) {
+					Intent intent = new Intent();;
+					intent.setAction("cn.koolcloud.demo.invokepay");
+					currentController.startActivityForResult(intent, 0);
 				} else {
 					int requestCode = mRequestCode;
 					Class<?> controllerClass = classForName(name);
@@ -808,6 +816,8 @@ public class ClientEngine {
 			controllerClass = MerchantInfoController.class;
 		} else if (className.equals("Login")) {
 			controllerClass = LoginController.class;
+		} else if (className.equals("UsersList")) {
+			controllerClass = ListUserInfoController.class;
 		} else if (className.equals("ConsumptionRecord")) {
 			controllerClass = ConsumptionRecordController.class;
 		} else if (className.equals("ConsumptionRecordSearch")) {

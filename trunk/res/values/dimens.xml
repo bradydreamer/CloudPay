@@ -31,6 +31,9 @@
 	<dimen name="listview_elements_large_width">200dp</dimen>
 	<dimen name="listview_elements_small_width">150dp</dimen>
 	
+	<!-- ListView user list withd -->
+	<dimen name="listview_user_elements_width">200dp</dimen>
+	
 	<!-- Dialog devices checking size -->
 	<dimen name="dialog_device_checking_root_width">730dp</dimen>
 	<dimen name="dialog_device_checking_root_height">400dp</dimen>

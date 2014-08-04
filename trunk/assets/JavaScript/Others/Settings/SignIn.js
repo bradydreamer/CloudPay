@@ -132,7 +132,7 @@
   
   function signOut(keyIndex){
 	//通联MISpos方案，这里进行滤掉
-	if(keyIndex == "90"){
+	if(keyIndex == "90" || keyIndex == "91"){
 		currentIndex++;
 		parseMerchSettings();
 		return;
