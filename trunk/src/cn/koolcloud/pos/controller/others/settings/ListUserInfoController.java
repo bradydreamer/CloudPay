@@ -1,24 +1,38 @@
 package cn.koolcloud.pos.controller.others.settings;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ImageView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.UsersListAdapter;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.util.UserInfoComparator;
 import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.widget.ScrowDeleteListView;
+import cn.koolcloud.pos.widget.ScrowDeleteListView.RemoveDirection;
+import cn.koolcloud.pos.widget.ScrowDeleteListView.RemoveListener;
 
-public class ListUserInfoController extends BaseController {
+public class ListUserInfoController extends BaseController implements
+		RemoveListener {
 
 	private List<JSONObject> usersDataList;
-	private ListView lv_userInfo;
+	private ScrowDeleteListView lv_userInfo;
 	private UsersListAdapter userListAdapter;
+	private JSONArray userList;
+	private UserInfoComparator userInfoComp;
+	private Boolean userName_sortType = false, gradeId_sortType = false,
+			aliasName_sortType = false, lastLoginTime_sortType = false,
+			LoginCount_sortType = false;
+	private ImageView userNameImage, userGradeIdImage, userAliasNameImage,
+			userLastLoginTimeImage, userLoginCountImage, currentImageView;
 	private boolean removeJSTag = true;
 	private boolean hasMore;
 
@@ -31,16 +45,16 @@ public class ListUserInfoController extends BaseController {
 		}
 		JSONObject data = formData
 				.optJSONObject(getString(R.string.formData_key_data));
-		JSONArray userList = data.optJSONArray("userList");
+		userList = data.optJSONArray("userList");
 		usersDataList = UtilForJSON
 				.JSONArrayOfJSONObjects2ListOfJSONObjects(userList);
 		userListAdapter = new UsersListAdapter(this);
 		userListAdapter.setList(usersDataList);
 		hasMore = data.optBoolean("hasMore");
 		userListAdapter.setHasMore(hasMore);
-		lv_userInfo = (ListView) findViewById(R.id.list_users_lv_info);
+		lv_userInfo = (ScrowDeleteListView) findViewById(R.id.list_users_lv_info);
 		lv_userInfo.setAdapter(userListAdapter);
-
+		lv_userInfo.setRemoveListener(this);
 		lv_userInfo
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -59,6 +73,12 @@ public class ListUserInfoController extends BaseController {
 						}
 					}
 				});
+		userNameImage = (ImageView) findViewById(R.id.userNameSortImage);
+		userGradeIdImage = (ImageView) findViewById(R.id.userGradeIDImage);
+		userAliasNameImage = (ImageView) findViewById(R.id.userAliasNameSortImage);
+		userLastLoginTimeImage = (ImageView) findViewById(R.id.userLastLoginTimeSortImage);
+		userLoginCountImage = (ImageView) findViewById(R.id.userLoginCountSortImage);
+		currentImageView = userNameImage;
 	}
 
 	@Override
@@ -90,8 +110,92 @@ public class ListUserInfoController extends BaseController {
 			hasMore = data.optBoolean("hasMore");
 			userListAdapter.setHasMore(hasMore);
 			userListAdapter.notifyDataSetChanged();
+		} else if ("recoverList".equals(key)) {
+			JSONObject data = (JSONObject) value;
+			JSONObject userInfoItem = data.optJSONObject("userItem");
+			try {
+				int index = data.getInt("position");
+				usersDataList.add(index, userInfoItem);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			userListAdapter.notifyDataSetChanged();
 		}
+
 		super.setView(view, key, value);
+	}
+
+	@Override
+	public void removeItem(RemoveDirection direction, int position) {
+		// userListAdapter.(userListAdapter.getItem(position));
+		JSONObject msg = new JSONObject();
+		try {
+			JSONArray userInfoList = new JSONArray(usersDataList.toString());
+			msg.put("userList", userInfoList);
+			msg.put("position", position);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		onCall("ListUserInfo.deleteAlert", msg);
+		// user
+		usersDataList.remove(position);
+		userListAdapter.notifyDataSetChanged();
+	}
+
+	public void userInfoSort(Boolean compareType, int compareContent) {
+		userInfoComp = new UserInfoComparator();
+		userInfoComp.setCompareType(compareType);
+		userInfoComp.setCompareContent(compareContent);
+		Collections.sort(usersDataList, userInfoComp);
+		userListAdapter.notifyDataSetChanged();
+	}
+
+	public void sortUserName(View v) {
+		displayArrowLogo(userNameImage, userName_sortType);
+		userInfoSort(userName_sortType, UserInfoComparator.COMP_USER_NAME);
+		userName_sortType = !userName_sortType;
+	}
+
+	public void sortUserGradeID(View v) {
+		displayArrowLogo(userGradeIdImage, gradeId_sortType);
+		userInfoSort(gradeId_sortType, UserInfoComparator.COMP_USER_GRADEID);
+		gradeId_sortType = !gradeId_sortType;
+	}
+
+	public void sortUserAliasName(View v) {
+		displayArrowLogo(userAliasNameImage, aliasName_sortType);
+		userInfoSort(aliasName_sortType, UserInfoComparator.COMP_USER_ALIASNAME);
+		aliasName_sortType = !aliasName_sortType;
+	}
+
+	public void sortUserLastLoginTime(View v) {
+		displayArrowLogo(userLastLoginTimeImage, lastLoginTime_sortType);
+		userInfoSort(lastLoginTime_sortType,
+				UserInfoComparator.COMP_USER_LASTLOGINTIME);
+		lastLoginTime_sortType = !lastLoginTime_sortType;
+	}
+
+	public void sortUserLoginCount(View v) {
+		displayArrowLogo(userLoginCountImage, LoginCount_sortType);
+		userInfoSort(LoginCount_sortType,
+				UserInfoComparator.COMP_USER_LOGINCOUNT);
+		LoginCount_sortType = !LoginCount_sortType;
+	}
+
+	private void displayArrowLogo(ImageView imgView, Boolean arrowTag) {
+		if (currentImageView != imgView) {
+			currentImageView.setBackgroundResource(0);
+			currentImageView = imgView;
+		}
+		if (!arrowTag) {
+			currentImageView
+					.setBackgroundResource(R.drawable.form_navigation_bar_arrow_down);
+		} else {
+			currentImageView
+					.setBackgroundResource(R.drawable.form_navigation_bar_arrow_up);
+		}
 	}
 
 	@Override
@@ -126,4 +230,5 @@ public class ListUserInfoController extends BaseController {
 		// TODO Auto-generated method stub
 		return removeJSTag;
 	}
+
 }

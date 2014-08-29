@@ -169,9 +169,12 @@
 		var refNo = params.id;
 		var paymentId = params.paymentId;
 		var req = {
+			"pageNo" : 1,
+			"pageSize" : 20,
 			"refNo" : refNo,
-			"paymentId": paymentId,
+			"paymentId": paymentId
 		};
+		req_loadMore = req;
 		singleResearchTag = true;
 		ConsumptionData.dataForPayment.rrn = refNo;
 		Net.connect("msc/txn/detail/query", req, handleResFromReqRecord);

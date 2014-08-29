@@ -270,6 +270,9 @@ public class NetEngine {
 			}
 		}
 		Log.d(TAG, "response : " + resJsonObject.toString());
+		
+		//invoke gc
+		conn = null;
 		return resJsonObject;
 	}
 

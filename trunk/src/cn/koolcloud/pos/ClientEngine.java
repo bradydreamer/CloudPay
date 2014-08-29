@@ -1,6 +1,9 @@
 package cn.koolcloud.pos;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -70,12 +74,16 @@ import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.net.NetEngine;
 import cn.koolcloud.pos.secure.SecureEngine;
+import cn.koolcloud.pos.service.CouponInfo;
+import cn.koolcloud.pos.service.ICouponService;
 import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.ISecureService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.SecureInfo;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
+import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.pos.util.UtilForThread;
 import cn.koolcloud.pos.widget.CustomAnimDialog;
 
@@ -181,7 +189,7 @@ public class ClientEngine {
 			mMerchService = null;
 		}
 	};
-	
+
 	public ISecureService getSecureService() {
 		return mSecureService;
 	}
@@ -196,6 +204,20 @@ public class ClientEngine {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			mSecureService = null;
+		}
+	};
+
+	private ICouponService mCouponService;
+
+	private ServiceConnection couponConnection = new ServiceConnection() {
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mCouponService = null;
+		}
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			mCouponService = ICouponService.Stub.asInterface(service);
 		}
 	};
 
@@ -214,6 +236,16 @@ public class ClientEngine {
 				secureConnection, Context.BIND_AUTO_CREATE);
 		if (!result_secure) {
 			Toast.makeText(context, "secure服务绑定失败。", Toast.LENGTH_SHORT).show();
+		}
+
+		Intent couponIntent = new Intent(ICouponService.class.getName());
+		couponIntent.setAction("com.koolyun.coupon.service.permission.COUPON");
+		boolean result_coupon = context.bindService(couponIntent,
+				couponConnection, Context.BIND_AUTO_CREATE);
+
+		if (!result_coupon) {
+			Toast.makeText(context, "coupon 服务绑定失败。", Toast.LENGTH_SHORT)
+					.show();
 		}
 		initJSengine();
 		secureEngine = new SecureEngine();
@@ -287,7 +319,6 @@ public class ClientEngine {
 		jsEngine.loadJs("Others/Settings/SignIn");
 		jsEngine.loadJs("Others/Settings/TransBatch");
 
-
 	}
 
 	public JavaScriptEngine javaScriptEngine() {
@@ -320,7 +351,7 @@ public class ClientEngine {
 					e.printStackTrace();
 				}
 			}
-			
+
 		} else {
 			// FIXME: get merchant info from service
 			result = getServiceSecureInfo();
@@ -404,7 +435,7 @@ public class ClientEngine {
 		return systemInfo;
 	}
 
-	void showAlert(final JSONObject data, final String identifier) {
+	public void showAlert(final JSONObject data, final String identifier) {
 		String msg = data.optString("msg");
 		if (msg.startsWith("JSLOG")) {
 			Log.i(TAG, msg);
@@ -737,9 +768,90 @@ public class ClientEngine {
 						currentController.finish();
 					}
 				} else if ("Coupon".equals(name)) {
-					Intent intent = new Intent();;
-					intent.setAction("cn.koolcloud.demo.invokepay");
-					currentController.startActivityForResult(intent, 0);
+					if (Env.checkApkExist(context,
+							ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
+						if (mCouponService != null) {
+							JSONObject couponData = data.optJSONObject("data");
+							String couponDataType = couponData
+									.optString("coupon_type");
+							String transAmount = couponData
+									.optString("transAmount");
+							String couponType = "";
+							if (!TextUtils.isEmpty(couponDataType)
+									&& couponDataType.equals("rm_coupon")) {
+								couponType = "1";
+							} else {
+								couponType = "0";
+							}
+
+							CouponInfo payResult;
+							try {
+								if (!TextUtils.isEmpty(transAmount)) {
+
+									// mCouponService.startCoupon parameters：
+									// transAmount – not null, total pay
+									// packagename – invoker app packagename,
+									// could be null
+									// orderNo – order number , could be null
+									// orderDesc – order short description,
+									// could be null
+									// typeAction – give coupon or check coupon
+									// (eg. 0:give coupon, 1: check coupon)
+									payResult = mCouponService.startCoupon(
+											transAmount, couponType, null,
+											null, null);
+									if (payResult != null
+											&& !TextUtils
+													.isEmpty(couponDataType)) {
+										Log.e("count",
+												"count:"
+														+ payResult
+																.getCouponAmount());
+										Log.e("payResult", "payResult:"
+												+ payResult.getResult());
+
+										// TODO:write back to APMP, and organize
+										// amount data.
+										writeBackAPMPCouponData(couponData,
+												payResult.getCouponAmount(),
+												payResult.getResult());
+									} else {
+										Log.e("payResult", "return null value!");
+									}
+								} else {
+									Toast.makeText(
+											context,
+											context.getResources()
+													.getString(
+															R.string.str_coupon_amount_null),
+											Toast.LENGTH_LONG).show();
+								}
+							} catch (RemoteException e) {
+								e.printStackTrace();
+							}
+						} else {
+							Toast.makeText(
+									context,
+									context.getResources()
+											.getString(
+													R.string.str_coupon_service_binding),
+									Toast.LENGTH_LONG).show();
+						}
+					} else {
+						try {
+							JSONObject jsObj = new JSONObject();
+							jsObj.put(
+									"msg",
+									context.getResources()
+											.getString(
+													R.string.str_coupon_app_not_installed));
+							showAlert(jsObj, "");
+						} catch (NotFoundException e) {
+							e.printStackTrace();
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
 				} else {
 					int requestCode = mRequestCode;
 					Class<?> controllerClass = classForName(name);
@@ -752,6 +864,63 @@ public class ClientEngine {
 				}
 			}
 		});
+	}
+
+	private void writeBackAPMPCouponData(JSONObject couponData,
+			String couponAmount, String couponNum) {
+		String transTime = null;
+		String transType = null;
+		String batchNo = null;
+		String traceNo = null;
+		int traceId = 0;
+		String resCode = "00";
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		System.setProperty("user.timezone", "GMT+8");
+		transTime = dateFormat.format(now);
+		transType = "1021";
+		DecimalFormat dataFormat = new DecimalFormat("000000");
+
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
+		if (null == map.get("transId")) {
+			traceNo = "0";
+		} else {
+			traceId = ((Integer) map.get("transId")).intValue();
+			traceNo = dataFormat.format(traceId);
+		}
+		if (null == map.get("batchId")) {
+			batchNo = "0";
+		} else {
+			batchNo = dataFormat.format(((Integer) map.get("batchId"))
+					.intValue());
+		}
+
+		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
+		newMerchantMap.put("transId", Integer.valueOf(traceId + 1));
+		UtilForDataStorage.savePropertyBySharedPreferences(
+				MyApplication.getContext(), "merchant", newMerchantMap);
+
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("transAmount",
+					UtilForMoney.yuan2fen(couponData.optString("transAmount")));
+			msg.put("couponPaidAmount", UtilForMoney.yuan2fen(couponAmount));
+			msg.put("couponNum", couponNum);
+			msg.put("transTime", transTime);
+			msg.put("transType", transType);
+			msg.put("batchNo", batchNo);
+			msg.put("traceNo", traceNo);
+			msg.put("resCode", resCode);
+			msg.put("keyIndex", couponData.optString("payKeyIndex"));
+			msg.put("paymentId", couponData.optString("paymentId"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (jsEngine != null) {
+			jsEngine.callJsHandler("window.Pay.writeBackAPMPCouponData", msg);
+		}
 	}
 
 	private void startController(Class<?> cls, JSONObject formData,
@@ -900,6 +1069,17 @@ public class ClientEngine {
 	}
 
 	void get8583(final JSONObject jsonObject, final String callBackId) {
+		String data8583;
+		String transType;
+		String batchNo;
+		String traceNo;
+		String transTime;
+		String cardNo;
+		Long transAmount;
+		String oriBatchNo;
+		String oriTraceNo;
+		String oriTransTime;
+		JSONObject businessJsonObject = new JSONObject();
 		Log.d(TAG, "get8583 jsonObject : " + jsonObject);
 		ISO8583Controller iso8583Controller = ISO8583Engine.getInstance()
 				.generateISO8583Controller();
@@ -925,18 +1105,18 @@ public class ClientEngine {
 			} else if (typeOf8583.equals("transBatch")) {
 				iso8583Controller.transBatch();
 			} else if (typeOf8583.equals("chongZheng")) {
-				String data8583 = jsonObject.optString("data8583");
+				data8583 = jsonObject.optString("data8583");
 				String transDate = jsonObject.optString("transDate");
 				String subType = jsonObject.optString("subType");
 				iso8583Controller.chongZheng(Utility.hex2byte(data8583),
 						transDate, subType);
 			} else if (typeOf8583.equals("cheXiao")) {
-				String data8583 = jsonObject.optString("transData8583");
+				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				iso8583Controller.cheXiao(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("refund")) {
-				String data8583 = jsonObject.optString("transData8583");
+				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				iso8583Controller
 						.refund(Utility.hex2byte(data8583), jsonObject);
@@ -952,38 +1132,37 @@ public class ClientEngine {
 				iso8583Controller.purchaseChaXun(cardID, track2, track3,
 						balancePwd, openBrh, paymentId);
 			} else if (typeOf8583.equals("preAuthComplete")) {
-				String data8583 = jsonObject.optString("transData8583");
+				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				iso8583Controller.preAuthComplete(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("preAuthSettlement")) {
-				String data8583 = jsonObject.optString("transData8583");
+				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				iso8583Controller.preAuthSettlement(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("preAuthCancel")) {
-				String data8583 = jsonObject.optString("transData8583");
+				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				iso8583Controller.preAuthCancel(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("preAuthCompleteCancel")) {
-				String data8583 = jsonObject.optString("transData8583");
+				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				iso8583Controller.preAuthCompleteCancel(
 						Utility.hex2byte(data8583), jsonObject);
 			}
 
-			String data8583 = iso8583Controller.toString();
-			String transType = iso8583Controller.getApmpTransType();
-			String batchNo = iso8583Controller.getBatchNum();
-			String traceNo = iso8583Controller.getTraceNum();
-			String transTime = iso8583Controller.getCurrentTime();
-			String cardNo = iso8583Controller.getBankCardNum();
-			Long transAmount = iso8583Controller.getTransAmount();
-			String oriBatchNo = iso8583Controller.getOriBatchNum();
-			String oriTraceNo = iso8583Controller.getOriTraceNum();
-			String oriTransTime = iso8583Controller.getOriTransTime();
-			JSONObject businessJsonObject = new JSONObject();
+			data8583 = iso8583Controller.toString();
+			transType = iso8583Controller.getApmpTransType();
+			batchNo = iso8583Controller.getBatchNum();
+			traceNo = iso8583Controller.getTraceNum();
+			transTime = iso8583Controller.getCurrentTime();
+			cardNo = iso8583Controller.getBankCardNum();
+			transAmount = iso8583Controller.getTransAmount();
+			oriBatchNo = iso8583Controller.getOriBatchNum();
+			oriTraceNo = iso8583Controller.getOriTraceNum();
+			oriTransTime = iso8583Controller.getOriTransTime();
 			try {
 				businessJsonObject.put("data8583", data8583);
 				businessJsonObject.put("paymentId", paymentId);
@@ -998,11 +1177,20 @@ public class ClientEngine {
 				businessJsonObject.put("oriTraceNo", oriTraceNo);
 				businessJsonObject.put("oriTransTime", oriTransTime);
 			} catch (JSONException e) {
+				businessJsonObject.put("error", "ERROR");
+				callBack(callBackId, businessJsonObject);
 				e.printStackTrace();
 			}
 			Log.d(TAG, "get8583 : " + data8583);
 			callBack(callBackId, businessJsonObject);
 		} catch (Exception e1) {
+			try {
+				businessJsonObject.put("error", "ERROR");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			callBack(callBackId, businessJsonObject);
 			e1.printStackTrace();
 		}
 	}
@@ -1029,6 +1217,8 @@ public class ClientEngine {
 					iso8583Controller.getApOrderId());// 通联订单号
 			data8583JsonObject.put("payOrderBatch",
 					iso8583Controller.getBatch());
+			data8583JsonObject.put("transAmount",
+					iso8583Controller.getTransAmount());
 			data8583JsonObject.put("transTime",
 					iso8583Controller.getTransTime());
 			data8583JsonObject.put("paymentId",
@@ -1052,6 +1242,13 @@ public class ClientEngine {
 			iso8583Controller.setAuthCode("");
 
 		} catch (Exception e) {
+			try {
+				data8583JsonObject.put("error", "ERROR");
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			callBack(callBackId, data8583JsonObject);
 			e.printStackTrace();
 		}
 		callBack(callBackId, data8583JsonObject);

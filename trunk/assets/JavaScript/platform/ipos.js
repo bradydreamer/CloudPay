@@ -5,12 +5,44 @@
   }
 
   function convert8583(data, callback) {
-    Global.callObjcHandler("convert8583", data, callback);
+    Global.callObjcHandler("convert8583", data, convert8583_callback);
+    function convert8583_callback(data){
+		if(data.error == "ERROR"){
+			Scene.alert("程序异常，请重新操作或重新启动！",function(){
+				if(ConsumptionData.dataForPayment.isExternalOrder){
+					Pay.restart();
+				}else{			
+					Scene.goBack("Home");
+				}
+			});
+			return;
+		}
+		if(callback != null){
+			callback(data);
+		}
+  	}
   }
 
   function get8583(data, callback) {
-    Global.callObjcHandler("get8583", data, callback);
+    Global.callObjcHandler("get8583", data, get8583_callback);
+	function get8583_callback(data){
+		if(data.error == "ERROR"){
+			Scene.alert("程序异常，请重新操作或重新启动！",function(){
+				if(ConsumptionData.dataForPayment.isExternalOrder){
+					Pay.restart();
+				}else{			
+					Scene.goBack("Home");
+				}
+			});
+			return;
+		}
+		if(callback != null){
+			callback(data);
+		}
+  	}
   }
+
+  
 
   function getBalance(callback) {
     Global.callObjcHandler("getBalance", null, callback);

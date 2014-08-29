@@ -11,6 +11,12 @@
     var transAmount = params.transAmount;
 
     currentStep = Pay.cacheData.step;
+	if(currentStep >= Pay.cacheData.flowList.length){
+		Scene.alert("非正常操作，请重新操作！",function(){
+			Scene.goBack("Home");
+		});
+		return;
+	}
     if (Pay.cacheData.flowList[currentStep] == null) {
       Scene.alert("currentStep = " + currentStep);
       return;

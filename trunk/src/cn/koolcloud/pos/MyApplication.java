@@ -1,13 +1,13 @@
 package cn.koolcloud.pos;
 
-import cn.koolcloud.pos.service.MerchService;
-import cn.koolcloud.pos.service.SecureService;
-import cn.koolcloud.pos.util.NetUtil;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import cn.koolcloud.pos.service.MerchService;
+import cn.koolcloud.pos.service.SecureService;
 
-public class MyApplication extends Application {
+import com.baidu.frontia.FrontiaApplication;
+
+public class MyApplication extends FrontiaApplication {
 
 	private static MyApplication instance;
 	private Context context;
@@ -32,6 +32,8 @@ public class MyApplication extends Application {
         
         Intent secureService = new Intent(context, SecureService.class);
         context.startService(secureService);
+        
+      
 	}
 	
 	public boolean isFirstStart() {

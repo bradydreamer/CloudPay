@@ -15,10 +15,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.entity.MisposData;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
@@ -67,10 +69,13 @@ public class OrderDetailController extends BaseController {
 	private TextView acquireMerchNumTextView;
 	private TextView acquireTerminalTextView;
 	private TextView acquireTerminalNumTextView;
+	private Button couponButton;
 
 	private HashSet<String> orderStateSet = new HashSet<String>();
 	private int transType = -1;
+	UtilFor8583 util8583 = UtilFor8583.getInstance();
 
+	private boolean isExternalOrder = false;
 	// private Typeface faceTypeLanTing;
 
 	@Override
@@ -118,6 +123,7 @@ public class OrderDetailController extends BaseController {
 		transAmount = data.optString("transAmount");
 		func_confirm = data.optString("confirm");
 		txnId = data.optString("txnId");
+		isExternalOrder = data.optBoolean("isExternalOrder");
 
 		// get order state and trans type
 		String orderStateDesc = data.optString("orderStateDesc");
@@ -136,7 +142,7 @@ public class OrderDetailController extends BaseController {
 		batchNo = data.optString("batchNo");
 		traceNo = data.optString("traceNo");
 		payKeyIndex = data.optString("payKeyIndex");
-
+		util8583.terminalConfig.setKeyIndex(payKeyIndex);
 		findViews();
 		initButtons();
 	}
@@ -187,6 +193,16 @@ public class OrderDetailController extends BaseController {
 		acquireTerminalNumTextView = (TextView) findViewById(R.id.acquireTerminalNumTextView);
 		// acquireTerminalNumTextView.setTypeface(faceTypeLanTing);
 		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
+
+		couponButton = (Button) findViewById(R.id.order_detail_btn_coupon);
+
+		if (Env.checkApkExist(OrderDetailController.this,
+				ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
+			couponButton.setVisibility(View.VISIBLE);
+		} else {
+			couponButton.setVisibility(View.GONE);
+		}
+
 	}
 
 	private void initTextView(int resourceId, JSONObject data, String key,
@@ -265,6 +281,20 @@ public class OrderDetailController extends BaseController {
 		onCall("OrderDetail.onCancel", msg);
 	}
 
+	public void onCoupon(View view) {
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("ref", rrn);
+			msg.put("transAmount", transAmount);
+			msg.put("txnId", txnId);
+			msg.put("payKeyIndex", payKeyIndex);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		onCall("OrderDetail.showCoupon", msg);
+	}
+
 	public void onRefund(View view) {
 		JSONObject msg = new JSONObject();
 		try {
@@ -274,6 +304,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("openBrh", openBrh);
 			msg.put("paymentId", paymentId);
 			msg.put("paymentName", paymentName);
+			msg.put("payKeyIndex", payKeyIndex);
 			msg.put("transType", transType);
 			msg.put("txnId", txnId);
 		} catch (JSONException e) {
@@ -292,6 +323,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("openBrh", openBrh);
 			msg.put("paymentId", paymentId);
 			msg.put("paymentName", paymentName);
+			msg.put("payKeyIndex", payKeyIndex);
 			msg.put("authNo", authCode);
 			msg.put("transType", transType);
 			msg.put("txnId", txnId);
@@ -310,6 +342,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("openBrh", openBrh);
 			msg.put("paymentId", paymentId);
 			msg.put("paymentName", paymentName);
+			msg.put("payKeyIndex", payKeyIndex);
 			msg.put("authNo", authCode);
 			msg.put("transType", transType);
 			msg.put("txnId", txnId);
@@ -325,6 +358,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("ref", rrn);
 			msg.put("paymentId", paymentId);
 			msg.put("paymentName", paymentName);
+			msg.put("payKeyIndex", payKeyIndex);
 			msg.put("txnId", txnId);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -384,14 +418,25 @@ public class OrderDetailController extends BaseController {
 	}
 
 	public void onConfirm(View view) {
+		handleBackAndConfirmButton();
+	}
+
+	@Override
+	public void onBackPressed() {
+		handleBackAndConfirmButton();
+	}
+
+	private void handleBackAndConfirmButton() {
 		// call research js
 		TextView orderStatusTextView = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
 		String orderStatus = orderStatusTextView.getText().toString();
-		
-		//mod for reverse status for 3th start reverse mod by Teddy on 1st August -- start 
-		
+
+		// mod for reverse status for 3th start reverse mod by Teddy on 1st
+		// August -- start
+
 		try {
-			if (!TextUtils.isEmpty(orderStatus) && orderStatus.equals(ConstantUtils.ALREADY_REVERSE)) {
+			if (!TextUtils.isEmpty(orderStatus)
+					&& orderStatus.equals(ConstantUtils.ALREADY_REVERSED)) {
 				data.put("reverse_status", 1);
 			} else {
 				data.put("reverse_status", 0);
@@ -401,20 +446,21 @@ public class OrderDetailController extends BaseController {
 			e.printStackTrace();
 		}
 		onCall(func_confirm, data);
-		
-		//mod for reverse status for 3th start reverse mod by Teddy on 1st August -- end 
-		
+
+		// mod for reverse status for 3th start reverse mod by Teddy on 1st
+		// August -- end
+
 		// if (!TextUtils.isEmpty(orderStatus) && (orderStatus.equals("已撤销") ||
 		// orderStatus.equals("已退货"))) {
+		//external order return directly fixed by Teddy on 7th August --start
+		if (isExternalOrder) {
+			return;
+		}
+		//external order return directly fixed by Teddy on 7th August --end
 		if (!orderStateSet.contains(orderStatus)) {// refresh the record list
 													// when status changed
 			onCall("TransactionManageIndex.refreshResearch", null);
 		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		onCall(func_confirm, null);
 	}
 
 	@Override

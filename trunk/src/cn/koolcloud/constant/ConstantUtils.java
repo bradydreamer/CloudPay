@@ -19,8 +19,10 @@ public class ConstantUtils {
 	
 	//appstore package name
 	public static final String APP_STORE_PACKAGE_NAME = "cn.koolcloud.ipos.appstore";
+	public static final String COUPON_APP_PACKAGE_NAME = "com.koolyun.coupon";
+//	public static final String COUPON_APP_PACKAGE_NAME = "cn.koolcloud.ipos.appstore";
 	
-	public static final String ALREADY_REVERSE = "已撤销";
+	public static final String ALREADY_REVERSED = "已撤销";
 	
 	//keys for alert common dialog
 	public static final String POSITIVE_BTN_KEY = "positive_btn_key";

@@ -142,6 +142,12 @@
 	    	}else {    		
 		    	Scene.alert("权限确认成功",function(){
 		    	currentStep = Pay.cacheData.step;
+				if(currentStep > Pay.cacheData.flowList.length){
+					Scene.alert("非正常操作，请重新操作！",function(){
+						Scene.goBack("Home");
+					});
+					return;
+				}
 		    	currentTag = Pay.cacheData.flowList[currentStep].packTag;
 		    	Pay.cacheData.step = currentStep + 1;
 		    	Pay.gotoFlow();});

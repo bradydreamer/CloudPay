@@ -1,16 +1,16 @@
 package cn.koolcloud.pos;
 
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.HomeController;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import cn.koolcloud.pos.controller.HomeController;
+import cn.koolcloud.pos.controller.dialogs.PushMessageController;
+import cn.koolcloud.pos.util.PushUtils;
 
 public class WelcomeScreen extends Activity {
 	protected Handler mainHandler;
@@ -22,10 +22,15 @@ public class WelcomeScreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         Log.d(TAG, this.toString() + "onCreate");
         context = this;
         mainHandler = new Handler();
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        
+        PushUtils.logStringCache = PushUtils.getLogText(getApplicationContext());
+        PushUtils.loginBaiduCloud(getApplicationContext());
+        
         this.setContentView();
     }
     
@@ -46,6 +51,7 @@ public class WelcomeScreen extends Activity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
+		
 		if (hasFocus && !hasInit) {
 			mainHandler.postDelayed(new Runnable() {
 				

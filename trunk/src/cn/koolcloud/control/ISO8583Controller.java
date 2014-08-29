@@ -40,6 +40,7 @@ public class ISO8583Controller implements Constant {
 	private static final String PREAUTHCOMPLETECANCELREVERSE = "preauthcompletecancelreverse";// 预授冲正
 	private String mId = "";
 	private String tId = "";
+	private String oriCardID = "";
 	private int transId = 0; // 流水号
 
 	private byte[] mRequest;
@@ -856,6 +857,7 @@ public class ISO8583Controller implements Constant {
 		ChongZheng.chongzhengUnpack(data, oldTrans);
 		paramer.oldTrans = oldTrans;
 		try {
+			jsonObject.put("F02", oldTrans.getOldPan());
 			jsonObject.put("F40_6F10", oldTrans.getOldApOrderId());
 			jsonObject.put("F40_6F08", oldTrans.getOldPayOrderBatch());
 			jsonObject.put("F40_6F20", oldTrans.getOldOpenBrh());

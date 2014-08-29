@@ -150,7 +150,7 @@
         _keyExchange = true;
       }
       if (_customAction == "") {
-        Scene.alert(response.errorMsg);
+        Scene.alert(response.errorMsg,actionAfterError);
       } else {
         var func = _callbackQueue[_customAction];
         if (func) {
@@ -202,7 +202,11 @@
   }
   
   function actionAfterError(){
-	  Scene.goBack("Home"); 
+	  if(ConsumptionData.dataForPayment.isExternalOrder){
+				Pay.restart();
+			}else{
+				Scene.goBack("Home");
+		}
   }
   
 
@@ -213,7 +217,7 @@
     if (data.responseCode == "0") {
       return func(data)
     } else {
-      Scene.alert(data.errorMsg)
+      Scene.alert(data.errorMsg,actionAfterError);
     }
   }
 
@@ -268,9 +272,15 @@
       _sessionId = "-1";
       _keyExchange = true;
       Scene.alert(data.errorMsg,function(){
+	  	window.RMS.clear("savedTransData");
       	window.user.init({});
-		Scene.goBack("Home");
-		setTimeout(window.util.exeActionWithLoginChecked,500);      	
+		//Scene.goBack("Home");
+		setTimeout(window.util.exeActionWithLoginChecked,500); 
+		if(ConsumptionData.dataForPayment.isExternalOrder){
+				Pay.restart();
+			}else{
+				Scene.goBack("Home");
+			}
       });
 			
 

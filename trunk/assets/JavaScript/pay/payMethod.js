@@ -16,6 +16,10 @@
 	function onConfirmMethod(data) {
 		var payType;
 		var params = JSON.parse(data);
+		if(params.error != null || params.error != undefined){
+			Scene.alert(params.error);
+			return;
+		}
 		var product = JSON.parse(params.tag);
 		if (product == null) {
 			Scene.alert(data);
@@ -26,8 +30,13 @@
 			ConsumptionData.resetConsumptionData();
 		}else{
 			var transAmount = ConsumptionData.dataForPayment.transAmount;
+			var couponAmount = ConsumptionData.dataForPayment.couponAmount;
+			//cache couponAmount mod by Teddy on 12th August --start
 			ConsumptionData.resetConsumptionData();
 			ConsumptionData.dataForPayment.isExternalOrder = true;
+			ConsumptionData.dataForPayment.couponAmount = couponAmount;
+			//cache couponAmount mod by Teddy on 12th August --end
+			
 			if(!ConsumptionData.isMultiPay){
 				ConsumptionData.dataForPayment.transAmount = transAmount;
 			}

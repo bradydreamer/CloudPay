@@ -26,35 +26,61 @@
 			<LinearLayout
 			    android:layout_width="@dimen/listview_user_elements_width"
 			    android:layout_height="match_parent"
-			    android:gravity="center"
+			    android:gravity="center_vertical"
 			    android:orientation="horizontal">
 		        <TextView 
-		            android:layout_width="match_parent"
+		            android:layout_width="wrap_content"
 		            style="@style/users_listview_title"
 		            android:text="@string/users_user_name"
+		            android:clickable="true"
+		            android:onClick="sortUserName"
 		            />
+		        <ImageView 
+		            android:id="@+id/userNameSortImage"
+		            android:layout_width="11dp"
+		            android:layout_height="wrap_content"
+		            android:gravity="center"
+		            android:background="@drawable/form_navigation_bar_arrow_up"/>
 	        </LinearLayout>
 			<LinearLayout
 			    android:layout_width="150dp"
 			    android:layout_height="match_parent"
-			    android:gravity="center"
+			    android:gravity="center_vertical"
 			    android:orientation="horizontal">
 		        <TextView 
-		            android:layout_width="match_parent"
-		            style="@style/users_listview_title"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+        			android:textSize="25px"
+        			android:gravity="center_vertical"
+        			android:layout_marginLeft="30dp"
+        			android:textColor="@color/color_for_consumption_record_listTitle_text"
 		            android:text="@string/users_user_gradeId"
+		            android:clickable="true"
+		            android:onClick="sortUserGradeID"
 		            />
+		        <ImageView 
+		            android:id="@+id/userGradeIDImage"
+		            android:layout_width="11dp"
+		            android:layout_height="wrap_content"
+		            android:gravity="center"/>
 	        </LinearLayout>
 			<LinearLayout
 			    android:layout_width="@dimen/listview_user_elements_width"
 			    android:layout_height="match_parent"
-			    android:gravity="center"
+			    android:gravity="center_vertical"
 			    android:orientation="horizontal">
 		        <TextView 
-		            android:layout_width="match_parent"
+		            android:layout_width="wrap_content"
 		            style="@style/users_listview_title"
 		            android:text="@string/users_user_aliasName"
+		            android:clickable="true"
+		            android:onClick="sortUserAliasName"
 		            />
+		        <ImageView 
+		            android:id="@+id/userAliasNameSortImage"
+		            android:layout_width="11dp"
+		            android:layout_height="wrap_content"
+		            android:gravity="center"/>
 	        </LinearLayout>
 			<LinearLayout
 			    android:layout_width="240dp"
@@ -62,10 +88,20 @@
 			    android:gravity="center"
 			    android:orientation="horizontal">
 		        <TextView 
-		            android:layout_width="match_parent"
-		            style="@style/users_listview_title"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+        			android:textSize="25px"
+        			android:gravity="center"
+        			android:textColor="@color/color_for_consumption_record_listTitle_text"
 		            android:text="@string/users_user_lastLoginTime"
+		            android:clickable="true"
+		            android:onClick="sortUserLastLoginTime"
 		            />
+		        <ImageView 
+		            android:id="@+id/userLastLoginTimeSortImage"
+		            android:layout_width="11dp"
+		            android:layout_height="wrap_content"
+		            android:gravity="center"/>
 	        </LinearLayout>
 			<LinearLayout
 			    android:layout_width="150dp"
@@ -73,14 +109,24 @@
 			    android:gravity="center"
 			    android:orientation="horizontal">
 		        <TextView 
-		            android:layout_width="match_parent"
-		            style="@style/users_listview_title"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+        			android:textSize="25px"
+        			android:gravity="center"
+        			android:textColor="@color/color_for_consumption_record_listTitle_text"
 		            android:text="@string/users_user_loginCount"
+		            android:clickable="true"
+		            android:onClick="sortUserLoginCount"
 		            />
+		        <ImageView 
+		            android:id="@+id/userLoginCountSortImage"
+		            android:layout_width="11dp"
+		            android:layout_height="wrap_content"
+		            android:gravity="center"/>
 	        </LinearLayout>
         
 	    </LinearLayout>
-
+<!--  
 	    <ListView
 	        android:id="@+id/list_users_lv_info"
 	        android:layout_width="match_parent"
@@ -90,6 +136,17 @@
 	        android:background="@android:color/transparent"
 	        >
 	    </ListView>
+-->
+		<cn.koolcloud.pos.widget.ScrowDeleteListView
+	        android:id="@+id/list_users_lv_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" 
+	        android:layout_marginLeft="20dp"
+	        android:layout_marginRight="20dp"
+	        android:listSelector="@android:color/transparent"
+	        android:divider="@drawable/reader_item_divider"
+	        android:cacheColorHint="@android:color/transparent">
+   		</cn.koolcloud.pos.widget.ScrowDeleteListView>
 	    
 	</LinearLayout>
 </LinearLayout>

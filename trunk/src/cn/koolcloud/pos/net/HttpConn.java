@@ -48,10 +48,10 @@ public final class HttpConn {
 
 	private static final int CONNECTION_TIMEOUT = 10000;
 	private static final int WAIT_DATA_TIMEOUT = 60000;
-	public static final int CACHE_BUFFER_SIZE = 1024;
+	public static final int CACHE_BUFFER_SIZE = 2048;
 
-	private static HttpClient httpClient;
-	private static ClientConnectionManager connManager;
+	private  HttpClient httpClient;
+	private  ClientConnectionManager connManager;
 	private static Context context;
 	public static final byte CMNET_TYPE = 1;
 	public static final byte CMWAP_TYPE = 2;
@@ -91,22 +91,24 @@ public final class HttpConn {
 					CONNECTION_TIMEOUT);
 			HttpConnectionParams.setSoTimeout(params, WAIT_DATA_TIMEOUT);
 			HttpConnectionParams.setSocketBufferSize(params, 8192);
-			HttpClientParams.setRedirecting(params, true);
+//			HttpClientParams.setRedirecting(params, true);
 
 			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			
+			schemeRegistry.register(new Scheme("https",
+					new EasySSLSocketFactory(), 443));
 			schemeRegistry.register(new Scheme("http", PlainSocketFactory
 					.getSocketFactory(), 8080));
 			schemeRegistry.register(new Scheme("http", PlainSocketFactory
 					.getSocketFactory(), 80));
 			
-			schemeRegistry.register(new Scheme("https",
-					new EasySSLSocketFactory(), 9025));
-			schemeRegistry.register(new Scheme("https",
-					new EasySSLSocketFactory(), 8443));
-			schemeRegistry.register(new Scheme("https",
-					new EasySSLSocketFactory(), 10080));
-			schemeRegistry.register(new Scheme("https",
-					new EasySSLSocketFactory(), 443));
+//			schemeRegistry.register(new Scheme("https",
+//					new EasySSLSocketFactory(), 9025));
+//			schemeRegistry.register(new Scheme("https",
+//					new EasySSLSocketFactory(), 8443));
+//			schemeRegistry.register(new Scheme("https",
+//					new EasySSLSocketFactory(), 10080));
+			
 			connManager = new ThreadSafeClientConnManager(params,
 					schemeRegistry);
 			httpClient = new DefaultHttpClient(connManager, params);

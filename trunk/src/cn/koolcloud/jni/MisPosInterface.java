@@ -10,6 +10,7 @@ public class MisPosInterface {
 	public static final int TRANS_TYPE_PRE_AUTH_REVOKE = 0x07;
 	public static final int TRANS_TYPE_PRE_AUTH_COMPLETE = 0x08;
 	public static final int TRANS_TYPE_GET_BALANCE = 0x12;
+	public static final int TRANS_TYPE_GET_PAN = 0x62;
 	
 	static {
 		System.loadLibrary("koolcloud_mispos");
@@ -17,8 +18,8 @@ public class MisPosInterface {
 	
 	/**
 	 * Serialport Communication Open
-	 * @return >=0 : succ
-	 * 			<0 : fail
+	 * @return >0 : succ
+	 * 		  <=0 : fail
 	 */
 	public native static int communicationOpen();
 	
@@ -130,6 +131,14 @@ public class MisPosInterface {
 	 * 			< 0 : fail
 	 */
 	public native static int getBalance(int transType);
+	
+	/**
+	 * Mispos Get PAN
+	 * @param transType : transaction type, set "0x62"
+	 * @return >= 0 : succ
+	 * 			< 0 : fail
+	 */
+	public native static int getPAN(int transType);
 	
 	/**
 	 * Mispos Send Data

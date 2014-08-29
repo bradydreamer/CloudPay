@@ -4,12 +4,14 @@
   function gotoCreate(data) {
   	var msg = JSON.parse(data)
   	var newOperator = msg.newOperator;
+	var gradeId = msg.gradeId;
   	var pwd = msg.pwd;
   	
   	var req = {
   		merchId : window.user.merchId,
   		newOperator: newOperator,
   		aliasName: newOperator,
+  		gradeId: gradeId,
   		pwd: pwd,
   	}
 	Net.connect("msc/user/create", req, actionAfterCreate)

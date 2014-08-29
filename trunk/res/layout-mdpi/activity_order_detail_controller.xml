@@ -17,115 +17,122 @@
 	    android:paddingLeft="40dp"
 	    android:paddingRight="40dp"
 	    tools:context=".DelVoucherInfoController" >
-		<LinearLayout 
-		    android:layout_width="match_parent"
+	    <LinearLayout 
+	        android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:orientation="horizontal"
 		    android:id="@+id/btnsRootLayout"
+		    android:orientation="vertical"
 		    android:layout_alignParentBottom="true">
-		    <RelativeLayout 
-		        android:id="@+id/layout_auth_complete"
-			    android:layout_width="0dp"
+	        
+			<LinearLayout 
+			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
-			    android:layout_weight="1"
-			    android:visibility="gone">
+			    android:orientation="horizontal"
+			    >
+			    <RelativeLayout 
+			        android:id="@+id/layout_auth_complete"
+				    android:layout_width="0dp"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1"
+				    android:visibility="gone">
+				    
+				    <Button
+				        android:id="@+id/order_detail_btn_auth_complete"
+				        android:layout_width="220dp"
+				        android:layout_height="60dp"
+				        android:layout_centerInParent="true"
+				        android:background="@drawable/button_cancel_background"
+				        android:onClick="onAuthComplete"
+				        android:text="@string/order_detail_btn_operation_text_auth_complete"
+				        android:textColor="@android:color/white"
+				        android:textSize="@dimen/order_details_content_text_size" />
+				</RelativeLayout>
+				<RelativeLayout 
+				    android:id="@+id/layout_auth_settlement"
+				    android:layout_width="0dp"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1"
+				    android:visibility="gone">
+				    
+				    <Button
+				        android:id="@+id/order_detail_btn_auth_settlement"
+				        android:layout_width="220dp"
+				        android:layout_height="60dp"
+				        android:layout_centerInParent="true"
+				        android:background="@drawable/button_cancel_background"
+				        android:onClick="onAuthSettlement"
+				        android:text="@string/order_detail_btn_operation_text_auth_settlement"
+				        android:textColor="@android:color/white"
+				        android:textSize="@dimen/order_details_content_text_size" />
+				</RelativeLayout>
+				<RelativeLayout 
+				    android:layout_width="0dp"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1"
+				    android:visibility="gone">
+				    
+				    <Button
+				        android:id="@+id/order_detail_btn_refund"
+				        android:layout_width="220dp"
+				        android:layout_height="60dp"
+				        android:layout_centerInParent="true"
+				        android:background="@drawable/button_refund_background"
+				        android:onClick="onRefund"
+				        android:text="@string/order_detail_btn_operation_text_refund"
+				        android:textColor="@android:color/white"
+				        android:textSize="@dimen/order_details_content_text_size" />
+				</RelativeLayout>
+				<RelativeLayout 
+				    android:layout_width="0dp"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1">
+				    
+				    <Button
+				        android:id="@+id/order_detail_btn_cancel"
+				        android:layout_width="220dp"
+				        android:layout_height="60dp"
+				        android:layout_centerInParent="true"
+				        android:background="@drawable/button_cancel_background"
+				        android:onClick="onCancel"
+				        android:text="@string/order_detail_btn_operation_text_cancel"
+				        android:textColor="@android:color/white"
+				        android:textSize="@dimen/order_details_content_text_size" />
+				</RelativeLayout>
+				<RelativeLayout 
+				    android:layout_width="0dp"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1">
+				    
+				    <Button
+				        android:id="@+id/order_detail_btn_print"
+				        android:layout_width="220dp"
+				        android:layout_height="60dp"
+				        android:layout_centerInParent="true"
+				        android:background="@drawable/button_blue_background"
+				        android:onClick="onPrint"
+				        android:text="@string/order_detail_btn_operation_text_print"
+				        android:textColor="@android:color/white"
+				        android:textSize="@dimen/order_details_content_text_size" />
+				</RelativeLayout>
 			    
-			    <Button
-			        android:id="@+id/order_detail_btn_auth_complete"
-			        android:layout_width="220dp"
-			        android:layout_height="60dp"
-			        android:layout_centerInParent="true"
-			        android:background="@drawable/button_cancel_background"
-			        android:onClick="onAuthComplete"
-			        android:text="@string/order_detail_btn_operation_text_auth_complete"
-			        android:textColor="@android:color/white"
-			        android:textSize="@dimen/order_details_content_text_size" />
-			</RelativeLayout>
-			<RelativeLayout 
-			    android:id="@+id/layout_auth_settlement"
-			    android:layout_width="0dp"
-			    android:layout_height="wrap_content"
-			    android:layout_weight="1"
-			    android:visibility="gone">
-			    
-			    <Button
-			        android:id="@+id/order_detail_btn_auth_settlement"
-			        android:layout_width="220dp"
-			        android:layout_height="60dp"
-			        android:layout_centerInParent="true"
-			        android:background="@drawable/button_cancel_background"
-			        android:onClick="onAuthSettlement"
-			        android:text="@string/order_detail_btn_operation_text_auth_settlement"
-			        android:textColor="@android:color/white"
-			        android:textSize="@dimen/order_details_content_text_size" />
-			</RelativeLayout>
-			<RelativeLayout 
-			    android:layout_width="0dp"
-			    android:layout_height="wrap_content"
-			    android:layout_weight="1"
-			    android:visibility="gone">
-			    
-			    <Button
-			        android:id="@+id/order_detail_btn_refund"
-			        android:layout_width="220dp"
-			        android:layout_height="60dp"
-			        android:layout_centerInParent="true"
-			        android:background="@drawable/button_refund_background"
-			        android:onClick="onRefund"
-			        android:text="@string/order_detail_btn_operation_text_refund"
-			        android:textColor="@android:color/white"
-			        android:textSize="@dimen/order_details_content_text_size" />
-			</RelativeLayout>
-			<RelativeLayout 
-			    android:layout_width="0dp"
-			    android:layout_height="wrap_content"
-			    android:layout_weight="1">
-			    
-			    <Button
-			        android:id="@+id/order_detail_btn_cancel"
-			        android:layout_width="220dp"
-			        android:layout_height="60dp"
-			        android:layout_centerInParent="true"
-			        android:background="@drawable/button_cancel_background"
-			        android:onClick="onCancel"
-			        android:text="@string/order_detail_btn_operation_text_cancel"
-			        android:textColor="@android:color/white"
-			        android:textSize="@dimen/order_details_content_text_size" />
-			</RelativeLayout>
-			<RelativeLayout 
-			    android:layout_width="0dp"
-			    android:layout_height="wrap_content"
-			    android:layout_weight="1">
-			    
-			    <Button
-			        android:id="@+id/order_detail_btn_print"
-			        android:layout_width="220dp"
-			        android:layout_height="60dp"
-			        android:layout_centerInParent="true"
-			        android:background="@drawable/button_blue_background"
-			        android:onClick="onPrint"
-			        android:text="@string/order_detail_btn_operation_text_print"
-			        android:textColor="@android:color/white"
-			        android:textSize="@dimen/order_details_content_text_size" />
-			</RelativeLayout>
-		    
-			<RelativeLayout 
-			    android:layout_width="0dp"
-			    android:layout_height="wrap_content"
-			    android:layout_weight="1">
-			    
-			    <Button
-			        android:id="@+id/order_detail_btn_confirm"
-			        android:layout_width="220dp"
-			        android:layout_height="60dp"
-			        android:layout_centerInParent="true"
-			        android:background="@drawable/button_green_background"
-			        android:onClick="onConfirm"
-			        android:text="@string/order_detail_btn_operation_text_confirm"
-			        android:textColor="@android:color/white"
-			        android:textSize="@dimen/order_details_content_text_size" />
-			</RelativeLayout>
-		</LinearLayout>
+				<RelativeLayout 
+				    android:layout_width="0dp"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1">
+				    
+				    <Button
+				        android:id="@+id/order_detail_btn_confirm"
+				        android:layout_width="220dp"
+				        android:layout_height="60dp"
+				        android:layout_centerInParent="true"
+				        android:background="@drawable/button_green_background"
+				        android:onClick="onConfirm"
+				        android:text="@string/order_detail_btn_operation_text_confirm"
+				        android:textColor="@android:color/white"
+				        android:textSize="@dimen/order_details_content_text_size" />
+				</RelativeLayout>
+			</LinearLayout>
+	    </LinearLayout>
 	
 		<LinearLayout 
 		    android:layout_width="match_parent"
@@ -253,60 +260,66 @@
 			            />
 			    </RelativeLayout>
 			</LinearLayout>
-	        <RelativeLayout 
-		        android:layout_width="fill_parent"
-		        android:layout_height="@dimen/order_details_content_item_height">
-		        <TextView
-	                android:id="@+id/order_detail_tv_orderId_mark"
-	                style="@style/order_detail_mark_style"
-	                android:layout_centerVertical="true"
-	                android:layout_marginRight="60dp"
-	                android:text="@string/order_detail_tv_orderId"
-	                android:textColor="@color/gray"
-	                android:textSize="@dimen/order_details_content_text_size" />
-	
-	            <TextView
-	                android:id="@+id/order_detail_tv_orderId"
-	                style="@style/order_detail_mark_style"
-	                android:layout_centerVertical="true"
-	                android:layout_marginLeft="30dp"
-	                android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
-	                android:textColor="@color/black"
-	                android:textSize="@dimen/order_details_content_text_size" />
-		        <TextView 
-		            android:layout_width="fill_parent"
-		            android:layout_height="1dp"
-		            android:layout_alignParentBottom="true"
-		            android:background="@color/interval_line_color"
-		            />
-		    </RelativeLayout>
-		    <RelativeLayout 
-		        android:layout_width="fill_parent"
-		        android:layout_height="@dimen/order_details_content_item_height">
-		        <TextView
-	                android:id="@+id/order_detail_tv_authcode_mark"
-	                style="@style/order_detail_mark_style"
-	                android:layout_centerVertical="true"
-	                android:layout_marginRight="60dp"
-	                android:text="@string/order_detail_tv_authCode"
-	                android:textColor="@color/gray"
-	                android:textSize="@dimen/order_details_content_text_size" />
-	
-	            <TextView
-	                android:id="@+id/order_detail_tv_authcode"
-	                style="@style/order_detail_mark_style"
-	                android:layout_centerVertical="true"
-	                android:layout_marginLeft="30dp"
-	                android:layout_toRightOf="@id/order_detail_tv_authcode_mark"
-	                android:textColor="@color/black"
-	                android:textSize="@dimen/order_details_content_text_size" />
-		        <TextView 
-		            android:layout_width="fill_parent"
-		            android:layout_height="1dp"
-		            android:layout_alignParentBottom="true"
-		            android:background="@color/interval_line_color"
-		            />
-		    </RelativeLayout>
+			<LinearLayout 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal">
+			    <RelativeLayout 
+			        android:layout_width="fill_parent"
+			        android:layout_height="@dimen/order_details_content_item_height">
+			        <TextView
+		                android:id="@+id/order_detail_tv_orderId_mark"
+		                style="@style/order_detail_mark_style"
+		                android:layout_centerVertical="true"
+		                android:layout_marginRight="60dp"
+		                android:text="@string/order_detail_tv_orderId"
+		                android:textColor="@color/gray"
+		                android:textSize="@dimen/order_details_content_text_size" />
+		
+		            <TextView
+		                android:id="@+id/order_detail_tv_orderId"
+		                style="@style/order_detail_mark_style"
+		                android:layout_centerVertical="true"
+		                android:layout_marginLeft="30dp"
+		                android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
+		                android:textColor="@color/black"
+		                android:textSize="@dimen/order_details_content_text_size" />
+			        <TextView 
+			            android:layout_width="fill_parent"
+			            android:layout_height="1dp"
+			            android:layout_alignParentBottom="true"
+			            android:background="@color/interval_line_color"
+			            />
+			    </RelativeLayout>
+			    <RelativeLayout 
+			        android:layout_width="fill_parent"
+			        android:layout_height="@dimen/order_details_content_item_height">
+			        <TextView
+		                android:id="@+id/order_detail_tv_authcode_mark"
+		                style="@style/order_detail_mark_style"
+		                android:layout_centerVertical="true"
+		                android:layout_marginRight="60dp"
+		                android:text="@string/order_detail_tv_authCode"
+		                android:textColor="@color/gray"
+		                android:textSize="@dimen/order_details_content_text_size" />
+		
+		            <TextView
+		                android:id="@+id/order_detail_tv_authcode"
+		                style="@style/order_detail_mark_style"
+		                android:layout_centerVertical="true"
+		                android:layout_marginLeft="30dp"
+		                android:layout_toRightOf="@id/order_detail_tv_authcode_mark"
+		                android:textColor="@color/black"
+		                android:textSize="@dimen/order_details_content_text_size" />
+			        <TextView 
+			            android:layout_width="fill_parent"
+			            android:layout_height="1dp"
+			            android:layout_alignParentBottom="true"
+			            android:background="@color/interval_line_color"
+			            />
+			    </RelativeLayout>
+			</LinearLayout>
+		    
 		    <RelativeLayout 
 		        android:layout_width="fill_parent"
 		        android:layout_height="@dimen/order_details_content_item_height">
@@ -360,6 +373,21 @@
 		            android:layout_alignParentBottom="true"
 		            android:background="@color/interval_line_color"
 		            />
+		        <Button
+			        android:id="@+id/order_detail_btn_coupon"
+			        android:layout_width="90dp"
+			        android:layout_height="40dp"
+			        android:background="@drawable/button_green_background"
+			        android:onClick="onCoupon"
+			        android:text="@string/order_detail_btn_operation_text_coupon"
+			        android:textColor="@android:color/white"
+			        android:layout_marginLeft="80dp"
+			        android:textSize="@dimen/order_details_coupon_text_size"
+			        android:drawableLeft="@drawable/give_coupon_icon"
+			        android:paddingLeft="5dp"
+			        android:paddingRight="5dp"
+			        android:layout_centerVertical="true"
+			        android:layout_toRightOf="@+id/order_detail_tv_orderStatus" />
 		    </RelativeLayout>
 		</LinearLayout>
 	

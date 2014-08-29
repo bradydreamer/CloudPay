@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.jni.PrinterInterface;
+import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
@@ -267,6 +268,43 @@ public abstract class BaseHomeController extends BaseController {
 		cashChange = (TextView) myView.findViewById(R.id.cash_change_amount);
 		paidHint = paidAmount.getHint().toString();
 		sumPayableHint = sumPayable.getHint().toString();
+		sumPayable.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				Float change = (float) 0.00;
+				String paidAmountStr = paidAmount.getText().toString();
+				String sumPayableStr = sumPayable.getText().toString();
+				if (sumPayableStr.equals("")) {
+					sumPayableStr = "0.00";
+				}
+				if (paidAmountStr.equals("")) {
+					paidAmountStr = "0.00";
+					change = (float) 0.00;
+				} else {
+					change = Float.valueOf(paidAmountStr)
+							- Float.valueOf(sumPayableStr);
+				}
+				changeAmountStr = String.valueOf(change);
+				cashChange.setText(changeAmountStr);
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
 		paidAmount.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -405,6 +443,8 @@ public abstract class BaseHomeController extends BaseController {
 						iv.setImageResource(R.drawable.logo_coupon);
 					} else if (imageName.startsWith("logo_rm_coupon")) {
 						iv.setImageResource(R.drawable.logo_rm_coupon);
+					} else if (imageName.startsWith("logo_prepaid_card")) {
+						iv.setImageResource(R.drawable.logo_prepaid_card);
 					}
 					// iv.setBackgroundResource(R.drawable.icon_bg);
 				}
@@ -427,16 +467,24 @@ public abstract class BaseHomeController extends BaseController {
 			String tranType = "";
 			String paymentId = "";
 			String typeId = "";
+			String misc = "";
 			JSONObject msg = new JSONObject();
 			JSONObject tagObj = null;
+			UtilFor8583 util8583 = UtilFor8583.getInstance();
 			try {
 				tagObj = new JSONObject(tag);
 				// indexNo = "90";
 				indexNo = tagObj.getString("brhKeyIndex");
-				tranType = tagObj.getString(MisposController.KEY_TRAN_TYPE);
-				paymentId = tagObj.getString("paymentId");
-				typeId = tagObj.getString("typeId");
-				msg.put("tag", tag);
+				if (!indexNo.equals("")) {
+					util8583.terminalConfig.setKeyIndex(indexNo);
+					tranType = tagObj.getString(MisposController.KEY_TRAN_TYPE);
+					paymentId = tagObj.getString("paymentId");
+					typeId = tagObj.getString("typeId");
+					misc = tagObj.optString("misc");
+					msg.put("tag", tag);
+				} else {
+					msg.put("error", "没有主密钥索引，请联系客服！");
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -454,19 +502,24 @@ public abstract class BaseHomeController extends BaseController {
 					paramObj.put("typeId", tranType);
 					paramObj.put("payKeyIndex", indexNo);
 					paramObj.put("paymentId", paymentId);
+					if (!TextUtils.isEmpty(misc)) {
+						paramObj.put("misc", misc);
+					}
 
 					onCall("window.util.showMisposWithLoginChecked", paramObj);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 
-			} else if (!TextUtils.isEmpty(typeId) && typeId.equalsIgnoreCase("coupon")) {
+			} else if (!TextUtils.isEmpty(misc)
+					&& misc.equalsIgnoreCase("rm_coupon")) {
 				JSONObject paramObj = null;
 				try {
 					paramObj = new JSONObject();
 					paramObj.put("typeId", tranType);
 					paramObj.put("payKeyIndex", indexNo);
 					paramObj.put("paymentId", paymentId);
+					paramObj.put("coupon_type", "rm_coupon");
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -548,8 +601,8 @@ public abstract class BaseHomeController extends BaseController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		sumPayable.setText("");
-		sumPayable.setHint(sumPayableHint);
+		// sumPayable.setText("");
+		// sumPayable.setHint(sumPayableHint);
 		paidAmount.setText("");
 		paidAmount.setHint(paidHint);
 		paidAmount.setCursorVisible(false);

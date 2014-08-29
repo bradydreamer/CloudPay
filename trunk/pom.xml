@@ -115,6 +115,46 @@
 			<artifactId>wsn-sscl</artifactId>
 			<version>1.0</version>
 		</dependency>
+		
+		<dependency>
+	      	<groupId>com.baidu.android.pushservice</groupId>
+	      	<artifactId>baidu_push_service</artifactId>
+	      	<version>4.1.0</version>
+	    </dependency>
+	
+	    <dependency>
+            <groupId>com.baidu.android.pushservice</groupId>
+            <artifactId>arm_push_V2</artifactId>
+            <version>v2.0</version>
+            <classifier>armeabi</classifier>
+            <scope>runtime</scope>
+            <type>so</type>
+        </dependency>
+	    <dependency>
+            <groupId>com.baidu.android.pushservice</groupId>
+            <artifactId>mips_push_V2</artifactId>
+            <version>v2.0</version>
+            <classifier>mips</classifier>
+            <scope>runtime</scope>
+            <type>so</type>
+        </dependency>
+        
+	    <dependency>
+            <groupId>cn.koolcloud.jni.mispos</groupId>
+            <artifactId>mispos_lib_v1.8</artifactId>
+            <version>v1.8</version>
+            <classifier>armeabi</classifier>
+            <scope>runtime</scope>
+            <type>so</type>
+        </dependency>
+	    <dependency>
+            <groupId>cn.koolcloud.jni.mispos</groupId>
+            <artifactId>mispos_so_v1.8</artifactId>
+            <version>v1.8</version>
+            <classifier>armeabi</classifier>
+            <scope>runtime</scope>
+            <type>so</type>
+        </dependency>
 	</dependencies>
 
 	<repositories>
@@ -227,7 +267,7 @@
 					<version>${android-maven-plugin-version}</version>
 					<extensions>true</extensions>
 					<!-- install apk to devices after compiled the source -->
-					<!-- <executions>
+					<!-- executions>
 						<execution>
 							<id>run</id>
 							<goals>
@@ -236,7 +276,7 @@
 							</goals>
 							<phase>install</phase>
 						</execution>
-					</executions> -->
+					</executions-->
 					<!-- configuration>
 						<proguardConfig>proguard-project.txt</proguardConfig>
 						<proguardSkip>true</proguardSkip>
@@ -380,13 +420,18 @@
 								<phase>package</phase>
 								<inherited>true</inherited>
 								<configuration>
+								    <!-- set true will cause beep not sound so set false as default -->
 									<removeExistingSignatures>false</removeExistingSignatures>
 									<archiveDirectory />
 									<includes>
 										<include>${project.build.directory}/*.apk</include>
 									</includes>
-									<!--<key-file-path>${key-file-path}</key-file-path> <alias>${key-alias}</alias> 
-										<storepass>${store-password}</storepass> <keypass>${key-password}</keypass> -->
+									
+									<!-- key-file-path>${key-file-path}</key-file-path> 
+									<alias>${key-alias}</alias> 
+									<storepass>${store-password}</storepass> 
+									<keypass>${key-password}</keypass -->
+									
 									<keystore>${key-file-path}</keystore>
 									<storepass>${store-password}</storepass>
 									<keypass>${key-password}</keypass>
@@ -404,17 +449,46 @@
 					</plugin>
 					<!-- the signed apk then needs to be zipaligned and we activate proguard 
 						and we run the manifest update -->
-					<!-- <plugin> <groupId>com.jayway.maven.plugins.android.generation2</groupId> 
-						<artifactId>android-maven-plugin</artifactId> <inherited>true</inherited> 
-						<configuration> <sign> <debug>false</debug> </sign> <zipalign> <skip>true</skip> 
-						<verbose>true</verbose> <inputApk>${project.build.directory}/${project.artifactId}.apk</inputApk> 
-						<outputApk>${project.build.directory}/${project.artifactId}-signed-aligned.apk 
-						</outputApk> </zipalign> <manifest> <debuggable>false</debuggable> <versionCodeAutoIncrement>false</versionCodeAutoIncrement> 
-						</manifest> <proguard> <skip>false</skip> </proguard> </configuration> <executions> 
-						<execution> <id>manifestUpdate</id> <phase>process-resources</phase> <goals> 
-						<goal>manifest-update</goal> </goals> </execution> <execution> <id>alignApk</id> 
-						<phase>package</phase> <goals> <goal>zipalign</goal> </goals> </execution> 
-						</executions> </plugin> -->
+					<!--plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<inherited>true</inherited>
+						<configuration>
+							<sign>
+								<debug>false</debug>
+							</sign>
+							<zipalign>
+								<skip>true</skip>
+								<verbose>true</verbose>
+								<inputApk>${project.build.directory}/${project.artifactId}.apk</inputApk>
+								<outputApk>${project.build.directory}/${project.artifactId}-signed-aligned.apk
+								</outputApk>
+							</zipalign>
+							<manifest>
+								<debuggable>false</debuggable>
+								<versionCodeAutoIncrement>false</versionCodeAutoIncrement>
+							</manifest>
+							<proguard>
+								<skip>false</skip>
+							</proguard>
+						</configuration>
+						<executions>
+							<execution>
+								<id>manifestUpdate</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>manifest-update</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>alignApk</id>
+								<phase>package</phase>
+								<goals>
+									<goal>zipalign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin-->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>

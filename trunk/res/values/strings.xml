@@ -129,6 +129,7 @@
     <string name="order_detail_btn_operation_text_auth_complete">联机完成</string>
     <string name="order_detail_btn_operation_text_auth_settlement">离线完成</string>
     <string name="order_detail_btn_operation_text_confirm">确定</string>
+    <string name="order_detail_btn_operation_text_coupon">发券</string>
     <string name="order_detail_tv_payType">支付方式</string>
     <string name="order_detail_tv_orderId">参考号</string>
     <string name="order_detail_tv_orderStatus">支付状态</string>
@@ -146,6 +147,9 @@
     <string name="msg_mod_pwd_hint_diffent_pwd_dialog">请输入不同的密码</string>
     <string name="msg_account_hint">请输入账号</string>
     <string name="msg_pwd_hint">请输入密码</string>
+    
+    <string name="msg_printer_issues">请检查打印机状态及打印纸！</string>
+    
     <!-- activity_login_controller.xml -->
     <string name="create_userName">请输入用户名</string>
     <string name="create_userName_pwd_1st">请输入密码</string>
@@ -318,6 +322,7 @@
     <string name="str_update_later">暂不更新</string>
     <string name="str_update_now">马上更新</string>
     <string name="str_about_programme">关于程序</string>
+    <string name="str_bulletin_msg">公告</string>
     <string name="str_about">关于</string>
     <string name="str_exit">退出</string>
     <string name="str_version_name">版本号：</string>
@@ -327,6 +332,11 @@
     <string name="str_exit_message">您真的要退出收银通吗？</string>
     <string name="already_latest_version">已是最新版本</string>
     <string name="about_info">收银通是新一代基于云POS的超级收银作业平台，集刷卡、二维码支付等多种支付方式于一体，为客户打造全面的收银接入服务。</string>
+    
+    <!-- coupon msg -->
+    <string name="str_coupon_app_not_installed">酷券应用尚未安装，请先安装！</string>
+    <string name="str_coupon_amount_null">总金额为0，无券可以核销！</string>
+    <string name="str_coupon_service_binding">请先启动酷券应用开启服务！</string>
     
     <!-- for trans batch -->
     <string name="trans_batch_alert_content">正在批结算，请稍后！</string>
@@ -399,4 +409,10 @@
     <string name="input_amount">请点击输入金额</string>
     <string name="amount_unit">元</string>
     <string name="cash_confirm">确定</string>
+    
+    <!-- list user info -->
+    <string name="user_manager">主管   </string>
+    <string name="common_operator">收银员</string>
+    <string name="user_delete">删除</string>
+    <string name="menu_title">选项</string>
 </resources>

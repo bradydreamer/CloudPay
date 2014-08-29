@@ -9,6 +9,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.widget.TextView;
 import cn.koolcloud.jni.PinPadInterface;
+import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
 
@@ -19,6 +20,8 @@ public class PinPadController extends BaseController {
 	private TextView tv_notice;
 	private int TIME_INPUT = 300000;
 	private boolean removeJSTag = true;
+	private String brhKeyIndex = "";
+	private UtilFor8583 util8583 = UtilFor8583.getInstance();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,10 @@ public class PinPadController extends BaseController {
 		tv_notice = (TextView) findViewById(R.id.pin_pad_id_tv_notice);
 		transData = formData
 				.optJSONObject(getString(R.string.formData_key_data));
-
+		brhKeyIndex = transData.optString("brhKeyIndex");
+		if (brhKeyIndex != null && !brhKeyIndex.equals("")) {
+			util8583.terminalConfig.setKeyIndex(brhKeyIndex);
+		}
 		handlerThread = new HandlerThread("PinPadInterface");
 		handlerThread.start();
 		looper = handlerThread.getLooper();
@@ -59,28 +65,37 @@ public class PinPadController extends BaseController {
 				}
 				byte[] bytes_pan = cardId.getBytes();
 				byte[] pinBlock = new byte[8];
-				PinPadInterface.selectKey(2, 0, 0, 1);
+				int keyIndex = Integer.parseInt(util8583.terminalConfig
+						.getKeyIndex());
+				PinPadInterface.selectKey(2, keyIndex, 0, 1);
 				String actionPurpose = transData.optString("actionPurpose");
 				if (!actionPurpose.equals("Balance")) {
 					String amount = transData.optString("transAmount");
 					if (!amount.isEmpty()) {
 						String text = amount;
 						byte[] btyes_text = text.getBytes();
-						//clean line
+						// clean line
 						PinPadInterface.showText(0, null, 0, 1);
-						PinPadInterface.showText(0, btyes_text, btyes_text.length, 1);
+						PinPadInterface.showText(0, btyes_text,
+								btyes_text.length, 1);
 					}
 				} else {// input pwd character on pinpad line 1
-//					String text = getString(R.string.pin_pad_tv_input_pwd);
-//					byte[] btyes_text = new byte[] {(byte) 0x80, (byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
-//					PinPadInterface.showText(0, btyes_text, btyes_text.length, 1);
-					byte[] btyes_text_1 = new byte[] {(byte) 0x80, (byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
-					//clean line
+					// String text = getString(R.string.pin_pad_tv_input_pwd);
+					// byte[] btyes_text = new byte[] {(byte) 0x80, (byte) 0x81,
+					// (byte) 0x82, (byte) 0x83, (byte) 0x84};
+					// PinPadInterface.showText(0, btyes_text,
+					// btyes_text.length,
+					// 1);
+					byte[] btyes_text_1 = new byte[] { (byte) 0x80,
+							(byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84 };
+					// clean line
 					PinPadInterface.showText(1, null, 0, 1);
-					PinPadInterface.showText(1, btyes_text_1, btyes_text_1.length, 1);
+					PinPadInterface.showText(1, btyes_text_1,
+							btyes_text_1.length, 1);
 				}
 				PinPadInterface.setPinLength(6, 1);
-				int pwdInputResult = PinPadInterface.calculatePinBlock(bytes_pan, bytes_pan.length, pinBlock, TIME_INPUT, 0);
+				int pwdInputResult = PinPadInterface.calculatePinBlock(
+						bytes_pan, bytes_pan.length, pinBlock, TIME_INPUT, 0);
 				if (pwdInputResult < 0) {
 					isCancelled = true;
 				} else {
@@ -99,11 +114,14 @@ public class PinPadController extends BaseController {
 							@Override
 							public void run() {
 								setTitle(getString(R.string.pin_pad_tv_java_input_authCode));
-								tv_notice.setText(getString(R.string.pin_pad_tv_java_input_authCode));
+								tv_notice
+										.setText(getString(R.string.pin_pad_tv_java_input_authCode));
 							}
 						});
 						byte[] auth = new byte[8];
-						int authInputResult = PinPadInterface.calculatePinBlock(bytes_pan, bytes_pan.length, auth, TIME_INPUT, 0);
+						int authInputResult = PinPadInterface
+								.calculatePinBlock(bytes_pan, bytes_pan.length,
+										auth, TIME_INPUT, 0);
 						if (authInputResult < 0) {
 							isCancelled = true;
 						} else {

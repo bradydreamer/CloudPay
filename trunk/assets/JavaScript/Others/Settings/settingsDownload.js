@@ -243,7 +243,11 @@
 		window.merchSettings = null;
 
 		Scene.alert("参数下载成功", function() {
-			Scene.goBack("Home");
+			if(ConsumptionData.dataForPayment.isExternalOrder){
+				Pay.restart();
+			}else{
+				Scene.goBack("Home");
+			}
 		});
 	}
 

@@ -44,7 +44,11 @@
   }  
 
   function errOKProcess(){
-	Scene.goBack("Home");
+	  if(ConsumptionData.dataForPayment.isExternalOrder){
+			Pay.restart();
+		}else{			
+			Scene.goBack("Home");
+		}
   }
   
   function afterConvertMsg(params){

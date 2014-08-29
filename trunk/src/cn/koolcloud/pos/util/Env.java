@@ -19,50 +19,61 @@ import android.net.Uri;
 import android.telephony.TelephonyManager;
 
 /**
- * <p>Title: Env.java </p>
- * <p>Description: class for application</p>
- * <p>Copyright: Copyright (c) 2014</p>
- * <p>Company: All In Pay</p>
- * @author 		Teddy
- * @date 		2014-3-28
- * @version 	
+ * <p>
+ * Title: Env.java
+ * </p>
+ * <p>
+ * Description: class for application
+ * </p>
+ * <p>
+ * Copyright: Copyright (c) 2014
+ * </p>
+ * <p>
+ * Company: All In Pay
+ * </p>
+ * 
+ * @author Teddy
+ * @date 2014-3-28
+ * @version
  */
 public class Env {
-	
+
 	/**
-	* @Title: uninstallApp
-	* @Description: TODO uninstsall APP
-	* @param @param context
-	* @param @param packageName
-	* @return void 
-	* @throws
-	*/
+	 * @Title: uninstallApp
+	 * @Description: TODO uninstsall APP
+	 * @param @param context
+	 * @param @param packageName
+	 * @return void
+	 * @throws
+	 */
 	public static void uninstallApp(Context context, String packageName) {
-	    Uri packageURI = Uri.parse("package:" + packageName);   
-	    Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);   
-	    uninstallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    context.startActivity(uninstallIntent);
+		Uri packageURI = Uri.parse("package:" + packageName);
+		Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);
+		uninstallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(uninstallIntent);
 	}
-	
+
 	/**
 	 * install app
 	 */
 	public static void openAPK(File f, Context context) {
-	    context.startActivity(getInstallApp(f, context));
+		context.startActivity(getInstallApp(f, context));
 	}
 
 	private static Intent getInstallApp(File f, Context context) {
-	    Intent intent = new Intent();
-	    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    //set the place where the file come from
-	    intent.putExtra("android.intent.extra.INSTALLER_PACKAGE_NAME", context.getPackageName());
-	    intent.setAction(android.content.Intent.ACTION_VIEW);
+		Intent intent = new Intent();
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		// set the place where the file come from
+		intent.putExtra("android.intent.extra.INSTALLER_PACKAGE_NAME",
+				context.getPackageName());
+		intent.setAction(android.content.Intent.ACTION_VIEW);
 
-	    /* set file for intent */
-	    intent.setDataAndType(Uri.fromFile(f), "application/vnd.android.package-archive");
-	    return intent;
+		/* set file for intent */
+		intent.setDataAndType(Uri.fromFile(f),
+				"application/vnd.android.package-archive");
+		return intent;
 	}
-	
+
 	public static int getVersionCode(Context context) {
 		int versionCode = 0;
 		try {
@@ -84,7 +95,7 @@ public class Env {
 		}
 		return versionName;
 	}
-	
+
 	public static String getPackageName(Context context) {
 		String packageName = "";
 		try {
@@ -95,16 +106,16 @@ public class Env {
 		}
 		return packageName;
 	}
-	
+
 	/**
-	* @Title: getAPKPackageName
-	* @Description: get apk file package name
-	* @param @param context
-	* @param @param file
-	* @param @return
-	* @return String 
-	* @throws
-	*/
+	 * @Title: getAPKPackageName
+	 * @Description: get apk file package name
+	 * @param @param context
+	 * @param @param file
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
 	public static String getAPKPackageName(Context context, File file) {
 		String packageName = null;
 		if (null != file && file.isFile() && file.exists()) {
@@ -114,13 +125,14 @@ public class Env {
 				// apk absolute path
 				apk_path = file.getAbsolutePath();
 				PackageManager pm = context.getPackageManager();
-				PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path, PackageManager.GET_ACTIVITIES);
+				PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path,
+						PackageManager.GET_ACTIVITIES);
 				ApplicationInfo appInfo = packageInfo.applicationInfo;
 				/* apk icon */
 				appInfo.sourceDir = apk_path;
 				appInfo.publicSourceDir = apk_path;
 				Drawable apk_icon = appInfo.loadIcon(pm);
-				/* apk package name*/
+				/* apk package name */
 				packageName = packageInfo.packageName;
 				/* apk version String */
 				String versionName = packageInfo.versionName;
@@ -130,16 +142,16 @@ public class Env {
 		}
 		return packageName;
 	}
-	
+
 	/**
-	* @Title: getAPKPackageInfo
-	* @Description: get apk file package information
-	* @param @param context
-	* @param @param file
-	* @param @return
-	* @return PackageInfo 
-	* @throws
-	*/
+	 * @Title: getAPKPackageInfo
+	 * @Description: get apk file package information
+	 * @param @param context
+	 * @param @param file
+	 * @param @return
+	 * @return PackageInfo
+	 * @throws
+	 */
 	public static PackageInfo getAPKPackageInfo(Context context, File file) {
 		PackageInfo packageInfo = null;
 		String packageName = null;
@@ -150,15 +162,16 @@ public class Env {
 				// apk absolute path
 				apk_path = file.getAbsolutePath();
 				PackageManager pm = context.getPackageManager();
-				packageInfo = pm.getPackageArchiveInfo(apk_path, PackageManager.GET_ACTIVITIES);
+				packageInfo = pm.getPackageArchiveInfo(apk_path,
+						PackageManager.GET_ACTIVITIES);
 				if (packageInfo != null) {
-					
+
 					ApplicationInfo appInfo = packageInfo.applicationInfo;
 					/* apk icon */
 					appInfo.sourceDir = apk_path;
 					appInfo.publicSourceDir = apk_path;
 					Drawable apk_icon = appInfo.loadIcon(pm);
-					/* apk package name*/
+					/* apk package name */
 					packageName = packageInfo.packageName;
 					/* apk version String */
 					String versionName = packageInfo.versionName;
@@ -182,34 +195,39 @@ public class Env {
 				"application/vnd.android.package-archive");
 		ctx.startActivityForResult(intent, requestCode);
 	}
-	
-	public static Intent getLaunchIntent(Context ctx, String packageName, Map<String, PackageInfo> installedPackage) {
+
+	public static Intent getLaunchIntent(Context ctx, String packageName,
+			Map<String, PackageInfo> installedPackage) {
 		return ctx.getPackageManager().getLaunchIntentForPackage(
 				installedPackage.get(packageName).packageName);
 	}
-	
+
 	public static String getResourceString(Context context, int strId) {
 		return context.getResources().getString(strId);
 	}
-	
+
 	/**
 	 * @Title: isAppRunning
-	 * @Description: TODO Checks if the application is being sent in the background (i.e behind another application's Activity)
+	 * @Description: TODO Checks if the application is being sent in the
+	 *               background (i.e behind another application's Activity)
 	 * @param context
 	 * @return true if another application will be above this one.
 	 * @return: boolean
 	 */
 	public static boolean isAppRunning(Context context) {
-	    // check with the first task(task in the foreground)
-	    // in the returned list of tasks
-	    ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-	    List<RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
-	    if (services.get(0).topActivity.getPackageName().toString().equalsIgnoreCase(context.getPackageName().toString())) {
-	        return true;
-	    }
-	    return false;
+		// check with the first task(task in the foreground)
+		// in the returned list of tasks
+		ActivityManager activityManager = (ActivityManager) context
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		List<RunningTaskInfo> services = activityManager
+				.getRunningTasks(Integer.MAX_VALUE);
+		if (services.get(0).topActivity.getPackageName().toString()
+				.equalsIgnoreCase(context.getPackageName().toString())) {
+			return true;
+		}
+		return false;
 	}
-	
+
 	/**
 	 * @Title: checkApkExist
 	 * @Description: TODO check if the app is installed.
@@ -222,16 +240,20 @@ public class Env {
 		if (packageName == null || "".equals(packageName))
 			return false;
 		try {
-//			ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
-			context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+			// ApplicationInfo info =
+			// context.getPackageManager().getApplicationInfo(packageName,
+			// PackageManager.GET_UNINSTALLED_PACKAGES);
+			context.getPackageManager().getPackageInfo(packageName,
+					PackageManager.GET_ACTIVITIES);
 			return true;
 		} catch (NameNotFoundException e) {
 			return false;
 		}
 	}
-	
+
 	public static String getDeviceInfo(Context ctx) {
-		TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager tm = (TelephonyManager) ctx
+				.getSystemService(Context.TELEPHONY_SERVICE);
 		StringBuilder sb = new StringBuilder();
 		sb.append("\nDeviceId(IMEI) = " + tm.getDeviceId());
 		sb.append("\nDeviceSoftwareVersion = " + tm.getDeviceSoftwareVersion());
@@ -272,8 +294,9 @@ public class Env {
 		sb.append("\nandroid.os.Build.TYPE = " + android.os.Build.TYPE);
 		sb.append("\nandroid.os.Build.UNKNOWN = " + android.os.Build.UNKNOWN);
 		sb.append("\nandroid.os.Build.USER = " + android.os.Build.USER);
-		sb.append("\nandroid.os.Build.VERSION.RELEASE = " + android.os.Build.VERSION.RELEASE);
-		
+		sb.append("\nandroid.os.Build.VERSION.RELEASE = "
+				+ android.os.Build.VERSION.RELEASE);
+
 		return sb.toString();
 	}
 }

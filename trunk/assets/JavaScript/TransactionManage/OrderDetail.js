@@ -86,7 +86,17 @@
   function onAuthSettlement(data){
 	  transCancelTag = false;
 	  actionTransData8583(data,Pay.authSettlementOrder,updateListAuthCompleteSettlement);
-  }  
+  }
+  
+  function showCoupon(data) {
+  	  var params = JSON.parse(data);
+	  Scene.alert("是否进入酷券发券？", function (callBack) {
+			if (callBack.isPositiveClicked == true) {
+				Scene.showScene("Coupon", "", params);
+			}
+	  }, "确定", "取消");
+	  
+  }
   
   function actionTransData8583 (data, actionFunc, succFunc) {
     var params = JSON.parse(data);
@@ -100,6 +110,10 @@
 	var payment_id = params.paymentId;
 	var txnId = params.txnId;
 	var transType;
+	if(params.payKeyIndex == null || params.payKeyIndex == undefined){
+		Scene.alert("没有主密钥索引，请联系客服！");
+		return;
+	}
 	if(transCancelTag){
 		if (params.transType == transType_Consume) {
 			transType = transType_ConsumeCancel;
@@ -202,7 +216,8 @@
     "onCancel": onCancel,
     "onAuthComplete": onAuthComplete,
     "onAuthSettlement": onAuthSettlement,
-    "onPrint": onPrint
+    "onPrint": onPrint,
+    "showCoupon": showCoupon
   };
 
 })();

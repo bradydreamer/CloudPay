@@ -185,7 +185,11 @@ Pay.payResult = function(params) {
 			}
 		RMS.save(ConsumptionData.dataForPayment.brhKeyIndex, indexParams);
 		window.util.exeActionWithSigninChecked(function(){
-			Scene.goBack("Home");
+			if(ConsumptionData.dataForPayment.isExternalOrder){
+				Pay.restart();
+			}else{			
+				Scene.goBack("Home");
+			}
 		});
 	}
 	
@@ -217,6 +221,7 @@ Pay.payResult = function(params) {
 			"transType": ConsumptionData.dataForPayment.transType,
 			"authNo": ConsumptionData.dataForPayment.authNo,
 			"txnId": ConsumptionData.dataForPayment.txnId,
+			"couponAmount": ConsumptionData.dataForPayment.couponAmount
 		};
 		
 		if(ConsumptionData.dataForPayment.preScene == "PayAccount" || ConsumptionData.dataForPayment.preScene == "PinPad"){
@@ -259,27 +264,66 @@ Pay.misposErrRestart = function(params){
 	Pay.restart();
 };
 
+Pay.writeBackAPMPCouponData = function(params) {
+	Scene.alert("JSLOG writeBackAPMPCouponData");
+	var couponData = JSON.parse(params);
+	var req = {
+		"paymentId": couponData.paymentId,
+		"transType": couponData.transType,
+		"batchNo": couponData.batchNo,
+		"traceNo": couponData.traceNo,
+		"transTime": couponData.transTime,
+		"transAmount": couponData.couponPaidAmount,
+		"oriTxnId": couponData.oriTxnId,
+		"resCode": couponData.resCode,
+		"resMsg": couponData.resMsg
+	};
+	Net.asynConnect("txn/" + couponData.keyIndex, req, afterCouponWriteBack);
+	
+	function afterCouponWriteBack(data) {
+		ConsumptionData.dataForPayment.totalAmount = parseInt(couponData.transAmount);
+		ConsumptionData.dataForPayment.couponAmount = parseInt(couponData.couponPaidAmount);
+		var balance = parseInt(couponData.transAmount - couponData.couponPaidAmount);
+		if (balance > 0) {
+			ConsumptionData.dataForPayment.transAmount = balance;
+		} else {
+			ConsumptionData.dataForPayment.result = "success";
+			ConsumptionData.dataForPayment.transAmount = parseInt(couponData.transAmount);
+			Pay.restart();
+		}
+	}
+};	
+
 Pay.cashSuccRestart = function(params){
 	var cashData = JSON.parse(params);
-	ConsumptionData.dataForPayment.cashPay = true;
-	ConsumptionData.dataForPayment.result = "success";
-	ConsumptionData.dataForPayment.transAmount = cashData.transAmount;
-	ConsumptionData.dataForPayment.paidAmount = cashData.cashPaidAmount;
-	ConsumptionData.dataForPayment.changeAmount = cashData.changeAmount;
-	ConsumptionData.dataForPayment.transTime = cashData.transTime;
-	ConsumptionData.dataForPayment.paymentName = cashData.paymentName;
-	var req = {
-		"paymentId": cashData.paymentId,
-		"transType": cashData.transType,
-		"batchNo": cashData.batchNo,
-		"traceNo": cashData.traceNo,
-		"transTime": cashData.transTime,
-		"transAmount": cashData.transAmount,
-		"oriTxnId": cashData.oriTxnId,
-		"resCode": cashData.resCode,
-		"resMsg": cashData.resMsg
-	}
-	Net.asynConnect("txn/"+cashData.keyIndex,req,afterUpdateInfo);	
+	window.util.exeActionWithLoginChecked(function(){
+		if(parseInt(cashData.transAmount) > parseInt(cashData.cashPaidAmount)){
+			Scene.alert("您输入的金额不足，请重新输入！",function(){
+				Scene.goBack("Home");
+				}
+			);
+			return;
+		}
+		ConsumptionData.dataForPayment.cashPay = true;
+		ConsumptionData.dataForPayment.result = "success";
+		ConsumptionData.dataForPayment.transAmount = cashData.transAmount;
+		ConsumptionData.dataForPayment.paidAmount = cashData.cashPaidAmount;
+		ConsumptionData.dataForPayment.changeAmount = cashData.changeAmount;
+		ConsumptionData.dataForPayment.transTime = cashData.transTime;
+		ConsumptionData.dataForPayment.paymentName = cashData.paymentName;
+		var req = {
+			"paymentId": cashData.paymentId,
+			"transType": cashData.transType,
+			"batchNo": cashData.batchNo,
+			"traceNo": cashData.traceNo,
+			"transTime": cashData.transTime,
+			"transAmount": cashData.transAmount,
+			"oriTxnId": cashData.oriTxnId,
+			"resCode": cashData.resCode,
+			"resMsg": cashData.resMsg
+		}
+		Net.asynConnect("txn/"+cashData.keyIndex,req,afterUpdateInfo);	
+	});	
 
 	function afterUpdateInfo(data){
 		//var data = JSON.parse(params);
@@ -323,18 +367,25 @@ Pay.restart = function(params) {
 	var order = {
 		"refNo" : ConsumptionData.dataForPayment.rrn,
 		"orderStateDesc" : ConsumptionData.dataForPayment.result == "success" ? "完成" : "失败",
-		"payTime" : ConsumptionData.dataForPayment.transTime,
-		"payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
+		// "payTime" : ConsumptionData.dataForPayment.transTime,
+		"transTime" : ConsumptionData.dataForPayment.transTime,
+		"paymentId" : ConsumptionData.dataForPayment.paymentId,
+		// "payTypeDesc" : "" + ConsumptionData.dataForPayment.paymentName,
+		"paymentIdDesc" : "" + ConsumptionData.dataForPayment.paymentName,
 		"transAmount" : ConsumptionData.dataForPayment.transAmount,
-		"bankCardNum" : ConsumptionData.dataForPayment.bankCardNum,
+		// "bankCardNum" : ConsumptionData.dataForPayment.bankCardNum,
+		"accountNo" : ConsumptionData.dataForPayment.bankCardNum,
 		"issuerName" : ConsumptionData.dataForPayment.issuerName,
 		"alipayAccount" : ConsumptionData.dataForPayment.alipayAccount,
 		"alipayPID" : ConsumptionData.dataForPayment.alipayPID,
 		"orderID" : ConsumptionData.dataForPayment.apOrderId,
 		"alipayTransactionID" : ConsumptionData.dataForPayment.alipayTransactionID,
-		"paymentId" : ConsumptionData.dataForPayment.paymentId,
-		"openBrh" : ConsumptionData.dataForPayment.openBrh,
+		// "openBrh" : ConsumptionData.dataForPayment.openBrh,
+		"acquId" : ConsumptionData.dataForPayment.openBrh,
+		"acquIdDesc" : ConsumptionData.dataForPayment.openBrhName,
 		"transType": ConsumptionData.dataForPayment.transType,
+		"merchantId": ConsumptionData.dataForPayment.brhMchtId,
+		"terminalId": ConsumptionData.dataForPayment.brhTermId,
 		"txnId" : ConsumptionData.dataForPayment.txnId
 	};
 
@@ -374,6 +425,7 @@ Pay.restart = function(params) {
 					"totalAmount" : ConsumptionData.dataForMultiPay.totalAmount,
 					"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount,
 					"result" : ConsumptionData.dataForMultiPay.result,
+					"couponAmount" : ConsumptionData.dataForPayment.couponAmount,
 					"orderList" : ConsumptionData.dataForMultiPay.orderList,
 					});
 				ConsumptionData.resetMultiData();
@@ -389,7 +441,9 @@ Pay.restart = function(params) {
 			}else {
 				Scene.goBack("first", {
 					"totalAmount" : ConsumptionData.dataForPayment.transAmount,
-					"paidAmount" : ConsumptionData.dataForPayment.transAmount,
+					"paidAmount" : ConsumptionData.dataForPayment.result == "success" ? ConsumptionData.dataForPayment.transAmount : "0",
+					"couponAmount" : ConsumptionData.dataForPayment.couponAmount,
+					"orderNo" : ConsumptionData.dataForPayment.orderNo,
 					"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
 					"orderList" : [order],
 				});
@@ -465,6 +519,12 @@ Pay.exePreAuthComplete = function(params){
 		   		"oriTraceNo": params.oriTraceNo,
 		   		"oriTransTime": params.oriTransTime,
 		   	};
+	if(params.cardNo != ConsumptionData.dataForPayment.F02){
+		Scene.alert("刷卡错误，请刷原卡!",function(){
+			Scene.goBack("OrderDetail");
+		});
+		return;
+	}
 	ConsumptionData.dataForPayment.req8583 = params.data8583;
 	ConsumptionData.dataForPayment.transType = params.transType;
    	Net.connect("msc/pay/prepaid/over", req, actionAfterPreAuthComplete, true);   	
@@ -505,6 +565,12 @@ Pay.exePreAuthSettlement = function(params){
 		   		"oriTraceNo": params.oriTraceNo,
 		   		"oriTransTime": params.oriTransTime,
 		   	};
+	if(params.cardNo != ConsumptionData.dataForPayment.F02){
+		Scene.alert("刷卡错误，请刷原卡!",function(){
+			Scene.goBack("OrderDetail");
+		});
+		return;
+	}
 	ConsumptionData.dataForPayment.req8583 = params.data8583;
 	ConsumptionData.dataForPayment.transType = params.transType;
    	Net.connect("msc/pay/prepaid/over/offline", req, actionAfterPreAuthSettlement, true);   	
@@ -545,6 +611,12 @@ Pay.exePreAuthCancel = function(params){
 		   		"oriTraceNo": params.oriTraceNo,
 		   		"oriTransTime": params.oriTransTime,
 		   	};
+	if(params.cardNo != ConsumptionData.dataForPayment.F02){
+		Scene.alert("刷卡错误，请刷原卡!",function(){
+			Scene.goBack("OrderDetail");
+		});
+		return;
+	}
 	ConsumptionData.dataForPayment.req8583 = params.data8583;
 	ConsumptionData.dataForPayment.transType = params.transType;
    	Net.connect("msc/pay/prepaid/cancel", req, actionAfterPreAuthCancel, true);   	
@@ -585,6 +657,12 @@ Pay.exePreAuthCompleteCancel = function(params){
 		   		"oriTraceNo": params.oriTraceNo,
 		   		"oriTransTime": params.oriTransTime,
 		   	};
+	if(params.cardNo != ConsumptionData.dataForPayment.F02){
+		Scene.alert("刷卡错误，请刷原卡!",function(){
+			Scene.goBack("OrderDetail");
+		});
+		return;
+	}
 	ConsumptionData.dataForPayment.req8583 = params.data8583;
 	ConsumptionData.dataForPayment.transType = params.transType;
    	Net.connect("msc/pay/prepaid/over/cancel", req, actionAfterPreAuthCompleteCancel, true);   	

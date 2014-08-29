@@ -15,6 +15,8 @@ External.startReverseAfterLogin = function(data) {
 	var req = {
 			txnId : params.txnId
 		};
+	ConsumptionData.dataForPayment.orderNo = params.orderNo;
+	
 	Net.connect("msc/txn/detail/query", req, handleResFromReqRecord);
 	
 	function handleResFromReqRecord(resData) {
@@ -30,7 +32,9 @@ External.startReverseAfterLogin = function(data) {
 				
 		// window.OrderDetail.onCancel(JSON.stringify(reverseData));
 		handleRecordData(reverseData);
-		reverseData.confirm = "window.External.goBack";
+		// reverseData.confirm = "window.External.goBack";
+		reverseData.confirm = "window.Pay.restart";
+		reverseData.isExternalOrder = ConsumptionData.dataForPayment.isExternalOrder;
 		Scene.showScene("OrderDetail", "", reverseData);
 	}
 	
@@ -194,11 +198,25 @@ External.onPay = function(data) {
 			};
 		};
 		if (transInfo != null) {
-			window.RMS.read("templateList", function(data) {
-				window.payTemplates = data;
-				window.PayMethod.confirmMethod(transInfo, window.payTemplates[transInfo[transType_Consume]]);
-			});
-			// window.PayMethod.confirmMethod(transInfo);
+			var payKeyIndex = transInfo.brhKeyIndex;
+		
+			if (payKeyIndex === "90") {
+				
+				var params = {
+					typeId : transInfo.typeId,
+					payKeyIndex : transInfo.brhKeyIndex,
+					paymentId : transInfo.paymentId,
+					misc : transInfo.misc
+				};
+				window.util.showMisposWithLoginChecked(JSON.stringify(params));
+			} else {
+				
+				window.RMS.read("templateList", function(data) {
+					window.payTemplates = data;
+					window.PayMethod.confirmMethod(transInfo, window.payTemplates[transInfo[transType_Consume]]);
+				});
+				// window.PayMethod.confirmMethod(transInfo);
+			}
 			
 		} else {
 			Scene.showScene("Home", "");

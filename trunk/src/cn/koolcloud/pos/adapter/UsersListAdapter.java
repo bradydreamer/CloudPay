@@ -39,10 +39,26 @@ public class UsersListAdapter extends LoadMoreAdapter {
 		}
 
 		JSONObject userInfoItem = this.list.get(position);
+		String grade = "无";
+		if (userInfoItem.optString("gradeId").equals("1")) {
+			grade = context.getString(R.string.user_manager);
+		} else if (userInfoItem.optString("gradeId").equals("2")) {
+			grade = context.getString(R.string.common_operator);
+		}
+		holder.gradeId.setText(grade);
 		holder.userName.setText(userInfoItem.optString("operator"));
-		holder.gradeId.setText(userInfoItem.optString("gradeId"));
 		holder.aliasName.setText(userInfoItem.optString("aliasName"));
-		holder.lastLoginTime.setText(userInfoItem.optString("lastLoginTime"));
+		String time = userInfoItem.optString("lastLoginTime");
+		String lastLoginTime = "";
+		if (time.equals("") || time == null) {
+			lastLoginTime = time;
+		} else {
+			lastLoginTime = time.substring(0, 4) + "-" + time.substring(4, 6)
+					+ "-" + time.substring(6, 8) + " " + time.substring(8, 10)
+					+ ":" + time.substring(10, 12) + ":"
+					+ time.substring(12, 14);
+		}
+		holder.lastLoginTime.setText(lastLoginTime);
 		holder.loginCount.setText(userInfoItem.optString("loginCount"));
 
 		return convertView;

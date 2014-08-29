@@ -12,8 +12,12 @@
 		
 		<TextView 
 		    android:layout_width="150dp"
-		    android:id="@+id/lv_user_info_gradeId"
-		    style="@style/list_user_info_lv_tv"
+		    android:id="@+id/lv_user_info_gradeId"		    
+        	android:layout_height="match_parent"
+        	android:textSize="23px"
+       		android:gravity="center_vertical"
+       		android:paddingLeft="30dp"
+        	android:textColor="@drawable/lv_row_text_color"
 		    />
 		
 		<TextView 
@@ -25,13 +29,19 @@
 		<TextView 
 		    android:layout_width="240dp"
 		    android:id="@+id/lv_user_info_lastLoginTime"
-		    style="@style/list_user_info_lv_tv"
+		    android:layout_height="match_parent"
+        	android:textSize="23px"
+       		android:gravity="center"
+        	android:textColor="@drawable/lv_row_text_color"
 		    />
 		
 		<TextView 	         
 		    android:layout_width="150dp"   
 		    android:id="@+id/lv_user_info_loginCount"
-		    style="@style/list_user_info_lv_tv"
+		    android:layout_height="match_parent"
+        	android:textSize="23px"
+       		android:gravity="center"
+        	android:textColor="@drawable/lv_row_text_color"
 		    />
 
 </LinearLayout>

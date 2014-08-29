@@ -2,14 +2,19 @@ package cn.koolcloud.printer;
 
 import java.io.UnsupportedEncodingException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.widget.Toast;
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.OldTrans;
+import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.util.MisposOperationUtil;
@@ -52,12 +57,30 @@ public class PrinterHelper implements Constant {
 		try {
 			PrinterInterface.open();
 			PrinterInterface.set(1);
-			PrinterInterface.begin();
-			PrinterInterface.end();
+//			PrinterInterface.begin();
+//			PrinterInterface.end();
 			// printerWrite(PrinterCommand.init());
 			// printerWrite(PrinterCommand.setHeatTime(180));
-
-			PrinterInterface.begin();
+			
+			int printerStatus = PrinterInterface.begin();
+			if (printerStatus == -1) {
+				//close printer 
+				PrinterInterface.end();
+				PrinterInterface.close();
+				
+				JSONObject jsObj = new JSONObject();
+				try {
+					jsObj.put(
+							"msg",
+							ctx.getResources().getString(R.string.msg_printer_issues));
+					ClientEngine.engineInstance().showAlert(jsObj, null);
+				} catch (NotFoundException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			for (int i = 0; i < 2; i++) {
 				printerWrite(PrinterCommand.setFontBold(1));
 				printerWrite(PrinterCommand.setAlignMode(1));

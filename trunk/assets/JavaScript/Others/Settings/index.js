@@ -56,7 +56,11 @@
 		};
 		
 	function errorOkprocess(){
-		Scene.goBack("Home");
+		if(ConsumptionData.dataForPayment.isExternalOrder){
+				Pay.restart();
+			}else{
+				Scene.goBack("Home");
+		}
 	}
 	
 	
@@ -230,18 +234,20 @@
 	}
 	var req_listMore = {};
 	function gotoListUsers(reqDataInfo){
-		var req;
-		if(null != reqDataInfo && reqDataInfo.reqMoreInfo){
-			req = req_listMore;
-		}else{		
-			req = {
-				pageNo : 1,
-				pageSize : 20
-			};
-		}
-		req_listMore = req;
-		Net.connect("msc/user/page/query", req, afterGetUsersInfo);
-
+		window.util.exeActionWithLoginChecked(function(){
+			var req;
+			if(null != reqDataInfo && reqDataInfo.reqMoreInfo){
+				req = req_listMore;
+			}else{		
+				req = {
+					pageNo : 1,
+					pageSize : 20
+				};
+			}
+			req_listMore = req;
+			Net.connect("msc/user/page/query", req, afterGetUsersInfo);
+		});
+	
 		function afterGetUsersInfo(params){
 			var pageSize;
 			var totalSize;
@@ -278,8 +284,7 @@
 			}else{
 				Scene.alert(params.errorMsg,errorOkprocess);
 			}
-
-		}
+		}		
 	}
 
 	function gotoCreateUser(){

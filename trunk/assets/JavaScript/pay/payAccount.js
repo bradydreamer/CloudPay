@@ -21,11 +21,16 @@
     Pay.cacheData.needAuthCode = null;
 
     currentStep = Pay.cacheData.step;
+	if(currentStep >= Pay.cacheData.flowList.length){
+		Scene.alert("非正常操作，请重新操作！",function(){
+			Scene.goBack("Home");
+		});
+		return;
+	}
     currentTag = Pay.cacheData.flowList[currentStep].packTag;
 
     var inputRegex = Pay.cacheData.flowList[currentStep].inputRegex;
     var cardID = getInputRegexResult(params.field0, inputRegex);
-
     Pay.cacheData[currentTag] = cardID;
     Pay.cacheData.step = currentStep + 1;
     Pay.gotoFlow();
@@ -33,6 +38,8 @@
 
   function exeCardIdResponse(data) {
     var params = JSON.parse(data);
+    Pay.cacheData.track2 = "";
+    Pay.cacheData.track3 = "";
     exePurchase(params);
   }
 

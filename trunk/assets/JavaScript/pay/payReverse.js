@@ -178,7 +178,7 @@ Pay.cancelOrder = function(params, callBack) {
 	};
 	Pay.cancelCallBack = callBack;
 	ConsumptionData.resetDataForCancellingOrder();
-
+	ConsumptionData.dataForCancellingOrder.txnId = params.txnId
 	ConsumptionData.dataForPayment.txnId = params.txnId; // for cancel.
 	if (window.merchSettings == null) {
 		window.RMS.read("merchSettings", Pay.getProductInfo);
@@ -191,6 +191,9 @@ Pay.getProductInfo = function(data){
 	var payType;
 	var product = window.util.getProductInfo(data, oriData.params.openBrh, oriData.params.paymentId);
 	ConsumptionData.dataForPayment.brhKeyIndex = product.brhKeyIndex; // for sign in
+	ConsumptionData.dataForCancellingOrder.brhKeyIndex = product.brhKeyIndex;
+	ConsumptionData.dataForCancellingOrder.paymentName = product.paymentName;
+	ConsumptionData.dataForCancellingOrder.openBrh = oriData.params.openBrh;
 	if(oriData.transType == transType_ConsumeCancel){
 		payType = transType_ConsumeCancel;
 	}else if(oriData.transType == transType_preAuthComplete){
@@ -301,6 +304,13 @@ Pay.cancelOrderExe = function(params) {
 		"oriTraceNo": params.oriTraceNo,
 		"oriTransTime": params.oriTransTime,
 	};
+
+	if(params.cardNo != "9999999999999999" && params.cardNo != ConsumptionData.dataForCancellingOrder.F02){
+		Scene.alert("刷卡错误，请刷原卡!",function(){
+			Scene.goBack("OrderDetail");
+		});
+		return;
+	}
 	ConsumptionData.dataForCancellingOrder.req8583 = req.data;
 
 	var action = "msc/pay/consume/cancel";
@@ -361,10 +371,21 @@ Pay.cancelOrderResult = function(params) {
 	window.Database.insertTransData8583(ConsumptionData.dataForCancellingOrder.txnId, ConsumptionData.dataForCancellingOrder.req8583, ConsumptionData.dataForCancellingOrder.res8583);
 	if ("00" == params.resCode) {
 		window.RMS.clear("savedTransData");
+		
+		//set revoke data --start
+		ConsumptionData.dataForPayment.transType = ConsumptionData.dataForCancellingOrder.transType;
+		setConsumptionData();
+		ConsumptionData.dataForPayment.result = "success";
+		ConsumptionData.dataForPayment.paymentId = ConsumptionData.dataForCancellingOrder.paymentId;
+		ConsumptionData.dataForPayment.openBrh = ConsumptionData.dataForCancellingOrder.openBrh;
+		ConsumptionData.dataForPayment.paymentName = ConsumptionData.dataForCancellingOrder.paymentName;
+		//set revoke data --end
+		
 		setTimeout(function() {
 			window.posPrint.printTrans(ConsumptionData.dataForCancellingOrder.txnId);
 			ConsumptionData.resetDataForCancellingOrder();
 		}, 300);
+		
 		if (Pay.cancelCallBack) {
 			Pay.cancelCallBack();
 			Pay.cancelCallBack = null;
@@ -377,6 +398,22 @@ Pay.cancelOrderResult = function(params) {
 			Scene.alert(params.resMessage);
 		}, 300);
 	}
+	
+	//init consumption data for revoke order add by Teddy on 19th August -- start
+	function setConsumptionData() {
+		ConsumptionData.dataForPayment.rrn = params.rrn;
+		// ConsumptionData.dataForPayment.result = "success"; 
+		ConsumptionData.dataForPayment.transTime = params.transTime;
+		ConsumptionData.dataForPayment.transAmount = params.transAmount;
+		ConsumptionData.dataForPayment.bankCardNum = params.cardNum;
+		ConsumptionData.dataForPayment.issuerName = params.iusserName;
+		ConsumptionData.dataForPayment.alipayAccount = params.alipayAccount;
+		ConsumptionData.dataForPayment.alipayPID = params.alipayPID;
+		ConsumptionData.dataForPayment.apOrderId = params.apOrderId;
+		ConsumptionData.dataForPayment.alipayTransactionID = params.alipayTransactionID;
+		ConsumptionData.dataForPayment.txnId = ConsumptionData.dataForCancellingOrder.txnId;
+	}
+	//init consumption data for revoke order add by Teddy on 19th August -- end
 };
 
 Pay.cancelEnd = function() {

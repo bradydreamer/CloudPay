@@ -5,7 +5,10 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
@@ -17,6 +20,10 @@ public class CreateUserController extends BaseController {
 	private EditText userName = null;
 	private EditText firstPassword = null;
 	private EditText secondPassword = null;
+	private static final String gradeIdName[] = new String[] { "收银员", "主管" };
+	private Spinner spinner;
+	private String spinnerStr;
+	private ArrayAdapter<String> adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +31,39 @@ public class CreateUserController extends BaseController {
 		userName = (EditText) findViewById(R.id.text_username);
 		firstPassword = (EditText) findViewById(R.id.text_first_password);
 		secondPassword = (EditText) findViewById(R.id.text_second_password);
+		spinner = (Spinner) findViewById(R.id.Spinner01);
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, gradeIdName);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				spinnerStr = parent.getItemAtPosition(position).toString();
+				if (spinnerStr.equals(gradeIdName[0])) {
+					spinnerStr = "2";
+				} else if (spinnerStr.equals(gradeIdName[1])) {
+					spinnerStr = "1";
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// Toast.makeText(getApplicationContext(), "没有改变的处理",
+				// Toast.LENGTH_LONG).show();
+			}
+
+		});
+
 	}
 
 	@Override
 	public void onClickBtnOK(View view) {
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
 		String userNameStr = userName.getText().toString();
+		String gradeId = spinnerStr;
 		String firstPasswordStr = "_TDS_"
 				+ se.md5(firstPassword.getText().toString()).toLowerCase();
 		String secondPasswordStr = "_TDS_"
@@ -48,6 +82,7 @@ public class CreateUserController extends BaseController {
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("newOperator", userNameStr);
+			msg.put("gradeId", gradeId);
 			msg.put("pwd", firstPasswordStr);
 		} catch (JSONException e) {
 			e.printStackTrace();

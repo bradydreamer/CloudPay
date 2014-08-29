@@ -40,6 +40,11 @@
 -libraryjars  libs/sscl.jar
 -libraryjars  libs/universal-image-loader-1.8.7-snapshot-with-sources.jar
 
+# baidu push
+-libraryjars libs/pushservice-4.1.0.jar
+-dontwarn com.baidu.**
+-keep class com.baidu.** { *; }
+
 # for javascript interface
 -keepclassmembers class cn.koolcloud.pos.JavaScriptEngine$JSResponser {
    	<methods>;

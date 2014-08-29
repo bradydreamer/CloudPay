@@ -46,14 +46,16 @@ public class MisposOperationUtil {
 	 */
 	public static void consume(String amountStr) {
 //		String temp = "0.01";
-//		String temp_amount = temp.replace(".", "");
+//		String temp_amount = amountStr.replace(".", "");
 		String temp_amount = amountStr;
 		String amount = "";
-		if ((temp_amount.length() % 2) != 0) {
+		if (!TextUtils.isEmpty(amountStr) && amountStr.length() > 0) {
 			for (int i = 0; i < 12 - temp_amount.length(); i++) {
 				amount += "0";
 			}
 			amount += temp_amount;
+		} else {
+			return;
 		}
 		Log.i("AAAAAAAAAAAA", amount);
 		MisPosInterface.consume(0x02, amount);
@@ -194,7 +196,11 @@ public class MisposOperationUtil {
 		int iIssuerIdLen = MisPosInterface.getTagValue(0x9F08, bIssuerId);
 		String strIssuerId = new String(bIssuerId, 0, iIssuerIdLen);
 		Log.i(TAG, "IssuerId: " + strIssuerId);
-		beanData.setIssuerId(InputStreamUtils.byteTOString(bIssuerId).substring(2));
+		if (!TextUtils.isEmpty(InputStreamUtils.byteTOString(bIssuerId))) {
+			beanData.setIssuerId(InputStreamUtils.byteTOString(bIssuerId).substring(2));
+		} else {
+			beanData.setIssuerId(InputStreamUtils.byteTOString(bIssuerId));
+		}
 		
 		byte[] bIssuerName = new byte[100];
 		int iIssuerNameLen = MisPosInterface.getTagValue(0x9F09, bIssuerName);
