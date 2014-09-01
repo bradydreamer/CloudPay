@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\ZPos\\trunk\\src\\cn\\koolcloud\\ipos\\appstore\\service\\aidl\\IMSCService.aidl
+ * Original file: F:\\Projects\\ZPos\\trunk\\src\\cn\\koolcloud\\ipos\\appstore\\service\\aidl\\IMSCService.aidl
  */
 package cn.koolcloud.ipos.appstore.service.aidl;
 public interface IMSCService extends android.os.IInterface

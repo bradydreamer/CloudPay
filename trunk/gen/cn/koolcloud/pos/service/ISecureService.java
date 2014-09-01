@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\ZPos\\trunk\\src\\cn\\koolcloud\\pos\\service\\ISecureService.aidl
+ * Original file: F:\\Projects\\ZPos\\trunk\\src\\cn\\koolcloud\\pos\\service\\ISecureService.aidl
  */
 package cn.koolcloud.pos.service;
 public interface ISecureService extends android.os.IInterface

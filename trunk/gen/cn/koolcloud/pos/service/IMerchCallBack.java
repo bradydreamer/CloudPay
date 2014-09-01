@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\ZPos\\trunk\\src\\cn\\koolcloud\\pos\\service\\IMerchCallBack.aidl
+ * Original file: F:\\Projects\\ZPos\\trunk\\src\\cn\\koolcloud\\pos\\service\\IMerchCallBack.aidl
  */
 package cn.koolcloud.pos.service;
 public interface IMerchCallBack extends android.os.IInterface

@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\ZPos\\trunk\\src\\cn\\koolcloud\\pos\\service\\IMerchService.aidl
+ * Original file: F:\\Projects\\ZPos\\trunk\\src\\cn\\koolcloud\\pos\\service\\IMerchService.aidl
  */
 package cn.koolcloud.pos.service;
 public interface IMerchService extends android.os.IInterface
@@ -102,6 +102,14 @@ cn.koolcloud.pos.service.IMerchCallBack _arg0;
 _arg0 = cn.koolcloud.pos.service.IMerchCallBack.Stub.asInterface(data.readStrongBinder());
 this.unregisterCallback(_arg0);
 reply.writeNoException();
+return true;
+}
+case TRANSACTION_getPaymentInfos:
+{
+data.enforceInterface(DESCRIPTOR);
+java.util.List<cn.koolcloud.pos.service.PaymentInfo> _result = this.getPaymentInfos();
+reply.writeNoException();
+reply.writeTypedList(_result);
 return true;
 }
 }
@@ -224,6 +232,23 @@ _reply.recycle();
 _data.recycle();
 }
 }
+@Override public java.util.List<cn.koolcloud.pos.service.PaymentInfo> getPaymentInfos() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+java.util.List<cn.koolcloud.pos.service.PaymentInfo> _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getPaymentInfos, _data, _reply, 0);
+_reply.readException();
+_result = _reply.createTypedArrayList(cn.koolcloud.pos.service.PaymentInfo.CREATOR);
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 }
 static final int TRANSACTION_getMerchInfo = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_setMerchInfo = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
@@ -231,6 +256,7 @@ static final int TRANSACTION_setLoginStatus = (android.os.IBinder.FIRST_CALL_TRA
 static final int TRANSACTION_endCallPayEx = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
 static final int TRANSACTION_registerCallback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
 static final int TRANSACTION_unregisterCallback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+static final int TRANSACTION_getPaymentInfos = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
 }
 public cn.koolcloud.pos.service.MerchInfo getMerchInfo() throws android.os.RemoteException;
 public void setMerchInfo(cn.koolcloud.pos.service.MerchInfo mi) throws android.os.RemoteException;
@@ -238,4 +264,5 @@ public void setLoginStatus(java.lang.String ls) throws android.os.RemoteExceptio
 public void endCallPayEx() throws android.os.RemoteException;
 public void registerCallback(cn.koolcloud.pos.service.IMerchCallBack cb) throws android.os.RemoteException;
 public void unregisterCallback(cn.koolcloud.pos.service.IMerchCallBack cb) throws android.os.RemoteException;
+public java.util.List<cn.koolcloud.pos.service.PaymentInfo> getPaymentInfos() throws android.os.RemoteException;
 }

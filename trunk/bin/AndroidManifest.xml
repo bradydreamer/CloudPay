@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="14"
-    android:versionName="1.0.14" >
+    android:versionCode="32"
+    android:versionName="2.0.7" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -18,13 +18,27 @@
         android:name="cn.koolcloud.pos.SERVICE"
         android:protectionLevel="normal" >
     </permission>
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="cn.koolcloud.pos.SERVICE" />
+    <uses-permission android:name="com.koolyun.coupon.permission.COUPON" />
+    
+    <!-- Baidu push services -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CYNOVO_DRIVER" />
+    <uses-permission android:name="android.permission.KOOLCLOUD_MISPOS" />
     <uses-permission android:name="android.permission.KOOLCLOUD_MSR" />
     <uses-permission android:name="android.permission.KOOLCLOUD_PRINTER" />
     <uses-permission android:name="android.permission.KOOLCLOUD_SMARTCARD" />
@@ -79,7 +93,7 @@
                 android:value=".controller.BaseController" />
         </activity>
         <activity
-            android:name="cn.koolcloud.pos.controller.others.settings.LoginController"
+            android:name="cn.koolcloud.pos.controller.others.settings.LoginVerifyController"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateHidden" >
@@ -160,6 +174,14 @@
                 android:value=".controller.BaseController" />
         </activity>
         <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.PaymentMechanismController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SetMachineIdController"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape" >
@@ -168,7 +190,31 @@
                 android:value=".controller.BaseController" />
         </activity>
         <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.SigninController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SetTransIdController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+		<activity
+            android:name="cn.koolcloud.pos.controller.others.settings.ModifyPWDController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+		<activity
+            android:name="cn.koolcloud.pos.controller.others.settings.CreateUserController"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape" >
             <meta-data
@@ -288,7 +334,42 @@
                 android:value=".controller.BaseController" />
         </activity>
         <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.LoginController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.mispos.MisposController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseHomeController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.others.settings.ListUserInfoController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.dialogs.PushMessageController"
+            android:theme="@style/dialog" android:launchMode="singleTop"  />
+        <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.AboutDialog" android:theme="@style/dialog"/>
+        <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog" android:theme="@style/dialog"/>
+        <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog" android:theme="@style/dialog"/>
+        <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.AlertCommonDialog" android:theme="@style/dialog"/>
+        <!-- <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.ExitDialog" android:theme="@style/dialog"/> -->
         
         <!-- receiver -->
         <receiver android:name="cn.koolcloud.pos.receiver.LanchReceiver" >
@@ -323,6 +404,52 @@
                 <action android:name="cn.koolcloud.pos.service.ISecureService" />
             </intent-filter>
         </service>
+        
+        
+         <!-- Baidu push custom receiver -->
+        <receiver android:name="cn.koolcloud.pos.receiver.MyPushMessageReceiver">
+            <intent-filter>
+                <!-- receive push message -->
+                <action android:name="com.baidu.android.pushservice.action.MESSAGE" />
+                <!-- receive bind,unbind,fetch,delete messages -->
+                <action android:name="com.baidu.android.pushservice.action.RECEIVE" />
+                <action android:name="com.baidu.android.pushservice.action.notification.CLICK" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Baidu push necessary receiver and service -->
+        <receiver android:name="com.baidu.android.pushservice.PushServiceReceiver"
+            android:process=":bdservice_v1">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="com.baidu.android.pushservice.action.notification.SHOW" />
+                <action android:name="com.baidu.android.pushservice.action.media.CLICK" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.baidu.android.pushservice.RegistrationReceiver"
+            android:process=":bdservice_v1">
+            <intent-filter>
+                <action android:name="com.baidu.android.pushservice.action.METHOD" />
+                <action android:name="com.baidu.android.pushservice.action.BIND_SYNC" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package" />
+            </intent-filter>                   
+        </receiver>
+        <service
+            android:name="com.baidu.android.pushservice.PushService"
+            android:exported="true"
+            android:process=":bdservice_v1"  >
+            <intent-filter>
+                <action android:name="com.baidu.android.pushservice.action.PUSH_SERVICE" />
+            </intent-filter>
+        </service>
+        <!-- push end -->
+        
+		<!-- Baidu Push API Key -->
+        <meta-data android:name="api_key" android:value="sKzujsGvU6zmXS9fHGsE4ymO" />
     </application>
 
 </manifest>
