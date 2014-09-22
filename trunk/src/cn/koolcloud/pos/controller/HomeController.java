@@ -161,18 +161,6 @@ public class HomeController extends BaseHomeController implements
 		super.willShow();
 	}
 
-	@Override
-	protected void loadRelatedJS() {
-		if (getRemoveJSTag()) {
-			JavaScriptEngine js = ClientEngine.engineInstance()
-					.javaScriptEngine();
-			js.loadJs(getString(R.string.controllerJSName_TransactionManageIndex));
-			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
-		}
-		super.loadRelatedJS();
-		setRemoveJSTag(false);
-	}
-
 	private void startDeviceChecking() {
 		Intent mIntent = new Intent(HomeController.this,
 				DevicesCheckingDialog.class);

@@ -104,8 +104,6 @@ public class PayExScreen extends WelcomeScreen {
 			currentController = null;
 		}
 		ClientEngine.engineInstance().setPayExController(this);
-		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.loadJs(this.getString(R.string.controllerJSName_External));
 
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
 			ClientEngine.engineInstance().showWaitingDialog(context, null,
@@ -360,7 +358,6 @@ public class PayExScreen extends WelcomeScreen {
 		}
 
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.loadJs(getString(R.string.controllerJSName_OrderDetail));
 		js.callJsHandler("External.startReverse", msg);
 	}
 

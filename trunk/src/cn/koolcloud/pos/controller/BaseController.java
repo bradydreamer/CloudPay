@@ -74,7 +74,6 @@ public abstract class BaseController extends Activity {
 			clientEngine.setCurrentController(this);
 			clientEngine.addController(getControllerName(), this);
 			setFormData();
-			loadRelatedJS();
 		}
 
 		setWindowFeature();
@@ -162,18 +161,6 @@ public abstract class BaseController extends Activity {
 		clientEngine.showController(cls);
 	}
 
-	protected void loadRelatedJS() {
-		if (null == getControllerJSName()) {
-			return;
-		}
-		if (getRemoveJSTag()) {
-			JavaScriptEngine js = ClientEngine.engineInstance()
-					.javaScriptEngine();
-			js.loadJs(getControllerJSName());
-			setRemoveJSTag(false);
-		}
-	}
-
 	protected void willShow() {
 
 	}
@@ -252,7 +239,6 @@ public abstract class BaseController extends Activity {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
 			clientEngine.setCurrentController(this);
 		}
-		loadRelatedJS();
 		super.onResume();
 		hasControllerResumed = true;
 	}
@@ -306,18 +292,6 @@ public abstract class BaseController extends Activity {
 		if (!willRestart) {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
 			clientEngine.removeController(getControllerName());
-			if (null != getControllerJSName()
-					&& !(this instanceof LoginVerifyController)
-					&& !(this instanceof LoginController)
-					&& !(this instanceof SetMachineIdController)
-					&& !(this instanceof SetMerchIdController)) {
-				JavaScriptEngine js = ClientEngine.engineInstance()
-						.javaScriptEngine();
-				Log.i(TAG, "Warning:--------RemoveJS:onDestroy:"
-						+ getControllerJSName());
-				js.removeJs(getControllerJSName());
-				setRemoveJSTag(true);
-			}
 		}
 		super.onDestroy();
 	}

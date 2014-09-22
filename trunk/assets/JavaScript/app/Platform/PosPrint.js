@@ -32,5 +32,5 @@ define(['Moo'], function() {
 		}
 	});
 
-	return posPrint;
+	return PosPrint;
 });

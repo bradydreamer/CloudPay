@@ -305,7 +305,7 @@ public class ClientEngine {
 		jsEngine = new JavaScriptEngine();
 		jsEngine.initEngine(context);
 
-		jsEngine.loadJs("Common/global");
+		/*jsEngine.loadJs("Common/global");
 		jsEngine.loadJs("platform/android");
 		jsEngine.loadJs("platform/ipos");
 		jsEngine.loadJs("Common/ConsumptionData");
@@ -317,7 +317,7 @@ public class ClientEngine {
 		jsEngine.loadJs("pay/payReverse");
 		jsEngine.loadJs("pay/payMethod");
 		jsEngine.loadJs("Others/Settings/SignIn");
-		jsEngine.loadJs("Others/Settings/TransBatch");
+		jsEngine.loadJs("Others/Settings/TransBatch");*/
 
 	}
 

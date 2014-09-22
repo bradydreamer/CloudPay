@@ -61,8 +61,6 @@ public class ListUserInfoController extends BaseController implements
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
-						setRemoveJSTag(true);
-						loadRelatedJS();
 						if (position == usersDataList.size()) {
 							onCall("ListUserInfo.reqMoreInfo", null);
 						} else {

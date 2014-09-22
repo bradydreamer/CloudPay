@@ -1,7 +1,9 @@
 require.config({
 	baseUrl: 'app',
     paths: {
+    	/* Lib */
         Moo: '../libs/mootools-core-1.5.0',
+        
         /*Common JS*/
         Global: './Common/Global',
         UserInfo: './Common/UserInfo',
@@ -19,8 +21,6 @@ require.config({
         
         /* DeliveryVoucher */
         DeliveryVocherConsume: './DeliveryVoucher/DeliveryVocherConsume',
-        
-        /* Other */
        
         /* pay */
        	InputAmount: './pay/InputAmount',
@@ -66,8 +66,10 @@ require.config({
 });
 
  
-require(['Moo'], 
-	function(Moo) {
-		
+require(['Moo', 'Global', 'Scene'], 
+	function(Moo, Global, Scene) {
+		console.error('1');
+		var scene = new Scene();
+		new Global();
 	}
 );

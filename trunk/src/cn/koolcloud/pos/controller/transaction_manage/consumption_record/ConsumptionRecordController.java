@@ -61,8 +61,6 @@ public class ConsumptionRecordController extends BaseController implements Order
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				setRemoveJSTag(true);
-				loadRelatedJS();
 				if (position == recordDataList.size()) {
 					onCall("ConsumptionRecord.reqMore", null);
 				} else {

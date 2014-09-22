@@ -1,16 +1,20 @@
 //app/Common/Global.js
-define(['Moo'], function(Moo) {
+define(['Moo', 'Android', 'Scene'], function(Moo, Android, Scene) {
 	var messagingIframe;
 	var msg;
 	var callbackQueue = {};
 	var uniqueId = 0;
 	var doc = document;
+	var scene;
 
 	var Global = new Class({
-
+		Extends : Android,
 		//constructor
 		initialize : function() {
-			_createQueueReadyIframe(doc);
+			
+			this._createQueueReadyIframe(doc);
+			//scene = new Scene();
+			//scene.alert("JSLOG Global.initialize");
 		},
 
 		_createQueueReadyIframe : function(doc) {
@@ -18,29 +22,7 @@ define(['Moo'], function(Moo) {
 			Global.messagingIframe.style.display = 'none';
 			doc.documentElement.appendChild(Global.messagingIframe);
 		},
-
-		calloc : function(func, params, callbackfunc) {
-			var funcData = {
-				handler : func,
-				params : params,
-			};
-
-			if (callbackfunc) {
-				var callbackId = 'js_cb_' + (uniqueId++);
-				funcData.callbackId = callbackId;
-
-				callbackQueue[callbackId] = function(data) {
-					if (callbackfunc) {
-						callbackfunc(data);
-					} else {
-						// Scene.alert("cannot find objcCallBack func")
-					}
-				};
-			}
-			msg = funcData;
-			Global.callPlatform(funcData);
-		},
-
+		
 		callPlatform : function(funcData) {
 
 		},
@@ -59,22 +41,6 @@ define(['Moo'], function(Moo) {
 				}
 			}
 			return "ok";
-		},
-
-		callJS : function(data) {
-
-			var message = JSON.parse(data);
-			var result;
-			try {
-				result = eval(message.handler)(JSON.stringify(message.params));
-			} catch (ex) {
-				Scene.alert("callJSError:" + ex.name + "; " + ex.message);
-			} finally {
-				if (result == null) {
-					result = "";
-				}
-			}
-			JSResponser.sendJsResponse(result);
 		},
 
 		fetchMessage : function() {
@@ -117,5 +83,45 @@ define(['Moo'], function(Moo) {
 			Global.callObjcHandler("getSystemInfo", "", callbackfunc);
 		}
 	});
+	
+	Global.callObjcHandler = function(func, params, callbackfunc) {
+		var funcData = {
+			handler : func,
+			params : params,
+		};
+
+		if (callbackfunc) {
+			var callbackId = 'js_cb_' + (uniqueId++);
+			funcData.callbackId = callbackId;
+
+			callbackQueue[callbackId] = function(data) {
+				if (callbackfunc) {
+					callbackfunc(data);
+				} else {
+					// Scene.alert("cannot find objcCallBack func")
+				}
+			};
+		}
+		msg = funcData;
+		callPlatform(funcData);
+	};
+
+	Global.callJS = function(data) {
+
+		var message = JSON.parse(data);
+		var result;
+		try {
+			scene.alert("JSLOG Global.callJS");
+			result = eval(message.handler)(JSON.stringify(message.params));
+		} catch (ex) {
+			Scene.alert("callJSError:" + ex.name + "; " + ex.message);
+		} finally {
+			if (result == null) {
+				result = "";
+			}
+		}
+		JSResponser.sendJsResponse(result);
+	};
+
 	return Global;
 });

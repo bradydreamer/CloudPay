@@ -80,13 +80,6 @@ public class LoginController extends BaseController {
 	}
 
 	@Override
-	protected void loadRelatedJS() {
-		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
-		super.loadRelatedJS();
-	}
-
-	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_configure_controller);
 	}
