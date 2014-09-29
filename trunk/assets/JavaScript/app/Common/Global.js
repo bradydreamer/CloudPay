@@ -87,7 +87,7 @@ define(['Moo', 'Android', 'Scene'], function(Moo, Android, Scene) {
 	Global.callObjcHandler = function(func, params, callbackfunc) {
 		var funcData = {
 			handler : func,
-			params : params,
+			params : params
 		};
 
 		if (callbackfunc) {

@@ -14,7 +14,7 @@ define(['Moo'], function(Moo) {
 				"seqId" : msg.seqId,
 				"consumePwd" : msg.consumePwd,
 				"consumeQty" : msg.consumeQty,
-				"brhId" : msg.brhId,
+				"brhId" : msg.brhId
 			};
 			Net.connect("merchant/voucherConsumeCancel", req, updateDelVoucherRecord);
 	
@@ -22,7 +22,7 @@ define(['Moo'], function(Moo) {
 				var propertyList = [{
 					"name" : "lv_record",
 					"key" : "deleteALine",
-					"value" : g_index,
+					"value" : g_index
 				}];
 				Scene.setProperty("DelVoucherRecord", propertyList);
 			}

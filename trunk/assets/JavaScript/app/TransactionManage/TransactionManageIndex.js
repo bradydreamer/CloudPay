@@ -238,7 +238,7 @@ define(['Moo'], function(Moo) {
 				} else {
 					var req = {
 						"id" : ConsumptionData.dataForPayment.rrn,
-						"paymentId" : ConsumptionData.dataForPayment.paymentId,
+						"paymentId" : ConsumptionData.dataForPayment.paymentId
 					};
 					var jsonStr = JSON.stringify(req);
 					var params = jsonStr.replace(/"([^"]*)"/g, "\"$1\"");

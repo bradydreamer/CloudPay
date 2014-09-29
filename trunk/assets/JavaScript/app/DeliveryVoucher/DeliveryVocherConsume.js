@@ -4,7 +4,7 @@ define(['Moo'], function(Moo) {
 		"consumePwd" : "",
 		"num" : "",
 		"openBrh" : "",
-		"paymentId" : "",
+		"paymentId" : ""
 	};
 	var DeliveryVocherConsume = new Class({
 
@@ -17,7 +17,7 @@ define(['Moo'], function(Moo) {
 				"consumePwd" : "",
 				"num" : "",
 				"openBrh" : "",
-				"paymentId" : "",
+				"paymentId" : ""
 			};
 		},
 
@@ -29,7 +29,7 @@ define(['Moo'], function(Moo) {
 
 			var nextForm = {
 				"inputAccount" : "DeliveryVocherConsume.onConfirmPwd",
-				"nearfieldAccount" : "DeliveryVocherConsume.onConfirmPwd",
+				"nearfieldAccount" : "DeliveryVocherConsume.onConfirmPwd"
 			};
 
 			nextForm.btn_swipe = -1;
@@ -51,7 +51,7 @@ define(['Moo'], function(Moo) {
 			var req = {
 				"consumePwd" : DeliveryVocherConsume.consumeData.consumePwd,
 				"brhId" : DeliveryVocherConsume.consumeData.openBrh,
-				"payment_id" : DeliveryVocherConsume.consumeData.paymentId,
+				"payment_id" : DeliveryVocherConsume.consumeData.paymentId
 			};
 			Net.connect("merchant/voucherQuery", req, callBackQuery);
 
@@ -90,7 +90,7 @@ define(['Moo'], function(Moo) {
 					"voucherId" : DeliveryVocherConsume.consumeData.consumePwd,
 					"dateRange" : dateRange,
 					"brief" : params.brief,
-					"productName" : params.promotionName,
+					"productName" : params.promotionName
 				};
 				Scene.showScene("DelVoucherInfo", "", formData);
 			}
@@ -102,7 +102,7 @@ define(['Moo'], function(Moo) {
 				"consumeQty" : DeliveryVocherConsume.consumeData.num,
 				"consumePwd" : DeliveryVocherConsume.consumeData.consumePwd,
 				"brhId" : DeliveryVocherConsume.consumeData.openBrh,
-				"payment_id" : DeliveryVocherConsume.consumeData.paymentId,
+				"payment_id" : DeliveryVocherConsume.consumeData.paymentId
 			};
 			Net.connect("merchant/voucherConsume", req, callBackConsume);
 

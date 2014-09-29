@@ -16,7 +16,7 @@ define(['Moo'], function(Moo) {
 				newOperator : newOperator,
 				aliasName : newOperator,
 				gradeId : gradeId,
-				pwd : pwd,
+				pwd : pwd
 			};
 			Net.connect("msc/user/create", req, actionAfterCreate);
 		},

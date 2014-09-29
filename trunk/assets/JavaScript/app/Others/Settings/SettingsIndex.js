@@ -165,7 +165,7 @@ define(['Moo'], function() {
 				"oriTxnId" : params.oriTxnId,
 				"oriBatchNo" : params.oriBatchNo,
 				"oriTraceNo" : params.oriTraceNo,
-				"oriTransTime" : params.oriTransTime,
+				"oriTransTime" : params.oriTransTime
 			};
 
 			Net.connect("msc/pay/batch/settle", req, actionAfterTransBatch);
@@ -312,7 +312,7 @@ define(['Moo'], function() {
 			var params = {
 				merchId : window.user.merchId,
 				machineId : window.user.machineId,
-				merchName : data.merchName,
+				merchName : data.merchName
 			};
 			Scene.showScene("MerchantInfo", "", params);
 		},

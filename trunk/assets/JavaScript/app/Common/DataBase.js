@@ -13,7 +13,7 @@ define(['Moo'], function(Moo) {
 				data8583 = data;
 				if (data.res8583 == null || data.res8583 == "") {
 					var req = {
-						"txnId" : txnId,
+						"txnId" : txnId
 					};
 					Net.connect("msc/txn/detail/query", req, afterGetDetail, true);
 				} else {
@@ -64,7 +64,7 @@ define(['Moo'], function(Moo) {
 
 		getTransData8583 : function(txnId, callbackfunc) {
 			var params = {
-				"txnId" : txnId,
+				"txnId" : txnId
 			};
 			Global.callObjcHandler("getTransData8583", params, callbackfunc);
 		}

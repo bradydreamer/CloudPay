@@ -141,7 +141,7 @@
         "paymentId": payment_id,
         "txnId": txnId,
         "transType": transType,
-        "transAmount": transAmount,
+        "transAmount": transAmount
       }, succFunc);
     }
   }
@@ -150,7 +150,7 @@
     var propertyList = [{
       name: "orderStatus",
       key: "text",
-      value: "已撤销",
+      value: "已撤销"
     }];
     Scene.setProperty("OrderDetail", propertyList);
     setTimeout(function() {
@@ -162,7 +162,7 @@
     var propertyList = [{
       name: "orderStatus",
       key: "text",
-      value: "已退货",
+      value: "已退货"
     }];
     Scene.setProperty("OrderDetail", propertyList);
     setTimeout(function() {
@@ -174,7 +174,7 @@
     var propertyList = [{
         name: "orderStatus",
         key: "text",
-        value: "已完成",
+        value: "已完成"
       }];
       Scene.setProperty("OrderDetail", propertyList);
   }
@@ -183,7 +183,7 @@
     var propertyList = [{
       name: "orderStatus",
       key: "text",
-      value: "已撤销",
+      value: "已撤销"
     }];
     Scene.setProperty("OrderDetail", propertyList);
   }
@@ -192,7 +192,7 @@
 	var propertyList = [{
 			name: "orderStatus",
 			key: "text",
-			value: "已撤销",
+			value: "已撤销"
 		}];
 	Scene.setProperty("OrderDetail", propertyList);
 	setTimeout(function() {

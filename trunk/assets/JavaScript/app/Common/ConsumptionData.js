@@ -22,7 +22,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 			"openBrh" : "",
 			"paymentId" : "",
 			"flowList" : [],
-			"step" : 0,
+			"step" : 0
 		};
 	};
 
@@ -32,7 +32,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 			"openBrh" : "",
 			"paymentId" : "",
 			"flowList" : [],
-			"step" : 0,
+			"step" : 0
 		};
 	};
 
@@ -44,7 +44,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 			"transData8583" : "",
 			"req8583" : "",
 			"res8583" : "",
-			"step" : 0,
+			"step" : 0
 		};
 	};
 
@@ -140,7 +140,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 			"balancePwd" : "",
 			"cardID" : "",
 			"openBrh" : "",
-			"paymentId" : "",
+			"paymentId" : ""
 		};
 	};
 
@@ -152,10 +152,10 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 				"desc" : "请输入交易总金额",
 				"matchRegex" : "",
 				"inputRegex" : "",
-				"packTag" : "totalAmount",
+				"packTag" : "totalAmount"
 			}],
 			"step" : 0,
-			"completed" : false,
+			"completed" : false
 		};
 	};
 

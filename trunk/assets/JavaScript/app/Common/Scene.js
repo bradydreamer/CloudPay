@@ -12,7 +12,7 @@ define(['Moo', 'Global'], function(Moo, Global) {
 	showScene = function(sName, sTitle, sData) {
 		var scene = {
 			"name" : sName,
-			"title" : sTitle,
+			"title" : sTitle
 		};
 		if (sData) {
 			scene.data = sData;
@@ -23,7 +23,7 @@ define(['Moo', 'Global'], function(Moo, Global) {
 	alert = function(msg, callbackfunc, positiveButtonText, negativeButtonText) {
 
 		var params = {
-			"msg" : msg,
+			"msg" : msg
 		};
 		if (null != positiveButtonText) {
 			params.positiveButtonText = positiveButtonText;
@@ -38,7 +38,7 @@ define(['Moo', 'Global'], function(Moo, Global) {
 
 		var data = {
 			"controller" : sceneNm,
-			"params" : propertyList,
+			"params" : propertyList
 		};
 		Global.callObjcHandler("setProperty", data, null);
 	};

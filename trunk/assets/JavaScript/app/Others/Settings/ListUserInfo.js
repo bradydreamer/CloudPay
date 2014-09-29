@@ -8,7 +8,7 @@ define(['Moo'], function() {
 
 		reqMoreInfo : function() {
 			var params = {
-				"reqMoreInfo" : true,
+				"reqMoreInfo" : true
 			};
 			window.SettingsIndex.gotoListUsers(params);
 		},

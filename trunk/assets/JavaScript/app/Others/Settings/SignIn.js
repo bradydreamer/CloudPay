@@ -34,7 +34,7 @@ define(['Moo'], function(Moo) {
 				"oriTxnId" : params.oriTxnId,
 				"oriBatchNo" : params.oriBatchNo,
 				"oriTraceNo" : params.oriTraceNo,
-				"oriTransTime" : params.oriTransTime,
+				"oriTransTime" : params.oriTransTime
 			};
 			Net.connect("msc/pay/signin", req, actionAfterSignIn);
 		},
@@ -71,11 +71,11 @@ define(['Moo'], function(Moo) {
 					"authNo" : params.authNo,
 					"issuerId" : params.issuerId,
 					"dateExpr" : params.dateExpr,
-					"stlmDate" : params.stlmDate,
+					"stlmDate" : params.stlmDate
 				};
 				var brhKeyIndex = ConsumptionData.dataForPayment.brhKeyIndex;
 				var _params = {
-					"signature" : true,
+					"signature" : true
 				};
 				RMS.save(brhKeyIndex, _params);
 				actionAfterSet();
@@ -149,7 +149,7 @@ define(['Moo'], function(Moo) {
 			}
 			ConsumptionData.dataForPayment.brhKeyIndex = keyIndex;
 			var data = {
-				typeOf8583 : "signout",
+				typeOf8583 : "signout"
 			};
 			window.data8583.get8583(data, actionAfterGet);
 		},
@@ -166,7 +166,7 @@ define(['Moo'], function(Moo) {
 				"oriTxnId" : params.oriTxnId,
 				"oriBatchNo" : params.oriBatchNo,
 				"oriTraceNo" : params.oriTraceNo,
-				"oriTransTime" : params.oriTransTime,
+				"oriTransTime" : params.oriTransTime
 			};
 
 			Net.connect("msc/pay/signout", req, actionAfterSignout);
@@ -185,7 +185,7 @@ define(['Moo'], function(Moo) {
 				return;
 			} else {
 				var _params = {
-					"signature" : false,
+					"signature" : false
 				};
 				RMS.save(keyIndex, _params);
 				currentIndex++;

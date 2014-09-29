@@ -40,7 +40,7 @@ define(['Moo'], function(Moo) {
 					transInfoList[typeId] = [];
 					funcModuleName.push({
 						"typeName" : typeName,
-						"typeId" : typeId,
+						"typeId" : typeId
 					});
 				}
 				delete merchSettings.typeName;
@@ -49,11 +49,11 @@ define(['Moo'], function(Moo) {
 			var propertyList = [{
 				"name" : "layout_funcModule",
 				"key" : "data",
-				"value" : funcModuleName,
+				"value" : funcModuleName
 			}, {
 				"name" : "viewPager",
 				"key" : "data",
-				"value" : transInfoList[funcModuleName[0].typeId],
+				"value" : transInfoList[funcModuleName[0].typeId]
 			}];
 			Scene.setProperty("", propertyList);
 		},
@@ -64,7 +64,7 @@ define(['Moo'], function(Moo) {
 			var propertyList = [{
 				"name" : "viewPager",
 				"key" : "data",
-				"value" : transInfoList[typeId],
+				"value" : transInfoList[typeId]
 			}];
 			Scene.setProperty("", propertyList);
 		},
@@ -75,7 +75,7 @@ define(['Moo'], function(Moo) {
 			ConsumptionData.dataForPayment.paymentId = product.paymentId;
 			ConsumptionData.dataForPayment.brhKeyIndex = product.brhKeyIndex;
 			var formData = {
-				"paymentId" : product.paymentId,
+				"paymentId" : product.paymentId
 			};
 			window.util.showSceneWithLoginChecked("SingleRecordSearch", formData, null);
 		}

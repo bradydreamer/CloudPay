@@ -8,7 +8,7 @@ define(['Moo', 'Global'], function(Moo, Global) {
 
 		readLocal : function(key, callbackfunc) {
 			var params = {
-				"key" : key,
+				"key" : key
 			};
 			Global.callObjcHandler("readLocal", params, callbackfunc);
 		},
@@ -21,7 +21,7 @@ define(['Moo', 'Global'], function(Moo, Global) {
 		saveLocal : function(key, value) {
 			var params = {
 				"key" : key,
-				"value" : value,
+				"value" : value
 			};
 			Global.callObjcHandler("saveLocal", params);
 		},
@@ -29,7 +29,7 @@ define(['Moo', 'Global'], function(Moo, Global) {
 		clearLocal : function(key, callbackfunc) {
 
 			var params = {
-				"key" : key,
+				"key" : key
 			};
 			Global.callObjcHandler("clearLocal", params, callbackfunc);
 		},

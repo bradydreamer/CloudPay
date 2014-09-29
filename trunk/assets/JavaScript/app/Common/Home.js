@@ -44,7 +44,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 					transInfoList[typeId] = [];
 					funcModuleName.push({
 						"typeName" : typeName,
-						"typeId" : typeId,
+						"typeId" : typeId
 					});
 				}
 				delete merchSettings.typeName;
@@ -53,11 +53,11 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 			var propertyList = [{
 				"name" : "layout_funcModule",
 				"key" : "data",
-				"value" : funcModuleName,
+				"value" : funcModuleName
 			}, {
 				"name" : "viewPager",
 				"key" : "data",
-				"value" : transInfoList[funcModuleName[0].typeId],
+				"value" : transInfoList[funcModuleName[0].typeId]
 			}];
 			Scene.setProperty("", propertyList);
 		},
@@ -83,7 +83,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 				"name" : "viewPager",
 				"key" : "data",
 				"value" : transInfoList[typeId],
-				"transAmount" : transAmount,
+				"transAmount" : transAmount
 			}];
 			Scene.setProperty("", propertyList);
 		},
@@ -105,7 +105,7 @@ define(['Moo', 'RMS'], function(Moo, RMS) {
 				"platform" : systemInfo.platform,
 				"fullmobiletype" : systemInfo.model,
 				"os" : systemInfo.os,
-				"resolution" : systemInfo.resolution,
+				"resolution" : systemInfo.resolution
 			};
 			Net.asynConnect("base/verifyVersion", req, callback);
 

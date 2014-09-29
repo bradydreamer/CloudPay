@@ -8,7 +8,7 @@ define(['Moo'], function(Moo) {
 		gotoBalance : function() {
 			var nextForm = {
 				"btn_swipe" : 1,
-				"swipeCard" : "OthersIndex.gotoBalanceResult",
+				"swipeCard" : "OthersIndex.gotoBalanceResult"
 			};
 			Scene.showScene("PayAccount", "", nextForm);
 		},

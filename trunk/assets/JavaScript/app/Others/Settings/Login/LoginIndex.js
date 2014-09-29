@@ -21,7 +21,7 @@ define(['Moo'], function() {
 				merchId : params.merchId,
 				operator : params.userName,
 				pwd : params.pwd,
-				iposSn : params.ssn,
+				iposSn : params.ssn
 			};
 
 			g_loginReq = req;
@@ -59,7 +59,7 @@ define(['Moo'], function() {
 					merchId : g_loginReq.merchId,
 					machineId : g_loginRes.iposId,
 					operator : g_loginRes.userName,
-					payParamVersion : g_loginRes.payParamVersion,
+					payParamVersion : g_loginRes.payParamVersion
 				};
 				RMS.save("merchant", params);
 
@@ -71,7 +71,7 @@ define(['Moo'], function() {
 				//SettingsIndex.getMerchantInfoAfterLogin();
 				if (g_loginRes.payParamVersion != verParams.payParamVersion) {
 					var mParam = {
-						shouldRemoveCurCtrl : false,
+						shouldRemoveCurCtrl : false
 					};
 					Scene.showScene("SettingsDownload", "", mParam);
 				} else {
@@ -152,7 +152,7 @@ define(['Moo'], function() {
 				merchId : window.user.merchId,
 				iposId : window.user.machineId,
 				operator : params.userName,
-				pwd : params.pwd,
+				pwd : params.pwd
 			};
 			Net.connect("msc/user/verify", req, afterConfirmLogin);
 

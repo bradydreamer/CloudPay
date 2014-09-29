@@ -14,7 +14,7 @@ define(['Moo'], function(Moo) {
 
 		reqMore : function() {
 			var params = {
-				"isReqMore" : true,
+				"isReqMore" : true
 			};
 			window.TransactionManageIndex.gotoConsumptionRecord(params);
 		},

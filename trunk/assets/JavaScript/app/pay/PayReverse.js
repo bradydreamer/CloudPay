@@ -30,7 +30,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 						"data8583" : params.data,
 						"transDate" : params.transDate,
 						"subType" : params.subType,
-						"typeOf8583" : "chongZheng",
+						"typeOf8583" : "chongZheng"
 					};
 					ConsumptionData.dataForPayment.brhKeyIndex = params.brhKeyIndex;
 					window.data8583.get8583(reverseData, afterGetReverse8583);
@@ -53,7 +53,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 					"oriTxnId" : params.oriTxnId,
 					"oriBatchNo" : params.oriBatchNo,
 					"oriTraceNo" : params.oriTraceNo,
-					"oriTransTime" : params.oriTransTime,
+					"oriTransTime" : params.oriTransTime
 				};
 				Net.connect("msc/pay/reverse", req, Pay.reverseResult, true);
 			}
@@ -66,7 +66,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 		ConsumptionData.dataForPayment.txnId = params.txnId;
 		if (params.responseCode == "0") {
 			var params = {
-				data8583 : params.data,
+				data8583 : params.data
 			};
 			window.data8583.convert8583(params, afterConvertBackup);
 		} else if (params.responseCode == "1") {
@@ -316,7 +316,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 			"oriTxnId" : ConsumptionData.dataForCancellingOrder.txnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 
 		if (params.cardNo != "9999999999999999" && params.cardNo != ConsumptionData.dataForCancellingOrder.F02) {
@@ -336,7 +336,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 		function afterCancelPayOrder(data) {
 			if (data.responseCode == "0") {
 				var params = {
-					"data8583" : data.data,
+					"data8583" : data.data
 				};
 				ConsumptionData.dataForCancellingOrder.res8583 = data.data;
 				ConsumptionData.dataForPayment.txnId = data.txnId;

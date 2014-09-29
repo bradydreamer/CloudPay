@@ -36,7 +36,7 @@ define(['Moo'], function(Moo) {
 					"data" : params.data,
 					"trans8583" : params.data,
 					"transDate" : "",
-					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex,
+					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex
 				};
 				window.RMS.save("savedTransData", value);
 			} else if (action == "msc/pay/consume/cancel") {
@@ -46,7 +46,7 @@ define(['Moo'], function(Moo) {
 					"data" : params.data,
 					"trans8583" : params.data,
 					"transDate" : ConsumptionData.dataForCancellingOrder.transDate,
-					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex,
+					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex
 				};
 				window.RMS.save("savedTransData", value);
 			} else if (action == "msc/pay/prepaid") {
@@ -56,7 +56,7 @@ define(['Moo'], function(Moo) {
 					"data" : params.data,
 					"trans8583" : params.data,
 					"transDate" : ConsumptionData.dataForCancellingOrder.transDate,
-					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex,
+					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex
 				};
 				window.RMS.save("savedTransData", value);
 			} else if (action == "msc/pay/prepaid/over") {
@@ -66,7 +66,7 @@ define(['Moo'], function(Moo) {
 					"data" : params.data,
 					"trans8583" : params.data,
 					"transDate" : ConsumptionData.dataForCancellingOrder.transDate,
-					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex,
+					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex
 				};
 				window.RMS.save("savedTransData", value);
 			} else if (action == "msc/pay/prepaid/cancel") {
@@ -76,7 +76,7 @@ define(['Moo'], function(Moo) {
 					"data" : params.data,
 					"trans8583" : params.data,
 					"transDate" : ConsumptionData.dataForCancellingOrder.transDate,
-					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex,
+					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex
 				};
 				window.RMS.save("savedTransData", value);
 			} else if (action == "msc/pay/prepaid/over/cancel") {
@@ -86,7 +86,7 @@ define(['Moo'], function(Moo) {
 					"data" : params.data,
 					"trans8583" : params.data,
 					"transDate" : ConsumptionData.dataForCancellingOrder.transDate,
-					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex,
+					"brhKeyIndex" : ConsumptionData.dataForPayment.brhKeyIndex
 				};
 				window.RMS.save("savedTransData", value);
 			}
@@ -201,7 +201,7 @@ define(['Moo'], function(Moo) {
 		request : function(action, params, callbackfunc) {
 			var reqData = {
 				"header" : {},
-				"body" : [],
+				"body" : []
 			};
 
 			if (action == "msc/user/login") {

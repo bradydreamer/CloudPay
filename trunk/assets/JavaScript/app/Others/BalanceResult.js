@@ -19,7 +19,7 @@ define(['Moo'], function(Moo) {
 				"oriTxnId" : msg.oriTxnId,
 				"oriBatchNo" : msg.oriBatchNo,
 				"oriTraceNo" : msg.oriTraceNo,
-				"oriTransTime" : msg.oriTransTime,
+				"oriTransTime" : msg.oriTransTime
 			};
 			Net.connect("msc/balance", req, actionAfterReqBalance, true);
 		},

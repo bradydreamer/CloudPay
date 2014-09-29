@@ -139,7 +139,7 @@ define(['Moo'], function(Moo) {
 		onLogin : function() {
 			window.util.exeActionWithLoginChecked(function() {
 				var formData = {
-					"userStatus" : window.user.userStatus,
+					"userStatus" : window.user.userStatus
 				};
 				Scene.goBack("first", formData);
 			}, true);
@@ -148,7 +148,7 @@ define(['Moo'], function(Moo) {
 		onLogout : function(data) {
 			window.user.init({});
 			var formData = {
-				"userStatus" : window.user.userStatus,
+				"userStatus" : window.user.userStatus
 			};
 			return formData;
 		},

@@ -16,7 +16,7 @@ define(['Moo'], function(Moo) {
 					pageNo : 1,
 					pageSize : 9,
 					consumeStarttime : msg.startDate + "000000",
-					consumeEndtime : msg.endDate + "235959",
+					consumeEndtime : msg.endDate + "235959"
 				};
 			}
 
@@ -24,7 +24,7 @@ define(['Moo'], function(Moo) {
 				pageNo : req.pageNo + 1,
 				pageSize : req.pageSize,
 				consumeStarttime : req.consumeStarttime,
-				consumeEndtime : req.consumeEndtime,
+				consumeEndtime : req.consumeEndtime
 			};
 
 			Net.connect("merchant/getTuanConsumeList", req, showDelVoucherRecord);

@@ -12,7 +12,7 @@ define(['Moo'], function(Moo) {
 
 			var req = {
 				pwd : newPwd,
-				oldPwd : origPwd,
+				oldPwd : origPwd
 			};
 			Net.connect("msc/user/pwd/change", req, actionAfterModify);
 			/*var data = {
@@ -46,7 +46,7 @@ define(['Moo'], function(Moo) {
 
 				var formData = {
 					"merchId" : data.merchId,
-					"operator" : data.operator,
+					"operator" : data.operator
 				};
 				Scene.showScene("Login", "", formData);
 			}

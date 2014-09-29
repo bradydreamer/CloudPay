@@ -4,7 +4,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 		Extends : Pay,
 		initialize : function() {
 
-		},
+		}
 	});
 
 	Pay.gotoPayFlow = function() {
@@ -80,7 +80,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 				//"totalAmount": util.formatAmountStr(ConsumptionData.dataForMultiPay.totalAmount),
 				"totalAmount" : ConsumptionData.dataForMultiPay.totalAmount,
 				//"paidAmount": util.formatAmountStr(ConsumptionData.dataForMultiPay.paidAmount),
-				"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount,
+				"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount
 			};
 			if (Pay.cacheData.preScene == "InputAmount") {
 				formData.shouldRemoveCurCtrl = true;
@@ -243,7 +243,7 @@ define(['Moo', 'Pay'], function(Moo, Pay) {
 			formData = {
 				"swipeCard" : "PayAccount.exeSwipeResponse",
 				"nearfieldAccount" : "PayAccount.exeRecvData",
-				"inputAccount" : "PayAccount.exeCardIdResponse",
+				"inputAccount" : "PayAccount.exeCardIdResponse"
 			};
 
 			var transAmount = cacheData.transAmount;

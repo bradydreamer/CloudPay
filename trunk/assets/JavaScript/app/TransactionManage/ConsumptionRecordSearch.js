@@ -10,7 +10,7 @@ define(['Moo'], function() {
 			var msg = JSON.parse(data);
 			var params = {
 				startDate : msg.startDate + "000000",
-				endDate : msg.endDate + "235959",
+				endDate : msg.endDate + "235959"
 			};
 			//save startDate and endDate to global variable
 			window.TransactionManageIndex.refresh = undefined;

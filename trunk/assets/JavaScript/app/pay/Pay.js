@@ -16,7 +16,7 @@ define(['Moo'], function(Moo) {
 
 	Pay.exeSendCode = function(params) {
 		var req = {
-			"data" : params.data8583,
+			"data" : params.data8583
 		};
 		ConsumptionData.dataForPayment.req8583 = params.data8583;
 		Net.connect("msc/pay/consume", req, actionAfterSend, true);
@@ -28,7 +28,7 @@ define(['Moo'], function(Moo) {
 				ConsumptionData.dataForPayment.isSendCode = null;
 
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 				window.data8583.convert8583(convertData, actionAfterConvert);
 			} else {
@@ -68,7 +68,7 @@ define(['Moo'], function(Moo) {
 			"oriTxnId" : params.oriTxnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 		ConsumptionData.dataForPayment.req8583 = params.data8583;
 		ConsumptionData.dataForPayment.transType = params.transType;
@@ -77,7 +77,7 @@ define(['Moo'], function(Moo) {
 		function actionAfterPay(params) {
 			if (params.responseCode == "0") {
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 				ConsumptionData.dataForPayment.res8583 = params.data;
 				ConsumptionData.dataForPayment.txnId = params.txnId;
@@ -102,7 +102,7 @@ define(['Moo'], function(Moo) {
 			"authNo" : params.authNo,
 			"issuerId" : params.issuerId,
 			"dateExpr" : params.dateExpr,
-			"stlmDate" : params.stlmDate,
+			"stlmDate" : params.stlmDate
 		};
 		window.RMS.save("transBackupInfo", req);
 
@@ -187,7 +187,7 @@ define(['Moo'], function(Moo) {
 
 		function reSignAction() {
 			var indexParams = {
-				"signature" : false,
+				"signature" : false
 			};
 			RMS.save(ConsumptionData.dataForPayment.brhKeyIndex, indexParams);
 			window.util.exeActionWithSigninChecked(function() {
@@ -358,7 +358,7 @@ define(['Moo'], function(Moo) {
 					"brhTermId" : cashData.brhTermId,
 					"merchId" : cashData.merchId,
 					"iposId" : cashData.iposId,
-					"transType" : cashData.transType,
+					"transType" : cashData.transType
 				};
 				msg.confirm = "Pay.restart";
 				Scene.showScene("OrderDetail", "", msg);
@@ -419,7 +419,7 @@ define(['Moo'], function(Moo) {
 				"totalAmount" : ConsumptionData.dataForMultiPay.totalAmount,
 				"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount,
 				"result" : ConsumptionData.dataForMultiPay.result,
-				"orderList" : ConsumptionData.dataForMultiPay.orderList,
+				"orderList" : ConsumptionData.dataForMultiPay.orderList
 			};
 			Scene.goBack("MultiPayRecord", formData);
 			if (ConsumptionData.dataForPayment.isExternalOrder == true) {
@@ -433,7 +433,7 @@ define(['Moo'], function(Moo) {
 						"paidAmount" : ConsumptionData.dataForMultiPay.paidAmount,
 						"result" : ConsumptionData.dataForMultiPay.result,
 						"couponAmount" : ConsumptionData.dataForPayment.couponAmount,
-						"orderList" : ConsumptionData.dataForMultiPay.orderList,
+						"orderList" : ConsumptionData.dataForMultiPay.orderList
 					});
 					ConsumptionData.resetMultiData();
 				} else if (ConsumptionData.dataForPayment.cashPay == true) {
@@ -443,7 +443,7 @@ define(['Moo'], function(Moo) {
 						"paidAmount" : ConsumptionData.dataForPayment.paidAmount,
 						"changeAmount" : ConsumptionData.dataForPayment.changeAmount,
 						"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
-						"orderList" : [order],
+						"orderList" : [order]
 					});
 				} else {
 					Scene.goBack("first", {
@@ -452,7 +452,7 @@ define(['Moo'], function(Moo) {
 						"couponAmount" : ConsumptionData.dataForPayment.couponAmount,
 						"orderNo" : ConsumptionData.dataForPayment.orderNo,
 						"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
-						"orderList" : [order],
+						"orderList" : [order]
 					});
 				}
 			} else {
@@ -480,7 +480,7 @@ define(['Moo'], function(Moo) {
 			"oriTxnId" : params.oriTxnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 		ConsumptionData.dataForPayment.req8583 = params.data8583;
 		ConsumptionData.dataForPayment.transType = params.transType;
@@ -489,7 +489,7 @@ define(['Moo'], function(Moo) {
 		function actionAfterPreAuth(params) {
 			if (params.responseCode == "0") {
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 
 				ConsumptionData.dataForPayment.res8583 = params.data;
@@ -524,7 +524,7 @@ define(['Moo'], function(Moo) {
 			"oriTxnId" : ConsumptionData.dataForPayment.txnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 		if (params.cardNo != ConsumptionData.dataForPayment.F02) {
 			Scene.alert("刷卡错误，请刷原卡!", function() {
@@ -539,7 +539,7 @@ define(['Moo'], function(Moo) {
 		function actionAfterPreAuthComplete(params) {
 			if (params.responseCode == "0") {
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 
 				ConsumptionData.dataForPayment.res8583 = params.data;
@@ -570,7 +570,7 @@ define(['Moo'], function(Moo) {
 			"oriTxnId" : ConsumptionData.dataForPayment.txnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 		if (params.cardNo != ConsumptionData.dataForPayment.F02) {
 			Scene.alert("刷卡错误，请刷原卡!", function() {
@@ -585,7 +585,7 @@ define(['Moo'], function(Moo) {
 		function actionAfterPreAuthSettlement(params) {
 			if (params.responseCode == "0") {
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 
 				ConsumptionData.dataForPayment.res8583 = params.data;
@@ -616,7 +616,7 @@ define(['Moo'], function(Moo) {
 			"oriTxnId" : ConsumptionData.dataForPayment.txnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 		if (params.cardNo != ConsumptionData.dataForPayment.F02) {
 			Scene.alert("刷卡错误，请刷原卡!", function() {
@@ -631,7 +631,7 @@ define(['Moo'], function(Moo) {
 		function actionAfterPreAuthCancel(params) {
 			if (params.responseCode == "0") {
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 
 				ConsumptionData.dataForPayment.res8583 = params.data;
@@ -662,7 +662,7 @@ define(['Moo'], function(Moo) {
 			"oriTxnId" : ConsumptionData.dataForPayment.txnId,
 			"oriBatchNo" : params.oriBatchNo,
 			"oriTraceNo" : params.oriTraceNo,
-			"oriTransTime" : params.oriTransTime,
+			"oriTransTime" : params.oriTransTime
 		};
 		if (params.cardNo != ConsumptionData.dataForPayment.F02) {
 			Scene.alert("刷卡错误，请刷原卡!", function() {
@@ -677,7 +677,7 @@ define(['Moo'], function(Moo) {
 		function actionAfterPreAuthCompleteCancel(params) {
 			if (params.responseCode == "0") {
 				var convertData = {
-					"data8583" : params.data,
+					"data8583" : params.data
 				};
 
 				ConsumptionData.dataForPayment.res8583 = params.data;

@@ -94,7 +94,7 @@ define(['Moo'], function() {
 				if (typeId == util.getTransType("DELIVERY_VOUCHER")) {
 					var formData = {
 						"open_brh" : open_brh,
-						"payment_id" : payment_id,
+						"payment_id" : payment_id
 					};
 					formData.openBrhName = open_brh_name;
 					formData.brhMchtId = brhMchtId;
@@ -111,7 +111,7 @@ define(['Moo'], function() {
 
 					var formData = {
 						"btn_swipe" : 1,
-						"swipeCard" : "PayMethod.gotoBalanceResult",
+						"swipeCard" : "PayMethod.gotoBalanceResult"
 					};
 					formData.openBrhName = open_brh_name;
 					formData.brhMchtId = brhMchtId;

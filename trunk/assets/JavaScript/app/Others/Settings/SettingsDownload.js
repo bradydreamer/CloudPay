@@ -52,7 +52,7 @@ define(['Moo'], function() {
 				var propertyList = [{
 					name : "loading",
 					key : "process",
-					value : Math.ceil(_currentStep * 100 / _totalSteps),
+					value : Math.ceil(_currentStep * 100 / _totalSteps)
 				}];
 				Scene.setProperty("SettingsDownload", propertyList);
 			}, 100);
@@ -60,7 +60,7 @@ define(['Moo'], function() {
 
 		reqInfo : function() {
 			var req = {
-				merchId : window.user.merchId,
+				merchId : window.user.merchId
 			};
 			//Net.asynConnect("merchant/prdtInfoByMerid", req, callBack_reqInfo);msc/payment/info/query
 			//Net.asynConnect("merchant/paymentQuery", req, callBack_reqInfo);
@@ -99,7 +99,7 @@ define(['Moo'], function() {
 					"typeName" : prdtList[i]["classes"],
 					"typeId" : prdtList[i]["content"],
 					"printType" : prdtList[i]["print_type"],
-					"misc" : prdtList[i]["misc"],
+					"misc" : prdtList[i]["misc"]
 				};
 
 				var templates = prdtList[i].templates;
@@ -109,7 +109,7 @@ define(['Moo'], function() {
 					_templateList[templates[j]["templateName"]] = {
 						"paymentId" : _settingParams[i].paymentId,
 						"openBrh" : _settingParams[i].openBrh,
-						"templateName" : templates[j]["templateName"],
+						"templateName" : templates[j]["templateName"]
 					};
 				}
 
@@ -122,13 +122,13 @@ define(['Moo'], function() {
 					"brhTermId" : prdtList[i]["brh_term_id"],
 					"prdtNo" : prdtList[i]["prdt_no"],
 					"printType" : prdtList[i]["print_type"],
-					"misc" : prdtList[i]["misc"],
+					"misc" : prdtList[i]["misc"]
 				});
 
 				var indexParams = {
 					"signature" : false,
 					"batchId" : 0,
-					"transId" : 0,
+					"transId" : 0
 				};
 				RMS.save(_settingParams[i].brhKeyIndex, indexParams);
 			};
@@ -158,7 +158,7 @@ define(['Moo'], function() {
 				callBack1_dowload();
 			} else {
 				var req = {
-					"templateName" : template.templateName,
+					"templateName" : template.templateName
 				};
 				Net.asynConnect("msc/payment/template/query", req, callBack1_dowload);
 			}
@@ -182,7 +182,7 @@ define(['Moo'], function() {
 
 		downloadMerchantInfo : function() {
 			var req = {
-				merchId : window.user.merchId,
+				merchId : window.user.merchId
 			};
 			Net.asynConnect("msc/cust/info/query", req, afterGetMerchantInfo);
 
@@ -193,7 +193,7 @@ define(['Moo'], function() {
 				var params = {
 					merchId : data.mer_id,
 					machineId : window.user.machineId,
-					merchName : data.mer_name,
+					merchName : data.mer_name
 				};
 				RMS.save("merchant", params);
 				ServiceMerchInfo.setMerchInfo(params);
@@ -210,7 +210,7 @@ define(['Moo'], function() {
 				case 0:
 					RMS.clear("merchSettings", function() {
 						RMS.save("merchSettings", {
-							"settingString" : JSON.stringify(_settingParams),
+							"settingString" : JSON.stringify(_settingParams)
 						});
 					});
 
