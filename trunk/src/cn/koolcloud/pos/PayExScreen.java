@@ -104,6 +104,8 @@ public class PayExScreen extends WelcomeScreen {
 			currentController = null;
 		}
 		ClientEngine.engineInstance().setPayExController(this);
+		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.loadJs(this.getString(R.string.controllerJSName_External));
 
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
 			ClientEngine.engineInstance().showWaitingDialog(context, null,
@@ -242,7 +244,9 @@ public class PayExScreen extends WelcomeScreen {
 						"merchant");
 		newMerchantMap.put("pwd", "_TDS_" + payInfo.pwd);
 		newMerchantMap.put("ssn", android.os.Build.SERIAL);
-		newMerchantMap.put("merchId", map.get("merchId").toString());
+		if (null != map.get("merchId")) {
+			newMerchantMap.put("merchId", map.get("merchId").toString());
+		}
 		newMerchantMap.put("operator", payInfo.userName);
 		UtilForDataStorage.savePropertyBySharedPreferences(
 				MyApplication.getContext(), "merchant", newMerchantMap);
@@ -358,6 +362,7 @@ public class PayExScreen extends WelcomeScreen {
 		}
 
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.loadJs(getString(R.string.controllerJSName_OrderDetail));
 		js.callJsHandler("External.startReverse", msg);
 	}
 

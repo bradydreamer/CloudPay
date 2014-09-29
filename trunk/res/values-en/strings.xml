@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="app_name">SMARTPOS</string>
+    <string name="backButton">BACK</string>
+    <string name="desc_image">image</string>
+    <string name="notice_aboutpwd">PLEASE USE DIFFERENT PASSWORD FOR LOGIN AND PAYMENT. SUGGESTED PASSWORD TYPE CONSISTED OF MINIMUM 6 DIGITS LENGTH MIXTURE OF CAPITAL, LOWER CASE LETTERS AND DIGITS. PLEASE CHANGE PASSWORD PERIODICALLY FOR ACCOUNT SECURITY</string>
+    <string name="formData_key_title">title</string>
+    <string name="formData_key_data">data</string>
+    <string name="formData_key_transAmount">transAmount</string>
+    <string name="formData_key_payAmount">payAmount</string>
+    <string name="formData_key_payMethod">payMethod</string>
+    <string name="formData_value_payMethod_barCode">barCode</string>
+    <string name="formData_value_payMethod_soundWave">soundWave</string>
+    <string name="formData_key_notPaid">notPaid</string>
+    <string name="formData_key_mOrderId">mOrderId</string>
+    <string name="formData_key_payType">payType</string>
+    <string name="formData_key_payData_field0">field0</string>
+    <string name="formData_key_payData_field1">field1</string>
+    <string name="formData_key_payData_field2">field2</string>
+    <string name="formData_key_payData_field3">field3</string>
+    <string name="formData_key_payData_field4">field4</string>
+    <string name="transCurrency_text"> DOLLAR </string>
+
+    <!-- for intent -->
+    <string name="intent_extra_name_formData">formData</string>
+    <string name="lv_loadmore_row_lv_notice_show">PRESS TO SEE MORE</string>
+    <string name="lv_loadmore_row_lv_notice_loading">LOADING&#8230;</string>
+
+    <!-- netconnect -->
+    <string name="netconnect_result_no_connection">NO NETWORK CONNECTION</string>
+    <string name="netconnect_result_RESPONSECODE_EXCEPTION_TIMEOUT">NETWORK CONNECTION TIMEOUT</string>
+    <string name="netconnect_result_redirection">REDIRECTION</string>
+    <string name="netconnect_result_SC_BAD_REQUEST">INVALID REQUEST</string>
+    <string name="netconnect_result_SC_UNAUTHORIZED">UNAUTHORIZED</string>
+    <string name="netconnect_result_SC_FORBIDDEN">ACCESS REJECTED</string>
+    <string name="netconnect_result_SC_NOT_FOUND">QUERY CONTENT NOT FOUND</string>
+    <string name="netconnect_result_request_error">CLIENT END ERROR</string>
+    <string name="netconnect_result_SC_BAD_GATEWAY">GATEWAY ERROR</string>
+    <string name="netconnect_result_SC_SERVICE_UNAVAILABLE">SERVICE UNAVAILABLE</string>
+    <string name="netconnect_result_SC_GATEWAY_TIMEOUT">GATEWAY TIMEOUT</string>
+    <string name="netconnect_result_SC_HTTP_VERSION_NOT_SUPPORTED">HTTP VERSION NOT SUPPORTED</string>
+    <string name="netconnect_result_server_error">SERVER ERROR</string>
+    <string name="netconnect_result_default">COMMUNICATION FAIL</string>
+
+    <!-- OptionsMenu -->
+    <string name="opitonsMenu_quitApp_text">EXIT</string>
+
+    <!-- activity_home_controller.xml -->
+
+
+    <!-- activity_transaction_manage_controller.xml -->
+    <string name="transaction_manage_module_title_consumption_record_today">CONSUMPTION DETAILS TODAY</string>
+    <string name="transaction_manage_module_title_consumption_record_old">CONSUMPTION HISTORY</string>
+    <string name="transaction_manage_module_title_delivery_voucher_record">DELIVERY VOUCHER RECORD</string>
+    <string name="transaction_manage_module_title_consumption_summary">TOTAL CONSUMPTION TODAY</string>
+    <string name="transaction_manage_module_title_single_record_search">QUICK QUERY</string>
+
+    <!-- activity_settings_index_controller.xml -->
+    <string name="settins_index_module_title_login">LOGIN</string>
+    <string name="settins_index_module_title_logout">LOGOUT</string>
+    <string name="settins_index_module_title_merchant_info">CLIENT INFORMATION</string>
+    <string name="settins_index_module_title_setMerchId">RESET CLIENT ID</string>
+    <string name="settins_index_module_title_setMachineId">SET DEVICE ID</string>
+    <string name="settins_index_module_title_clearReverseData">CLEAR REVERSE DATA</string>
+    <string name="settins_index_module_title_downloadMerchData">SYSTEM INITIAL</string>
+    <string name="settins_index_module_title_set_trans_id">SET TRANSACTION ID</string>
+    <string name="settins_index_module_title_trans_batch">BATCH PAYMENT</string>
+    <string name="settins_index_module_title_sign_up">CREATE CASHIER</string>
+    <string name="settins_index_module_title_modify_pwd">CHANGE PASSWORD</string>
+    <string name="settins_index_module_title_list_users">ACCOUNT INFORMATION</string>
+    
+    <!-- activity_others_index_controller.xml -->
+    <string name="others_index_module_title_pre_authorization">PRE-AUTHORIZATION</string>
+    <string name="others_index_module_title_balance">BALANCE QUERY</string>
+    <string name="others_index_module_title_settings">SETTING</string>
+    <string name="balance_result_tv_title_balance">BALANCE OUTSTANDING:</string>
+    <string name="pin_pad_tv_input_pwd">INPUT PASSWORD</string>
+    <string name="pin_pad_tv_java_input_authCode">INPUT VERIFICATION CODE </string>
+    <string name="del_voucher_info_btn_confirm">FINISH</string>
+    <string name="del_voucher_info_tv_voucherId">VOUCHER ID</string>
+    <string name="del_voucher_info_tv_productName">PRODUCT NAME</string>
+    <string name="del_voucher_info_tv_dateRange">VALIDITY PERIOD</string>
+    <string name="del_voucher_info_tv_details">DETAILS</string>
+
+    <!-- activity_consumption_record_controller.xml -->
+    <string name="consumption_record_tv_orderSource">ORDER SOURCE</string>
+    <string name="consumption_record_tv_transType">TRANSACTION TYPE</string>
+    <string name="consumption_record_tv_payType">PAYMENT TYPE</string>
+    <string name="consumption_record_tv_mOrderId">ORDER ID</string>
+    <string name="consumption_record_tv_rrn">REFERENCE ID</string>
+    <string name="consumption_record_tv_transDate">DATE</string>
+    <string name="consumption_record_tv_transTime">TIME</string>
+    <string name="consumption_record_tv_transAmount">VALUE (DOLLAR)</string>
+    <string name="consumption_record_tv_orderStatus">STATUS</string>
+    <string name="consumption_record_tv_paidAmount">AMOUNT PAID</string>
+    <string name="consumption_record_tv_balance">BALANCE</string>
+    <string name="consumption_record_tv_totalAmount">TOTAL ORDER AMOUNT</string>
+    
+    <!-- activity_list_user_info_controller.xml -->
+    <string name="users_user_name">USER NAME</string>
+    <string name="users_user_gradeId">GRADE</string>
+    <string name="users_user_aliasName">ALIAS NAME</string>
+    <string name="users_user_lastLoginTime">LAST LOGIN TIME</string>
+    <string name="users_user_loginCount">LOGIN COUNT</string>
+    <string name="users_username_choose">SELECT</string>
+
+    <!-- activity_multipay_record_controller.xml -->
+    <string name="multipay_record_tv_no">SERIAL NUMBER</string>
+    <string name="multipay_record_tv_transType">PAYMENT TYPE</string>
+    <string name="multipay_record_tv_rrn">REFERENCE ID</string>
+    <string name="multipay_record_tv_transAmount">VALUE AMOUNT</string>
+    <string name="multipay_record_tv_orderStatus">STATUS</string>
+    <string name="multipay_record_tv_paidAmount">AMOUNT PAID</string>
+    <string name="multipay_record_tv_balance">BALANCE</string>
+    <string name="multipay_record_tv_totalAmount">TOTAL ORDER AMOUNT</string>
+    <string name="multipay_record_btn_text_confirm">COMPLETE</string>
+    <string name="multipay_record_btn_text_pay">CONTINUE PAY</string>
+
+    <!-- activity_order_detail_controller.xml -->
+    <string name="order_detail_tv_transDate">TRANS TIME</string>
+    <string name="order_detail_tv_transAmount">AMOUNT</string>
+    <string name="order_detail_operator">OPERATOR</string>
+    <string name="order_detail_tv_transType">TRANS TYPE</string>
+    <string name="order_detail_btn_operation_text_refund">RETURN ORDER</string>
+    <string name="order_detail_btn_operation_text_print">PRINT</string>
+    <string name="order_detail_btn_operation_text_cancel">CANCEL</string>
+    <string name="order_detail_btn_operation_text_auth_complete">COMPLETE ONLINE</string>
+    <string name="order_detail_btn_operation_text_auth_settlement">COMPLETE OFFLINE</string>
+    <string name="order_detail_btn_operation_text_confirm">CONFIRM</string>
+    <string name="order_detail_btn_operation_cancel">CANCEL</string>
+    <string name="order_detail_btn_operation_text_coupon">COUPON</string>
+    <string name="order_detail_btn_sent_text_coupon">ISSUED</string>
+    <string name="order_detail_tv_payType">PAY TYPE</string>
+    <string name="order_detail_tv_orderId">REFERENCE ID</string>
+    <string name="order_detail_tv_orderStatus">PAYMENT STATUS</string>
+    <string name="order_detail_tv_authCode">AUTHORIZATION CODE</string>
+
+    <!-- activity_login_controller.xml -->
+    <string name="login_tv_userName">OPERATOR</string>
+    <string name="login_tv_pwd">PASSWORD</string>
+    <string name="msg_login">LOGIN</string>
+    <string name="msg_mod_pwd_submit">CONFIRM</string>
+    <string name="msg_mod_pwd_hint_pwd_origin_input">ORIGINAL PASSWORD</string>
+    <string name="msg_mod_pwd_hint_pwd_input">NEW PASSWORD</string>
+    <string name="msg_mod_pwd_hint_pwd_input_confirm">CONFIRM PASSWORD</string>
+    <string name="msg_mod_pwd_hint_error_dialog">INCONFORMITY PASSWORD, PLEASE INPUT AGAIN</string>
+    <string name="msg_mod_pwd_hint_diffent_pwd_dialog">PLEASE INPUT A DIFFERENT PASSWORD</string>
+    <string name="msg_account_hint">INPUT ACCOUNT ID</string>
+    <string name="msg_pwd_hint">INPUT PASSWORD</string>
+    
+    <string name="msg_printer_issues">PLEASE CHECK PRINTER STATUS AND PAPER</string>
+    
+    <!-- activity_login_controller.xml -->
+    <string name="create_userName">USER NAME</string>
+    <string name="create_userName_pwd_1st">PASSWORD</string>
+    <string name="create_userName_pwd_2nd">PLEASE INPUT THE PASSWARD AGAIN</string>
+    <string name="createOK">CREATE</string>
+
+    <!-- activity_consumption_record_search_controller.xml -->
+    <string name="consumption_record_search_tv_startDate">START DATE</string>
+    <string name="consumption_record_search_tv_endDate">END DATE</string>
+    <string name="consumption_record_search_btn_confirm_text">CONFIRM</string>
+
+    <!-- activity_pay_method.xml -->
+    <string name="pay_method_title_card">SWIPING CARD</string>
+    <string name="pay_method_title_account">ALLINFNT ACCOUNT</string>
+
+    <!-- ConsumptionRecordSearchController.java -->
+    <string name="consumption_record_search_java_dateRangeNotice">ONLY SEARCH OF CONSUMPTION RECORD IN LAST 6 MONTHS</string>
+
+    <!-- activity_del_voucher_record_search_controller.xml -->
+    <string name="del_voucher_record_search_tv_startDate">START DATE</string>
+    <string name="del_voucher_record_search_tv_endDate">END DATE</string>
+    <string name="del_voucher_record_search_btn_confirm_text">CONFIRM</string>
+    <string name="del_voucher_record_listTitle_voucherName">COUPONS NAME</string>
+    <string name="del_voucher_record_listTitle_date">DELIVERY DATE</string>
+    <string name="del_voucher_record_listTitle_voucherId">COUPONS VOUCHER ID</string>
+    <string name="del_voucher_record_listTitle_voucherNum">QUANTITY</string>
+    <string name="del_voucher_record_listTitle_operation">PROCESS</string>
+
+    <!-- DelVoucherRecordSearchController.java -->
+    <string name="del_voucher_record_search_java_dateRangeNotice">START DATE MUST EARLIER THAN END DATE</string>
+
+    <!-- DelVoucherRecordController.java -->
+    <string name="del_voucher_record_notice_cancelConfirm_prefix">DO YOU CONFIRM TO DENY VOUCHER NUMBER</string>
+    <string name="del_voucher_record_notice_cancelConfirm_suffix">FROM DELIVERY</string>
+
+    <!-- ClientEngine.java -->
+    <string name="alert_btn_positive">CONFIRM</string>
+    <string name="alert_btn_negative">CANCEL</string>
+    <string name="waiting_dialog_msg_reverse">REVERSING</string>
+
+    <!-- activity_merchant_info_controller.xml -->
+    <string name="merchant_info_tv_merchId">KOOLYUN CLIENT ID:</string>
+    <string name="merchant_info_tv_machineId">KOOLYUN DEVICE ID:</string>
+    <string name="merchant_info_tv_merchName">CLIENT NAME:</string>
+    <string name="merchant_info_tv_merchAccount">CLIENT SETTLEMENT ACCOUNT</string>
+
+    <!-- activity_transAmount_controller.xml -->
+    <string name="input_money_et_money_hint">0</string>
+
+    <!-- activity_pay_account_controller.xml -->
+    <string name="pay_account_tv_amount">PAYMENT AMOUNT</string>
+    <string name="pay_account_btn_qrcode">2-D CODE</string>
+    <string name="pay_account_btn_sound">SONIC PAYMENT</string>
+    <string name="pay_account_btn_swiper">SWIPING CARD</string>
+    <string name="pay_account_btn_keyboard">MANUAL INPUT</string>
+    <string name="pay_account_tag_qrcode">qrcode</string>
+    <string name="pay_account_tag_sound">sound</string>
+    <string name="pay_account_tag_swiper">swiper</string>
+    <string name="pay_account_tag_keyboard">keyboard</string>
+
+    <!-- controllerName -->
+    <string name="controllerName_Home">Home</string>
+    <string name="controllerName_DelVoucherRecord">DelVoucherRecord</string>
+    <string name="controllerName_ConsumptionRecord">ConsumptionRecord</string>
+    <string name="controllerName_ListUserInfo">ListUserInfo</string>
+    <string name="controllerName_OrderDetail">OrderDetail</string>
+    <string name="controllerName_ConsumptionSummary">ConsumptionSummary</string>
+    <string name="controllerName_BalanceResult">BalanceResult</string>
+    <string name="controllerName_OthersIndex">OthersIndex</string>
+    <string name="controllerName_SettingsIndex">SettingsIndex</string>
+    <string name="controllerName_SettingsDownload">SettingsDownload</string>
+    <string name="controllerName_InputMoney">InputMoney</string>
+    <string name="controllerName_TransAmount">TransAmount</string>
+    <string name="controllerName_PayAccount">PayAccount</string>
+    <string name="controllerName_PayMethod">PayMethod</string>
+    <string name="controllerName_TransactionManageIndex">TransactionManageIndex</string>
+    <string name="controllerName_MultiPayIndex">MultiPayIndex</string>
+    <string name="controllerName_MultiPayRecord">MultiPayRecord</string>
+
+    <!-- controllerJSName -->
+    <!-- if modified,modify android.html together -->
+    <string name="controllerJSName_External">Common/external</string>
+    <string name="controllerJSName_Home">Common/home</string>
+    <string name="controllerJSName_PinPad">Common/PinPad</string>
+    <string name="controllerJSName_DelVoucherConsume">DeliveryVoucher/deliveryVocherConsume</string>
+    <string name="controllerJSName_InputDelVoucherNum">DeliveryVoucher/InputDelVoucherNum</string>
+    <string name="controllerJSName_DelVoucherInfo">DeliveryVoucher/DelVoucherInfo</string>
+    <string name="controllerJSName_SetMerchId">Others/Settings/SetMerchId</string>
+    <string name="controllerJSName_SetMachineId">Others/Settings/SetMachineId</string>
+    <string name="controllerJSName_ModifyPwd">Others/Settings/ModifyPwd</string>
+    <string name="controllerJSName_CreateUser">Others/Settings/CreateUser</string>
+    <string name="controllerJSName_SetTransId">Others/Settings/SetTransId</string>
+    <string name="controllerJSName_PaymentMechanismInfo">Others/Settings/PaymentMechanismInfo</string>
+    <string name="controllerJSName_TransBatch">Others/Settings/TransBatch</string>
+    <string name="controllerJSName_SignIn">Others/Settings/SignIn</string>
+    <string name="controllerJSName_Login">Others/Settings/Login/index</string>
+    <string name="controllerJSName_SettingsIndex">Others/Settings/index</string>
+    <string name="controllerJSName_SettingsDownload">Others/Settings/settingsDownload</string>
+    <string name="controllerJSName_ListUserInfo">Others/Settings/ListUserInfo</string>
+    <string name="controllerJSName_OthersIndex">Others/index</string>
+    <string name="controllerJSName_BalanceResult">Others/BalanceResult</string>
+    <string name="controllerJSName_TransactionManageIndex">TransactionManage/index</string>
+    <string name="controllerJSName_ConsumptionRecord">TransactionManage/ConsumptionRecord</string>
+    <string name="controllerJSName_ConsumptionRecordSearch">TransactionManage/ConsumptionRecordSearch</string>
+    <string name="controllerJSName_DelVoucherRecordSearch">TransactionManage/DelVoucherRecordSearch</string>
+    <string name="controllerJSName_DelVoucherRecord">TransactionManage/DelVoucherRecord</string>
+    <string name="controllerJSName_OrderDetail">TransactionManage/OrderDetail</string>
+    <string name="controllerJSName_TransAmount">pay/inputAmount</string>
+    <string name="controllerJSName_PayAccount">pay/payAccount</string>
+    <string name="controllerJSName_PayMethod">pay/payMethod</string>
+    <string name="controllerJSName_MultiPay">pay/multipay</string>
+
+    <!-- title -->
+    <string name="title_activity_home_controller">SMARTPAY</string>
+    <string name="title_activity_multi_pay_controller">COMBO PAYMENT</string>
+    <string name="title_activity_input_money_controller">PLEASE INPUT AMOUNT</string>
+    <string name="title_activity_login_controller">CHECK IN</string>
+    <string name="title_activity_configure_controller">LOGIN</string>
+    <string name="title_activity_consumption_record">CONSUMPTION RECORD</string>
+    <string name="title_activity_order_detail">CONSUMPTION DETAILS</string>
+    <string name="title_activity_consumption_summary">TOTAL CONSUMPTION TODAY</string>
+    <string name="title_activity_consumption_record_search_controller">CONSUMPTION HISTORY</string>
+    <string name="title_activity_transaction_manage_index">TRANSACTION MANAGEMENT</string>
+    <string name="title_activity_trade_statistics_search_controller">CONSUMPTION HISTORY STATISTICS</string>
+    <string name="title_activity_pin_pad_controller">PLEASE INPUT PASSWORD</string>
+    <string name="title_activity_settings_index_controller">SETTING</string>
+    <string name="title_activity_others_index">OTHERS</string>
+    <string name="title_activity_set_merch_id_controller">SETUP CLIENT ID</string>
+    <string name="title_activity_merchant_info_controller">BUSINESS INFORMATION</string>
+    <string name="title_activity_settings_download_controller">PARAMETERS DOWNLOAD</string>
+    <string name="title_activity_input_del_voucher_num_controller">INPUT DELIVERY QtY.</string>
+    <string name="title_activity_del_voucher_way_chosen_controller">WAY CHOSEN</string>
+    <string name="title_activity_input_del_voucher_id_controller">INPUT VOUCHER ID</string>
+    <string name="title_activity_set_machine_id_controller">SET DEVICE ID</string>
+    <string name="title_activity_modify_pwd_controller">CHANGE PASSWORD</string>
+    <string name="title_activity_create_user_controller">CREATE USER</string>
+    <string name="title_activity_del_voucher_record_search_controller">DELIVERY RECORD QUERY</string>
+    <string name="title_activity_del_voucher_record_controller">DELIVERY RECORD</string>
+    <string name="title_activity_del_voucher_info_controller">VOUCHER INFORMATION</string>
+    <string name="title_activity_swipe_card_controller">PLEASE SWIPE CARD</string>
+    <string name="title_activity_manual_goods_controller">PRODUCTS LIST</string>
+    <string name="title_activity_input_coupon_id_controller">INPUT COUPON ID</string>
+    <string name="title_activity_input_quick_pay_id_controller">INPUT QUICK PAY ID</string>
+    <string name="title_activity_input_member_id_controller">INPUT MEMBER ID</string>
+    <string name="title_activity_coupon_goods_controller">PRODUCT INFORMATION</string>
+    <string name="title_activity_input_ap_account_controller">INPUT ALLINFNT ACCOUNT ID</string>
+    <string name="title_activity_balance_result_controller">BALANCE OUTSTANDING</string>
+    <string name="title_activity_external_order_info_controller">ORDER INFORMATION</string>
+    <string name="title_activity_single_record_search_controller">PLEASE INPUT REFERENCE ID</string>
+    <string name="title_activity_set_trans_id_controller">SET TRANSACTION ID</string>
+    <string name="title_activity_set_trans_batch_controller">BATCH PAYMENT</string>
+    <string name="title_activity_sign_in_controller">SIGN IN</string>
+    <string name="title_activity_pay_mechanism_controller">PLEASE CHOOSE PAYMENT INSTITUTION</string>
+    <string name="title_activity_list_users_controller">USER DETAILS</string>
+    <string name="title_activity_qrcode_controller">PLEASE SWEEP CODE</string>
+    <string name="title_activity_my_prepaid_card_controller">MY COUPONS</string>
+    
+    <!-- for home -->
+    <string name="home_activity_home">HOME</string>
+    <string name="home_activity_setting">SETTING</string>
+    <string name="home_activity_transaction_inquiries">QUERY</string>
+    <string name="home_activity_multi_pay">PAYMENT</string>
+    <string name="home_activity_check_update">CHECK UPDATE</string>
+
+    <!-- for multi pay -->
+    <string name="multi_pay_btn_close">CLOSE</string>
+    <string name="multi_pay_btn_record">ORDER</string>
+    
+    <!-- dialog msg -->
+    <string name="str_cancel">CANCEL</string>
+    <string name="str_ok">CONFIRM</string>
+	<string name="str_update">UPDATE</string>
+	<string name="str_check_update">CHECK UPDATE</string>
+    <string name="str_update_later">UPDATE LATER</string>
+    <string name="str_update_now">UPDATE NOW</string>
+    <string name="str_about_programme">ABOUT</string>
+    <string name="str_bulletin_msg">BULLETIN</string>
+    <string name="str_about">ABOUT</string>
+    <string name="str_exit">EXIT</string>
+    <string name="str_version_name">VERSION ID</string>
+    <string name="str_current_version_name">CURRENT VERSION:</string>
+    <string name="str_new_version">LATEST VERSION:</string>
+    <string name="str_install_appstore_first">INSTALL APPSTORE TO UPDATE</string>
+    <string name="str_exit_message">DO YOU REALLY WANT TO EXIT</string>
+    <string name="already_latest_version">ALREADY LATEST VERSION</string>
+    <string name="about_info">Backboned by cloud pos, Smartpos is an unparallel next-generation payment platform and provides the total solution of cash access point service, which integrates swiping card, 2D-code and other payment methods.</string>
+    
+    <!-- coupon msg -->
+    <string name="str_coupon_app_not_installed">COUPON APP HASN\'T INSTALLED,PLEASE INSTALL FIRST.</string>
+    <string name="str_coupon_amount_null">COUPON AMOUNT NULL</string>
+    <string name="str_coupon_service_binding">PLEASE START COUPON APP TO INITIATE SERVICE.</string>
+    
+    <!-- for trans batch -->
+    <string name="trans_batch_alert_content">BATCH PROCESSING,PLEASE WAIT.</string>
+    
+    <!-- Dialog devices checking msg -->
+    <string name="dialog_device_check_device_ok_msg">EVERYTHING\'S RIGHT！</string>
+    <string name="dialog_device_checking_device_msg">CHECKING DEVICE,PLEASE WAIT.</string>
+    <string name="dialog_device_checking_now">DEVICE CHECKING,PLEASE WAIT.</string>
+    <string name="dialog_device_check_devices_unusual">DEVICES ERROR,PLEASE CHECK.</string>
+    <string name="dialog_device_check_pinpad_unusual">PINPAD CONNECTION ERROR，mispos NEGELECT.</string>
+    <string name="dialog_device_check_pinpad_usual">PINPAD\'S READY.</string>
+    <string name="dialog_device_check_printer_unusual">PRINTER ERROR.</string>
+    <string name="dialog_device_check_printer_usual">PRITER\'S READY.</string>
+    <string name="dialog_device_check_network_unusual">NETWORK ERROR</string>
+    <string name="dialog_device_check_network_usual">NETWORK READY.</string>
+    <string name="dialog_device_check_self_checking">CHECK AGAIN</string>
+    <string name="dialog_device_check_use_anyway">GO ON USING</string>
+    <string name="dialog_device_check_start_to_use">START TO USE</string>
+    <string name="dialog_device_checking">DEVICE CHECKING...</string>
+    <string name="ping_host_url">www.baidu.com</string>
+    <string name="msg_checking_version_waiting">CHECKING NEWEST VERSION,PLEASE WAITING...</string>
+    <string name="alert_common_warn_msg">WARN</string>
+    <string name="msg_exist_toast">PRESS BACK BUTTON AND EXIT PROGRAM.</string>
+    
+    <!-- device, merchant bar msg -->
+    <string name="bar_koolcloud_merch_name_msg">CLIENT ID：</string>
+    <string name="bar_koolcloud_device_name_msg">DEVICE ID：</string>
+    <string name="bar_acquire_name_msg">ACQUIRER NAME：</string>
+    <string name="bar_acquire_merch_msg">MERCHANT ID：</string>
+    <string name="bar_acquire_merch_msg_pid">PID：</string>
+    <string name="bar_acquire_terminal_msg">TERMINAL ID：</string>
+    <string name="bar_acquire_terminal_msg_beneficiary_account_no">BENEFICIARY ACCOUNT：</string>
+    <!-- for sign in -->
+    <string name="sign_in_alert_content">SIGNIN,PLEASE WAITING</string>
+    
+    <!-- for login -->
+    <string name="customer_id_content">INPUT CUSTOMER ID</string>
+    <string name="operator_id_content">INPUT ACCOUNT</string>
+    <string name="pass_word_content">INPUT PASSWORD</string>
+    <!-- merchant info -->
+    <string name="merchant_info_msg_acquire_institute_name_title">ACQUIRE INSTITUTION NAME</string>
+    <string name="merchant_info_msg_acquire_institute_num_title">MERCHANT ID/PID</string>
+    <string name="merchant_info_msg_acquire_institute_device_no_title">TERMINAL ID/BENEFICIARY ACCOUNT</string>
+    
+    <!-- MisPos -->
+    <string name="mispos_login_msg">LOGIN</string>
+    <string name="mispos_logout_msg">LOGOUT</string>
+    <string name="mispos_consumption_msg">CONSUMPTION</string>
+    <string name="mispos_consumption_reverse_msg">CONSUMPTION REVERSE</string>
+    <string name="mispos_refund_msg">REFUND</string>
+    <string name="mispos_preauthorize_msg">PRE-AUTHORIZATION</string>
+    <string name="mispos_preauthorize_reverse_msg">PRE-AUTHORIZATION REVERSE</string>
+    <string name="mispos_preauthorize_finish_msg">PRE-AUTHORIZATION FINISH</string>
+    <string name="mispos_balance_msg">BALANCE ENQUIRY</string>
+    <string name="mispos_test_msg">COMMUNICATION TEST</string>
+    <string name="mispos_onperate_on_mispos">Please follow the instructions displayed on the screen of mispos; and press \'cancel\' button on mispos to cancel current transaction.
+	</string>
+    <string name="mispos_str_mispos">MisPos</string>
+    <string name="mispos_str_dollar">￥</string>
+    <string name="mispos_tran_success">TRANSACTION SUCCESS</string>
+    <string name="mispos_str_balance">CURRENT BALANCE：</string>
+    <string name="mispos_str_reconnected">PLEASE CHECK THE MISPOS AND TRY AGAIN.</string>
+    <string name="mispos_check_bind_config_msg">bind conflict,PLEASE CHECK YOUR SERVICE PROVIDER。</string>
+    <string name="mispos_amount_msg">AMOUNT：</string>
+    
+    <!-- 现金支付 -->
+    <string name="sum_payable_mark">PAYABLE AMOUNT： </string>
+    <string name="paid_amount_mark">PAID AMOUNT： </string>
+    <string name="change_mark">CHANGE： </string>
+    <string name="no_amount">0.00</string>
+    <string name="input_amount">PLEASE INPUT AMOUNT</string>
+    <string name="amount_unit">RMB</string>
+    <string name="cash_confirm">CONFIRM</string>
+    
+    <!-- list user info -->
+    <string name="user_manager">INCHARGE   </string>
+    <string name="common_operator">OPERATOR</string>
+    <string name="user_delete">DELETE</string>
+    <string name="menu_title">OPTION</string>
+    
+    <!-- 卡券 -->
+    <string name="prepaid_card_balance_str">PREPAID CARD BALANCE</string>
+    <string name="prepaid_card_status_str">PREPAID CARD STATUS</string>
+    <string name="prepaid_card_band_name">PREPAID CARD NAME</string>
+    <string name="prepaid_card_date_time_str">VALIDITY</string>
+    
+    <!-- consumption summary info -->
+    <string name="consumption_summary_merchantName">MERCHANT NAME:</string>
+    <string name="consumption_summary_merchantID">KOOLYUN CLIENT ID:</string>
+    <string name="consumption_summary_mechineID">KOOLYUN DEVICE ID:</string>
+    <string name="consumption_summary_transType">TRANSTYPE</string>
+    <string name="consumption_summary_transCount">TRANSCOUTN</string>
+    <string name="consumption_summary_transAmount">TRANSAMOUNT(RMB)</string>
+    <string name="consumption_summary_consume">CONSUME</string>
+    <string name="consumption_summary_consumeCancel">CONSUME CANCEL</string>
+    <string name="consumption_summary_preAuth">PRE-AUTHORIZATION</string>
+    <string name="consumption_summary_preAuthComplete">PRE-AUTHORIZATION COMPLETE</string>
+    <string name="consumption_summary_preAuthCompleteOffline">PRE-AUTHORIZATION COMPLETE (OFFLINE)</string>
+    <string name="consumption_summary_preAuthCancel">PRE-AUTHORIZATION CANCEL</string>
+    <string name="consumption_summary_preAuthCompleteCancel">PRE-AUTHORIZATION COMPLETE CANCEL</string>
+    
+    
+
+</resources>

@@ -52,9 +52,10 @@
 
 
     <!-- activity_transaction_manage_controller.xml -->
-    <string name="transaction_manage_module_title_consumption_record_today">今日消费记录</string>
-    <string name="transaction_manage_module_title_consumption_record_old">历史消费记录</string>
+    <string name="transaction_manage_module_title_consumption_record_today">今日消费明细</string>
+    <string name="transaction_manage_module_title_consumption_record_old">历史消费明细</string>
     <string name="transaction_manage_module_title_delivery_voucher_record">提货记录</string>
+    <string name="transaction_manage_module_title_consumption_summary">今日消费汇总</string>
     <string name="transaction_manage_module_title_single_record_search">快速查询</string>
 
     <!-- activity_settings_index_controller.xml -->
@@ -64,7 +65,7 @@
     <string name="settins_index_module_title_setMerchId">重置客户号</string>
     <string name="settins_index_module_title_setMachineId">设置设备号</string>
     <string name="settins_index_module_title_clearReverseData">清除冲正数据</string>
-    <string name="settins_index_module_title_downloadMerchData">手动参数更新</string>
+    <string name="settins_index_module_title_downloadMerchData">系统初始化</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
     <string name="settins_index_module_title_trans_batch">批结算</string>
     <string name="settins_index_module_title_sign_up">创建收银员</string>
@@ -129,7 +130,9 @@
     <string name="order_detail_btn_operation_text_auth_complete">联机完成</string>
     <string name="order_detail_btn_operation_text_auth_settlement">离线完成</string>
     <string name="order_detail_btn_operation_text_confirm">确定</string>
+    <string name="order_detail_btn_operation_cancel">取消</string>
     <string name="order_detail_btn_operation_text_coupon">发券</string>
+    <string name="order_detail_btn_sent_text_coupon">已发券</string>
     <string name="order_detail_tv_payType">支付方式</string>
     <string name="order_detail_tv_orderId">参考号</string>
     <string name="order_detail_tv_orderStatus">支付状态</string>
@@ -145,7 +148,7 @@
     <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认新密码</string>
     <string name="msg_mod_pwd_hint_error_dialog">密码不一致，请重新输入</string>
     <string name="msg_mod_pwd_hint_diffent_pwd_dialog">请输入不同的密码</string>
-    <string name="msg_account_hint">请输入账号</string>
+    <string name="msg_account_hint">请输入主管账号</string>
     <string name="msg_pwd_hint">请输入密码</string>
     
     <string name="msg_printer_issues">请检查打印机状态及打印纸！</string>
@@ -216,6 +219,7 @@
     <string name="controllerName_ConsumptionRecord">ConsumptionRecord</string>
     <string name="controllerName_ListUserInfo">ListUserInfo</string>
     <string name="controllerName_OrderDetail">OrderDetail</string>
+    <string name="controllerName_ConsumptionSummary">ConsumptionSummary</string>
     <string name="controllerName_BalanceResult">BalanceResult</string>
     <string name="controllerName_OthersIndex">OthersIndex</string>
     <string name="controllerName_SettingsIndex">SettingsIndex</string>
@@ -269,6 +273,7 @@
     <string name="title_activity_configure_controller">登录</string>
     <string name="title_activity_consumption_record">消费记录</string>
     <string name="title_activity_order_detail">消费详情</string>
+    <string name="title_activity_consumption_summary">今日消费汇总</string>
     <string name="title_activity_consumption_record_search_controller">历史消费记录</string>
     <string name="title_activity_transaction_manage_index">交易管理</string>
     <string name="title_activity_trade_statistics_search_controller">历史消费统计</string>
@@ -277,7 +282,7 @@
     <string name="title_activity_others_index">其他</string>
     <string name="title_activity_set_merch_id_controller">设置客户号</string>
     <string name="title_activity_merchant_info_controller">商户信息</string>
-    <string name="title_activity_settings_download_controller">参数下载</string>
+    <string name="title_activity_settings_download_controller">系统初始化</string>
     <string name="title_activity_input_del_voucher_num_controller">输入提货数量</string>
     <string name="title_activity_del_voucher_way_chosen_controller">方式选择</string>
     <string name="title_activity_input_del_voucher_id_controller">输入提货券号</string>
@@ -302,6 +307,8 @@
     <string name="title_activity_sign_in_controller">签到</string>
     <string name="title_activity_pay_mechanism_controller">请选择支付机构</string>
     <string name="title_activity_list_users_controller">用户详情</string>
+    <string name="title_activity_qrcode_controller">请扫码</string>
+    <string name="title_activity_my_prepaid_card_controller">我的卡券</string>
     
     <!-- for home -->
     <string name="home_activity_home">首页</string>
@@ -348,6 +355,8 @@
     <string name="dialog_device_check_devices_unusual">设备发现异常，请您及时处理！</string>
     <string name="dialog_device_check_pinpad_unusual">密码键盘连接异常，mispos外接刷卡机请忽略。</string>
     <string name="dialog_device_check_pinpad_usual">密码键盘连接正常。</string>
+    <string name="dialog_device_check_mispos_unusual">Mispos连接异常。</string>
+    <string name="dialog_device_check_mispos_usual">Mispos连接正常。</string>
     <string name="dialog_device_check_printer_unusual">打印机未连接好。</string>
     <string name="dialog_device_check_printer_usual">打印机连接正常。</string>
     <string name="dialog_device_check_network_unusual">网络连接不通。</string>
@@ -376,6 +385,7 @@
     <string name="customer_id_content">请输入客户号</string>
     <string name="operator_id_content">请输入账号</string>
     <string name="pass_word_content">请输入密码</string>
+    <string name="remember_pass_word_content">记住密码</string>
     <!-- merchant info -->
     <string name="merchant_info_msg_acquire_institute_name_title">收单机构名称</string>
     <string name="merchant_info_msg_acquire_institute_num_title">商户号/PID</string>
@@ -415,4 +425,28 @@
     <string name="common_operator">收银员</string>
     <string name="user_delete">删除</string>
     <string name="menu_title">选项</string>
+    
+    <!-- 卡券 -->
+    <string name="prepaid_card_balance_str">卡券余额</string>
+    <string name="prepaid_card_status_str">卡券状态</string>
+    <string name="prepaid_card_band_name">卡券名称</string>
+    <string name="prepaid_card_date_time_str">有效期</string>
+    
+    <!-- consumption summary info -->
+    <string name="consumption_summary_merchantName">商户名称:</string>
+    <string name="consumption_summary_merchantID">酷云客户号:</string>
+    <string name="consumption_summary_mechineID">酷云设备号:</string>
+    <string name="consumption_summary_transType">交易类型</string>
+    <string name="consumption_summary_transCount">笔数（次）</string>
+    <string name="consumption_summary_transAmount">金额（元）</string>
+    <string name="consumption_summary_consume">消费</string>
+    <string name="consumption_summary_consumeCancel">消费撤销</string>
+    <string name="consumption_summary_preAuth">预授权</string>
+    <string name="consumption_summary_preAuthComplete">预授权完成</string>
+    <string name="consumption_summary_preAuthCompleteOffline">预授权完成（离线）</string>
+    <string name="consumption_summary_preAuthCancel">预授权撤销</string>
+    <string name="consumption_summary_preAuthCompleteCancel">预授权完成撤销</string>
+    
+    
+
 </resources>

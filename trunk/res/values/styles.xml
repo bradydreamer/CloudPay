@@ -214,6 +214,7 @@
     <style name="order_detail_mark_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="order_detail_summerize_tv_item_column">
@@ -258,6 +259,29 @@
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:layout_marginTop">15dp</item>
         <item name="android:layout_marginBottom">0dp</item>
+    </style>
+    
+    <style name="consumptionSummary_line_style">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="consumptionSummary_line_content_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/consumption_line_content_text_size</item>
+    </style>
+    
+    <style name="consumptionSummary_line_title_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/consumption_line_text_size</item>
     </style>
 
     <style name="calculator_display_screen_style">

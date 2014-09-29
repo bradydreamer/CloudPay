@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import cn.koolcloud.jni.MisPosInterface;
 import cn.koolcloud.jni.MsrInterface;
 import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.jni.PrinterInterface;
@@ -31,10 +33,14 @@ import cn.koolcloud.pos.util.NetUtil;
 
 public class DevicesCheckingDialog extends Activity implements View.OnClickListener {
 
+	private final String TAG = "DevicesCheckingDialog";
+	
 	public static final int HANDLE_PINPAD_STATUS = 0;
 	public static final int HANDLE_NETWORK_STATUS = 1;
 	public static final int HANDLE_PRINTER_STATUS = 2;
 	public static final int HANDLE_TITLE_STATUS = 3;
+	public static final int HANDLE_MISPOS_STATUS = 4;
+	
 	private TextView titleTextView;
 	private TextView pinpadTextView;
 	private TextView printerTextView;
@@ -66,8 +72,9 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.dialog_device_checking);
 		initViews();
+		// communication open
+		MisPosInterface.communicationOpen();
 		checkDevices();
-		
 	}
 
 	private void initViews() {
@@ -186,6 +193,18 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 					summaryImageView.setImageResource(R.drawable.dialog_device_checking_title_unusual);
 				}
 				break;
+			case HANDLE_MISPOS_STATUS:
+				if (status) {
+					pinpadTextView.setText(Env.getResourceString(DevicesCheckingDialog.this,
+							R.string.dialog_device_check_mispos_usual));
+					
+					pinpadTextView.setCompoundDrawables(checkPassDrawable, null, null, null);
+				} else {
+					pinpadTextView.setText(Env.getResourceString(DevicesCheckingDialog.this,
+							R.string.dialog_device_check_mispos_unusual));
+					pinpadTextView.setCompoundDrawables(checkFailDrawable, null, null, null);
+				}
+				break;
 			default:
 				break;
 			}
@@ -254,6 +273,7 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 		threadStack.push(new CheckPinPadThread());
 		threadStack.push(new CheckPrinterThread());
 		threadStack.push(new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)));
+//		threadStack.push(new CheckMisposThread());
 	}
 	
 	/**
@@ -322,6 +342,39 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 		}		
 	}
 	
+	class CheckMisposThread extends Thread {
+		
+		@Override
+		public void run() {
+			MisPosInterface.communicationTest();
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			byte[] returnCode = new byte[2];
+			MisPosInterface.getTagValue(0x9F14, returnCode);
+			Log.i(TAG, "returnCode: " + returnCode[0] + " " + returnCode[1]);
+			
+			Message msg = mHandler.obtainMessage();
+			
+			
+			msg.what = HANDLE_MISPOS_STATUS;
+			
+			if (returnCode[0] != 0x30 && returnCode[1] != 0x30) {
+				Log.i(TAG, "Serialport Communication Failed");
+				msg.obj = false;
+			} else {
+				msg.obj = true;
+			}
+			
+			devicesSet.add("mispos");
+			mHandler.sendMessageDelayed(msg, 800);
+		}		
+	}
+	
 	private void onCall(String jsHandler, JSONObject msg) {
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
 		if (js != null) {
@@ -344,5 +397,6 @@ public class DevicesCheckingDialog extends Activity implements View.OnClickListe
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		MisPosInterface.communicationClose();
 	}
 }

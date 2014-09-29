@@ -51,11 +51,16 @@
             style="@style/table_number_input_btn_style_small"
             android:onClick="onClickBtnNumber6"
             />
+        <ImageView 
+            android:src="@drawable/table_number_input_00"
+            style="@style/table_number_input_btn_style_small"
+            android:onClick="onClickBtnNumber00"
+            />
         
         <ImageView 
 	         android:src="@drawable/table_number_input_c"
 	         android:layout_span="2" 
-	         style="@style/table_number_input_btn_style_big"
+	         style="@style/table_number_input_btn_style_small"
 	         android:onClick="onClickBtnC"
 	         />
     </TableRow>

@@ -76,7 +76,9 @@ public class WelcomeScreen extends Activity {
 		intent.setClass(context, HomeController.class);
 //		intent.setClass(context, PayExScreen.class);
 //		intent.putExtra(PayExScreen.ACTION, PayExScreen.ACTION_MERCH_INFO);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//fix appstore can't open smartpay (SMTPS-113) --start fixed by Teddy on 26th September
+		intent.setFlags(/*Intent.FLAG_ACTIVITY_CLEAR_TOP|*/Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//fix appstore can't open smartpay (SMTPS-113) --end fixed by Teddy on 26th September
 		startActivityForResult(intent, ClientEngine.engineInstance().mRequestCode);
 	}
 	

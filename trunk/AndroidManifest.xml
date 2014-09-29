@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="999"
-    android:versionName="9.9.99" >
+    android:versionCode="99"
+    android:versionName="9.9.9" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -14,13 +14,7 @@
         android:smallScreens="true">
         
  	</supports-screens>
-    <permission
-        android:name="cn.koolcloud.pos.SERVICE"
-        android:protectionLevel="normal" >
-    </permission>
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="cn.koolcloud.pos.SERVICE" />
-    <uses-permission android:name="com.koolyun.coupon.permission.COUPON" />
     
     <!-- Baidu push services -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -357,6 +351,30 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.BaseController" />
         </activity>
+	<activity
+            android:name="cn.koolcloud.pos.controller.prepaid_card.PrepaidCardQRCodeController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.prepaid_card.PrepaidCardSearchResultController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionSummaryController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.dialogs.PushMessageController"
             android:theme="@style/dialog" android:launchMode="singleTop"  />
@@ -389,7 +407,6 @@
         <service
             android:name="cn.koolcloud.pos.service.MerchService"
             android:exported="true"
-            android:permission="cn.koolcloud.pos.SERVICE"
             android:process=":remote" >
             <intent-filter>
                 <action android:name="cn.koolcloud.pos.service.IMerchService" />
@@ -398,7 +415,6 @@
         <service
             android:name="cn.koolcloud.pos.service.SecureService"
             android:exported="true"
-            android:permission="cn.koolcloud.pos.SERVICE"
             android:process=":remote" >
             <intent-filter>
                 <action android:name="cn.koolcloud.pos.service.ISecureService" />

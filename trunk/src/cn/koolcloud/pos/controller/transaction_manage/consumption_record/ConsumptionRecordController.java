@@ -61,6 +61,8 @@ public class ConsumptionRecordController extends BaseController implements Order
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				setRemoveJSTag(true);
+				loadRelatedJS();
 				if (position == recordDataList.size()) {
 					onCall("ConsumptionRecord.reqMore", null);
 				} else {
@@ -115,6 +117,14 @@ public class ConsumptionRecordController extends BaseController implements Order
 				new CacheRecordThread().start();
 			}
 			//cache record to sqlite --end by Teddy 17th July
+		} else if (key.equals("updateList")) {
+			//clear ListView data first after finish revoke order --start mod by Teddy on 29th September
+			if (recordDataList != null) {
+				recordDataList.clear();
+			}
+			
+			adapter.notifyDataSetChanged();	
+			//clear ListView data first after finish revoke order --end mod by Teddy on 29th September
 		}
 		super.setView(view, key, value);
 	}

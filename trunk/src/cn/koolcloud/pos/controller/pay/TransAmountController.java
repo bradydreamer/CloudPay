@@ -41,6 +41,7 @@ public class TransAmountController extends BaseController {
 	private JSONObject data;
 	
 	private String requestFromMispos;
+	private boolean okBtnClicked = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,12 @@ public class TransAmountController extends BaseController {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		okBtnClicked = false;
+	}
+
+	@Override
 	protected void showInputNumber() {
 		StringBuilder textbuBuilder = getNumberInputString();
 		if (null == textbuBuilder || 0 == textbuBuilder.length()) {
@@ -136,6 +143,8 @@ public class TransAmountController extends BaseController {
 		if (null != text && numberInputString.toString().length() < 12) {
 			if (numberInputString.toString().equals("0")) {
 				numberInputString.replace(0, 1, text);
+			} else if (numberInputString.toString().equals("00")) {
+				numberInputString.replace(0, 2, text);
 			} else {
 				numberInputString.append(text);
 			}
@@ -171,7 +180,10 @@ public class TransAmountController extends BaseController {
 		//if request from mispos then set amount result else execute original flow  --start mod by Teddy on 1th July
 		
 		if (TextUtils.isEmpty(requestFromMispos)) {
-			onCall("InputAmount.onCompleteInput", msg);
+			if (!okBtnClicked) {
+				okBtnClicked = true;
+				onCall("InputAmount.onCompleteInput", msg);
+			}
 		} else {
 			Intent mIntent = new Intent();  
 	        mIntent.putExtra(MisposController.KEY_AMOUNT, numberConfirmed);

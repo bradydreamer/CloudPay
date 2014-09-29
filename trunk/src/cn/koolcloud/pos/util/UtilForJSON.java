@@ -153,7 +153,7 @@ public class UtilForJSON {
 					JSONObject jsObj = jsonArray.getJSONObject(i);
 					
 					if (!packageSet.contains(packageName)) {
-						String cardNum = jsObj.getString("accountNo");
+						String cardNum = jsObj.optString("accountNo");
 						if (!TextUtils.isEmpty(cardNum)) {
 							
 							String tempPan = cardNum.substring(0, 6) + "******"

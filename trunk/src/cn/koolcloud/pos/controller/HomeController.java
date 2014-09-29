@@ -34,6 +34,9 @@ import cn.koolcloud.pos.widget.ViewPagerIndicator;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
+	
+	public final static int REQUEST_CODE = 10;
+	
 	private LinearLayout settingsIndexController;
 	private LinearLayout transactionManageIndexController;
 	private LinearLayout currentLayout;
@@ -51,10 +54,18 @@ public class HomeController extends BaseHomeController implements
 	protected ViewPager settingViewPager;
 	protected ViewPagerIndicator settingPageIndicator;
 	private static final int EXIT_LAST_TIME = 2000;
+	
+	private JSONObject data;
+	private boolean isExternalOrder = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		activityList.add(this);
+		if (null != formData) {
+			data = formData.optJSONObject(getString(R.string.formData_key_data));
+			isExternalOrder = data.optBoolean("isExternalOrder");
+		}
 
 		/*
 		 * three layout which will changed each other
@@ -159,6 +170,18 @@ public class HomeController extends BaseHomeController implements
 	protected void willShow() {
 		onCall("Home.onShow", null);
 		super.willShow();
+	}
+
+	@Override
+	protected void loadRelatedJS() {
+		if (getRemoveJSTag()) {
+			JavaScriptEngine js = ClientEngine.engineInstance()
+					.javaScriptEngine();
+			js.loadJs(getString(R.string.controllerJSName_TransactionManageIndex));
+			js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
+		}
+		super.loadRelatedJS();
+		setRemoveJSTag(false);
 	}
 
 	private void startDeviceChecking() {
@@ -294,6 +317,10 @@ public class HomeController extends BaseHomeController implements
 		onCall("TransactionManageIndex.onDelVoucherRecordSearch", null);
 	}
 
+	public void gotoConsumptionSummary(View view) {
+		onCall("TransactionManageIndex.gotoConsumptionSummary", null);
+	}
+
 	/*
 	 * 设置界面
 	 */
@@ -379,19 +406,25 @@ public class HomeController extends BaseHomeController implements
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK
-				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			// TODO:show exit dialog
-			if ((System.currentTimeMillis() - exitTime) > EXIT_LAST_TIME) {
-				Toast.makeText(HomeController.this, R.string.msg_exist_toast,
-						Toast.LENGTH_SHORT).show();
-				exitTime = System.currentTimeMillis();
-			} else {
-				exit();
+		if (isExternalOrder) {
+			return super.onKeyDown(keyCode, event);
+		} else {
+			
+			if (keyCode == KeyEvent.KEYCODE_BACK
+					&& event.getAction() == KeyEvent.ACTION_DOWN) {
+				// TODO:show exit dialog
+				if ((System.currentTimeMillis() - exitTime) > EXIT_LAST_TIME) {
+					Toast.makeText(HomeController.this, R.string.msg_exist_toast,
+							Toast.LENGTH_SHORT).show();
+					exitTime = System.currentTimeMillis();
+				} else {
+					exit();
+				}
+				return true;
 			}
-			return true;
 		}
 		return super.onKeyDown(keyCode, event);
+		
 	}
 
 	@Override

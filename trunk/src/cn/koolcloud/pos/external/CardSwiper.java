@@ -37,11 +37,18 @@ public class CardSwiper {
 			MsrInterface.open();
 		}
 
+		if (waitDataLooper == null) {
+			HandlerThread waitDataThread = new HandlerThread(
+					"waitSwipeCardData");
+			waitDataThread.start();
+			waitDataLooper = waitDataThread.getLooper();
+		}
 		Handler handler = new Handler(waitDataLooper);
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				int timeout = 300000;
+				isPollCanceled = false;
 				gotoPoll(timeout);
 			}
 		});
@@ -57,6 +64,7 @@ public class CardSwiper {
 		MsrInterface.close();
 		if (null != waitDataLooper) {
 			waitDataLooper.quit();
+			waitDataLooper = null;
 		}
 	}
 
@@ -93,6 +101,7 @@ public class CardSwiper {
 				}
 				trackData.put("cardID", getCardID(track2));
 				trackData.put("validTime", getCardValidTime(track2));
+				trackData.put("servicesCode", getServicesCode(track2));
 				this.listener.onRecvTrackData(trackData);
 			}
 		}
@@ -106,6 +115,12 @@ public class CardSwiper {
 	public String getCardValidTime(String msg) {
 		String[] strs = msg.split("=");
 		String str = strs[1].substring(0, 4);
+		return str;
+	}
+
+	public String getServicesCode(String msg) {
+		String[] strs = msg.split("=");
+		String str = strs[1].substring(4, 7);
 		return str;
 	}
 

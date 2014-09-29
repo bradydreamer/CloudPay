@@ -13,7 +13,8 @@ public class MisPosInterface {
 	public static final int TRANS_TYPE_GET_PAN = 0x62;
 	
 	static {
-		System.loadLibrary("koolcloud_mispos");
+		System.loadLibrary("MisPos");
+		System.loadLibrary("koolcloud_mispos"); 
 	}
 	
 	/**

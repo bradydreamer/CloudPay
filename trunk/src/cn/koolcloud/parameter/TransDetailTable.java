@@ -150,6 +150,9 @@ public class TransDetailTable {
 
 	// pan
 	public String getPAN() {
+		if (pan == null) {
+			pan = "";
+		}
 		return pan;
 	}
 

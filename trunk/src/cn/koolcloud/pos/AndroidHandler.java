@@ -32,6 +32,10 @@ public class AndroidHandler {
 					clientEngine.showAlert(jsonObjData, callBackId);
 				} else if ("showScene".equals(androidHandlerName)) {
 					clientEngine.showController(jsonObjData, callBackId);
+				} else if ("checkSessionTime".equals(androidHandlerName)) {
+					clientEngine.startSessionTest();
+				} else if ("stopCheckSessionTime".equals(androidHandlerName)) {
+					clientEngine.stopSessionTest();
 				} else if ("goBack".equals(androidHandlerName)) {
 					clientEngine.showController(jsonObjData, callBackId);
 				} else if ("setProperty".equals(androidHandlerName)) {

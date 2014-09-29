@@ -202,6 +202,9 @@ public class OldTrans implements Constant {
 	private String oldProcesscode;
 
 	public String getOldProcesscode() {
+		if (oldProcesscode == null) {
+			oldProcesscode = "";
+		}
 		return oldProcesscode;
 	}
 

@@ -121,8 +121,14 @@
 	      	<artifactId>baidu_push_service</artifactId>
 	      	<version>4.1.0</version>
 	    </dependency>
+	    
+		<dependency>
+	      	<groupId>net.sourceforge.zbar</groupId>
+	      	<artifactId>zbar1.0</artifactId>
+	      	<version>1.0</version>
+	    </dependency>
 	
-	    <dependency>
+	    <!-- dependency>
             <groupId>com.baidu.android.pushservice</groupId>
             <artifactId>arm_push_V2</artifactId>
             <version>v2.0</version>
@@ -137,9 +143,9 @@
             <classifier>mips</classifier>
             <scope>runtime</scope>
             <type>so</type>
-        </dependency>
+        </dependency-->
         
-	    <dependency>
+	    <!-- dependency>
             <groupId>cn.koolcloud.jni.mispos</groupId>
             <artifactId>mispos_lib_v1.8</artifactId>
             <version>v1.8</version>
@@ -154,7 +160,7 @@
             <classifier>armeabi</classifier>
             <scope>runtime</scope>
             <type>so</type>
-        </dependency>
+        </dependency-->
 	</dependencies>
 
 	<repositories>
@@ -193,6 +199,7 @@
 					<sdk>
 						<platform>${android-platform}</platform>
 					</sdk>
+					<nativeLibrariesDirectory>${project.basedir}/libs</nativeLibrariesDirectory>
 					<deleteConflictingFiles>true</deleteConflictingFiles>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					<proguard>
@@ -521,6 +528,7 @@
 						<artifactId>android-maven-plugin</artifactId>
 						<inherited>true</inherited>
 						<configuration>
+						    <nativeLibrariesDirectory>${project.basedir}/libs</nativeLibrariesDirectory>
 							<proguardConfig>proguard-project.txt</proguardConfig>
 							<proguardSkip>false</proguardSkip>
 							<manifestDebuggable>false</manifestDebuggable>

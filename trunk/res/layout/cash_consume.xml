@@ -30,6 +30,8 @@
             android:textSize="@dimen/cash_amount_textsize"
             android:singleLine="true"
             android:inputType="numberDecimal"
+            android:maxLength="10"
+            android:focusableInTouchMode="true"
             android:background="@null"/>
 
         <TextView
@@ -64,6 +66,8 @@
             android:textSize="@dimen/cash_amount_textsize"
             android:singleLine="true"
             android:inputType="numberDecimal"
+            android:focusableInTouchMode="true"
+            android:maxLength="10"
             android:background="@null"/>
 
         <TextView

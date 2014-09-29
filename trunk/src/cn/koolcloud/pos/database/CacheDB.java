@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.service.PaymentInfo;
@@ -28,7 +29,7 @@ import cn.koolcloud.pos.util.Logger;
 public class CacheDB extends BaseSqlAdapter {
 
 	private final static String DATABASE_NAME = "Cache.db";
-	private final static int DATABASE_VERSION = 1;
+	private final static int DATABASE_VERSION = 3;
     private final static String BATCH_PROCESSING_TABLE_NAME = "batch_processing_table";
     private final static String ACQUIRE_INSTITUTE_TABLE_NAME = "acquire_institute_table";
     private final static String PAYMENT_ACTIVITY_TABLE_NAME = "payment_activity_table";
@@ -38,22 +39,28 @@ public class CacheDB extends BaseSqlAdapter {
     
     private static CacheDB cacheDB;
     
-//    private final static String TRANS_TYPE = "trans_type";
-//    private final static String BATCH_NUMBER = "batch_number";
-//    private final static String PRIMARY_ACCOUNT_NUMBER = "primary_account_number";
-//    private final static String TRANS_AMOUNT = "trans_amount";
-//    private final static String TRACE_NUMBER = "trace_number";
-//    private final static String TRANS_TIME = "trans_time";
-//    private final static String TRANS_DATE = "trans_date";
     //TODO:batch processing table columns
-    private final static String TXN_ID = "txn_id";
-    private final static String RETRIEVAL_REFERENCE_NUMBER = "retrieval_reference_number";	//RRN
-    private final static String AUTH_CODE = "auth_code";									//Authorization Identification Response
-    private final static String RESPONSE_CODE = "response_code";
-    private final static String RESPONSE_MESSAGE = "response_message";
-    private final static String ISSUER_ID = "issuer_id";
-    private final static String EXP_DATE = "exp_date";										//format YYMM
-    private final static String SETTLEMENT_DATE = "settlement_date";						//settlement date format MMDD
+    private final static String BATCH_TXN_ID = "txnId";
+    private final static String BATCH_ORI_TXN_ID = "oriTxnId";
+    private final static String BATCH_REF_NUMBER = "refNo";									//RRN
+    private final static String BATCH_AUTH_CODE = "authNo";									//Authorization Identification Response
+    private final static String BATCH_RESPONSE_CODE = "resCode";
+    private final static String BATCH_RESPONSE_MESSAGE = "resMsg";
+    private final static String BATCH_ISSUER_ID = "issuerId";
+    private final static String BATCH_EXP_DATE = "dateExpr";								//format YYMM
+    private final static String BATCH_SETTLEMENT_DATE = "stlmDate";							//settlement date format MMDD
+    
+    private final static String BATCH_CARD_NUM = "cardNo";
+    private final static String BATCH_PAYMENT_ID = "paymentId";
+    private final static String BATCH_TRANS_TYPE = "transType";
+    private final static String BATCH_BATCH_NO = "batchNo";
+    private final static String BATCH_TRACE_NO = "traceNo";
+    private final static String BATCH_TRANS_TIME = "transTime";
+    private final static String BATCH_TRANS_AMOUNT = "transAmount";
+    
+    private final static String BATCH_ACTION = "action";
+    private final static String BATCH_PRIMARY_KEY_ID = "pk_id";
+    
     
     //TODO:acquire institute table columns
     private final static String ACQUIRE_MERCHANT_ID = "brhMchtId";
@@ -74,6 +81,7 @@ public class CacheDB extends BaseSqlAdapter {
     private final static String ACQUIRE_BRH_KEY_INDEX = "brhKeyIndex";
     private final static String ACQUIRE_BRH_MSG_TYPE = "brhMsgType";
     private final static String ACQUIRE_BRH_MCHT_MCC = "brhMchtMcc";
+    private final static String ACQUIRE_TAB_TYPE_ID = "tabType";
     
     private final static String PAYMENT_ACTIVITY_JSON = "payment_json";
   
@@ -99,40 +107,46 @@ public class CacheDB extends BaseSqlAdapter {
      * @param batchTask
      * @return: void
      */
-    public void insertBatchTask(BatchTaskBean batchTask) {
+    public void insertBatchTask(JSONObject batchTaskObj) {
+    	
+    	String pkStr = batchTaskObj.optString("pk_id");
+    	//avoid duplicated data while dealing batch data tasks
+    	if (TextUtils.isEmpty(pkStr)) {
+    		return;
+    	}
         
         ArrayList<SQLEntity> sqlList = new ArrayList<SQLEntity>();
         Cursor cursor = null;
-        boolean isExist = false;
 		try {
 			
 			String sql = "INSERT INTO "+ BATCH_PROCESSING_TABLE_NAME +"(" +
-					TXN_ID + ", " +
-					RETRIEVAL_REFERENCE_NUMBER + ", " +
-					AUTH_CODE + ", " +
-					RESPONSE_CODE + ", " +
-					RESPONSE_MESSAGE + ", " +
-					ISSUER_ID + ", " +
-					EXP_DATE + ", " +
-					SETTLEMENT_DATE + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+					BATCH_PRIMARY_KEY_ID + ", " + 
+					BATCH_TXN_ID + ", " + 
+					BATCH_ORI_TXN_ID + ", " + 
+					BATCH_REF_NUMBER + ", " + 
+					BATCH_AUTH_CODE + ", " + 
+					BATCH_RESPONSE_CODE + ", " + 
+					BATCH_RESPONSE_MESSAGE + ", " + 
+					BATCH_ISSUER_ID + ", " + 
+					BATCH_EXP_DATE + ", " +
+					BATCH_SETTLEMENT_DATE + ", " +
+					BATCH_CARD_NUM + ", " +
+					BATCH_PAYMENT_ID + ", " +
+					BATCH_TRANS_TYPE + ", " +
+					BATCH_BATCH_NO + ", " +
+					BATCH_TRACE_NO + ", " +
+					BATCH_TRANS_TIME + ", " +
+					BATCH_TRANS_AMOUNT + ", " +
+					BATCH_ACTION + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
-			if (batchTask != null) {
-				
-				cursor = selectBatchTaskByTxnId(batchTask.getTxnId());
-				if (cursor.getCount() > 0) {
-					isExist = true;
-				}
-				cursor.close();
-				if (isExist) {
-					return;
-				} else {
-					
-					String[] params = new String[] { batchTask.getTxnId(), batchTask.getRefrenceRetrievalNumber(),
-							batchTask.getAuthCode(), batchTask.getResponseCode(), batchTask.getResponseMsg(),
-							batchTask.getIssuerId(), batchTask.getExpDate(), batchTask.getSettlementDate() };
-					sqlList.add(new SQLEntity(sql, params));
-				}
-			}
+			String[] params = new String[] {batchTaskObj.optString("pk_id"), batchTaskObj.optString("txnId"), batchTaskObj.optString("oriTxnId"),
+					batchTaskObj.optString("refNo"), batchTaskObj.optString("authNo"), batchTaskObj.optString("resCode"),
+					batchTaskObj.optString("resMsg"), batchTaskObj.optString("issuerId"), batchTaskObj.optString("dateExpr"),
+					batchTaskObj.optString("stlmDate"), batchTaskObj.optString("cardNo"), batchTaskObj.optString("paymentId"),
+					batchTaskObj.optString("transType"), batchTaskObj.optString("batchNo"), batchTaskObj.optString("traceNo"),
+					batchTaskObj.optString("transTime"), batchTaskObj.optString("transAmount"), batchTaskObj.optString("action")
+					};
+			sqlList.add(new SQLEntity(sql, params));
 			excuteSql(sqlList);
 			
 		} catch (Exception e) {
@@ -261,7 +275,8 @@ public class CacheDB extends BaseSqlAdapter {
     				ACQUIRE_PRODUCT_DESC + ", " +
     				ACQUIRE_DEVICE_NUM_OF_MERCH + ", " +
     				ACQUIRE_INSTITUTE_NAME + ", " +
-    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    				ACQUIRE_TAB_TYPE_ID + ", " +
+    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     		
     		if (paymentActivity != null && paymentActivity.size() > 0) {
     			for (int i = 0; i < paymentActivity.size(); i++) {
@@ -276,7 +291,7 @@ public class CacheDB extends BaseSqlAdapter {
     						acquireInstituteBean.getBrhTermId(), acquireInstituteBean.getPrintType(), 
     						acquireInstituteBean.getProductNo(), acquireInstituteBean.getProductTitle(), 
     						acquireInstituteBean.getProductDesc(), acquireInstituteBean.getDeviceNumOfMerch(),
-    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getJsonItem(),
+    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getTypeId(), acquireInstituteBean.getJsonItem()
     						
     				};
     				sqlList.add(new SQLEntity(sql, params));
@@ -330,9 +345,8 @@ public class CacheDB extends BaseSqlAdapter {
     	closeDB();
     }
     
-    public void deleteBatchTaskByTxnId(String txnId) { 
-        
-        String sql = "delete from " + BATCH_PROCESSING_TABLE_NAME + " where " + TXN_ID + "='" + txnId + "'";
+    public void deleteBatchTaskByPKId(String pkId) { 
+        String sql = "delete from " + BATCH_PROCESSING_TABLE_NAME + " where " + BATCH_PRIMARY_KEY_ID + "='" + pkId + "'";
 		try {
 			excuteSql(sql);
 		} catch(Exception e) {
@@ -343,7 +357,7 @@ public class CacheDB extends BaseSqlAdapter {
     }
     
     public Cursor selectBatchTaskByTxnId(String txnId) { 
-    	String sql = "select * from " + BATCH_PROCESSING_TABLE_NAME + " where " + TXN_ID + " = " + txnId;
+    	String sql = "select * from " + BATCH_PROCESSING_TABLE_NAME + " where " + BATCH_TXN_ID + " = " + txnId;
     	Cursor cursor = getCursor(sql, null);
     	return cursor; 
     }
@@ -405,7 +419,40 @@ public class CacheDB extends BaseSqlAdapter {
     		String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
     		paymentInfo = new PaymentInfo(paymentId, paymentName, brhKeyIndex, prodtNo, prdtTitle, prdtDesc, openBrh, openBrhName);
     	}
+    	
+    	cursor.close();
     	return paymentInfo;
+    }
+    
+    public AcquireInstituteBean getAcquireByPaymentId(String paymentId) { 
+    	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
+    	AcquireInstituteBean acquireInfo = null;
+    	Cursor cursor = getCursor(sql, null);
+    	if (cursor.getCount() > 0) {
+    		cursor.moveToNext();
+    		String paymentName = cursor.getString(cursor.getColumnIndex(ACQUIRE_PAYMENT_NAME));
+    		String brhKeyIndex = cursor.getString(cursor.getColumnIndex(ACQUIRE_BRH_KEY_INDEX));
+    		String productNo = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_NO));
+    		String prdtTitle = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_TITLE));
+    		String prdtDesc = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_DESC));
+    		String openBrh = cursor.getString(cursor.getColumnIndex(ACQUIRE_DEVICE_NUM_OF_MERCH));
+    		String tabType = cursor.getString(cursor.getColumnIndex(ACQUIRE_TAB_TYPE_ID));
+    		String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
+    		acquireInfo = new AcquireInstituteBean();
+    		acquireInfo.setPaymentId(paymentId);
+    		acquireInfo.setPaymentName(paymentName);
+    		acquireInfo.setBrhKeyIndex(brhKeyIndex);
+    		acquireInfo.setProductNo(productNo);
+    		acquireInfo.setProductTitle(prdtTitle);
+    		acquireInfo.setProductDesc(prdtDesc);
+    		acquireInfo.setOpenBrh(openBrh);
+    		acquireInfo.setOpenBrhName(openBrhName);
+    		acquireInfo.setTypeId(tabType);
+    		
+    	}
+    	
+    	cursor.close();
+    	return acquireInfo;
     }
     
     public JSONArray selectAllBatchStack() {
@@ -416,33 +463,44 @@ public class CacheDB extends BaseSqlAdapter {
 			cursor = getCursor(sql, null);
 			jsArray = new JSONArray();
 			while (cursor.moveToNext()) {
-				String txnId = cursor.getString(cursor.getColumnIndex(TXN_ID));
-				String retrievalReferenceNum = cursor.getString(cursor.getColumnIndex(RETRIEVAL_REFERENCE_NUMBER));
-				String authCode = cursor.getString(cursor.getColumnIndex(AUTH_CODE));
-				String responseCode = cursor.getString(cursor.getColumnIndex(RESPONSE_CODE));
-				String responseMsg = cursor.getString(cursor.getColumnIndex(RESPONSE_MESSAGE));
-				String issuerId = cursor.getString(cursor.getColumnIndex(ISSUER_ID));
-				String expDate = cursor.getString(cursor.getColumnIndex(EXP_DATE));
-				String settlementDate = cursor.getString(cursor.getColumnIndex(SETTLEMENT_DATE));
+				String pkId = cursor.getString(cursor.getColumnIndex(BATCH_PRIMARY_KEY_ID));
+				String txnId = cursor.getString(cursor.getColumnIndex(BATCH_TXN_ID));
+				String oriTxnId = cursor.getString(cursor.getColumnIndex(BATCH_ORI_TXN_ID));
+				String refNo = cursor.getString(cursor.getColumnIndex(BATCH_REF_NUMBER));
+				String authNo = cursor.getString(cursor.getColumnIndex(BATCH_AUTH_CODE));
+				String resCode = cursor.getString(cursor.getColumnIndex(BATCH_RESPONSE_CODE));
+				String resMsg = cursor.getString(cursor.getColumnIndex(BATCH_RESPONSE_MESSAGE));
+				String issuerId = cursor.getString(cursor.getColumnIndex(BATCH_ISSUER_ID));
+				String dateExpr = cursor.getString(cursor.getColumnIndex(BATCH_EXP_DATE));
+				String stlmDate = cursor.getString(cursor.getColumnIndex(BATCH_SETTLEMENT_DATE));
+				String cardNo = cursor.getString(cursor.getColumnIndex(BATCH_CARD_NUM));
+				String paymentId = cursor.getString(cursor.getColumnIndex(BATCH_PAYMENT_ID));
+				String transType = cursor.getString(cursor.getColumnIndex(BATCH_TRANS_TYPE));
+				String batchNo = cursor.getString(cursor.getColumnIndex(BATCH_BATCH_NO));
+				String traceNo = cursor.getString(cursor.getColumnIndex(BATCH_TRACE_NO));
+				String transTime = cursor.getString(cursor.getColumnIndex(BATCH_TRANS_TIME));
+				String transAmount = cursor.getString(cursor.getColumnIndex(BATCH_TRANS_AMOUNT));
+				String action = cursor.getString(cursor.getColumnIndex(BATCH_ACTION));
 				
-				/*BatchTaskBean batchTask = new BatchTaskBean();
-				batchTask.setTxnId(txnId);
-				batchTask.setAuthCode(authCode);
-				batchTask.setExpDate(expDate);
-				batchTask.setIssuerId(issuerId);
-				batchTask.setRefrenceRetrievalNumber(retrievalReferenceNum);
-				batchTask.setResponseCode(responseCode);
-				batchTask.setResponseMsg(responseMsg);
-				batchTask.setSettlementDate(settlementDate);*/
 				JSONObject jsObj = new JSONObject();
+				jsObj.put("pk_id", pkId);
 				jsObj.put("txnId", txnId);
-				jsObj.put("resCode", responseCode);
-				jsObj.put("resMsg", responseMsg);
-				jsObj.put("refNo", retrievalReferenceNum);
-				jsObj.put("authNo", authCode);
+				jsObj.put("oriTxnId", oriTxnId);
+				jsObj.put("refNo", refNo);
+				jsObj.put("authNo", authNo);
+				jsObj.put("resCode", resCode);
+				jsObj.put("resMsg", resMsg);
 				jsObj.put("issuerId", issuerId);
-				jsObj.put("dateExpr", expDate);
-				jsObj.put("stlmDate", settlementDate);
+				jsObj.put("dateExpr", dateExpr);
+				jsObj.put("stlmDate", stlmDate);
+				jsObj.put("cardNo", cardNo);
+				jsObj.put("paymentId", paymentId);
+				jsObj.put("transType", transType);
+				jsObj.put("batchNo", batchNo);
+				jsObj.put("traceNo", traceNo);
+				jsObj.put("transTime", transTime);
+				jsObj.put("transAmount", transAmount);
+				jsObj.put("action", action);
 				
 				jsArray.put(jsObj);
 			}
@@ -456,7 +514,7 @@ public class CacheDB extends BaseSqlAdapter {
     	return jsArray;
     }
     
-    public List<BatchTaskBean> selectAllBatchList() {
+   /* public List<BatchTaskBean> selectAllBatchList() {
     	String sql = "select * from " + BATCH_PROCESSING_TABLE_NAME;
     	List<BatchTaskBean> batchTaskList = null;
     	Cursor cursor = null;
@@ -464,14 +522,24 @@ public class CacheDB extends BaseSqlAdapter {
     		cursor = getCursor(sql, null);
     		batchTaskList = new ArrayList<BatchTaskBean>();
     		while (cursor.moveToNext()) {
-    			String txnId = cursor.getString(cursor.getColumnIndex(TXN_ID));
-    			String retrievalReferenceNum = cursor.getString(cursor.getColumnIndex(RETRIEVAL_REFERENCE_NUMBER));
-    			String authCode = cursor.getString(cursor.getColumnIndex(AUTH_CODE));
-    			String responseCode = cursor.getString(cursor.getColumnIndex(RESPONSE_CODE));
-    			String responseMsg = cursor.getString(cursor.getColumnIndex(RESPONSE_MESSAGE));
-    			String issuerId = cursor.getString(cursor.getColumnIndex(ISSUER_ID));
-    			String expDate = cursor.getString(cursor.getColumnIndex(EXP_DATE));
-    			String settlementDate = cursor.getString(cursor.getColumnIndex(SETTLEMENT_DATE));
+    			int pkId = cursor.getInt(cursor.getColumnIndex(BATCH_PRIMERY_KEY_ID));
+				String txnId = cursor.getString(cursor.getColumnIndex(BATCH_TXN_ID));
+				String oriTxnId = cursor.getString(cursor.getColumnIndex(BATCH_ORI_TXN_ID));
+				String refNo = cursor.getString(cursor.getColumnIndex(BATCH_REF_NUMBER));
+				String authNo = cursor.getString(cursor.getColumnIndex(BATCH_AUTH_CODE));
+				String resCode = cursor.getString(cursor.getColumnIndex(BATCH_RESPONSE_CODE));
+				String resMsg = cursor.getString(cursor.getColumnIndex(BATCH_RESPONSE_MESSAGE));
+				String issuerId = cursor.getString(cursor.getColumnIndex(BATCH_ISSUER_ID));
+				String dateExpr = cursor.getString(cursor.getColumnIndex(BATCH_EXP_DATE));
+				String stlmDate = cursor.getString(cursor.getColumnIndex(BATCH_SETTLEMENT_DATE));
+				String cardNo = cursor.getString(cursor.getColumnIndex(BATCH_CARD_NUM));
+				String paymentId = cursor.getString(cursor.getColumnIndex(BATCH_PAYMENT_ID));
+				String transType = cursor.getString(cursor.getColumnIndex(BATCH_TRANS_TYPE));
+				String batchNo = cursor.getString(cursor.getColumnIndex(BATCH_BATCH_NO));
+				String traceNo = cursor.getString(cursor.getColumnIndex(BATCH_TRACE_NO));
+				String transTime = cursor.getString(cursor.getColumnIndex(BATCH_TRANS_TIME));
+				String transAmount = cursor.getString(cursor.getColumnIndex(BATCH_TRANS_AMOUNT));
+				String action = cursor.getString(cursor.getColumnIndex(BATCH_ACTION));
     			
     			BatchTaskBean batchTask = new BatchTaskBean();
     			batchTask.setTxnId(txnId);
@@ -493,7 +561,7 @@ public class CacheDB extends BaseSqlAdapter {
     		}
     	}
     	return batchTaskList;
-    }
+    }*/
     
     public List<PaymentInfo> selectAllPaymentInfo() {
     	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " order by " + ACQUIRE_PAYMENT_ID + " ASC";
@@ -550,7 +618,7 @@ public class CacheDB extends BaseSqlAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if (oldVersion == 1 && newVersion == 2) {
+			if (oldVersion == 2 && newVersion == 3) {
 				// Drop tables  
 		        db.execSQL("DROP TABLE IF EXISTS " + BATCH_PROCESSING_TABLE_NAME);
 		        db.execSQL("DROP TABLE IF EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME);
@@ -561,14 +629,26 @@ public class CacheDB extends BaseSqlAdapter {
 		
 		private void createTables(SQLiteDatabase db) {
 			String createBatchProcessSql = "CREATE TABLE IF NOT EXISTS " + BATCH_PROCESSING_TABLE_NAME + " ("
-					+ TXN_ID + " varchar, " 
-			        + RETRIEVAL_REFERENCE_NUMBER + " varchar, " 
-			        + AUTH_CODE + " varchar, " 
-			        + RESPONSE_CODE + " varchar, " 
-			        + RESPONSE_MESSAGE + " varchar, " 
-			        + EXP_DATE + " varchar, " 
-			        + SETTLEMENT_DATE + " varchar, " 
-			        + ISSUER_ID + " varchar);";
+					+ BATCH_PRIMARY_KEY_ID + " varchar PRIMARY KEY, " 
+					+ BATCH_TXN_ID + " varchar, " 
+			        + BATCH_ORI_TXN_ID + " varchar, " 
+			        + BATCH_REF_NUMBER + " varchar, " 
+			        + BATCH_AUTH_CODE + " varchar, " 
+			        + BATCH_RESPONSE_CODE + " varchar, " 
+			        + BATCH_RESPONSE_MESSAGE + " varchar, " 
+			        + BATCH_ISSUER_ID + " varchar, " 
+			        + BATCH_EXP_DATE + " varchar, "
+			        + BATCH_SETTLEMENT_DATE + " varchar, "
+			        + BATCH_CARD_NUM + " varchar, "
+			        + BATCH_PAYMENT_ID + " varchar, "
+			        + BATCH_TRANS_TYPE + " varchar, "
+			        + BATCH_BATCH_NO + " varchar, "
+			        + BATCH_TRACE_NO + " varchar, "
+			        + BATCH_TRANS_TIME + " varchar, "
+			        + BATCH_TRANS_AMOUNT + " varchar, "
+			        + BATCH_ACTION + " varchar "
+			        + 
+			        ");";
 			
 			/*String createAcquireInstituteSql = "CREATE TABLE IF NOT EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME + " ("
 					+ ACQUIRE_MERCHANT_ID + " varchar primary key, " 
@@ -624,6 +704,7 @@ public class CacheDB extends BaseSqlAdapter {
 					+ ACQUIRE_PRODUCT_DESC + " varchar, " 
 					+ ACQUIRE_DEVICE_NUM_OF_MERCH + " varchar, " 
 					+ ACQUIRE_INSTITUTE_NAME + " varchar, " 
+					+ ACQUIRE_TAB_TYPE_ID + " varchar, " 
 					+ PAYMENT_ACTIVITY_JSON + " nvarchar, " 
 					+ " CONSTRAINT PK_PAYMENT_ACTIVITY PRIMARY KEY (" + ACQUIRE_PAYMENT_ID + ")" +
 					");";

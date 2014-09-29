@@ -73,6 +73,13 @@ public class LoginVerifyController extends BaseController {
 		// }
 	}
 
+	@Override
+	protected void loadRelatedJS() {
+		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.loadJs(getString(R.string.controllerJSName_SettingsIndex));
+		super.loadRelatedJS();
+	}
+
 	// call get merchant info start mod by Teddy on 7 April
 	@Override
 	protected void onDestroy() {

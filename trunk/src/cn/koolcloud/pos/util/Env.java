@@ -2,6 +2,8 @@ package cn.koolcloud.pos.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +40,7 @@ import android.telephony.TelephonyManager;
  */
 public class Env {
 
+	public static final String DATE_SMALL_STR = "yyyy-MM-dd";
 	/**
 	 * @Title: uninstallApp
 	 * @Description: TODO uninstsall APP
@@ -250,6 +253,11 @@ public class Env {
 			return false;
 		}
 	}
+	
+	public static String getNowDate() {
+        SimpleDateFormat df = new SimpleDateFormat(DATE_SMALL_STR);
+        return df.format(new Date());
+    }
 
 	public static String getDeviceInfo(Context ctx) {
 		TelephonyManager tm = (TelephonyManager) ctx
