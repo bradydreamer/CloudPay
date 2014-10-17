@@ -1,10 +1,6 @@
 package cn.koolcloud.pos.widget;
 
-import cn.koolcloud.pos.util.UtilForDensity;
-import cn.koolcloud.pos.util.UtilForGraghic;
-import cn.koolcloud.pos.AndroidHandler;
-import cn.koolcloud.pos.R;
-
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
@@ -19,6 +15,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import cn.koolcloud.pos.AndroidHandler;
+import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.util.UtilForDensity;
+import cn.koolcloud.pos.util.UtilForGraghic;
 
 public class CustomAnimDialog extends Dialog{
 
@@ -248,7 +248,11 @@ public class CustomAnimDialog extends Dialog{
 		if (showCalledCount > 1) {
 			return;
 		}
-		show();
+		//fix SmartPos SMTPS-87 bug --start mod by Teddy on 22th September
+		if(!((Activity) context).isFinishing()) {
+			show();
+		}
+		//fix SmartPos SMTPS-87 bug --end mod by Teddy on 22th September
 		HandlerThread backgroundThread = new HandlerThread("showWhileExecuting");
 		backgroundThread.start();
 		showWhileExecutingLooper = backgroundThread.getLooper();

@@ -42,10 +42,10 @@ public class JavaScriptEngine {
 		// webView.setw
 		webView.addJavascriptInterface(new JSResponser(context), "JSResponser");
 		loadJSWaitUntilDone(
-				"file:///android_asset/JavaScript/android.html", null);
+				"file:///android_asset/JavaScript/platform/android.html", null);
 	}
 
-	/*public void loadJs(String fileName) {
+	public void loadJs(String fileName) {
 		if (!hasLoadedGlobal && fileName.contains("global")) {
 			hasLoadedGlobal = true;
 		}
@@ -59,7 +59,14 @@ public class JavaScriptEngine {
 		String funcStr = String.format("javascript:%s('%s','%s');",
 				"loadScript", filePath, fileName);
 		loadJSWaitUntilDone(funcStr, null);
-	}*/
+	}
+
+	public void removeJs(String fileName) {
+		String funcStr = String.format("javascript:%s('%s');",
+				"removeScriptById", fileName);
+		Log.i(TAG, "Warning:--------RemoveJS:" + funcStr);
+		loadJSWaitUntilDone(funcStr, null);
+	}
 
 	public void callJsHandler(String JsHandlerName, JSONObject message) {
 		callJsHandler(JsHandlerName, message, null);

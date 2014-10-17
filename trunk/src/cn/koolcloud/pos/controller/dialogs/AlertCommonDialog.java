@@ -28,6 +28,8 @@ public class AlertCommonDialog extends Activity implements View.OnClickListener 
 	private String identifier;
 	private String positiveText;
 	private String negativeText;
+	private boolean isOnCall = false;
+	private String transAmount;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,8 @@ public class AlertCommonDialog extends Activity implements View.OnClickListener 
 		identifier = getIntent().getExtras().getString(ConstantUtils.IDENTIFIER_KEY);
 		positiveText = getIntent().getExtras().getString(ConstantUtils.POSITIVE_BTN_KEY);
 		negativeText = getIntent().getExtras().getString(ConstantUtils.NEGATIVE_BTN_KEY);
+		isOnCall = getIntent().getExtras().getBoolean("onCall");
+		transAmount = getIntent().getExtras().getString("transAmount");
 		initViews();
 	}
 
@@ -106,13 +110,32 @@ public class AlertCommonDialog extends Activity implements View.OnClickListener 
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		callBack(identifier, msg);
+		if (isOnCall) {
+			onCall(identifier);
+		} else {
+			callBack(identifier, msg);
+		}
 	}
 	
 	public void callBack(String callBackHandler, Object data) {
 		JavaScriptEngine jsEngine = ClientEngine.engineInstance().javaScriptEngine();
 		
 		jsEngine.responseCallback(callBackHandler, data);
+	}
+	
+	private void onCall(String identifier) {
+		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		JSONObject jsObj = new JSONObject();
+		if (!TextUtils.isEmpty(transAmount)) {
+			try {
+				jsObj.put("transAmount", transAmount);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		if (js != null) {
+			js.callJsHandler(identifier, jsObj);
+		}
 	}
 	
 	@Override

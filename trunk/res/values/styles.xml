@@ -32,6 +32,7 @@
     <style name="module_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
         <item name="android:textSize">22px</item>
     </style>
 
@@ -214,6 +215,7 @@
     <style name="order_detail_mark_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="order_detail_summerize_tv_item_column">
@@ -259,6 +261,29 @@
         <item name="android:layout_marginTop">15dp</item>
         <item name="android:layout_marginBottom">0dp</item>
     </style>
+    
+    <style name="consumptionSummary_line_style">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="consumptionSummary_line_content_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/consumption_line_content_text_size</item>
+    </style>
+    
+    <style name="consumptionSummary_line_title_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/consumption_line_text_size</item>
+    </style>
 
     <style name="calculator_display_screen_style">
         <item name="android:singleLine">true</item>
@@ -269,16 +294,41 @@
         <item name="android:layout_marginTop">12dp</item>
         <item name="android:focusable">false</item>
     </style>
+    
+    <style name="calculator_small_display_screen_style">
+        <item name="android:singleLine">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_height">90dp</item>
+        <item name="android:layout_width">500dp</item>
+        <item name="android:layout_marginTop">25dp</item>
+        <item name="android:layout_marginBottom">28dp</item>
+        <item name="android:focusable">false</item>
+    </style>
+    
+    <style name="calculator_small_edit_text_style">
+        <item name="android:singleLine">true</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:background">@null</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:layout_width">420dp</item>
+        <item name="android:textSize">30px</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+    </style>
 
     <style name="table_number_input_btn_style_common">
         <item name="android:layout_height">124dp</item>
+    </style>
+    
+    <style name="transfer_input_btn_style_common">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
     </style>
 
     <style name="table_number_input_btn_style_small" parent="@style/table_number_input_btn_style_common">
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:layout_width">156dp</item>
     </style>
-
+    
     <style name="table_number_input_btn_style_for_back" parent="@style/table_number_input_btn_style_common">
         <item name="android:layout_width">156dp</item>
     </style>

@@ -21,7 +21,7 @@
         android:textSize="@dimen/dialog_title_text_size"
         android:textColor="@color/gray"
         android:textStyle="normal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/titleLayout" />
    	<TextView
         android:id="@+id/dialogTitleTextView"
@@ -32,7 +32,7 @@
         android:textSize="@dimen/dialog_title_text_size"
         android:textColor="@color/black"
         android:textStyle="normal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/titleLayout" />
    	<TextView
         android:id="@+id/dialog_common_text"
@@ -49,7 +49,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20.0px"
+        android:layout_marginBottom="15.0dp"
         android:layout_marginLeft="15.0px"
         android:layout_marginRight="15.0px"
         android:layout_marginTop="5.0px"

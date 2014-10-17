@@ -1,8 +1,6 @@
 package cn.koolcloud.pos;
 
 import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +34,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.control.ISO8583Controller;
+import cn.koolcloud.interfaces.MisposEventInterface;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.HomeController;
 import cn.koolcloud.pos.controller.PinPadController;
@@ -64,30 +63,31 @@ import cn.koolcloud.pos.controller.others.settings.TransBatchController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
+import cn.koolcloud.pos.controller.prepaid_card.PrepaidCardQRCodeController;
+import cn.koolcloud.pos.controller.prepaid_card.PrepaidCardSearchResultController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController;
+import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionSummaryController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController;
+import cn.koolcloud.pos.controller.transfer.SuperTransferController;
 import cn.koolcloud.pos.database.CacheDB;
-import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.net.NetEngine;
 import cn.koolcloud.pos.secure.SecureEngine;
-import cn.koolcloud.pos.service.CouponInfo;
-import cn.koolcloud.pos.service.ICouponService;
 import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.ISecureService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.SecureInfo;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.util.MisposCheckingThread;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
-import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.pos.util.UtilForThread;
 import cn.koolcloud.pos.widget.CustomAnimDialog;
 
-public class ClientEngine {
+public class ClientEngine implements MisposEventInterface {
 
 	private static ClientEngine instance;
 	private JavaScriptEngine jsEngine;
@@ -108,6 +108,13 @@ public class ClientEngine {
 	public int mRequestCode;
 	public static final int REQUEST_INTER = 1;
 	public static final int REQUEST_EXTERNAL = 2;
+	private static final long SESSION_TIMEOUT = 8 * 60;// 分钟
+	private Thread sessionThread = null;
+	
+	private MisposCheckingThread misposCheckingThread;
+	
+	//cache mispos data
+	private JSONObject misposJsonObj;
 
 	private ClientEngine() {
 		controllerStack = new Stack<Map<String, BaseController>>();
@@ -178,7 +185,7 @@ public class ClientEngine {
 		return mMerchService;
 	}
 
-	private ServiceConnection merchConnection = new ServiceConnection() {
+	public ServiceConnection merchConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mMerchService = IMerchService.Stub.asInterface(service);
@@ -195,7 +202,7 @@ public class ClientEngine {
 	}
 
 	private ISecureService mSecureService;
-	private ServiceConnection secureConnection = new ServiceConnection() {
+	public ServiceConnection secureConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mSecureService = ISecureService.Stub.asInterface(service);
@@ -204,20 +211,6 @@ public class ClientEngine {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			mSecureService = null;
-		}
-	};
-
-	private ICouponService mCouponService;
-
-	private ServiceConnection couponConnection = new ServiceConnection() {
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mCouponService = null;
-		}
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			mCouponService = ICouponService.Stub.asInterface(service);
 		}
 	};
 
@@ -238,15 +231,6 @@ public class ClientEngine {
 			Toast.makeText(context, "secure服务绑定失败。", Toast.LENGTH_SHORT).show();
 		}
 
-		Intent couponIntent = new Intent(ICouponService.class.getName());
-		couponIntent.setAction("com.koolyun.coupon.service.permission.COUPON");
-		boolean result_coupon = context.bindService(couponIntent,
-				couponConnection, Context.BIND_AUTO_CREATE);
-
-		if (!result_coupon) {
-			Toast.makeText(context, "coupon 服务绑定失败。", Toast.LENGTH_SHORT)
-					.show();
-		}
 		initJSengine();
 		secureEngine = new SecureEngine();
 	}
@@ -305,7 +289,8 @@ public class ClientEngine {
 		jsEngine = new JavaScriptEngine();
 		jsEngine.initEngine(context);
 
-		/*jsEngine.loadJs("Common/global");
+		jsEngine.loadJs("Common/global");
+		jsEngine.loadJs("Common/home");
 		jsEngine.loadJs("platform/android");
 		jsEngine.loadJs("platform/ipos");
 		jsEngine.loadJs("Common/ConsumptionData");
@@ -317,7 +302,7 @@ public class ClientEngine {
 		jsEngine.loadJs("pay/payReverse");
 		jsEngine.loadJs("pay/payMethod");
 		jsEngine.loadJs("Others/Settings/SignIn");
-		jsEngine.loadJs("Others/Settings/TransBatch");*/
+		jsEngine.loadJs("Others/Settings/TransBatch");
 
 	}
 
@@ -435,6 +420,47 @@ public class ClientEngine {
 		return systemInfo;
 	}
 
+	public void startSessionTest() {
+		if (sessionThread == null) {
+			sessionThread = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					while (true) {
+						Date now = new Date();
+						long curTime = now.getTime();
+						Map<String, ?> map = UtilForDataStorage
+								.readPropertyBySharedPreferences(
+										MyApplication.getContext(), "merchant");
+						Long lastTouchTime = (Long) map.get("curTouchTime");
+						Long period_min = (curTime - lastTouchTime) / 1000 / 60;
+						Log.i(TAG,
+								"Session Test---------------Through the time:"
+										+ period_min);
+						if (SESSION_TIMEOUT - period_min < 30) {
+							((BaseController) context).onCall(
+									"Home.checkSessionByEchoTest", null);
+						}
+						try {
+							Thread.sleep(1000 * 60 * 2);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							// e.printStackTrace();
+							sessionThread = null;
+							break;
+						}
+					}
+				}
+			});
+			sessionThread.start();
+		}
+	}
+
+	public void stopSessionTest() {
+		sessionThread.interrupt();
+		Log.i(TAG, "stopSessionTest success--------------");
+	}
+
 	public void showAlert(final JSONObject data, final String identifier) {
 		String msg = data.optString("msg");
 		if (msg.startsWith("JSLOG")) {
@@ -470,6 +496,8 @@ public class ClientEngine {
 		mIntent.putExtra(ConstantUtils.NEGATIVE_BTN_KEY, negativeText);
 		mIntent.putExtra(ConstantUtils.MSG_KEY, msg);
 		mIntent.putExtra(ConstantUtils.IDENTIFIER_KEY, identifier);
+		mIntent.putExtra("onCall", data.optBoolean("onCall"));
+		mIntent.putExtra("transAmount", data.optString("transAmount"));
 		context.startActivity(mIntent);
 		// use styled alert dialog end on 16th June
 
@@ -560,21 +588,32 @@ public class ClientEngine {
 		if (null == data) {
 			return;
 		}
-		boolean saveCacheBatch = data.optBoolean("saveCacheBatch");
-		if (saveCacheBatch) {
-			String txnId = data.optString("txnId");
-			if (!TextUtils.isEmpty(txnId) && TextUtils.isDigitsOnly(txnId)) {
-				BatchTaskBean batchTask = new BatchTaskBean();
-				batchTask.setAuthCode(data.optString("authNo"));
-				batchTask.setExpDate(data.optString("dateExpr"));
-				batchTask.setIssuerId(data.optString("issuerId"));
-				batchTask.setRefrenceRetrievalNumber(data.optString("refNo"));
-				batchTask.setResponseCode(data.optString("resCode"));
-				batchTask.setResponseMsg(data.optString("resMsg"));
-				batchTask.setSettlementDate(data.optString("stlmDate"));
-				batchTask.setTxnId(data.optString("txnId"));
+		String keyStr = data.optString("key");
+		if (!TextUtils.isEmpty(keyStr) && keyStr.equals("batchCache")) {
+			// String txnId = data.optString("txnId");
+			// BatchTaskBean batchTask = new BatchTaskBean();
+			// batchTask.setAuthCode(data.optString("authNo"));
+			// batchTask.setExpDate(data.optString("dateExpr"));
+			// batchTask.setIssuerId(data.optString("issuerId"));
+			// batchTask.setRefrenceRetrievalNumber(data.optString("refNo"));
+			// batchTask.setResponseCode(data.optString("resCode"));
+			// batchTask.setResponseMsg(data.optString("resMsg"));
+			// batchTask.setSettlementDate(data.optString("stlmDate"));
+			// batchTask.setTxnId(data.optString("txnId"));
+			JSONObject batchObj = null;
+			try {
+				String batchStr = data.getString("value");
+				if (!TextUtils.isEmpty(batchStr)) {
+					batchObj = new JSONObject(batchStr);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (batchObj != null) {
+
 				CacheDB cacheDB = CacheDB.getInstance(context);
-				cacheDB.insertBatchTask(batchTask);
+				cacheDB.insertBatchTask(batchObj);
 			}
 
 		} else {
@@ -623,10 +662,10 @@ public class ClientEngine {
 		if (null == data) {
 			return;
 		}
-		String txnId = data.optString("txnId");
+		String pkId = data.optString("pk_id");
 		CacheDB cacheDB = CacheDB.getInstance(context);
 		// remove local cached batch task
-		cacheDB.deleteBatchTaskByTxnId(txnId);
+		cacheDB.deleteBatchTaskByPKId(pkId);
 	}
 
 	void netConnect(JSONObject params, String identifier) {
@@ -748,6 +787,7 @@ public class ClientEngine {
 					return;
 				}
 				String name = data.optString("name");
+				JSONObject formData = data.optJSONObject("data");
 				if ("".equals(name)) {
 					if (null != data) {
 						Intent intent = new Intent();
@@ -770,71 +810,42 @@ public class ClientEngine {
 				} else if ("Coupon".equals(name)) {
 					if (Env.checkApkExist(context,
 							ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
-						if (mCouponService != null) {
-							JSONObject couponData = data.optJSONObject("data");
-							String couponDataType = couponData
-									.optString("coupon_type");
-							String transAmount = couponData
-									.optString("transAmount");
-							String couponType = "";
-							if (!TextUtils.isEmpty(couponDataType)
-									&& couponDataType.equals("rm_coupon")) {
-								couponType = "1";
-							} else {
-								couponType = "0";
-							}
+						JSONObject couponData = data.optJSONObject("data");
+						String couponDataType = couponData
+								.optString("coupon_type");
+						String transAmount = couponData
+								.optString("transAmount");
+						String couponType = "";
+						int requestCode;
+						if (!TextUtils.isEmpty(couponDataType)
+								&& couponDataType.equals("rm_coupon")) {
+							couponType = "1";
+							requestCode = HomeController.REQUEST_CODE;
+						} else {
+							couponType = "0";
+							requestCode = OrderDetailController.REQUEST_CODE;
+						}
 
-							CouponInfo payResult;
-							try {
-								if (!TextUtils.isEmpty(transAmount)) {
+						if (!TextUtils.isEmpty(transAmount)) {
+							Intent mIntent = new Intent(Intent.ACTION_MAIN);
+							mIntent.setComponent(new ComponentName(
+									"com.koolyun.coupon",
+									"com.koolyun.coupon.LoginActivity"));
+							mIntent.putExtra("transAmount", transAmount);
+							mIntent.putExtra("packagename",
+									getCurrentController().getPackageName());
+							mIntent.putExtra("orderNo", "");
+							mIntent.putExtra("orderDesc", "");
+							mIntent.putExtra("actionType", couponType);
+							// startActivity(intent);
+							getCurrentController().startActivityForResult(
+									mIntent, requestCode);
 
-									// mCouponService.startCoupon parameters：
-									// transAmount – not null, total pay
-									// packagename – invoker app packagename,
-									// could be null
-									// orderNo – order number , could be null
-									// orderDesc – order short description,
-									// could be null
-									// typeAction – give coupon or check coupon
-									// (eg. 0:give coupon, 1: check coupon)
-									payResult = mCouponService.startCoupon(
-											transAmount, couponType, null,
-											null, null);
-									if (payResult != null
-											&& !TextUtils
-													.isEmpty(couponDataType)) {
-										Log.e("count",
-												"count:"
-														+ payResult
-																.getCouponAmount());
-										Log.e("payResult", "payResult:"
-												+ payResult.getResult());
-
-										// TODO:write back to APMP, and organize
-										// amount data.
-										writeBackAPMPCouponData(couponData,
-												payResult.getCouponAmount(),
-												payResult.getResult());
-									} else {
-										Log.e("payResult", "return null value!");
-									}
-								} else {
-									Toast.makeText(
-											context,
-											context.getResources()
-													.getString(
-															R.string.str_coupon_amount_null),
-											Toast.LENGTH_LONG).show();
-								}
-							} catch (RemoteException e) {
-								e.printStackTrace();
-							}
 						} else {
 							Toast.makeText(
 									context,
-									context.getResources()
-											.getString(
-													R.string.str_coupon_service_binding),
+									context.getResources().getString(
+											R.string.str_coupon_amount_null),
 									Toast.LENGTH_LONG).show();
 						}
 					} else {
@@ -852,6 +863,10 @@ public class ClientEngine {
 							e.printStackTrace();
 						}
 					}
+				} else if ("MisposController".equals(name) && formData.optString("actionType").equals("mispos")) {
+					misposJsonObj = data;
+					misposCheckingThread = new MisposCheckingThread(ClientEngine.this);
+					misposCheckingThread.start();
 				} else {
 					int requestCode = mRequestCode;
 					Class<?> controllerClass = classForName(name);
@@ -864,63 +879,6 @@ public class ClientEngine {
 				}
 			}
 		});
-	}
-
-	private void writeBackAPMPCouponData(JSONObject couponData,
-			String couponAmount, String couponNum) {
-		String transTime = null;
-		String transType = null;
-		String batchNo = null;
-		String traceNo = null;
-		int traceId = 0;
-		String resCode = "00";
-		Date now = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-		System.setProperty("user.timezone", "GMT+8");
-		transTime = dateFormat.format(now);
-		transType = "1021";
-		DecimalFormat dataFormat = new DecimalFormat("000000");
-
-		Map<String, ?> map = UtilForDataStorage
-				.readPropertyBySharedPreferences(MyApplication.getContext(),
-						"merchant");
-		if (null == map.get("transId")) {
-			traceNo = "0";
-		} else {
-			traceId = ((Integer) map.get("transId")).intValue();
-			traceNo = dataFormat.format(traceId);
-		}
-		if (null == map.get("batchId")) {
-			batchNo = "0";
-		} else {
-			batchNo = dataFormat.format(((Integer) map.get("batchId"))
-					.intValue());
-		}
-
-		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
-		newMerchantMap.put("transId", Integer.valueOf(traceId + 1));
-		UtilForDataStorage.savePropertyBySharedPreferences(
-				MyApplication.getContext(), "merchant", newMerchantMap);
-
-		JSONObject msg = new JSONObject();
-		try {
-			msg.put("transAmount",
-					UtilForMoney.yuan2fen(couponData.optString("transAmount")));
-			msg.put("couponPaidAmount", UtilForMoney.yuan2fen(couponAmount));
-			msg.put("couponNum", couponNum);
-			msg.put("transTime", transTime);
-			msg.put("transType", transType);
-			msg.put("batchNo", batchNo);
-			msg.put("traceNo", traceNo);
-			msg.put("resCode", resCode);
-			msg.put("keyIndex", couponData.optString("payKeyIndex"));
-			msg.put("paymentId", couponData.optString("paymentId"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (jsEngine != null) {
-			jsEngine.callJsHandler("window.Pay.writeBackAPMPCouponData", msg);
-		}
 	}
 
 	private void startController(Class<?> cls, JSONObject formData,
@@ -991,6 +949,10 @@ public class ClientEngine {
 			controllerClass = ConsumptionRecordController.class;
 		} else if (className.equals("ConsumptionRecordSearch")) {
 			controllerClass = ConsumptionRecordSearchController.class;
+		} else if (className.equals("PrepaidCardQRCodeController")) {
+			controllerClass = PrepaidCardQRCodeController.class;
+		} else if (className.equals("PrepaidCardSearchResultController")) {
+			controllerClass = PrepaidCardSearchResultController.class;
 		} else if (className.equals("PaymentMechanism")) {
 			controllerClass = PaymentMechanismController.class;
 		} else if (className.equals("InputDelVoucherNum")) {
@@ -1029,6 +991,10 @@ public class ClientEngine {
 			controllerClass = MultiPayRecord.class;
 		} else if (className.equals("MisposController")) {
 			controllerClass = MisposController.class;
+		} else if (className.equals("ConsumptionSummary")) {
+			controllerClass = ConsumptionSummaryController.class;
+		} else if (className.equals("SuperTransfer")) {
+			controllerClass = SuperTransferController.class;
 		}
 
 		return controllerClass;
@@ -1212,9 +1178,9 @@ public class ClientEngine {
 			Log.d(TAG, "load8583 resMessage : " + resMessage);
 			data8583JsonObject.put("resCode", resCode);
 			data8583JsonObject.put("resMessage", resMessage);
-			data8583JsonObject.put("rrn", iso8583Controller.getRRN());
+			data8583JsonObject.put("rrn", iso8583Controller.getApOrderId());// 使用机构的参考号
 			data8583JsonObject.put("apOrderId",
-					iso8583Controller.getApOrderId());// 通联订单号
+					iso8583Controller.getApOrderId());// 机构参考号
 			data8583JsonObject.put("payOrderBatch",
 					iso8583Controller.getBatch());
 			data8583JsonObject.put("transAmount",
@@ -1373,6 +1339,47 @@ public class ClientEngine {
 		}
 		db.close();
 		callBack(callBackId, msg);
+	}
+
+	@Override
+	public void misposConnectStatus(boolean isConnected) {
+		//TODO:checking mispos call back to show Mispos page whether or not
+		Log.w(TAG, "isConnected:" + isConnected);
+		misposCheckingThread.setEventThreadRunning(false);
+		if (isConnected) {
+			if (null != misposJsonObj) {
+				Log.w(TAG, "misposJsonObj:" + misposJsonObj.toString());
+				Class<?> controllerClass = classForName("MisposController");
+				startController(controllerClass, misposJsonObj, 0);
+			}
+		} else {
+//			callBack("SettingsIndex.batchCallBack", null);
+			JSONObject formData = misposJsonObj.optJSONObject("data");
+			if (formData.optString("actionType").equals("mispos")) {
+				JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+				if (js != null) {
+					js.callJsHandler("SettingsIndex.batchCallBack", null);
+				}
+			} else {
+				JSONObject jsObj = new JSONObject();
+				try {
+					jsObj.put("msg", context.getResources().getString(R.string.dialog_device_check_mispos_unusual));
+					jsObj.put("onCall", true);
+					jsObj.put("transAmount", formData.optString("transAmount"));
+					String identifier = "";
+					if (formData.optBoolean("isExternalOrder")) {
+						identifier = "Pay.misposErrRestart";
+					} else {
+						identifier = "window.util.backHome";
+					}
+					ClientEngine.engineInstance().showAlert(jsObj, identifier);
+				} catch (NotFoundException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }

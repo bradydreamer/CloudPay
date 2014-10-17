@@ -55,36 +55,7 @@ public class PaymentMechanismController extends BaseHomeController {
 				iv.setTag(data.toString());
 				iv.setOnClickListener(btnClickListener);
 				String imageName = data.optString("imgName");
-				if (imageName.startsWith("logo_ec")) {
-					iv.setImageResource(R.drawable.logo_ec);
-				} else if (imageName.startsWith("logo_cp")) {
-					iv.setImageResource(R.drawable.logo_cp);
-				} else if (imageName.startsWith("logo_delivery_voucher")) {
-					iv.setImageResource(R.drawable.logo_delivery_voucher);
-				} else if (imageName.startsWith("logo_allinpay")) {
-					iv.setImageResource(R.drawable.logo_allinpay);
-				} else if (imageName.startsWith("logo_alipay")) {
-					iv.setImageResource(R.drawable.logo_alipay);
-				} else if (imageName.startsWith("logo_card")) {
-					iv.setImageResource(R.drawable.logo_card);
-				} else if (imageName.startsWith("logo_cup")) {
-					iv.setImageResource(R.drawable.logo_cup);
-				} else if (imageName.startsWith("logo_quickpay")) {
-					iv.setImageResource(R.drawable.logo_quickpay);
-				} else if (imageName.startsWith("logo_search_balance")) {
-					iv.setImageResource(R.drawable.logo_search_balance);
-				} else if (imageName.startsWith("logo_test")) {
-					iv.setImageResource(R.drawable.logo_test);
-				} else if (imageName.startsWith("logo_unionpay")) {
-					iv.setImageResource(R.drawable.logo_unionpay);
-				} else if (imageName.startsWith("logo_wechat")) {
-					iv.setImageResource(R.drawable.logo_wechat);
-				} else if (imageName.startsWith("logo_fufeitong")) {
-					iv.setImageResource(R.drawable.logo_fufeitong);
-				} else if (imageName.startsWith("logo_cash")) {
-					iv.setImageResource(R.drawable.logo_cash);
-				}
-				// iv.setBackgroundResource(R.drawable.icon_bg);
+				matchLogo(iv, imageName);
 			} else {
 				TextView tv = (TextView) v;
 				tv.setText(data.optString("paymentName"));
@@ -121,7 +92,8 @@ public class PaymentMechanismController extends BaseHomeController {
 			JSONObject moduleData = mDataArray.optJSONObject(i);
 			String funcModuleName = moduleData.optString("typeName");
 			String funcModuleId = moduleData.optString("typeId");
-			if (funcModuleId.equals("BALANCE")) {
+			if (funcModuleId.equals("BALANCE") || funcModuleId.equals("coupon")
+					|| funcModuleId.equals("cash")) {
 				continue;
 			}
 			btnFuncModule.setText(funcModuleName);

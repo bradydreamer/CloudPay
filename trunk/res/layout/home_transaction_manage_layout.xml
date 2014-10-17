@@ -20,6 +20,18 @@
                 style="@style/module_title"
                 android:text="@string/transaction_manage_module_title_consumption_record_today" />
         </LinearLayout>
+        
+        <LinearLayout style="@style/module_layout" >
+
+            <ImageButton
+                style="@style/module_logo"
+                android:onClick="gotoConsumptionSummary"
+                android:background="@drawable/logo_consumption_summary" />
+
+            <TextView
+                style="@style/module_title"
+                android:text="@string/transaction_manage_module_title_consumption_summary" />
+        </LinearLayout>
 
         <LinearLayout style="@style/module_layout" >
 
@@ -31,7 +43,7 @@
             <TextView
                 style="@style/module_title"
                 android:text="@string/transaction_manage_module_title_consumption_record_old" />
-        </LinearLayout>
+        </LinearLayout>       
 
         <LinearLayout style="@style/module_layout" >
 

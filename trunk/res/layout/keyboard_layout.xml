@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+   	android:layout_height="wrap_content"
+   	android:layout_centerVertical="true"
+    >
+ 	<LinearLayout 
+ 	    android:layout_width="wrap_content"
+ 	    android:layout_height="wrap_content"
+ 	    android:layout_below="@+id/barTitleLayout"
+ 	    android:layout_centerInParent="true"
+ 	    android:gravity="center">
+ 	    
+	    <LinearLayout 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:background="@drawable/calculator_num_key_bg_small">
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:gravity="center"
+				android:layout_gravity="center"
+				style="@style/calculator_num_key_display_style" >         
+		    	<EditText 
+		    	    android:id="@+id/keyboardScreenEditText"
+			        android:background="@drawable/number_input_edittext_bg_small"
+			        android:textSize="@dimen/transfer_edittext_text_size"
+			       	style="@style/calculator_small_display_screen_style"
+			        android:hint="@string/input_money_et_money_hint"
+			        android:gravity="right|center_vertical"
+			        android:paddingRight="20dp"
+			        android:textColor="@color/white"
+			        />
+		    	
+		        <include 
+		            layout="@layout/table_number_input_small"/>
+	        </LinearLayout>
+		</LinearLayout>
+ 	</LinearLayout>
+</RelativeLayout>

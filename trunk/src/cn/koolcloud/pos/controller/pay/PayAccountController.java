@@ -1,18 +1,32 @@
 package cn.koolcloud.pos.controller.pay;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.ImageScanner;
+import net.sourceforge.zbar.Symbol;
+import net.sourceforge.zbar.SymbolSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.AssetFileDescriptor;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,11 +40,17 @@ import cn.koolcloud.pos.external.CodeScanner;
 import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
 import cn.koolcloud.pos.external.SoundWave;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
+import cn.koolcloud.pos.external.scanner.ZBarScanner;
+
+import com.google.zxing.client.android.ScannerRelativeLayout;
 
 public class PayAccountController extends BaseController implements
-		CardSwiperListener, SoundWaveListener, CodeScannerListener {
+		CardSwiperListener, SoundWaveListener, CodeScannerListener,
+		Camera.PreviewCallback {
 
 	private final int PAY_ACOUNT_MAX_LENGTH = 20;
+	private final int HANDLE_INIT_QRSCANNER = 1;
+	private final int OPEN_CAMERA_DELAY_TIME = 50;
 	protected LinearLayout layout_qrcode;
 	protected LinearLayout layout_sound;
 	protected LinearLayout layout_swiper;
@@ -51,6 +71,16 @@ public class PayAccountController extends BaseController implements
 	private String transType;
 	private boolean removeJSTag = true;
 
+	private String misc;
+	private ZBarScanner scanner;
+	private ImageScanner imageScanner;
+	private FrameLayout preview;
+	private MediaPlayer mediaPlayer;
+	private boolean playBeep = true;
+	private static final float BEEP_VOLUME = 0.10f;
+	private static final long VIBRATE_DURATION = 200L;
+	private static final String ZBTAG = "alipay";
+
 	// muilti info bar components
 	private RelativeLayout barTitleLayout;
 	private TextView koolCloudMerchNumNameTextView;
@@ -65,6 +95,7 @@ public class PayAccountController extends BaseController implements
 	private TextView acquireTerminalNumTextView;
 	private TextView amountMarkTextView;
 	private TextView amountTextView;
+	private ScannerRelativeLayout zscanner;
 
 	private final String APMP_TRAN_PREAUTH = "1011";
 	private final String APMP_TRAN_CONSUME = "1021";
@@ -102,6 +133,7 @@ public class PayAccountController extends BaseController implements
 		et_id = (EditText) findViewById(R.id.pay_account_et_id);
 		setCurrentNumberEditText(et_id);
 		transType = data.optString("transType");
+		misc = data.optString("misc");
 
 		amountTextView = (TextView) findViewById(R.id.pay_account_tv_amount);
 		if (transType.equals(APMP_TRAN_CONSUMECANCE)
@@ -116,19 +148,39 @@ public class PayAccountController extends BaseController implements
 		func_swipeCard = data.optString("swipeCard");
 		func_inputAccount = data.optString("inputAccount");
 		func_nearfieldAccount = data.optString("nearfieldAccount");
-
+		
+		preview = (FrameLayout) findViewById(R.id.scanner_zb);
+		zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
+		
+		if (misc != null && misc.equals(ZBTAG)) {
+			/*preview = (FrameLayout) findViewById(R.id.scanner_zb);
+			preview.setVisibility(View.VISIBLE);
+			ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
+			zscanner.setVisibility(View.GONE);
+			scanner = new ZBarScanner(this);
+			preview.addView(scanner.getMpreview());
+			imageScanner = scanner.getMscanner();
+			initBeepSound();*/
+			
+			preview.setVisibility(View.VISIBLE);
+			
+			zscanner.setVisibility(View.GONE);
+		} else {
+			preview.setVisibility(View.GONE);
+			
+			zscanner.setVisibility(View.VISIBLE);
+			if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
+				ex_codeScanner = new CodeScanner();
+				ex_codeScanner.onCreate(PayAccountController.this,
+						PayAccountController.this);
+			}
+		}
 		initBtnStatus(R.id.pay_account_btn_swiper, data.optInt("btn_swipe", -1));
 		initBtnStatus(R.id.pay_account_btn_keyboard,
 				data.optInt("btn_input", -1));
 		initBtnStatus(R.id.pay_account_btn_sound, data.optInt("btn_sound", -1));
 		initBtnStatus(R.id.pay_account_btn_qrcode,
 				data.optInt("btn_qrcode", -1));
-
-		if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
-			ex_codeScanner = new CodeScanner();
-			ex_codeScanner.onCreate(PayAccountController.this,
-					PayAccountController.this);
-		}
 
 		// faceTypeLanTing = Typeface.createFromAsset(getAssets(),
 		// "font/fzltxhk.ttf");
@@ -285,9 +337,20 @@ public class PayAccountController extends BaseController implements
 			layout_qrcode.setVisibility(View.VISIBLE);
 			UtilFor8583.getInstance().trans
 					.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
-			onStartQRScanner();
+			// onStartQRScanner();
+			if (misc != null && misc.equals(ZBTAG)) {
+//				scanner.startScanner();
+				mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER, OPEN_CAMERA_DELAY_TIME);
+			} else {
+				onStartQRScanner();
+			}
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
-			onStopQRScanner();
+			// onStopQRScanner();
+			if (misc != null && misc.equals(ZBTAG)) {
+				scanner.destroyedScanner();
+			} else {
+				onStopQRScanner();
+			}
 		}
 
 		actionTag = getString(R.string.pay_account_tag_sound);
@@ -319,6 +382,31 @@ public class PayAccountController extends BaseController implements
 			onStopKeyBoard();
 		}
 	}
+	
+	Handler mHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case HANDLE_INIT_QRSCANNER:
+				preview = (FrameLayout) findViewById(R.id.scanner_zb);
+				preview.setVisibility(View.VISIBLE);
+				ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
+				zscanner.setVisibility(View.GONE);
+				scanner = new ZBarScanner(PayAccountController.this);
+				preview.addView(scanner.getMpreview());
+				imageScanner = scanner.getMscanner();
+				initBeepSound();
+				
+				scanner.startScanner();
+				
+				break;
+			default:
+				break;
+			}
+		}
+		
+	};
 
 	private void onStartSwiper() {
 		if (ex_cardSwiper == null) {
@@ -379,6 +467,44 @@ public class PayAccountController extends BaseController implements
 
 	}
 
+	/**
+	 * 初始化声音
+	 */
+	private void initBeepSound() {
+		if (playBeep && mediaPlayer == null) {
+			setVolumeControlStream(AudioManager.STREAM_MUSIC);
+			mediaPlayer = new MediaPlayer();
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			mediaPlayer.setOnCompletionListener(beepListener);
+			AssetFileDescriptor file = getResources().openRawResourceFd(
+					R.raw.beep);
+			try {
+				mediaPlayer.setDataSource(file.getFileDescriptor(),
+						file.getStartOffset(), file.getLength());
+				file.close();
+				mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+				mediaPlayer.prepare();
+			} catch (IOException e) {
+				mediaPlayer = null;
+			}
+		}
+	}
+
+	/**
+	 * 播放声音和震动
+	 */
+	private void playBeepSoundAndVibrate() {
+		if (playBeep && mediaPlayer != null) {
+			mediaPlayer.start();
+		}
+	}
+
+	private final OnCompletionListener beepListener = new OnCompletionListener() {
+		public void onCompletion(MediaPlayer mediaPlayer) {
+			mediaPlayer.seekTo(0);
+		}
+	};
+
 	@Override
 	protected void addInputNumber(String text) {
 		if (et_id.getText().length() < PAY_ACOUNT_MAX_LENGTH) {
@@ -397,8 +523,17 @@ public class PayAccountController extends BaseController implements
 		if (ex_soundWave != null) {
 			ex_soundWave.onPause();
 		}
-		if (ex_codeScanner != null) {
-			ex_codeScanner.onPause();
+		// if (ex_codeScanner != null) {
+		// ex_codeScanner.onPause();
+		// }
+		if (misc != null && misc.equals(ZBTAG)) {
+			if (scanner != null) {
+				scanner.destroyedScanner();
+			}
+		} else {
+			if (ex_codeScanner != null) {
+				ex_codeScanner.onPause();
+			}
 		}
 		super.onPause();
 	}
@@ -418,8 +553,17 @@ public class PayAccountController extends BaseController implements
 		if (ex_soundWave != null) {
 			ex_soundWave.onStart();
 		}
-		if (ex_codeScanner != null) {
-			ex_codeScanner.onResume();
+		// if (ex_codeScanner != null) {
+		// ex_codeScanner.onResume();
+		// }
+		if (misc != null && misc.equals(ZBTAG)) {
+			if (scanner != null) {
+				scanner.startScanner();
+			}
+		} else {
+			if (ex_codeScanner != null) {
+				ex_codeScanner.onResume();
+			}
 		}
 		super.onResume();
 	}
@@ -436,16 +580,34 @@ public class PayAccountController extends BaseController implements
 			ex_soundWave.onDestroy();
 			ex_soundWave = null;
 		}
-		if (ex_codeScanner != null) {
-			ex_codeScanner.onDestroy();
-			ex_codeScanner = null;
+		// if (ex_codeScanner != null) {
+		// ex_codeScanner.onDestroy();
+		// ex_codeScanner = null;
+		// }
+		if (misc != null && misc.equals(ZBTAG)) {
+			if (scanner != null) {
+				scanner.destroyedScanner();
+			}
+		} else {
+			if (ex_codeScanner != null) {
+				ex_codeScanner.onDestroy();
+				ex_codeScanner = null;
+			}
 		}
 		super.onDestroy();
 	};
 
 	@Override
+	public void onClickLeftButton(View view) {
+		// TODO Auto-generated method stub
+		onPause();
+		super.onClickLeftButton(view);
+	}
+
+	@Override
 	public void onBackPressed() {
 		onCall("PayAccount.clear", null);
+		onPause();
 		super.onBackPressed();
 	}
 
@@ -467,6 +629,42 @@ public class PayAccountController extends BaseController implements
 	@Override
 	protected String getControllerJSName() {
 		return getString(R.string.controllerJSName_PayAccount);
+	}
+
+	@Override
+	public void onPreviewFrame(byte[] data, Camera camera) {
+		// TODO Auto-generated method stub
+		Camera.Parameters parameters = camera.getParameters();
+		Camera.Size size = parameters.getPreviewSize();
+
+		Image barcode = new Image(size.width, size.height, "Y800");
+		barcode.setData(data);
+
+		int result = imageScanner.scanImage(barcode);
+
+		if (result != 0) {
+			playBeepSoundAndVibrate();// 播放声音代表成功获取二维码
+			SymbolSet syms = imageScanner.getResults();
+			for (Symbol sym : syms) {
+				String symData = sym.getData();
+				if (!TextUtils.isEmpty(symData)) {
+					JSONObject transData = new JSONObject();
+					try {
+						transData
+								.put(getString(R.string.formData_key_payData_field0),
+										symData);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					scanner.stopScanner();
+					Log.d(TAG, "processReceivedData : " + transData.toString());
+					onCall(func_nearfieldAccount, transData);
+					break;
+				}
+			}
+		}
+		// textView.setText("" + data.toString());
 	}
 
 	@Override

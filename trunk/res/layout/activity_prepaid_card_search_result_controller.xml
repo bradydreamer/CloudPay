@@ -1,0 +1,150 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/main_page_bg_bitmap"
+    android:orientation="vertical" >
+	<RelativeLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_gravity="center"
+	    android:layout_marginBottom="16dp"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    android:background="@drawable/main_page_bg_bitmap"
+	    android:paddingBottom="20dp"
+	    android:paddingLeft="40dp"
+	    android:paddingRight="40dp"
+	    tools:context=".DelVoucherInfoController" >
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:id="@+id/btnsRootLayout"
+		    android:orientation="horizontal"
+		    android:layout_marginBottom="30dp"
+		    android:gravity="right"
+		    android:paddingRight="100dp"
+		    android:layout_alignParentBottom="true">
+		    
+		    <Button
+		        android:id="@+id/cancelButton"
+		        android:layout_width="220dp"
+		        android:layout_height="60dp"
+		        android:background="@drawable/button_cancel_background"
+		        android:text="@string/order_detail_btn_operation_cancel"
+		        android:textColor="@android:color/white"
+		        android:layout_marginTop="5dp"
+		        android:layout_marginBottom="5dp"
+		        android:gravity="center"
+		        android:onClick="onCancel"
+		        android:textSize="@dimen/order_details_content_text_size" />
+		    
+	        <Button
+		        android:id="@+id/confirmButton"
+		        android:layout_width="220dp"
+		        android:layout_height="60dp"
+		        android:background="@drawable/button_green_background"
+		        android:text="@string/order_detail_btn_operation_text_confirm"
+		        android:textColor="@android:color/white"
+		        android:layout_marginTop="5dp"
+		        android:layout_marginBottom="5dp"
+		        android:layout_marginLeft="100dp"
+		        android:gravity="center"
+		        android:onClick="onConfirm"
+		        android:textSize="@dimen/order_details_content_text_size" />
+			
+	    </LinearLayout>
+	
+		<LinearLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:layout_above="@id/btnsRootLayout"
+        	android:layout_marginLeft="100dp"
+        	android:layout_marginRight="100dp"
+        	android:layout_marginTop="40dp"
+		    android:orientation="vertical">
+			<RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/prepaid_card_content_item_height">
+		        <TextView
+	                android:id="@+id/prepaid_card_tv_band_name_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_marginRight="60dp"
+	                android:text="@string/prepaid_card_band_name"
+	                android:layout_centerVertical="true"
+	                android:textColor="@color/gray"	                
+	                android:textSize="@dimen/order_details_content_text_size" />
+	
+	            <TextView
+	                android:id="@+id/prepaid_card_tv_band_name"
+	                style="@style/order_detail_mark_style"
+	                android:layout_toRightOf="@id/prepaid_card_tv_band_name_mark"
+	                android:layout_centerVertical="true"
+	                android:textColor="@color/black"
+	                android:maxLines="4"
+	                android:gravity="left"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>    
+		    <RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/prepaid_card_content_item_height">
+		        <TextView
+	                android:id="@+id/prepaid_card_tv_balance_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_marginRight="60dp"
+	                android:layout_centerVertical="true"
+	                android:text="@string/prepaid_card_balance_str"
+	                android:textColor="@color/gray"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView
+	                android:id="@+id/prepaid_card_tv_balance"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_toRightOf="@id/prepaid_card_tv_balance_mark"
+	                android:textColor="@color/black"
+	                android:gravity="left"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>
+		    <RelativeLayout 
+		        android:layout_width="fill_parent"
+		        android:layout_height="@dimen/prepaid_card_content_item_height">
+		        <TextView
+	                android:id="@+id/prepaid_card_status_tv_mark"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="60dp"
+	                android:text="@string/prepaid_card_status_str"
+	                android:textColor="@color/gray"
+	                android:textSize="@dimen/order_details_content_text_size" />
+	
+	            <TextView
+	                android:id="@+id/prepaid_card_tv_status"
+	                style="@style/order_detail_mark_style"
+	                android:layout_centerVertical="true"
+	                android:layout_toRightOf="@id/prepaid_card_status_tv_mark"
+	                android:textColor="@color/black"
+	                android:gravity="left"
+	                android:textSize="@dimen/order_details_content_text_size" />
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="1dp"
+		            android:layout_alignParentBottom="true"
+		            android:background="@color/interval_line_color"
+		            />
+		    </RelativeLayout>
+			
+		</LinearLayout>
+	</RelativeLayout>
+</LinearLayout>

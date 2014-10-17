@@ -1,0 +1,94 @@
+<html>
+    <head>   
+	    <script>  
+		function loadScript(src,srcId) {  
+			var head = document.getElementsByTagName('head')[0];
+			var script = document.createElement('script');
+			script.type = 'text/javascript';
+			script.charset = 'UTF-8';
+			script.id = srcId
+			var onScriptLoad = function() {  
+			    JSResponser.sendJsResponse("loadJS "+src+" end");
+			}; 
+	
+			script.onload = onScriptLoad;  
+	  
+			script.src = src;  
+			head.appendChild(script);  
+		}  
+		
+		function removeScriptById(srcId) {
+			if ("Common/home" == srcId) {
+				window.Home = null
+			} else if ("Common/InputMoney" == srcId) {
+				window.InputMoney = null
+			} else if ("Consumption/index" == srcId) {
+				window.ConsumptionIndex = null
+			} else if ("Consumption/ExternalOrderInfo" == srcId) {
+				window.ExternalOrderInfo = null
+			} else if ("Consumption/InputCouponId" == srcId) {
+				window.InputCouponId = null
+			} else if ("Consumption/InputQuickPayId" == srcId) {
+				window.InputQuickPayId = null
+			} else if ("Consumption/InputApAccount" == srcId) {
+				window.InputApAccount = null
+			} else if ("Consumption/ManualGoods" == srcId) {
+				window.ManualGoods = null
+			} else if ("Consumption/InputMemberId" == srcId) {
+				window.InputMemberId = null
+			} else if ("Common/NearField" == srcId) {
+				window.NearField = null
+			} else if ("Common/SwipeCard" == srcId) {
+				window.SwipeCard = null
+			} else if ("Common/PinPad" == srcId) {
+				window.PinPad = null
+			} else if ("DeliveryVoucher/InputDelVoucherNum" == srcId) {
+				window.InputDelVoucherNum = null
+			} else if ("DeliveryVoucher/DelVoucherWayChosen" == srcId) {
+				window.DelVoucherWayChosen = null
+			} else if ("DeliveryVoucher/InputDelVoucherId" == srcId) {
+				window.InputDelVoucherId = null
+			} else if ("DeliveryVoucher/DelVoucherInfo" == srcId) {
+				window.DelVoucherInfo = null
+			} else if ("Others/Settings/SetMerchId" == srcId) {
+				window.SetMerchId = null
+			} else if ("Others/Settings/SetMachineId" == srcId) {
+				window.SetMachineId = null
+			} else if ("Others/Settings/Login/index" == srcId) {
+				window.LoginIndex = null
+			} else if ("Others/Settings/index" == srcId) {
+				window.SettingsIndex = null
+			} else if ("Others/index" == srcId) {
+				window.OthersIndex = null
+			} else if ("Others/BalanceResult" == srcId) {
+				window.BalanceResult = null
+			} else if ("TransactionManage/index" == srcId) {
+				window.TransactionManageIndex = null
+			} else if ("TransactionManage/ConsumptionRecord" == srcId) {
+				window.ConsumptionRecord = null
+			} else if ("TransactionManage/TradeStatisticsSearch" == srcId) {
+				window.TradeStatisticsSearch = null
+			} else if ("TransactionManage/ConsumptionRecordSearch" == srcId) {
+				window.ConsumptionRecordSearch = null
+			} else if ("TransactionManage/DelVoucherRecordSearch" == srcId) {
+				window.DelVoucherRecordSearch = null
+			} else if ("TransactionManage/DelVoucherRecord" == srcId) {
+				window.DelVoucherRecord = null
+			} else if ("TransactionManage/OrderDetail" == srcId) {
+				window.OrderDetail = null
+			}
+			var script = document.getElementById(srcId)
+			if(null != script) {
+				script.parentNode.removeChild(script)
+				JSResponser.sendJsResponse("unloadJS "+srcId+" end");
+			} else {
+				JSResponser.sendJsResponse(src+"has not loaded");
+			}
+		}
+		
+		JSResponser.sendJsResponse("android loadScript init end")
+		</script>  
+    </head>
+    <body>
+    </body>
+</html>

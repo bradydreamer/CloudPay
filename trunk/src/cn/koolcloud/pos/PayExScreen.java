@@ -32,7 +32,7 @@ public class PayExScreen extends WelcomeScreen {
 	public final static String ACTION_REVERSE = "reverse";
 
 	private BaseController currentController;
-	
+
 	String orderNo;
 
 	@Override
@@ -40,7 +40,7 @@ public class PayExScreen extends WelcomeScreen {
 		Intent intent = getIntent();
 		action = intent.getStringExtra(ACTION);
 		orderNo = intent.getStringExtra("orderNo");
-		
+
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
 			String pMethod = intent.getStringExtra("pMethod");
 			String transAmount = intent.getStringExtra("transAmount");
@@ -104,6 +104,8 @@ public class PayExScreen extends WelcomeScreen {
 			currentController = null;
 		}
 		ClientEngine.engineInstance().setPayExController(this);
+		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.loadJs(this.getString(R.string.controllerJSName_External));
 
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
 			ClientEngine.engineInstance().showWaitingDialog(context, null,
@@ -235,17 +237,20 @@ public class PayExScreen extends WelcomeScreen {
 		} catch (Exception e) {
 
 		}
-
-		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
-		Map<String, ?> map = UtilForDataStorage
-				.readPropertyBySharedPreferences(MyApplication.getContext(),
-						"merchant");
-		newMerchantMap.put("pwd", "_TDS_" + payInfo.pwd);
-		newMerchantMap.put("ssn", android.os.Build.SERIAL);
-		newMerchantMap.put("merchId", map.get("merchId").toString());
-		newMerchantMap.put("operator", payInfo.userName);
-		UtilForDataStorage.savePropertyBySharedPreferences(
-				MyApplication.getContext(), "merchant", newMerchantMap);
+		if (payInfo.pwd != null && payInfo.userName != null) {
+			Map<String, Object> newMerchantMap = new HashMap<String, Object>();
+			Map<String, ?> map = UtilForDataStorage
+					.readPropertyBySharedPreferences(
+							MyApplication.getContext(), "merchant");
+			newMerchantMap.put("pwd", "_TDS_" + payInfo.pwd);
+			newMerchantMap.put("ssn", android.os.Build.SERIAL);
+			if (null != map.get("merchId")) {
+				newMerchantMap.put("merchId", map.get("merchId").toString());
+			}
+			newMerchantMap.put("operator", payInfo.userName);
+			UtilForDataStorage.savePropertyBySharedPreferences(
+					MyApplication.getContext(), "merchant", newMerchantMap);
+		}
 
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
 		js.callJsHandler("External.onPay", msg);
@@ -263,7 +268,7 @@ public class PayExScreen extends WelcomeScreen {
 		String detailList = null;
 		String operatorName = null;
 		String orderNum = null;
-		
+
 		if (result == null) {
 			setResult(RESULT_CANCELED, i);
 		} else {
@@ -303,24 +308,27 @@ public class PayExScreen extends WelcomeScreen {
 			try {
 				detailList = result.getJSONArray("orderList").toString();
 				jsArray = new JSONArray(detailList);
-				String packageName = ((MyApplication) getApplication()).getPkgName();
-				UtilForJSON.parseCardNumberByPackageName(packageName, jsArray, PayExScreen.this);
+				String packageName = ((MyApplication) getApplication())
+						.getPkgName();
+				UtilForJSON.parseCardNumberByPackageName(packageName, jsArray,
+						PayExScreen.this);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			Map<String, ?> map = UtilForDataStorage
-					.readPropertyBySharedPreferences(MyApplication.getContext(), "merchant");
+					.readPropertyBySharedPreferences(
+							MyApplication.getContext(), "merchant");
 			operatorName = String.valueOf(map.get("operator"));
-			
+
 			i.putExtra(ACTION, ACTION_PAY);
 			i.putExtra("operatorName", operatorName);
 			i.putExtra("totalAmount", totalAmount);
 			i.putExtra("actualAmount", paidAmount);
 			i.putExtra("result", resultValue);
 			i.putExtra("detailList", jsArray.toString());
-			
+
 			if (Integer.parseInt(couponAmount) > 0) {
 				i.putExtra("couponAmount", couponAmount);
 			}
@@ -351,13 +359,14 @@ public class PayExScreen extends WelcomeScreen {
 			if (!TextUtils.isEmpty(payInfo.packageName)) {
 				msg.put("packageName", payInfo.packageName);
 			}
-			
+
 			msg.put("orderNo", orderNo);
 		} catch (Exception e) {
 
 		}
 
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.loadJs(getString(R.string.controllerJSName_OrderDetail));
 		js.callJsHandler("External.startReverse", msg);
 	}
 

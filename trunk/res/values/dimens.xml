@@ -5,7 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="home_navigation_btn_text_size">22px</dimen>
     <dimen name="order_details_content_text_size">28px</dimen>
-    <dimen name="order_details_coupon_text_size">22px</dimen>
+    <dimen name="order_details_coupon_text_size">20px</dimen>
     <dimen name="order_details_content_item_height">80dp</dimen>
     <dimen name="order_detail_interval_margin_right">100dp</dimen>
     
@@ -71,6 +71,8 @@
 	<dimen name="login_search_btn_text_size">40px</dimen>
 	<dimen name="login_search_btn_width">540dp</dimen>
 	<dimen name="login_search_btn_height">80dp</dimen>
+	<dimen name="login_remember_pwd_text_size">28px</dimen>
+	
 	
 	<!-- activity consumption record search controller xml -->
 	<dimen name="consumption_record_search_textview_size">30px</dimen>
@@ -128,10 +130,16 @@
 	<dimen name="single_record_search_edittext_text_size">60px</dimen>
 	<!-- activity trans amount controller xml -->
 	<dimen name="trans_amount_edittext_text_size">80px</dimen>
+	
+	<!-- activity trans amount controller xml -->
+	<dimen name="transfer_edittext_text_size">60px</dimen>
 	<!-- styles xml -->
 	<dimen name="consumption_common_text_size">30px</dimen>
 	<dimen name="styles_common_text_size">32px</dimen>
-
+	<!-- consumption summary  xml -->
+	<dimen name="consumption_line_text_size">25px</dimen>
+	<dimen name="consumption_line_content_text_size">23px</dimen>
+	
 	<!-- Mispos -->
 	<dimen name="mispos_common_text_size">32px</dimen>
 	<dimen name="mispos_balance_text_size">60px</dimen>
@@ -142,5 +150,15 @@
 	<dimen name="cash_btn_width">540dp</dimen>
 	<dimen name="cash_btn_height">80dp</dimen>
 	<dimen name="cash_btn_textsize">40px</dimen>
+	<dimen name="cash_textview_width">200dp</dimen>
+	<dimen name="cash_textview_height">80dp</dimen>
+	<dimen name="cash_edittext_width">300dp</dimen>
+	<dimen name="cash_edittext_height">80dp</dimen>
+	<dimen name="cash_unit_width">40dp</dimen>
+	<dimen name="cash_unit_height">80dp</dimen>
+	<dimen name="cash_layout_width">540dp</dimen>
+	<dimen name="cash_layout_height">80dp</dimen>
 	
+	<!-- prepaid card -->
+	<dimen name="prepaid_card_content_item_height">160px</dimen>
 </resources>

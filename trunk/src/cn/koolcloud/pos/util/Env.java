@@ -2,6 +2,8 @@ package cn.koolcloud.pos.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,8 @@ import android.telephony.TelephonyManager;
  * @version
  */
 public class Env {
+
+	public static final String DATE_SMALL_STR = "yyyy-MM-dd";
 
 	/**
 	 * @Title: uninstallApp
@@ -249,6 +253,21 @@ public class Env {
 		} catch (NameNotFoundException e) {
 			return false;
 		}
+	}
+
+	public static boolean isAppInForeground(Context context) {
+		List<RunningTaskInfo> task = ((ActivityManager) context
+				.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1);
+		if (task.isEmpty()) {
+			return false;
+		}
+		return task.get(0).topActivity.getPackageName().equalsIgnoreCase(
+				context.getPackageName());
+	}
+
+	public static String getNowDate() {
+		SimpleDateFormat df = new SimpleDateFormat(DATE_SMALL_STR);
+		return df.format(new Date());
 	}
 
 	public static String getDeviceInfo(Context ctx) {

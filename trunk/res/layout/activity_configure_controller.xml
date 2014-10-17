@@ -62,7 +62,7 @@
 	        <LinearLayout  
 	            android:layout_width="540dp"
 	            android:layout_height="80dp"
-	            android:layout_marginBottom="50dp"
+	            android:layout_marginBottom="10dp"
 	            android:orientation="horizontal"
 	            android:background="@drawable/login_password">
 		        <EditText 
@@ -75,11 +75,21 @@
 				    android:paddingLeft="10dp"
 				    android:singleLine="true"
 		            android:inputType="textPassword"
+		            android:maxLength="30"
 		            android:background="@null"/>
-	        </LinearLayout>       
+	        </LinearLayout>
+	        
+	        <CheckBox  
+	            android:id="@+id/remember_pwd"  
+	            android:layout_width="wrap_content"  
+	            android:layout_height="wrap_content"  
+	            android:layout_marginLeft="40dp"
+	            android:layout_marginBottom="30dp"
+	            android:text="@string/remember_pass_word_content"
+	            android:textSize="@dimen/login_remember_pwd_text_size"/> 
 	
 	        <Button 
-	            android:layout_marginTop="30dp"
+	            android:layout_marginTop="20dp"
 	            android:layout_width="@dimen/login_search_btn_width"
 		    	android:layout_height="@dimen/login_search_btn_height"
 	            android:textSize="@dimen/login_search_btn_text_size"

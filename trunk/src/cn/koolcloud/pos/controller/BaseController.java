@@ -1,5 +1,11 @@
 package cn.koolcloud.pos.controller;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +17,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,12 +29,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.others.settings.LoginController;
 import cn.koolcloud.pos.controller.others.settings.LoginVerifyController;
 import cn.koolcloud.pos.controller.others.settings.SetMachineIdController;
 import cn.koolcloud.pos.controller.others.settings.SetMerchIdController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
+import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
+import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForMoney;
 
 public abstract class BaseController extends Activity {
 
@@ -74,6 +85,7 @@ public abstract class BaseController extends Activity {
 			clientEngine.setCurrentController(this);
 			clientEngine.addController(getControllerName(), this);
 			setFormData();
+			loadRelatedJS();
 		}
 
 		setWindowFeature();
@@ -150,6 +162,22 @@ public abstract class BaseController extends Activity {
 		} else if (resultCode == TransAmountController.RESULT_CODE_AMOUNT) {
 			setResult(resultCode, data);
 			// finish();
+		} else if (requestCode == HomeController.REQUEST_CODE) {
+			if (null != data) {
+				Bundle bundle = data.getExtras();
+				String couponCount = bundle.getString("couponCount");
+				String couponAmount = bundle.getString("couponAmount");
+
+				if (!TextUtils.isEmpty(couponAmount)
+						&& Integer.parseInt(couponAmount) > 0) {
+					writeBackAPMPCouponData(couponAmount, couponCount);
+				} else {
+					Log.e("CouponResult", "return value:" + couponAmount);
+				}
+				return;
+			}
+		} else if (requestCode == OrderDetailController.REQUEST_CODE) {
+			setResult(resultCode, data);
 		} else {
 			notifyWillshow();
 		}
@@ -159,6 +187,68 @@ public abstract class BaseController extends Activity {
 	protected void showController(final Class<?> cls) {
 		ClientEngine clientEngine = ClientEngine.engineInstance();
 		clientEngine.showController(cls);
+	}
+
+	protected void loadRelatedJS() {
+		if (null == getControllerJSName()) {
+			return;
+		}
+		if (getRemoveJSTag()) {
+			JavaScriptEngine js = ClientEngine.engineInstance()
+					.javaScriptEngine();
+			js.loadJs(getControllerJSName());
+			setRemoveJSTag(false);
+		}
+	}
+
+	private void writeBackAPMPCouponData(String couponAmount, String couponNum) {
+		String transTime = null;
+		String transType = null;
+		String batchNo = null;
+		String traceNo = null;
+		int traceId = 0;
+		String resCode = "00";
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		System.setProperty("user.timezone", "GMT+8");
+		transTime = dateFormat.format(now);
+		transType = "1021";
+		DecimalFormat dataFormat = new DecimalFormat("000000");
+
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
+		if (null == map.get("transId")) {
+			traceNo = "0";
+		} else {
+			traceId = ((Integer) map.get("transId")).intValue();
+			traceNo = dataFormat.format(traceId);
+		}
+		if (null == map.get("batchId")) {
+			batchNo = "0";
+		} else {
+			batchNo = dataFormat.format(((Integer) map.get("batchId"))
+					.intValue());
+		}
+
+		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
+		newMerchantMap.put("transId", Integer.valueOf(traceId + 1));
+		UtilForDataStorage.savePropertyBySharedPreferences(
+				MyApplication.getContext(), "merchant", newMerchantMap);
+
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("couponPaidAmount", UtilForMoney.yuan2fen(couponAmount));
+			msg.put("couponNum", couponNum);
+			msg.put("transTime", transTime);
+			msg.put("transType", transType);
+			msg.put("batchNo", batchNo);
+			msg.put("traceNo", traceNo);
+			msg.put("resCode", resCode);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		onCall("window.Pay.writeBackAPMPCouponData", msg);
 	}
 
 	protected void willShow() {
@@ -239,6 +329,7 @@ public abstract class BaseController extends Activity {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
 			clientEngine.setCurrentController(this);
 		}
+		loadRelatedJS();
 		super.onResume();
 		hasControllerResumed = true;
 	}
@@ -292,6 +383,18 @@ public abstract class BaseController extends Activity {
 		if (!willRestart) {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
 			clientEngine.removeController(getControllerName());
+			if (null != getControllerJSName()
+					&& !(this instanceof LoginVerifyController)
+					&& !(this instanceof LoginController)
+					&& !(this instanceof SetMachineIdController)
+					&& !(this instanceof SetMerchIdController)) {
+				JavaScriptEngine js = ClientEngine.engineInstance()
+						.javaScriptEngine();
+				Log.i(TAG, "Warning:--------RemoveJS:onDestroy:"
+						+ getControllerJSName());
+				js.removeJs(getControllerJSName());
+				setRemoveJSTag(true);
+			}
 		}
 		super.onDestroy();
 	}
@@ -433,6 +536,15 @@ public abstract class BaseController extends Activity {
 		addInputNumber("9");
 		showInputNumber();
 	}
+	public void onClickBtnX(View view) {
+		addInputNumber("x");
+		showInputNumber();
+	}
+	
+	public void onClickBtnNumber00(View view) {
+		addInputNumber("00");
+		showInputNumber();
+	}
 
 	public void onClickBtnNumberBack(View view) {
 		delInputNumber();
@@ -441,6 +553,13 @@ public abstract class BaseController extends Activity {
 
 	public void onClickBtnC(View view) {
 		numberInputString.delete(0, numberInputString.length());
+		showInputNumber();
+	}
+	
+	public void clearInputNumber() {
+		if (!TextUtils.isEmpty(numberInputString)) {
+			numberInputString.delete(0, numberInputString.length());
+		}
 		showInputNumber();
 	}
 

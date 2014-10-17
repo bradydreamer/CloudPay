@@ -32,6 +32,10 @@ public class AndroidHandler {
 					clientEngine.showAlert(jsonObjData, callBackId);
 				} else if ("showScene".equals(androidHandlerName)) {
 					clientEngine.showController(jsonObjData, callBackId);
+				} else if ("checkSessionTime".equals(androidHandlerName)) {
+					clientEngine.startSessionTest();
+				} else if ("stopCheckSessionTime".equals(androidHandlerName)) {
+					clientEngine.stopSessionTest();
 				} else if ("goBack".equals(androidHandlerName)) {
 					clientEngine.showController(jsonObjData, callBackId);
 				} else if ("setProperty".equals(androidHandlerName)) {
@@ -65,7 +69,7 @@ public class AndroidHandler {
 						public void run() {
 							clientEngine.convert8583(jsData, callBackId);
 						}
-					}, "正在解析数据");
+					}, context.getResources().getString(R.string.msg_analyzing_data));
 
 				} else if ("get8583".equals(androidHandlerName)) {
 					final JSONObject jsData = jsonObjData;
@@ -75,7 +79,7 @@ public class AndroidHandler {
 						public void run() {
 							clientEngine.get8583(jsData, callBackId);
 						}
-					}, "正在组织数据");
+					}, context.getResources().getString(R.string.msg_organizing_data));
 				} else if ("printTrans".equals(androidHandlerName)) {
 					clientEngine.print(jsonObjData, context);
 				} else if ("insertTransData8583".equals(androidHandlerName)) {

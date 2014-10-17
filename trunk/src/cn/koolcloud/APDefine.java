@@ -9,8 +9,9 @@ public class APDefine {
 
 	// test server
 	public static final String APPSERVER = "http://aop.koolyun.cn:8080/apmp/rest/";
-	// public static final String APPSERVER =
-	// "http://192.168.70.104:8080/apmp/rest/";
+	
+	//UAT Server
+//	public static final String APPSERVER = "http://aop.koolyun.cn:8090/apmp/rest/";
 
 	/**
 	 * produce modulus

@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.controller.HomeController;
 import cn.koolcloud.pos.controller.dialogs.PushMessageController;
+import cn.koolcloud.pos.service.local.LocalService;
 import cn.koolcloud.pos.util.PushUtils;
 
 public class WelcomeScreen extends Activity {
@@ -30,6 +32,11 @@ public class WelcomeScreen extends Activity {
         
         PushUtils.logStringCache = PushUtils.getLogText(getApplicationContext());
         PushUtils.loginBaiduCloud(getApplicationContext());
+        
+		//start Local Service but don't execute chekcing
+        Intent bindIntent = new Intent(this, LocalService.class);
+		bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, false);
+		startService(bindIntent);
         
         this.setContentView();
     }
@@ -76,7 +83,9 @@ public class WelcomeScreen extends Activity {
 		intent.setClass(context, HomeController.class);
 //		intent.setClass(context, PayExScreen.class);
 //		intent.putExtra(PayExScreen.ACTION, PayExScreen.ACTION_MERCH_INFO);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//fix appstore can't open smartpay (SMTPS-113) --start fixed by Teddy on 26th September
+		intent.setFlags(/*Intent.FLAG_ACTIVITY_CLEAR_TOP|*/Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//fix appstore can't open smartpay (SMTPS-113) --end fixed by Teddy on 26th September
 		startActivityForResult(intent, ClientEngine.engineInstance().mRequestCode);
 	}
 	
@@ -99,5 +108,8 @@ public class WelcomeScreen extends Activity {
 		if(exitOnDestroy){
 			System.exit(0);
 		}
+		//stop Local service
+		Intent bindIntent = new Intent(this, LocalService.class);  
+		stopService(bindIntent);  
 	}
 }
