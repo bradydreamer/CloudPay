@@ -20,12 +20,7 @@ public class ChongZhengTest {
 
 		ISO8583Controller iso = new ISO8583Controller("999290054990001",
 				"10000072", 175, 600001);
-		try {
-			iso.chongZheng(data, "0830", "cheXiaoChongZheng");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		iso.chongZheng(data, "0830", "cheXiaoChongZheng");
 		// // iso.chongZheng(data, "0829","123123123","123123123");
 		// String track2 = "6200489220154827=40075205351020000";
 		// String track3 = "";

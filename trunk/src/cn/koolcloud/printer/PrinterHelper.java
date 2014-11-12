@@ -17,16 +17,18 @@ import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.util.MisposOperationUtil;
+import cn.koolcloud.pos.wd.R;
 import cn.koolcloud.printer.command.FormatSettingCommand;
+import cn.koolcloud.printer.command.PrinterCommand;
 import cn.koolcloud.printer.control.Align;
 import cn.koolcloud.printer.control.Depth;
 import cn.koolcloud.printer.control.FontType;
 import cn.koolcloud.printer.control.PrinterControl;
 import cn.koolcloud.printer.devices.DeviceManager;
 import cn.koolcloud.printer.exception.AccessException;
+import cn.koolcloud.printer.exception.PrinterException;
 import cn.koolcloud.printer.util.QRcodeBitmap;
 import cn.koolcloud.printer.util.Utils;
 import cn.koolcloud.util.AppUtil;
@@ -131,17 +133,14 @@ public class PrinterHelper implements Constant {
 				 * printerWrite(PrinterCommand.linefeed());
 				 */
 
-				printerWrite(("商户名:" + trans.getOldMertName())
-						.getBytes("GB2312"));
+				printerWrite(("商户名:" + trans.getOldMertName()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(("酷云客户号:" + trans.getKoolCloudMID())
-						.getBytes("GB2312"));
+				/*printerWrite(("酷云客户号:" + trans.getKoolCloudMID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(("酷云设备号:" + trans.getKoolCloudTID())
-						.getBytes("GB2312"));
-				printerWrite(PrinterCommand.linefeed());
+				printerWrite(("酷云设备号:" + trans.getKoolCloudTID()).getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());*/
 
 				printerWrite(("收单商户号:" + trans.getOldMID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
@@ -307,9 +306,12 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(PrinterCommand.feedLine(2));
-				if (i == 0) {
+				
+				//TODO:cut paper
+				printerWrite(PrinterCommand.getCmdCutPaper(PrinterCommand.CUT_HALF));
+				/*if (i == 0) {
 					Thread.currentThread().sleep(8000);
-				}
+				}*/
 			}
 
 		} catch (UnsupportedEncodingException e) {
@@ -317,10 +319,9 @@ public class PrinterHelper implements Constant {
 					+ e.getMessage(), e);
 		} catch (IllegalArgumentException e) {
 			throw new PrinterException(e.getMessage(), e);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		}/* catch (InterruptedException e) {
 			e.printStackTrace();
-		} finally {
+		} */finally {
 			PrinterInterface.end();
 			PrinterInterface.close();
 		}
@@ -514,9 +515,12 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(PrinterCommand.feedLine(2));
-				if (i == 0) {
+				
+				//TODO:cut paper
+				printerWrite(PrinterCommand.getCmdCutPaper(PrinterCommand.CUT_HALF));
+				/*if (i == 0) {
 					Thread.currentThread().sleep(8000);
-				}
+				}*/
 			}
 
 		} catch (UnsupportedEncodingException e) {
@@ -524,169 +528,12 @@ public class PrinterHelper implements Constant {
 					+ e.getMessage(), e);
 		} catch (IllegalArgumentException e) {
 			throw new PrinterException(e.getMessage(), e);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		}/* catch (InterruptedException e) {
 			e.printStackTrace();
-		} finally {
+		}*/ finally {
 			PrinterInterface.end();
 			PrinterInterface.close();
 		}
-	}
-
-	synchronized public void printTransSummary(JSONObject printData)
-			throws PrinterException {
-		try {
-			PrinterInterface.open();
-			PrinterInterface.set(1);
-			PrinterInterface.begin();
-			PrinterInterface.end();
-			// printerWrite(PrinterCommand.init());
-			// printerWrite(PrinterCommand.setHeatTime(180));
-
-			PrinterInterface.begin();
-
-			printerWrite(PrinterCommand.setFontBold(1));
-			printerWrite(PrinterCommand.setAlignMode(1));
-			printerWrite(PrinterCommand.setFontEnlarge(0x01));
-			printerWrite(("当日消费汇总").getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite(PrinterCommand.setFontBold(0));
-			printerWrite(PrinterCommand.setAlignMode(0));
-			printerWrite(PrinterCommand.setFontEnlarge(0));
-
-			printerWrite("--------------------------------".getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite(("商户名称:" + printData
-					.optString(ConstantUtils.FOR_PRINT_MERCHANT_NAME))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite(("酷云客户号:" + printData
-					.optString(ConstantUtils.FOR_PRINT_MERCHANT_ID))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite(("酷云设备号:" + printData
-					.optString(ConstantUtils.FOR_PRINT_MECHINE_ID))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite(("汇总时间:" + getCurrentTime()).getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite("--------------------------------".getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite(("交易类型     " + "笔数  " + "金额（元） ").getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite("--------------------------------".getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_CONSUME)
-					+ "            "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_CONSUME) + "  " + getTransAmount(
-						printData, ConstantUtils.APMP_TRAN_TYPE_CONSUME))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
-					+ "        "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
-					+ "  " + getTransAmount(printData,
-						ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
-					+ "          "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PREAUTH) + "  " + getTransAmount(
-						printData, ConstantUtils.APMP_TRAN_TYPE_PREAUTH))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
-					+ "  "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
-					+ "  " + getTransAmount(printData,
-						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
-					+ "  "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
-					+ "  " + getTransAmount(printData,
-						ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
-					+ "      "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
-					+ "  " + getTransAmount(printData,
-						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
-					+ "  "
-					+ getTransCount(
-							printData,
-							ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
-					+ "  " + getTransAmount(printData,
-						ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite("--------------------------------".getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite(PrinterCommand.linefeed());
-
-		} catch (UnsupportedEncodingException e) {
-			throw new PrinterException("PrinterHelper.printReceipt():"
-					+ e.getMessage(), e);
-		} catch (IllegalArgumentException e) {
-			throw new PrinterException(e.getMessage(), e);
-		} finally {
-			PrinterInterface.end();
-			PrinterInterface.close();
-		}
-	}
-
-	private String getTransType(JSONObject summary, String transType) {
-		String value = summary.optString(transType);
-		String[] strs = value.split("-");
-		return strs[0];
-	}
-
-	private String getTransCount(JSONObject summary, String transType) {
-		String value = summary.optString(transType);
-		String[] strs = value.split("-");
-		return strs[1];
-	}
-
-	private String getTransAmount(JSONObject summary, String transType) {
-		String value = summary.optString(transType);
-		String[] strs = value.split("-");
-		return strs[2];
-	}
-
-	private String getCurrentTime() {
-		String transTime;
-		Date now = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm:ss");// 可以方便地修改日期格式
-		System.setProperty("user.timezone", "GMT+8");
-		transTime = dateFormat.format(now);
-		return transTime;
 	}
 
 	public void printerWrite(byte[] data) {
@@ -699,8 +546,10 @@ public class PrinterHelper implements Constant {
 		PrinterControl control = DeviceManager.getInstance()
 				.getPrinterControlEx();
 		try {
-
 			control.open();
+			
+			PrinterInterface.set(1);
+			PrinterInterface.begin();
 
 			for (int i = 0; i < 2; i++) {
 
@@ -734,10 +583,8 @@ public class PrinterHelper implements Constant {
 				control.printText(trans.getOldMertName() + "\n",
 						FontType.NORMAL, Align.LEFT, Depth.DEEP);
 
-				control.printText(TAG_KOOL_CLOUD_MID + trans.getKoolCloudMID()
-						+ "\n");
-				control.printText(TAG_KOOL_CLOUD_TID + trans.getKoolCloudTID()
-						+ "\n");
+//				control.printText(TAG_KOOL_CLOUD_MID + trans.getKoolCloudMID() + "\n");
+//				control.printText(TAG_KOOL_CLOUD_TID + trans.getKoolCloudTID() + "\n");
 				// control.printText(TAG_AP_NAME + trans.getPaymentName() +
 				// "\n");
 				// control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
@@ -828,21 +675,26 @@ public class PrinterHelper implements Constant {
 					control.printText("本人确认以上交易，同意将其记入支付宝账户");
 					control.printText("\n\n\n\n\n");
 
-					Thread.currentThread().sleep(8000);
 				} else {
 					control.printText("本人确认以上交易，同意将其记入支付宝账户");
 					control.printText("\n\n\n\n\n");
 				}
-
+				
+				//TODO:cut paper
+				control.sendESC(PrinterCommand.getCmdCutPaper(PrinterCommand.CUT_HALF));
+				
+				/*if (i == 0) {
+					Thread.currentThread().sleep(8000);
+				}*/
 			}
 
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (AccessException e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
+		}/* catch (InterruptedException e) {
 			e.printStackTrace();
-		} finally {
+		} */finally {
 			try {
 				control.close();
 			} catch (AccessException e) {
@@ -850,5 +702,160 @@ public class PrinterHelper implements Constant {
 			}
 
 		}
+	}
+	
+	synchronized public void printTransSummary(JSONObject printData)
+			throws PrinterException {
+		try {
+			PrinterInterface.open();
+			PrinterInterface.set(1);
+			PrinterInterface.begin();
+			PrinterInterface.end();
+			// printerWrite(PrinterCommand.init());
+			// printerWrite(PrinterCommand.setHeatTime(180));
+
+			PrinterInterface.begin();
+
+			printerWrite(PrinterCommand.setFontBold(1));
+			printerWrite(PrinterCommand.setAlignMode(1));
+			printerWrite(PrinterCommand.setFontEnlarge(0x01));
+			printerWrite(("当日消费汇总").getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite(PrinterCommand.setFontBold(0));
+			printerWrite(PrinterCommand.setAlignMode(0));
+			printerWrite(PrinterCommand.setFontEnlarge(0));
+
+			printerWrite("--------------------------------".getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite(("商户名称:" + printData
+					.optString(ConstantUtils.FOR_PRINT_MERCHANT_NAME))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite(("客户号:" + printData
+					.optString(ConstantUtils.FOR_PRINT_MERCHANT_ID))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite(("设备号:" + printData
+					.optString(ConstantUtils.FOR_PRINT_MECHINE_ID))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite(("汇总时间:" + getCurrentTime()).getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite("--------------------------------".getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite(("交易类型     " + "笔数  " + "金额（元） ").getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite("--------------------------------".getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_CONSUME)
+					+ "            "
+					+ getTransCount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_CONSUME) + "  " + getTransAmount(
+						printData, ConstantUtils.APMP_TRAN_TYPE_CONSUME))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
+					+ "        "
+					+ getTransCount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
+					+ "  " + getTransAmount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			/*printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
+					+ "          "
+					+ getTransCount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PREAUTH) + "  " + getTransAmount(
+						printData, ConstantUtils.APMP_TRAN_TYPE_PREAUTH))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
+					+ "  "
+					+ getTransCount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
+					+ "  " + getTransAmount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
+					+ "  "
+					+ getTransCount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
+					+ "  " + getTransAmount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
+					+ "      "
+					+ getTransCount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
+					+ "  " + getTransAmount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite((getTransType(printData,
+					ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
+					+ "  "
+					+ getTransCount(
+							printData,
+							ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
+					+ "  " + getTransAmount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());*/
+			printerWrite("--------------------------------".getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite(PrinterCommand.getCmdCutPaper(PrinterCommand.CUT_HALF));
+		} catch (UnsupportedEncodingException e) {
+			throw new PrinterException("PrinterHelper.printReceipt():"
+					+ e.getMessage(), e);
+		} catch (IllegalArgumentException e) {
+			throw new PrinterException(e.getMessage(), e);
+		} finally {
+			PrinterInterface.end();
+			PrinterInterface.close();
+		}
+	}
+
+	private String getTransType(JSONObject summary, String transType) {
+		String value = summary.optString(transType);
+		String[] strs = value.split("-");
+		return strs[0];
+	}
+
+	private String getTransCount(JSONObject summary, String transType) {
+		String value = summary.optString(transType);
+		String[] strs = value.split("-");
+		return strs[1];
+	}
+
+	private String getTransAmount(JSONObject summary, String transType) {
+		String value = summary.optString(transType);
+		String[] strs = value.split("-");
+		return strs[2];
+	}
+
+	private String getCurrentTime() {
+		String transTime;
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd HH:mm:ss");// 可以方便地修改日期格式
+		System.setProperty("user.timezone", "GMT+8");
+		transTime = dateFormat.format(now);
+		return transTime;
 	}
 }

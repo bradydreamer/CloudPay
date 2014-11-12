@@ -2,10 +2,13 @@ package cn.koolcloud.pos;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -36,7 +39,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.control.ISO8583Controller;
-import cn.koolcloud.interfaces.MisposEventInterface;
 import cn.koolcloud.jni.EmvL2Interface;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.controller.BaseController;
@@ -64,7 +66,6 @@ import cn.koolcloud.pos.controller.others.settings.SetTransIdController;
 import cn.koolcloud.pos.controller.others.settings.SettingsDownloadController;
 import cn.koolcloud.pos.controller.others.settings.SigninController;
 import cn.koolcloud.pos.controller.others.settings.TransBatchController;
-import cn.koolcloud.pos.controller.pay.CashConsumeController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
@@ -72,28 +73,32 @@ import cn.koolcloud.pos.controller.prepaid_card.PrepaidCardQRCodeController;
 import cn.koolcloud.pos.controller.prepaid_card.PrepaidCardSearchResultController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController;
-import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionSummaryController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController;
-import cn.koolcloud.pos.controller.transfer.SuperTransferController;
 import cn.koolcloud.pos.database.CacheDB;
+import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.net.NetEngine;
 import cn.koolcloud.pos.secure.SecureEngine;
+import cn.koolcloud.pos.service.CouponInfo;
+import cn.koolcloud.pos.service.ICouponService;
 import cn.koolcloud.pos.service.IMerchService;
 import cn.koolcloud.pos.service.ISecureService;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.SecureInfo;
+import cn.koolcloud.pos.service.SmartIposRunBackground;
 import cn.koolcloud.pos.util.Env;
-import cn.koolcloud.pos.util.MisposCheckingThread;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForGraghic;
+import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.pos.util.UtilForThread;
+import cn.koolcloud.pos.wd.R;
 import cn.koolcloud.pos.widget.CustomAnimDialog;
 
-public class ClientEngine implements MisposEventInterface {
+public class ClientEngine {
 
 	private static ClientEngine instance;
 	private JavaScriptEngine jsEngine;
@@ -117,10 +122,7 @@ public class ClientEngine implements MisposEventInterface {
 	private static final long SESSION_TIMEOUT = 8 * 60;// 分钟
 	private Thread sessionThread = null;
 
-	private MisposCheckingThread misposCheckingThread;
-
-	// cache mispos data
-	private JSONObject misposJsonObj;
+	// private ISecureService getSummarySecureService;
 
 	private ClientEngine() {
 		controllerStack = new Stack<Map<String, BaseController>>();
@@ -171,6 +173,11 @@ public class ClientEngine implements MisposEventInterface {
 		this.context = context;
 	}
 
+	/*
+	 * public void setBackgroundService(ISecureService mService) {
+	 * this.getSummarySecureService = mService; }
+	 */
+
 	public void setCurrentController(BaseController currentController) {
 		this.currentController = currentController;
 		this.context = currentController;
@@ -191,7 +198,7 @@ public class ClientEngine implements MisposEventInterface {
 		return mMerchService;
 	}
 
-	public ServiceConnection merchConnection = new ServiceConnection() {
+	private ServiceConnection merchConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mMerchService = IMerchService.Stub.asInterface(service);
@@ -208,7 +215,7 @@ public class ClientEngine implements MisposEventInterface {
 	}
 
 	private ISecureService mSecureService;
-	public ServiceConnection secureConnection = new ServiceConnection() {
+	private ServiceConnection secureConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mSecureService = ISecureService.Stub.asInterface(service);
@@ -220,7 +227,22 @@ public class ClientEngine implements MisposEventInterface {
 		}
 	};
 
+	private ICouponService mCouponService;
+
+	private ServiceConnection couponConnection = new ServiceConnection() {
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mCouponService = null;
+		}
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			mCouponService = ICouponService.Stub.asInterface(service);
+		}
+	};
+
 	public void initEngine() {
+		Context context = MyApplication.getContext();
 		Intent merchIntent = new Intent(IMerchService.class.getName());
 		context.startService(merchIntent);
 		boolean result_merch = context.bindService(merchIntent,
@@ -237,6 +259,15 @@ public class ClientEngine implements MisposEventInterface {
 			Toast.makeText(context, "secure服务绑定失败。", Toast.LENGTH_SHORT).show();
 		}
 
+		Intent couponIntent = new Intent(ICouponService.class.getName());
+		couponIntent.setAction("com.koolyun.coupon.service.permission.COUPON");
+		boolean result_coupon = context.bindService(couponIntent,
+				couponConnection, Context.BIND_AUTO_CREATE);
+
+		if (!result_coupon) {
+			// Toast.makeText(context, "coupon 服务绑定失败。",
+			// Toast.LENGTH_SHORT).show();
+		}
 		initJSengine();
 		secureEngine = new SecureEngine();
 	}
@@ -296,7 +327,6 @@ public class ClientEngine implements MisposEventInterface {
 		jsEngine.initEngine(context);
 
 		jsEngine.loadJs("Common/global");
-		jsEngine.loadJs("Common/home");
 		jsEngine.loadJs("platform/android");
 		jsEngine.loadJs("platform/ipos");
 		jsEngine.loadJs("Common/ConsumptionData");
@@ -309,6 +339,10 @@ public class ClientEngine implements MisposEventInterface {
 		jsEngine.loadJs("pay/payMethod");
 		jsEngine.loadJs("Others/Settings/SignIn");
 		jsEngine.loadJs("Others/Settings/TransBatch");
+		jsEngine.loadJs("Others/Settings/Login/index");
+		jsEngine.loadJs("Others/Settings/index");
+		jsEngine.loadJs("Others/Settings/settingsDownload");
+		jsEngine.loadJs("Common/home");
 
 	}
 
@@ -428,6 +462,7 @@ public class ClientEngine implements MisposEventInterface {
 
 	public void startSessionTest() {
 		if (sessionThread == null) {
+
 			sessionThread = new Thread(new Runnable() {
 
 				@Override
@@ -496,6 +531,7 @@ public class ClientEngine implements MisposEventInterface {
 		} else {
 			existsTag = true;
 		}
+		Log.i(TAG, "===,paramsFilesIsExists,return:" + existsTag);
 		return existsTag;
 	}
 
@@ -534,8 +570,6 @@ public class ClientEngine implements MisposEventInterface {
 		mIntent.putExtra(ConstantUtils.NEGATIVE_BTN_KEY, negativeText);
 		mIntent.putExtra(ConstantUtils.MSG_KEY, msg);
 		mIntent.putExtra(ConstantUtils.IDENTIFIER_KEY, identifier);
-		mIntent.putExtra("onCall", data.optBoolean("onCall"));
-		mIntent.putExtra("transAmount", data.optString("transAmount"));
 		context.startActivity(mIntent);
 		// use styled alert dialog end on 16th June
 
@@ -706,6 +740,49 @@ public class ClientEngine implements MisposEventInterface {
 		cacheDB.deleteBatchTaskByPKId(pkId);
 	}
 
+	/**
+	 * save merchSetting info to database
+	 * 
+	 * @Title: saveToDataBase
+	 * @Description: TODO
+	 * @param data
+	 * @param context
+	 * @return: void
+	 */
+	public void saveMerchSettingToDataBase(String identifier, Context context) {
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(context, "merchSettings");
+		JSONArray jsonArray = null;
+		if (map.containsKey("settingString")) {
+			String jsArrayStr = String.valueOf(map.get("settingString"));
+			CacheDB cacheDB = CacheDB.getInstance(context);
+			try {
+				jsonArray = new JSONArray(jsArrayStr);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+			// clear acquire institute table
+			cacheDB.clearAcquireInstituteTableData();
+
+			List<AcquireInstituteBean> acquireList = UtilForJSON
+					.parseJsonArray2AcquireInstitute(jsonArray);
+			if (acquireList != null && acquireList.size() > 0) {
+				cacheDB.insertAcquireInstitute(acquireList);
+			}
+
+			// clear cached payment table
+			cacheDB.clearPaymentActivityTableData();
+			List<AcquireInstituteBean> acquireJsonList = UtilForJSON
+					.parseJsonArray2AcquireInstituteWithJson(jsonArray);
+			if (acquireJsonList != null && acquireJsonList.size() > 0) {
+				cacheDB.insertPayment(acquireJsonList);
+			}
+		}
+
+		callBack(identifier, null);
+	}
+
 	void netConnect(JSONObject params, String identifier) {
 		Map<String, String> headerMap = new HashMap<String, String>();
 		JSONObject headerJsonObject = params.optJSONObject("header");
@@ -825,7 +902,6 @@ public class ClientEngine implements MisposEventInterface {
 					return;
 				}
 				String name = data.optString("name");
-				JSONObject formData = data.optJSONObject("data");
 				if ("".equals(name)) {
 					if (null != data) {
 						Intent intent = new Intent();
@@ -848,44 +924,71 @@ public class ClientEngine implements MisposEventInterface {
 				} else if ("Coupon".equals(name)) {
 					if (Env.checkApkExist(context,
 							ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
-						JSONObject couponData = data.optJSONObject("data");
-						String couponDataType = couponData
-								.optString("coupon_type");
-						String transAmount = couponData
-								.optString("transAmount");
-						String couponType = "";
-						int requestCode;
-						if (!TextUtils.isEmpty(couponDataType)
-								&& couponDataType.equals("rm_coupon")) {
-							couponType = "1";
-							requestCode = HomeController.REQUEST_CODE;
-						} else {
-							couponType = "0";
-							requestCode = OrderDetailController.REQUEST_CODE;
-						}
+						if (mCouponService != null) {
+							JSONObject couponData = data.optJSONObject("data");
+							String couponDataType = couponData
+									.optString("coupon_type");
+							String transAmount = couponData
+									.optString("transAmount");
+							String couponType = "";
+							if (!TextUtils.isEmpty(couponDataType)
+									&& couponDataType.equals("rm_coupon")) {
+								couponType = "1";
+							} else {
+								couponType = "0";
+							}
 
-						if (!TextUtils.isEmpty(transAmount)) {
-							Intent mIntent = new Intent(Intent.ACTION_MAIN);
-							mIntent.setComponent(new ComponentName(
-									"com.koolyun.coupon",
-									"com.koolyun.coupon.LoginActivity"));
-							mIntent.putExtra("transAmount", transAmount);
-							mIntent.putExtra("packagename",
-									Env.getPackageName(context));
-							mIntent.putExtra("orderNo", "");
-							mIntent.putExtra("txnId",
-									couponData.optString("txnId"));
-							mIntent.putExtra("orderDesc", "");
-							mIntent.putExtra("actionType", couponType);
-							// startActivity(intent);
-							getCurrentController().startActivityForResult(
-									mIntent, requestCode);
+							CouponInfo payResult;
+							try {
+								if (!TextUtils.isEmpty(transAmount)) {
 
+									// mCouponService.startCoupon parameters：
+									// transAmount – not null, total pay
+									// packagename – invoker app packagename,
+									// could be null
+									// orderNo – order number , could be null
+									// orderDesc – order short description,
+									// could be null
+									// typeAction – give coupon or check coupon
+									// (eg. 0:give coupon, 1: check coupon)
+									payResult = mCouponService.startCoupon(
+											transAmount, couponType, null,
+											null, null);
+									if (payResult != null
+											&& !TextUtils
+													.isEmpty(couponDataType)) {
+										Log.e("count",
+												"count:"
+														+ payResult
+																.getCouponAmount());
+										Log.e("payResult", "payResult:"
+												+ payResult.getResult());
+
+										// TODO:write back to APMP, and organize
+										// amount data.
+										writeBackAPMPCouponData(couponData,
+												payResult.getCouponAmount(),
+												payResult.getResult());
+									} else {
+										Log.e("payResult", "return null value!");
+									}
+								} else {
+									Toast.makeText(
+											context,
+											context.getResources()
+													.getString(
+															R.string.str_coupon_amount_null),
+											Toast.LENGTH_LONG).show();
+								}
+							} catch (RemoteException e) {
+								e.printStackTrace();
+							}
 						} else {
 							Toast.makeText(
 									context,
-									context.getResources().getString(
-											R.string.str_coupon_amount_null),
+									context.getResources()
+											.getString(
+													R.string.str_coupon_service_binding),
 									Toast.LENGTH_LONG).show();
 						}
 					} else {
@@ -903,12 +1006,6 @@ public class ClientEngine implements MisposEventInterface {
 							e.printStackTrace();
 						}
 					}
-				} else if ("MisposController".equals(name)
-						&& formData.optString("actionType").equals("mispos")) {
-					misposJsonObj = data;
-					misposCheckingThread = new MisposCheckingThread(
-							ClientEngine.this);
-					misposCheckingThread.start();
 				} else {
 					int requestCode = mRequestCode;
 					Class<?> controllerClass = classForName(name);
@@ -921,6 +1018,63 @@ public class ClientEngine implements MisposEventInterface {
 				}
 			}
 		});
+	}
+
+	private void writeBackAPMPCouponData(JSONObject couponData,
+			String couponAmount, String couponNum) {
+		String transTime = null;
+		String transType = null;
+		String batchNo = null;
+		String traceNo = null;
+		int traceId = 0;
+		String resCode = "00";
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		System.setProperty("user.timezone", "GMT+8");
+		transTime = dateFormat.format(now);
+		transType = "1021";
+		DecimalFormat dataFormat = new DecimalFormat("000000");
+
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
+		if (null == map.get("transId")) {
+			traceNo = "0";
+		} else {
+			traceId = ((Integer) map.get("transId")).intValue();
+			traceNo = dataFormat.format(traceId);
+		}
+		if (null == map.get("batchId")) {
+			batchNo = "0";
+		} else {
+			batchNo = dataFormat.format(((Integer) map.get("batchId"))
+					.intValue());
+		}
+
+		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
+		newMerchantMap.put("transId", Integer.valueOf(traceId + 1));
+		UtilForDataStorage.savePropertyBySharedPreferences(
+				MyApplication.getContext(), "merchant", newMerchantMap);
+
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("transAmount",
+					UtilForMoney.yuan2fen(couponData.optString("transAmount")));
+			msg.put("couponPaidAmount", UtilForMoney.yuan2fen(couponAmount));
+			msg.put("couponNum", couponNum);
+			msg.put("transTime", transTime);
+			msg.put("transType", transType);
+			msg.put("batchNo", batchNo);
+			msg.put("traceNo", traceNo);
+			msg.put("resCode", resCode);
+			msg.put("keyIndex", couponData.optString("payKeyIndex"));
+			msg.put("paymentId", couponData.optString("paymentId"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (jsEngine != null) {
+			jsEngine.callJsHandler("window.Pay.writeBackAPMPCouponData", msg);
+		}
 	}
 
 	private void startController(Class<?> cls, JSONObject formData,
@@ -969,8 +1123,6 @@ public class ClientEngine implements MisposEventInterface {
 			controllerClass = LoginVerifyController.class;
 		} else if (className.equals("Signin")) {
 			controllerClass = SigninController.class;
-		} else if (className.equals("CashConsume")) {
-			controllerClass = CashConsumeController.class;
 		} else if (className.equals("Home")) {
 			controllerClass = HomeController.class;
 		} else if (className.equals("SetMerchId")) {
@@ -1035,10 +1187,6 @@ public class ClientEngine implements MisposEventInterface {
 			controllerClass = MultiPayRecord.class;
 		} else if (className.equals("MisposController")) {
 			controllerClass = MisposController.class;
-		} else if (className.equals("ConsumptionSummary")) {
-			controllerClass = ConsumptionSummaryController.class;
-		} else if (className.equals("SuperTransfer")) {
-			controllerClass = SuperTransferController.class;
 		}
 
 		return controllerClass;
@@ -1167,11 +1315,7 @@ public class ClientEngine implements MisposEventInterface {
 				iso8583Controller.downloadParams(jsonObject);
 			} else if (typeOf8583.equals("downloadEnd")) {
 				iso8583Controller.endDownloadParams(jsonObject);
-			} else if (typeOf8583.equals("superTransfer")) {
-				iso8583Controller.superTransfer(jsonObject);
-
 			}
-
 			data8583 = iso8583Controller.toString();
 			transType = iso8583Controller.getApmpTransType();
 			batchNo = iso8583Controller.getBatchNum();
@@ -1203,13 +1347,8 @@ public class ClientEngine implements MisposEventInterface {
 			Log.d(TAG, "get8583 : " + data8583);
 			callBack(callBackId, businessJsonObject);
 		} catch (Exception e1) {
-			String errorType = "ERROR";
-			if (iso8583Controller.getErrorType().equals(
-					ConstantUtils.ERROR_TYPE_0)) {
-				errorType = ConstantUtils.ERROR_TYPE_0;
-			}
 			try {
-				businessJsonObject.put("error", errorType);
+				businessJsonObject.put("error", "ERROR");
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1432,6 +1571,7 @@ public class ClientEngine implements MisposEventInterface {
 					String req8583 = jsonObjData.optString("req8583");
 					String res8583 = jsonObjData.optString("res8583");
 					String userName = jsonObjData.optString("userName");
+					String txnId = jsonObjData.optString("txnId");
 					String paymentId = jsonObjData.optString("paymentId");
 					String paymentName = jsonObjData.optString("paymentName");
 					Log.d(TAG, "print req8583 : " + req8583);
@@ -1439,7 +1579,15 @@ public class ClientEngine implements MisposEventInterface {
 					if (!"".equals(req8583) && !"".equals(res8583)) {
 						iso8583Controller.printer(Utility.hex2byte(req8583),
 								Utility.hex2byte(res8583), userName, paymentId,
-								paymentName, context);
+								paymentName, txnId, context);
+					} else {
+						String printType = jsonObjData.optString("printType");
+						if (!TextUtils.isEmpty(printType)
+								&& printType
+										.equals(ConstantUtils.FOR_PRINT_PRINT_SUMMARY)) {
+							iso8583Controller
+									.printSummary(jsonObjData, context);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1469,6 +1617,66 @@ public class ClientEngine implements MisposEventInterface {
 		callBack(callBackId, jsonObjData);
 	}
 
+	public void summaryCallBack(final JSONObject jsonObjData,
+			final String callBackId) {
+		JSONObject jsObj = new JSONObject();
+
+		try {
+			JSONArray summaryItems = jsonObjData.optJSONArray("statistic");
+			int responseCode = jsonObjData.optInt("responseCode");
+			String responseMessage = "";
+			String merchName = jsonObjData.optString("merchName");
+			String merchId = jsonObjData.optString("merchId");
+			String terminalId = jsonObjData.optString("machineId");
+
+			if (responseCode == 0) {
+				responseMessage = context.getResources().getString(
+						R.string.msg_summary_success);
+				if (summaryItems != null && summaryItems.length() == 1) {// there
+																			// is
+																			// only
+																			// consumption
+																			// data
+					JSONObject revokeObj = new JSONObject();
+					revokeObj.put("totalSize", "0");
+					revokeObj.put("totalAmount", "0");
+					revokeObj.put("transType", "3021");
+					summaryItems.put(revokeObj);
+				}
+			} else {// there is no items data
+				responseMessage = jsonObjData.optString("errorMsg");
+				summaryItems = new JSONArray();
+
+				JSONObject consumptionObj = new JSONObject();
+				consumptionObj.put("totalSize", "0");
+				consumptionObj.put("totalAmount", "0");
+				consumptionObj.put("transType", "1021");
+				summaryItems.put(consumptionObj);
+
+				JSONObject revokeObj = new JSONObject();
+				revokeObj.put("totalSize", "0");
+				revokeObj.put("totalAmount", "0");
+				revokeObj.put("transType", "3021");
+				summaryItems.put(revokeObj);
+			}
+
+			jsObj.put("items", summaryItems);
+			jsObj.put("responseCode", responseCode);
+			jsObj.put("responseMessage", responseMessage);
+			jsObj.put("merchName", merchName);
+			jsObj.put("merchId", merchId);
+			jsObj.put("terminalId", terminalId);
+
+			if (mSecureService != null) {
+				mSecureService.getSummaryCallBack(jsObj.toString());
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void updateTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {
 		String apOrderId = jsonObjData.optString("txnId");
@@ -1491,6 +1699,9 @@ public class ClientEngine implements MisposEventInterface {
 	public void getTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {
 		String apOrderId = jsonObjData.optString("txnId");
+		if (TextUtils.isEmpty(apOrderId)) {
+			return;
+		}
 		String databaseName = "TransData8583";
 		SQLiteDatabase db = context.openOrCreateDatabase(databaseName,
 				Context.MODE_PRIVATE, null);
@@ -1514,52 +1725,6 @@ public class ClientEngine implements MisposEventInterface {
 		}
 		db.close();
 		callBack(callBackId, msg);
-	}
-
-	@Override
-	public void misposConnectStatus(boolean isConnected) {
-		// TODO:checking mispos call back to show Mispos page whether or not
-		Log.w(TAG, "isConnected:" + isConnected);
-		misposCheckingThread.setEventThreadRunning(false);
-		if (isConnected) {
-			if (null != misposJsonObj) {
-				Log.w(TAG, "misposJsonObj:" + misposJsonObj.toString());
-				Class<?> controllerClass = classForName("MisposController");
-				startController(controllerClass, misposJsonObj, 0);
-			}
-		} else {
-			// callBack("SettingsIndex.batchCallBack", null);
-			JSONObject formData = misposJsonObj.optJSONObject("data");
-			if (formData.optString("actionType").equals("mispos")) {
-				JavaScriptEngine js = ClientEngine.engineInstance()
-						.javaScriptEngine();
-				if (js != null) {
-					js.callJsHandler("SettingsIndex.batchCallBack", null);
-				}
-			} else {
-				JSONObject jsObj = new JSONObject();
-				try {
-					jsObj.put(
-							"msg",
-							context.getResources()
-									.getString(
-											R.string.dialog_device_check_mispos_unusual));
-					jsObj.put("onCall", true);
-					jsObj.put("transAmount", formData.optString("transAmount"));
-					String identifier = "";
-					if (formData.optBoolean("isExternalOrder")) {
-						identifier = "Pay.misposErrRestart";
-					} else {
-						identifier = "window.util.backHome";
-					}
-					ClientEngine.engineInstance().showAlert(jsObj, identifier);
-				} catch (NotFoundException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 
 }

@@ -10,8 +10,8 @@ import android.os.Looper;
 import android.widget.TextView;
 import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.parameter.UtilFor8583;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
+import cn.koolcloud.pos.wd.R;
 
 public class PinPadController extends BaseController {
 	private Looper looper;
@@ -22,7 +22,6 @@ public class PinPadController extends BaseController {
 	private boolean removeJSTag = true;
 	private String brhKeyIndex = "";
 	private UtilFor8583 util8583 = UtilFor8583.getInstance();
-	private int willShowCount = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +45,6 @@ public class PinPadController extends BaseController {
 
 	@Override
 	protected void willShow() {
-		//fix SMTPS-153 --start mod by teddy on November 3th
-		willShowCount++;
-		if (willShowCount >= 2) {
-			return;
-		}
-		//fix SMTPS-153 --end mod by teddy on November 3th
 		super.willShow();
 		Handler handler = new Handler(looper);
 		handler.post(new Runnable() {

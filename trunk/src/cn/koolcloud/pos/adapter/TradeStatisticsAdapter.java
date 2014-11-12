@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.util.UtilForMoney;
+import cn.koolcloud.pos.wd.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;

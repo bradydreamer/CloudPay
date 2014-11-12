@@ -114,11 +114,11 @@
   }
 
   function connect(action, params, callbackfunc, isCustom, isAsyn) {
-//    checkTransReverse(action, params,
-//      function() {
+    //checkTransReverse(action, params,
+    //  function() {
         saveTransData(action, params);
         gotoConnect(action, params, callbackfunc, isCustom, isAsyn);
-//      });
+    //  });
   }
 
   function gotoConnect(action, params, callbackfunc, isCustom, isAsyn) {
@@ -148,10 +148,13 @@
 
   function _callBackConnect(response) {
     if (response == null) {
-	if(window.downloadParams){
+    	if(window.downloadParams){
 	  	window.COMM.deleteParamsFiles();
 	}
-      return;
+    	if(window.BackgroundInit){
+			  window.AppInit.initResult(window.FAIL);
+		}
+    	return;
     }
 
     //联网错误
@@ -160,10 +163,14 @@
         _keyExchange = true;
       }
       if (_customAction == "") {
-	  	if(window.downloadParams){
-	  		window.COMM.deleteParamsFiles();
-	  	}
-        Scene.alert(response.errorMsg,actionAfterError);
+          if(window.downloadParams){
+	  	window.COMM.deleteParamsFiles();
+	  }
+    	  if(window.BackgroundInit){
+			  window.AppInit.initResult(window.FAIL);
+		  }else{
+			  Scene.alert(response.errorMsg,actionAfterError);
+		  }
       } else {
         var func = _callbackQueue[_customAction];
         if (func) {
@@ -194,15 +201,23 @@
         if (data.action == null || data.action.length == 0) {
           if (_customAction == "") {
             if (data.errorMsg != null) {
-			  if(window.downloadParams){
-	  			window.COMM.deleteParamsFiles();
-	  		  }
-              Scene.alert(data.errorMsg,actionAfterError)
+	    	if(window.downloadParams){
+	  		window.COMM.deleteParamsFiles();
+	  	}
+		if(window.BackgroundInit){
+			window.AppInit.initResult(window.FAIL);
+		}else{
+			 Scene.alert(data.errorMsg,actionAfterError);
+		}
             } else {
-              if(window.downloadParams){
-	  			window.COMM.deleteParamsFiles();
-	  		  }
-              Scene.alert("通信故障",actionAfterError)
+	    	if(window.downloadParams){
+	  		window.COMM.deleteParamsFiles();
+	  	}
+            	if(window.BackgroundInit){
+  			window.AppInit.initResult(window.FAIL);
+  		}else{
+  			Scene.alert("通信故障",actionAfterError);
+  		}
             }
           } else {
             var func = _callbackQueue[_customAction];
@@ -250,10 +265,14 @@
       saveTouchApmpTime();
       return func(data)
     } else {
-      if(window.downloadParams){
-	  	window.COMM.deleteParamsFiles();
-	  }
-      Scene.alert(data.errorMsg,actionAfterError);
+    	if(window.downloadParams){
+		window.COMM.deleteParamsFiles();
+	}
+    	if(window.BackgroundInit){
+    		window.AppInit.initResult(window.FAIL);
+    	}else{
+    		Scene.alert(data.errorMsg,actionAfterError);
+	}
     }
   }
 
@@ -310,17 +329,21 @@
 	  if(window.downloadParams){
 	  	window.COMM.deleteParamsFiles();
 	  }
-      Scene.alert(data.errorMsg,function(){
-	  	window.RMS.clear("savedTransData");
-      	window.user.init({});
-		//Scene.goBack("Home");
-		setTimeout(window.util.exeActionWithLoginChecked,500); 
-		if(ConsumptionData.dataForPayment.isExternalOrder){
-				Pay.restart();
-			}else{
-				Scene.goBack("Home");
-			}
-      });
+	  if(window.BackgroundInit){
+		  window.AppInit.initResult(window.FAIL);
+	  }else{
+	      Scene.alert(data.errorMsg,function(){
+		  	window.RMS.clear("savedTransData");
+	      	window.user.init({});
+			//Scene.goBack("Home");
+			setTimeout(window.util.exeActionWithLoginChecked,500); 
+			if(ConsumptionData.dataForPayment.isExternalOrder){
+					Pay.restart();
+				}else{
+					Scene.goBack("Home");
+				}
+	      });
+	  }
       return true;
     }else{
     	return false;

@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.EditText;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
+import cn.koolcloud.pos.wd.R;
 
 public class LoginVerifyController extends BaseController {
 	private EditText et_userName;
@@ -37,12 +37,10 @@ public class LoginVerifyController extends BaseController {
 		et_pwd = (EditText) findViewById(R.id.login_et_pwd);
 		// initETWithKBHiddenListener(et_userName);
 		// initETWithKBHiddenListener(et_pwd);
-		if (formData != null) {
-			String titleName = formData
-					.optString(getString(R.string.formData_key_title));
-			if (!titleName.equals("")) {
-				setTitle(titleName);
-			}
+		String titleName = formData
+				.optString(getString(R.string.formData_key_title));
+		if (!titleName.equals("")) {
+			setTitle(titleName);
 		}
 
 	}

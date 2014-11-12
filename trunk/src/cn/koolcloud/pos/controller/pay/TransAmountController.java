@@ -12,10 +12,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.util.UtilForMoney;
+import cn.koolcloud.pos.wd.R;
 
 public class TransAmountController extends BaseController {
 
@@ -41,7 +41,6 @@ public class TransAmountController extends BaseController {
 	private JSONObject data;
 	
 	private String requestFromMispos;
-	private boolean okBtnClicked = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +120,6 @@ public class TransAmountController extends BaseController {
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		okBtnClicked = false;
-	}
-
-	@Override
 	protected void showInputNumber() {
 		StringBuilder textbuBuilder = getNumberInputString();
 		if (null == textbuBuilder || 0 == textbuBuilder.length()) {
@@ -143,8 +136,6 @@ public class TransAmountController extends BaseController {
 		if (null != text && numberInputString.toString().length() < 12) {
 			if (numberInputString.toString().equals("0")) {
 				numberInputString.replace(0, 1, text);
-			} else if (numberInputString.toString().equals("00")) {
-				numberInputString.replace(0, 2, text);
 			} else {
 				numberInputString.append(text);
 			}
@@ -180,10 +171,7 @@ public class TransAmountController extends BaseController {
 		//if request from mispos then set amount result else execute original flow  --start mod by Teddy on 1th July
 		
 		if (TextUtils.isEmpty(requestFromMispos)) {
-			if (!okBtnClicked) {
-				okBtnClicked = true;
-				onCall("InputAmount.onCompleteInput", msg);
-			}
+			onCall("InputAmount.onCompleteInput", msg);
 		} else {
 			Intent mIntent = new Intent();  
 	        mIntent.putExtra(MisposController.KEY_AMOUNT, numberConfirmed);

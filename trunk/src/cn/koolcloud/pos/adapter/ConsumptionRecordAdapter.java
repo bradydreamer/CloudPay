@@ -2,7 +2,7 @@ package cn.koolcloud.pos.adapter;
 
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.wd.R;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;

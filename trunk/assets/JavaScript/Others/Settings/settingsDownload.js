@@ -19,6 +19,10 @@
 		_currentType = TYPE_reqInfo;
 		_currentStep = 1;
 		_totalSteps = 100;
+		var params = {
+				paramDownload: false
+			}
+		RMS.save("merchant",params);
 		run();
 	}
 
@@ -49,7 +53,10 @@
 				key : "process",
 				value : Math.ceil(_currentStep * 100 / _totalSteps),
 			}];
-			Scene.setProperty("SettingsDownload", propertyList);
+			if(!window.BackgroundInit){
+				Scene.setProperty("SettingsDownload", propertyList);
+			}
+			
 		}, 100);
 	}
 
@@ -66,7 +73,11 @@
 		var prdtList = params.prdtList;
 		 
 		if (prdtList == null || prdtList.length == 0) {
-			Scene.alert("参数列表为空");
+			if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+				Scene.alert("参数列表为空");
+			}
 			return;
 		};
 
@@ -119,7 +130,6 @@
 				"brhTermId" : prdtList[i]["brh_term_id"],
 				"prdtNo" : prdtList[i]["prdt_no"],
 				"printType": prdtList[i]["print_type"],
-				"typeId": prdtList[i]["content"],
 				"misc": prdtList[i]["misc"],
 			})
 
@@ -199,7 +209,11 @@
 			_currentType++;	
 			run();	
 		}else{
-			Scene.alert(data.errorMsg);
+			if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+				Scene.alert(data.errorMsg);
+			}
 		}
 	}
 	
@@ -238,24 +252,48 @@
 	function end() {
 		_settingParams = [];
 		_currentStep = 0;
-		_totalSteps = 0;
-
-		Home.needUpdateUI = true;
-		window.merchSettings = null;
-
-		/*Scene.alert("系统初始化成功", function() {
-			if(ConsumptionData.dataForPayment.isExternalOrder){
-				Pay.restart();
-			}else{
-				Scene.goBack("Home");
+		_totalSteps = 0;	
+		var params = {
+				paramDownload: true
 			}
-		});*/
-		if (ConsumptionData.dataForPayment.isExternalOrder) {
-			Pay.restart();
-		} else {
-			Scene.goBack("Home");
+		RMS.save("merchant",params);
+		setTimeout(function(){
+			Home.needUpdateUI = true;
+			window.merchSettings = null;
+		},1000);
+		if(window.BackgroundInit){
+			// window.AppInit.initResult(window.SUCC);
+			window.RMS.saveMerchSettingToDataBase(writeDataBaseCallBack);
+		}else{
+			Scene.alert("参数下载成功", function() {
+				if(ConsumptionData.dataForPayment.isExternalOrder){
+					Pay.restart();
+				}else{
+					Scene.goBack("Home");
+				}
+			});
 		}
 	}
+	
+	function writeDataBaseCallBack() {
+		//window.AppInit.initResult(window.SUCC);
+		RMS.read("merchant", loadMerchInfoToUser);
+		function loadMerchInfoToUser(data){
+			if(data.batchId == null || data.batchId == undefined){
+				SettingsIndex.allTransBatch(SignIn.gotoAllSignIn);
+			}else{
+				SignIn.gotoAllSignIn();
+			}
+		}
+	}
+	
+	function resetParamsVersion(){
+		var params = {
+					payParamVersion: "0"
+			}
+			RMS.save("merchant",params);
+	}
+	
 
 	function objLength(o) {
 		var count = 0;
@@ -267,6 +305,7 @@
 
 	window.SettingsDownload = {
 		"start" : start,
+		"resetParamsVersion": resetParamsVersion
 	};
 })();
 

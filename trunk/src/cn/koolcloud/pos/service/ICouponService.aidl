@@ -1,5 +1,7 @@
 package cn.koolcloud.pos.service;
 
+import cn.koolcloud.pos.service.CouponInfo;
+
 interface ICouponService {
-   	boolean cancelCoupon(String pkgName, String txnID);
+   	CouponInfo startCoupon(String transAmount, String actionType, String packageName, String orderNo, String orderDesc);
 }

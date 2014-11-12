@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.wd.R;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
 
 public class PayMethodController extends BaseController {

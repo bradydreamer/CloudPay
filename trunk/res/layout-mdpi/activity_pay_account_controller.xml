@@ -8,12 +8,11 @@
         layout="@layout/bar_terminal_device_merchant_info"/>
     <LinearLayout
         android:id="@+id/money_amount_view"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="15dp"
         android:layout_below="@+id/barTitleLayout"
         android:orientation="horizontal"
+        android:gravity="center_horizontal"
        	 >
 
         <TextView
@@ -26,10 +25,9 @@
 
         <TextView
             android:id="@+id/pay_account_tv_amount"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
-            android:gravity="right"
             android:textColor="@color/blue"
             android:textStyle="bold"
             android:textSize="@dimen/pay_account_textview2_text_size" />
@@ -47,7 +45,8 @@
 	        android:layout_marginLeft="20dp"
 	        android:layout_marginRight="20dp"
 	        android:gravity="center"
-	        android:background="@drawable/pay_method_bg">
+	        android:background="@drawable/pay_method_bg"
+	        android:visibility="gone">
 		    <Button
 				android:id="@+id/pay_account_btn_swiper"
 				style="@style/account_btn_style_common"
@@ -56,7 +55,7 @@
 				android:onClick="onSwitchAccount"
 				android:tag="@string/pay_account_tag_swiper"
 				android:text="@string/pay_account_btn_swiper" />
-			    
+	
 			<Button
 			    android:id="@+id/pay_account_btn_keyboard"
 			    style="@style/account_btn_style_common"
@@ -76,7 +75,7 @@
 			    android:tag="@string/pay_account_tag_qrcode"
 			    android:text="@string/pay_account_btn_qrcode"
 			    android:layout_below="@+id/pay_account_btn_keyboard" />
-	 
+	
 			<Button
 			    android:id="@+id/pay_account_btn_sound"
 			    style="@style/account_btn_style_common"
@@ -86,7 +85,6 @@
 			    android:tag="@string/pay_account_tag_sound"
 			    android:text="@string/pay_account_btn_sound"
 			    android:layout_below="@+id/pay_account_btn_qrcode" />
-	 
 		</RelativeLayout>
 	
 	    <RelativeLayout
@@ -102,7 +100,7 @@
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"	  
 	            android:visibility="gone" >
-		    <TextView 
+		    	<TextView 
 	                android:id="@+id/pay_account_swiper_ic_text_guide"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
@@ -132,7 +130,7 @@
 	            android:layout_centerVertical="true"
 	            android:gravity="center"
 	            android:visibility="gone" >
-				
+	
 	            <ImageView
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"

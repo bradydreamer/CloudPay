@@ -6,14 +6,6 @@ Pay.gotoPayFlow = function() {
 	Pay.gotoFlow();
 };
 
-Pay.gotoTransferFlow = function() {
-	Pay.cacheData = ConsumptionData.dataForPayment;
-	Pay.flowEndFunction = Pay.transferReq;
-	Pay.flowRestartFunction = Pay.restart;
-
-	Pay.gotoFlow();
-};
-
 Pay.gotoAuthFlow = function(){
 	Pay.cacheData = ConsumptionData.dataForPayment;
 	Pay.flowEndFunction = Pay.preAuthReq;
@@ -60,7 +52,11 @@ Pay.gotoCancelFlow = function() {
 	Pay.cacheData = ConsumptionData.dataForCancellingOrder;
 	Pay.flowEndFunction = Pay.cancelOrderConvertReq;
 	Pay.flowRestartFunction = function () {
-		Scene.goBack("OrderDetail");
+		if (ConsumptionData.dataForPayment.isExternalOrder) {
+			Pay.errRestart();
+		} else {
+			Scene.goBack("OrderDetail");
+		}
 	};
 	
 	Pay.gotoFlow();
@@ -151,9 +147,12 @@ Pay.gotoFlow = function() {
 		formData = {"Login":"LoginIndex.refundConfirmLogin",
 					"merchId": cacheData.merchId};
 	} else if(method == "05"){
-		sceneName = "LoginVerify"		
-		formData = {"Login":"LoginIndex.voidConfirmLogin",
-					"merchId": cacheData.merchId};
+		//sceneName = "LoginVerify"		
+		//formData = {"Login":"LoginIndex.voidConfirmLogin",
+		//			"merchId": cacheData.merchId};
+		cacheData.step = step + 1;
+		Pay.gotoFlow();
+		return;
 	} else if(method == "07"){
 		formData = {
 			"nearfieldAccount": "PayAccount.exeRecvDataForPrepaidCard",
@@ -166,14 +165,6 @@ Pay.gotoFlow = function() {
 	}else if (method == "10") {
 		sceneName = "InputAmount";
 		initAmountData();
-	} else if (method == "11") {
-		sceneName = "SuperTransfer";
-		formData = {
-			
-		};
-	} else if (method == "15") {
-		sceneName = "CashConsume";
-		initAmountData();
 	} else if (method == "30") {
 		sceneName = "PinPad";
 		initPinData();
@@ -184,7 +175,7 @@ Pay.gotoFlow = function() {
 		return;
 	};
 	
-	if(cacheData.preScene == "PayAccount" || cacheData.preScene == "PinPad" || cacheData.preScene == "PrepaidCardQRCodeController"){
+	if(cacheData.preScene == "PinPad" || cacheData.preScene == "PrepaidCardQRCodeController"){
 		formData.shouldRemoveCurCtrl = true;
 		cacheData.preScene = null;
 	}
@@ -232,10 +223,7 @@ Pay.gotoFlow = function() {
 				balance = 0.00;
 			}
 			formData.maxAmount = "" + balance;
-		}else if(ConsumptionData.dataForPayment.isExternalOrder){
-			formData.maxAmount = ConsumptionData.dataForPayment.transAmount; 
 		}
-		
 	}
 
 	function initPrepaidCardInfo(){

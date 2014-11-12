@@ -695,24 +695,9 @@ public class ISOPackager implements Constant {
 	private static void setF61_CUP(UtilFor8583 appState) {
 		int F61_Length = 0;
 		byte[] tmpBuf = new byte[20];
-
-		// use full 61 from 0 to end for saving id card on super transfer
-		// --start add by Teddy on 22th October
-		if (appState.trans.getTransType() == TRAN_SUPER_TRANSFER) {
-			tmpBuf = ByteUtil.str2Bcd(appState.trans.getIdCardNo());
-			// System.arraycopy(ByteUtil.ASCII_To_BCD(appState.trans.getIdCardNo().getBytes(),
-			// appState.trans.getIdCardNo().getBytes().length), 0, tmpBuf, 0,
-			// StringUtil.hexString2bytes(appState.trans.getIdCardNo()).length);
-			// movGen(ISOField.F61, tmpBuf, tmpBuf.length);
-			movGen(ISOField.F61, tmpBuf, tmpBuf.length);
-			return;
-		}
-		// use full 61 from 0 to end for saving id card on super transfer --end
-		// add by Teddy on 22th October
-
 		// 61.1
 		/* Check if Original Batch no. has data */
-		if (appState.oldTrans != null && appState.oldTrans.getOldBatch() >= 0) {
+		if (appState.oldTrans.getOldBatch() >= 0) {
 			/* Yes; data in field exists */
 			/* Moves the original batch number into SENDBUF */
 			System.arraycopy(
@@ -723,7 +708,7 @@ public class ISOPackager implements Constant {
 
 		// 61.2
 		// 撤销
-		if (appState.oldTrans != null && appState.oldTrans.getOldTrace() >= 0) {
+		if (appState.oldTrans.getOldTrace() >= 0) {
 			/* Yes; data in field exists */
 			/* Moves the original batch number into SENDBUF */
 			System.arraycopy(
@@ -987,12 +972,6 @@ public class ISOPackager implements Constant {
 		case TRAN_EC_REFUND:
 			movGen(ISOField.F62, appState.oldTrans.getOldTID().getBytes(), 8);
 			break;
-		case TRAN_SUPER_TRANSFER:
-
-			movGen(ISOField.F62,
-					appState.trans.getToAccountCardNo().getBytes(),
-					appState.trans.getToAccountCardNo().length());
-			break;
 		}
 
 	}
@@ -1210,9 +1189,24 @@ public class ISOPackager implements Constant {
 
 	private static void procB60_CUP(byte[] F60_Field, UtilFor8583 appState) {
 		if (TRAN_LOGIN == appState.trans.getTransType()) {
+			String str = "";
+			for (int i = 0; i < 3; i++) {
+				str += String.format("%02x", F60_Field[i]);
+			}
+			Log.i("ISOPackager", "===,procB60_CUP,Str=" + str);
 			byte[] batchNumber = new byte[3];
 			System.arraycopy(F60_Field, 1, batchNumber, 0, 3);
-			appState.trans.setBatchNumber(ByteUtil.bcdToInt(batchNumber));
+			str = "";
+			for (int i = 0; i < 3; i++) {
+				str += String.format("%02x", batchNumber[i]);
+			}
+			Log.i("ISOPackager", "===,procB60_CUP,batchNumber=" + str);
+			Log.i("ISOPackager",
+					"===,procB60_CUP,batchNumber="
+							+ ByteUtil.bcdToInt(batchNumber));
+			if (batchNumber != null) {
+				appState.trans.setBatchNumber(ByteUtil.bcdToInt(batchNumber));
+			}
 			Log.d("DEBUG", "60.2 批次号 = " + appState.trans.getBatchNumber());
 		}
 	}
@@ -1893,9 +1887,6 @@ public class ISOPackager implements Constant {
 				case TRAN_MAG_LOAD_ACCOUNT:
 					F25_POCC[0] = (byte) 0x66;
 					break;
-				case TRAN_SUPER_TRANSFER:
-					F25_POCC[0] = (byte) 0x82;
-					break;
 				default:
 					if (null != appState.oldTrans) {
 						if (TRAN_AUTH_REVERSAL == appState.trans.getTransType()
@@ -2240,6 +2231,8 @@ public class ISOPackager implements Constant {
 				appState.trans.setParamDownloadFlag(true);
 			}
 		}
+		// for test
+		// appState.trans.setParamDownloadFlag(true);
 		offset += 6;
 
 		iso.setOffset((short) 0);

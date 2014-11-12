@@ -6,7 +6,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.wd.R;
 
 public class MultiPayRecordAdapter extends LoadMoreAdapter {
 
@@ -51,14 +51,14 @@ public class MultiPayRecordAdapter extends LoadMoreAdapter {
 		JSONObject recordData = this.list.get(position);
 		recordViewHolder.tv_no.setText("" + (position + 1));
 		recordViewHolder.tv_transType.setText(recordData
-				.optString("paymentIdDesc"));
+				.optString("payTypeDesc"));
 		recordViewHolder.tv_rrn.setText(recordData.optString("refNo"));
 		recordViewHolder.tv_transAmount.setText(formatAmountStr(recordData
 				.optString("transAmount")));
 		recordViewHolder.tv_orderStatus.setText(recordData
 				.optString("orderStateDesc"));
 
-		// convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
+//		convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
 
 		return convertView;
 	}

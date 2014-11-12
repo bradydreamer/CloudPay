@@ -2,8 +2,8 @@ package cn.koolcloud.pos.controller.others;
 
 import android.os.Bundle;
 import android.view.View;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.wd.R;
 
 public class OthersIndexController extends BaseController {
 

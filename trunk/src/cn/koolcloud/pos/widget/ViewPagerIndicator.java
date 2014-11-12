@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.wd.R;
 
 public class ViewPagerIndicator extends LinearLayout implements
 		OnPageChangeListener {

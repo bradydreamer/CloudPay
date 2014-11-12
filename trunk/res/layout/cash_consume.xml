@@ -7,105 +7,101 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:layout_width="@dimen/cash_layout_width"
-        android:layout_height="@dimen/cash_layout_height"
-        android:layout_marginTop="70dp"
+        android:layout_width="540dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="40dp"
         android:gravity="center"
         android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/cash_sum_payable_mark"
-            android:layout_width="@dimen/cash_textview_width"
-            android:layout_height="@dimen/cash_textview_height"
-            android:gravity="right|center_vertical"
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:gravity="center_vertical"
             android:text="@string/sum_payable_mark"
             android:textSize="@dimen/cash_amount_textsize"/>
 
         <EditText
             android:id="@+id/cash_sum_payable"
-            android:layout_width="@dimen/cash_edittext_width"
-            android:layout_height="@dimen/cash_edittext_height"
+            android:layout_width="300dp"
+            android:layout_height="80dp"
             android:gravity="center"
             android:hint="@string/no_amount"
             android:textSize="@dimen/cash_amount_textsize"
             android:singleLine="true"
             android:inputType="numberDecimal"
-            android:maxLength="10"
-            android:focusableInTouchMode="true"
             android:background="@null"/>
 
         <TextView
-            android:layout_width="@dimen/cash_unit_width"
-            android:layout_height="@dimen/cash_unit_height"
-            android:gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="80dp"
+            android:gravity="center_vertical"
             android:text="@string/amount_unit"
             android:textSize="@dimen/cash_amount_textsize"/>
     </LinearLayout>
     
     <LinearLayout
-        android:layout_width="@dimen/cash_layout_width"
-        android:layout_height="@dimen/cash_layout_height"
+        android:layout_width="540dp"
+        android:layout_height="80dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/cash_paid_amount_mark"
-            android:layout_width="@dimen/cash_textview_width"
-            android:layout_height="@dimen/cash_textview_height"
-            android:gravity="right|center_vertical"
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:gravity="center_vertical"
             android:text="@string/paid_amount_mark"
             android:textSize="@dimen/cash_amount_textsize"/>
 
         <EditText
             android:id="@+id/cash_paid_amount"
-            android:layout_width="@dimen/cash_edittext_width"
-            android:layout_height="@dimen/cash_edittext_height"
+            android:layout_width="300dp"
+            android:layout_height="80dp"
             android:gravity="center"
             android:hint="@string/input_amount"
             android:textSize="@dimen/cash_amount_textsize"
             android:singleLine="true"
             android:inputType="numberDecimal"
-            android:focusableInTouchMode="true"
-            android:maxLength="10"
             android:background="@null"/>
 
         <TextView
-            android:layout_width="@dimen/cash_unit_width"
-            android:layout_height="@dimen/cash_unit_height"
-            android:gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="80dp"
+            android:gravity="center_vertical"
             android:text="@string/amount_unit"
             android:textSize="@dimen/cash_amount_textsize"/>
     </LinearLayout>
     
     <LinearLayout
-        android:layout_width="@dimen/cash_layout_width"
-        android:layout_height="@dimen/cash_layout_height"
+        android:layout_width="540dp"
+        android:layout_height="80dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/cash_change_mark"
-            android:layout_width="@dimen/cash_textview_width"
-            android:layout_height="@dimen/cash_textview_height"
+            android:layout_width="200dp"
+            android:layout_height="80dp"
             android:gravity="right|center_vertical"
             android:text="@string/change_mark"
             android:textSize="@dimen/cash_amount_textsize"/>
 
         <TextView
             android:id="@+id/cash_change_amount"
-            android:layout_width="@dimen/cash_edittext_width"
-            android:layout_height="@dimen/cash_edittext_height"
+            android:layout_width="300dp"
+            android:layout_height="80dp"
             android:gravity="center"
             android:hint="@string/no_amount"
             android:textSize="@dimen/cash_amount_textsize"
             android:background="@null"/>
 
         <TextView
-            android:layout_width="@dimen/cash_unit_width"
-            android:layout_height="@dimen/cash_unit_height"
-            android:gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="80dp"
+            android:gravity="center_vertical"
             android:text="@string/amount_unit"
             android:textSize="@dimen/cash_amount_textsize"/>
     </LinearLayout>

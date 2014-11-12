@@ -5,6 +5,14 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.widget.TextView;
+import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.pos.util.UtilForMoney;
+
 public class Utils {
 
 	/**
@@ -52,6 +60,55 @@ public class Utils {
 	
 	public static String getCurrentTime() {
 		return getCurrentDateTime("HH:mm:ss");
+	}
+	
+	public static JSONObject initSummaryData(JSONObject summaryData) {
+		JSONObject printData = new JSONObject();
+		
+		JSONArray summaryList = summaryData.optJSONArray("statistic");
+		if (summaryList != null) {
+			
+			for (int i = 0; i < summaryList.length(); i++) {
+				JSONObject itemData = summaryList.optJSONObject(i);
+				String transType = itemData.optString("transType");
+				String count = itemData.optString("totalSize");
+				String amount = UtilForMoney.fen2yuan(itemData.optString("totalAmount"));
+				if (transType.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUME)) {
+					try {
+						printData.put(ConstantUtils.APMP_TRAN_TYPE_CONSUME, "消费" + "-" + count + "-"
+								+ amount);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else if (transType.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)) {
+					try {
+						printData.put(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE, "消费撤销" + "-" + count
+								+ "-" + amount);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			if (summaryList.length() == 1) {
+				try {
+					printData.put(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE, "消费撤销" + "-" + "0"
+							+ "-" + "0.00");
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			try {
+				printData.put(ConstantUtils.APMP_TRAN_TYPE_CONSUME, "消费" + "-" + 0 + "-" + 0.00);
+				printData.put(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE, "消费撤销" + "-" + 0 + "-" + 0.00);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return printData;
 	}
 	
 }

@@ -47,10 +47,7 @@
 	Scene.alert("JSLOG,exePurchase,cardID = " + cardID);
     Pay.cacheData[currentTag] = cardID;
     Pay.cacheData.step = currentStep + 1;
-    //don't cut cardID while prepaid card -- start mod by Teddy 28th September
-//	getPrepaidCardAmount(cardID.substring(cardID.length -10, cardID.length));
-	getPrepaidCardAmount(cardID);
-    //don't cut cardID while prepaid card -- end mod by Teddy 28th September
+	getPrepaidCardAmount(cardID.substring(cardID.length -10, cardID.length));
     //Pay.gotoFlow();
   };
 
@@ -73,14 +70,7 @@
 				}
 				Pay.cacheData.ori_avail_at = data.ggpt_saleact_cardcoupon_query_bycardid_response.ori_avail_at;
 				Pay.cacheData.card_state = data.ggpt_saleact_cardcoupon_query_bycardid_response.card_state;
-				if (data.ggpt_saleact_cardcoupon_query_bycardid_response.rsp_code != "0000") {
-					Scene.alert("不支持当前操作", function() {
-						Scene.goBack("Home");
-					});
-				} else {
-				
-					Pay.gotoFlow();
-				}
+				Pay.gotoFlow();
 			}else{
 				if(data.error_response != null && data.error_response != undefined){
 					Scene.alert(data.error_response.msg);
@@ -110,13 +100,12 @@
 
   function exeSwipeResponse(data) {
     var params = JSON.parse(data);
-    var cardId = params.cardID;
     params.field0 = params.cardID;
     Pay.cacheData.track2 = params.track2;
     Pay.cacheData.track3 = params.track3;
 	Pay.cacheData.validTime = params.validTime;
 	var serviesCode = (params.servicesCode).substring(0,1);
-	if( (serviesCode == "2" || serviesCode == "6") && cardId.substring(0,6) != "666010"){
+	if( serviesCode == "2" || serviesCode == "6"){
 		Scene.alert("JSLOG,serviesCode  is IC !" + serviesCode);
 		var datalist = [{ }];
 		Scene.setProperty("PayAccount",datalist);	
@@ -169,10 +158,6 @@
 	
   }
 
-  function cancelDialog(){
-	  Scene.alert("密码键盘尚未取消输入，请取消后操作！");
-  }
-
   window.PayAccount = {
     "exeSwipeResponse": exeSwipeResponse,
 	"exeICSwipeResponse": exeICSwipeResponse,
@@ -180,8 +165,7 @@
     "exeRecvData": exeRecvData,
     "exeRecvDataForPrepaidCard": exeRecvDataForPrepaidCard,
     "clear": clear,
-    "goBackHome": goBackHome,
-    "cancelDialog": cancelDialog
+    "goBackHome": goBackHome
   };
 
 })();

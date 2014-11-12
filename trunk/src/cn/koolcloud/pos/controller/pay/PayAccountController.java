@@ -35,7 +35,6 @@ import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.UtilFor8583;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
@@ -46,6 +45,7 @@ import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.external.SoundWave;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 import cn.koolcloud.pos.external.scanner.ZBarScanner;
+import cn.koolcloud.pos.wd.R;
 
 import com.google.zxing.client.android.ScannerRelativeLayout;
 
@@ -54,8 +54,6 @@ public class PayAccountController extends BaseController implements
 		Camera.PreviewCallback {
 
 	private final int PAY_ACOUNT_MAX_LENGTH = 20;
-	private final int HANDLE_INIT_QRSCANNER = 1;
-	private final int OPEN_CAMERA_DELAY_TIME = 50;
 	protected LinearLayout layout_qrcode;
 	protected LinearLayout layout_sound;
 	protected RelativeLayout layout_swiper;
@@ -88,7 +86,6 @@ public class PayAccountController extends BaseController implements
 	private static final float BEEP_VOLUME = 0.10f;
 	private static final long VIBRATE_DURATION = 200L;
 	private static final String ZBTAG = "alipay";
-	private static final String PREPAID_QRCODE = "prepaid_qrcode";
 
 	private EMVICManager emvManager = null;
 	private Boolean needPwd = false;
@@ -110,7 +107,6 @@ public class PayAccountController extends BaseController implements
 	private TextView amountTextView;
 	private TextView ic_swiper_guide_text;
 	private ImageView icswiper_img;
-	private ScannerRelativeLayout zscanner;
 
 	private final String APMP_TRAN_PREAUTH = "1011";
 	private final String APMP_TRAN_CONSUME = "1021";
@@ -166,26 +162,16 @@ public class PayAccountController extends BaseController implements
 		func_nearfieldAccount = data.optString("nearfieldAccount");
 		func_icSwipeCard = data.optString("icSwipeCard");
 
-		preview = (FrameLayout) findViewById(R.id.scanner_zb);
-		zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-
 		if (misc != null && misc.equals(ZBTAG)) {
-			/*
-			 * preview = (FrameLayout) findViewById(R.id.scanner_zb);
-			 * preview.setVisibility(View.VISIBLE); ScannerRelativeLayout
-			 * zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-			 * zscanner.setVisibility(View.GONE); scanner = new
-			 * ZBarScanner(this); preview.addView(scanner.getMpreview());
-			 * imageScanner = scanner.getMscanner(); initBeepSound();
-			 */
-
+			preview = (FrameLayout) findViewById(R.id.scanner_zb);
 			preview.setVisibility(View.VISIBLE);
-
+			ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
 			zscanner.setVisibility(View.GONE);
+			scanner = new ZBarScanner(this);
+			preview.addView(scanner.getMpreview());
+			imageScanner = scanner.getMscanner();
+			initBeepSound();
 		} else {
-			preview.setVisibility(View.GONE);
-
-			zscanner.setVisibility(View.VISIBLE);
 			if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
 				ex_codeScanner = new CodeScanner();
 				ex_codeScanner.onCreate(PayAccountController.this,
@@ -319,6 +305,7 @@ public class PayAccountController extends BaseController implements
 			btn.setTextColor(getResources().getColor(
 					R.color.trade_statistics_textcolor_gray));
 			break;
+
 		default:
 			break;
 		}
@@ -358,25 +345,23 @@ public class PayAccountController extends BaseController implements
 		String actionTag = getString(R.string.pay_account_tag_qrcode);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_qrcode.setVisibility(View.VISIBLE);
+			UtilFor8583.getInstance().trans
+					.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
+			// onStartQRScanner();
 			if (misc != null && misc.equals(ZBTAG)) {
-				// scanner.startScanner();
-				mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER,
-						OPEN_CAMERA_DELAY_TIME);
-				UtilFor8583.getInstance().trans
-						.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
-			} else if (misc != null && misc.equals(PREPAID_QRCODE)) {
-				// for prepaid card then set entry mode
-				UtilFor8583.getInstance().trans
-						.setEntryMode(ConstantUtils.ENTRY_PREPAID_CARD_QRCODE_MODE);
+				scanner.startScanner();
+			} else {
 				onStartQRScanner();
 			}
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
+			// onStopQRScanner();
 			if (misc != null && misc.equals(ZBTAG)) {
 				scanner.destroyedScanner();
 			} else {
 				onStopQRScanner();
 			}
 		}
+
 		actionTag = getString(R.string.pay_account_tag_sound);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_sound.setVisibility(View.VISIBLE);
@@ -412,17 +397,6 @@ public class PayAccountController extends BaseController implements
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case HANDLE_INIT_QRSCANNER:
-				preview = (FrameLayout) findViewById(R.id.scanner_zb);
-				preview.setVisibility(View.VISIBLE);
-				ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-				zscanner.setVisibility(View.GONE);
-				scanner = new ZBarScanner(PayAccountController.this);
-				preview.addView(scanner.getMpreview());
-				imageScanner = scanner.getMscanner();
-				initBeepSound();
-				scanner.startScanner();
-				break;
 			case EMVICManager.STATUS_VALUE_0: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
@@ -793,24 +767,16 @@ public class PayAccountController extends BaseController implements
 	@Override
 	public void onClickLeftButton(View view) {
 		// TODO Auto-generated method stub
-		if (needPwd) {
-			onCall("PayAccount.cancelDialog", null);
-		} else {
-			onPause();
-			super.onClickLeftButton(view);
-		}
+		onPause();
+		super.onClickLeftButton(view);
 	}
 
 	@Override
 	public void onBackPressed() {
-		if (needPwd) {
-			onCall("PayAccount.cancelDialog", null);
-		} else {
-			if (backEnable) {
-				onCall("PayAccount.clear", null);
-				onPause();
-				super.onBackPressed();
-			}
+		if (backEnable) {
+			onCall("PayAccount.clear", null);
+			onPause();
+			super.onBackPressed();
 		}
 	}
 

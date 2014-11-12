@@ -6,8 +6,8 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.wd.R;
 
 public class SigninController extends BaseController {
 

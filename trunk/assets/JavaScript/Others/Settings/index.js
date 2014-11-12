@@ -12,14 +12,14 @@
 	var keyIndex = -1;
 	var MISTAG = true;
   
-	function gotoLogout() {
-//		var params = JSON.parse(data);
-//		window.SettingsIndex.existMispos = params.existMispos;
+	function gotoLogout(data) {
+		var params = JSON.parse(data);
+		window.SettingsIndex.existMispos = params.existMispos;
 		logoutTag = true;
-		if(window.user.userStatus == null){
+		/*if(window.user.userStatus == null){
 			Scene.alert("已退出！");
 			return;
-		}		
+		}*/		
 		allTransBatch(errorOkprocess);		
 	}
 	
@@ -31,22 +31,20 @@
 			
 			if(data.responseCode == "0"){
 				window.user.init({});
+				window.COMM.stopCheckSession();
 				if(!MISTAG){
-					logoutTag = false;
-					window.COMM.stopCheckSession();
-					Scene.alert("退出成功！");
+					logoutTag = false;					
+//					Scene.alert("退出成功！");
 				}else{
 					var formData = {
-						typeId : "LOGOUT",
-						actionType : "mispos"
+						typeId : "LOGOUT"					
 					};
-					Scene.showScene("MisposController", "", formData);
-					/*if (window.SettingsIndex.existMispos) {
+					if (window.SettingsIndex.existMispos) {
 						
 						Scene.showScene("MisposController", "", formData);
 					} else {
 						batchCallBack();
-					}*/
+					}
 				}
 			}else{
 				logoutTag = false;
@@ -97,11 +95,9 @@
 	function parseMerchSettings(){			
 		if(currentIndex < merchSettings.length){
 			keyIndex = merchSettings[currentIndex].brhKeyIndex;
-			
 			if(transTag[keyIndex] == "" || transTag[keyIndex] == null){
 				transBatch(keyIndex);
 				transTag[keyIndex] = true;
-				
 			}else{
 				currentIndex++;
 				parseMerchSettings();
@@ -112,34 +108,38 @@
 				actionLogout();
 		    }else{
 		    	if(!MISTAG){
-//			    	Scene.alert("批结算完成！",afterTransBatchCallback);
-		    		afterTransBatchCallback();
+					if(window.BackgroundInit){
+						afterTransBatchCallback();
+					}else{
+//			    		Scene.alert("批结算完成！",afterTransBatchCallback);
+			    		afterTransBatchCallback();
+					}
 		    	}else{
 			    	var formData = {
-						typeId : "LOGOUT",
-						actionType : "mispos"
+						typeId : "LOGOUT"					
 					};
-					Scene.showScene("MisposController", "", formData);
-					/*if (window.SettingsIndex.existMispos) {
+					if (window.SettingsIndex.existMispos) {
 						
 						Scene.showScene("MisposController", "", formData);
 					} else {
 						batchCallBack();
-					}*/
+					}
 		    	}
 		    }
 		}			
 	}	
 	
 	function batchCallBack() {
-		Scene.alert("JSLOG batchCallBack logoutTag:" + logoutTag);
 		if (logoutTag) {
 			logoutTag = false;
-			window.COMM.stopCheckSession();
-			Scene.alert("退出成功！");
+//			Scene.alert("退出成功！");
 		} else {
-			//Scene.alert("批结算完成！",afterTransBatchCallback);
-			afterTransBatchCallback();
+			if(window.BackgroundInit){
+				afterTransBatchCallback();
+			}else{
+//				Scene.alert("批结算完成！",afterTransBatchCallback);
+				afterTransBatchCallback();
+			}
 		}
 	}
 
@@ -334,8 +334,8 @@
 	}
 
 	function gotoTransBatch(data){
-//		var params = JSON.parse(data);
-//		window.SettingsIndex.existMispos = params.existMispos;
+		var params = JSON.parse(data);
+		window.SettingsIndex.existMispos = params.existMispos;
 		window.util.showSceneWithLoginChecked("TransBatch");
 	}
 

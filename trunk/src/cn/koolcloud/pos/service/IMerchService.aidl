@@ -9,8 +9,11 @@ interface IMerchService {
    	void setMerchInfo(in MerchInfo mi);
    	void setLoginStatus(String ls);  
    	void endCallPayEx();
+   	void printReceipt(String txnId);
    	
    	void registerCallback(IMerchCallBack cb);     
     void unregisterCallback(IMerchCallBack cb);
     List<PaymentInfo> getPaymentInfos();
+    
+    void printSummary();
 }

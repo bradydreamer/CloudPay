@@ -12,7 +12,7 @@
 
   function reqMore() {
     var params = {
-      "isReqMore": true
+      "isReqMore": true,
     };
     window.TransactionManageIndex.gotoConsumptionRecord(params);
   }

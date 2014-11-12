@@ -103,10 +103,6 @@ Util.prototype.uniqueId = function() {
 	return '_' + Math.random().toString(36).substr(2, 9);
 };
 
-Util.prototype.goBackHome = function() {
-	Scene.goBack("Home");
-};
-
 Util.prototype.showMisposWithLoginChecked = function(params) {
 	var data = JSON.parse(params);
 	var sceneName = "MisposController";
@@ -140,10 +136,6 @@ Util.prototype.showMisposWithLoginChecked = function(params) {
 
 };
 
-Util.prototype.backHome = function() {
-	Scene.goBack("Home");
-};
-
 Util.prototype.showCouponWithLoginChecked = function(params) {
 	var data = JSON.parse(params);
 	var sceneName = "Coupon";
@@ -162,8 +154,7 @@ Util.prototype.showCouponWithLoginChecked = function(params) {
 				ConsumptionData.dataForPayment.isExternalOrder = true;
 				data.isExternalOrder = true;
 			}
-			ConsumptionData.dataForPayment.keyIndex = data.payKeyIndex;
-			ConsumptionData.dataForPayment.paymentId = data.paymentId;
+			
 			Scene.showScene(sceneName, "", data);
 		}, false);
 
@@ -196,30 +187,40 @@ Util.prototype.exeActionWithLoginChecked = function(actionWithLoginNeeded, needN
 
 	function UserInfoCheck(data){
 		if (null != data) {
-			var transTime = data.transTime;
-			if (transTime != null && util.isReverseToday(transTime)) {
+			var lastLoginTime = data.lastLoginTime + "";
+			if (lastLoginTime != null && util.isReverseToday(lastLoginTime)) {
 				window.user.init(data);
-			};
+			}else{
+				window.user.init({});
+				window.COMM.stopCheckSession();
+			}
+			
 		};
-
 		if ("0" != window.user.userStatus) {
 			var callback = function() {
 				if (!needNotGoBack) {
 					Scene.goBack();
 				}
 				setTimeout(function() {
-					actionWithLoginNeeded(true);
+					actionWithLoginNeeded(window.firstLogin);
 				}, 300);				
 			}
 			window.user.setLoginResult(callback)
-			var nextForm = null
-			var formData = {
-				"merchId": merchInfo.merchId,
-				"operator": merchInfo.operator,
-				"pwd": merchInfo.pwd,
-				"pwd_len": merchInfo.pwd_len
+			var nextForm = null;
+			var formData;
+			if(!ConsumptionData.dataForPayment.isExternalOrder){
+				formData = {
+					"merchId": merchInfo.merchId,
+					"operator": merchInfo.operator
+				}
+				window.firstLogin = true;
+				Scene.showScene("Login","", formData);
+			}else{
+				var merchIdStr = "" + merchInfo.merchId;
+				formData = {"merchId": merchIdStr,"userName": merchInfo.operator,"pwd": merchInfo.pwd,"ssn": merchInfo.ssn};
+				window.firstLogin = false;
+				window.LoginIndex.autoLogin(JSON.stringify(formData));				
 			}
-			Scene.showScene("Login","", formData);
 		} else {
 			actionWithLoginNeeded();
 		}
@@ -243,7 +244,7 @@ Util.prototype.exeActionWithSigninChecked = function(actionWithLoginNeeded, need
 	
 	function checkSignin(data){
 		var params = data;
-		if((params.signature == "false"||params.signature == false)&& ConsumptionData.dataForPayment.brhKeyIndex != "91") {
+		if(params.signature == "false"||params.signature == false) {
 			signInAction(false);
 		} else {
 			actionWithLoginNeeded();
@@ -289,8 +290,6 @@ Util.prototype.getTransType = function(transTypeKey) {
 		return "PREPAID";
 	} else if("coupon" == transTypeKey){
 		return "coupon";
-	} else if ("SUPERTRANSER" == transTypeKey) {
-		return "SUPERTRANSER";
 	}
 }
 
@@ -383,3 +382,4 @@ Util.prototype.getProductInfo = function(data, open_brh, payment_id) {
 };
 
 window.util = new Util()
+window.firstLogin = true;

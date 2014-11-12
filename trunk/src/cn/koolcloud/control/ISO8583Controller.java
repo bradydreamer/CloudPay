@@ -1,5 +1,6 @@
 package cn.koolcloud.control;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,11 +26,13 @@ import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.Utility;
+import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.external.CardSwiper;
 import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.util.UtilForDataStorage;
-import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
+import cn.koolcloud.printer.exception.PrinterException;
+import cn.koolcloud.printer.util.Utils;
 import cn.koolcloud.util.ByteUtil;
 import cn.koolcloud.util.StringUtil;
 
@@ -41,7 +44,6 @@ public class ISO8583Controller implements Constant {
 	private static final String PREAUTHCOMPLETEREVERSE = "preauthcompletereverse";// 预授冲正
 	private static final String PREAUTHCANCELREVERSE = "preauthcancelreverse";// 预授冲正
 	private static final String PREAUTHCOMPLETECANCELREVERSE = "preauthcompletecancelreverse";// 预授冲正
-	private String errorType = null;
 	private String mId = "";
 	private String tId = "";
 	private String oriCardID = "";
@@ -416,76 +418,12 @@ public class ISO8583Controller implements Constant {
 		return mapAndPack(jsonObject, bitMap);
 	}
 
-	public boolean superTransfer(JSONObject jsonObject) {
-		paramer.trans.setTransType(TRAN_SUPER_TRANSFER);
-		paramer.trans.setApmpTransType(APMP_TRAN_SUPER_TRANSFER);
-		paramer.trans.setExpiry(jsonObject.optString("validTime"));
-		// fix no pin block original start
-		/*
-		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
-		 * ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-		 * ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-		 * ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
-		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
-		 * ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
-		 */
-		// fix no pin block original end
-
-		// fix no pin block start
-		int[] bitMap = null;
-		String pinblock = jsonObject.optString("F52");
-		if (!pinblock.isEmpty()) {
-			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
-				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
-				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
-						ISOField.F04_AMOUNT, ISOField.F11_STAN,
-						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
-						ISOField.F25_POCC, ISOField.F26_CAPTURE,
-						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
-						ISOField.F42_ACCID, ISOField.F44_ADDITIONAL,
-						ISOField.F49_CURRENCY,
-						/* ISOField.F52_PIN, ISOField.F53_SCI, */
-						ISOField.F60, ISOField.F61, ISOField.F62,
-						ISOField.F64_MAC };
-			} else {
-				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
-				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
-				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
-						ISOField.F04_AMOUNT, ISOField.F11_STAN,
-						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
-						ISOField.F25_POCC, ISOField.F26_CAPTURE,
-						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
-						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
-						ISOField.F42_ACCID, ISOField.F44_ADDITIONAL,
-						ISOField.F49_CURRENCY, ISOField.F52_PIN,
-						ISOField.F53_SCI, ISOField.F60, ISOField.F61,
-						ISOField.F62, ISOField.F64_MAC };
-			}
-		} else {
-			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
-					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
-					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
-					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
-					ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
-					ISOField.F41_TID, ISOField.F42_ACCID,
-					ISOField.F44_ADDITIONAL, ISOField.F49_CURRENCY,
-					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60,
-					ISOField.F61, ISOField.F62, ISOField.F64_MAC };
-		}
-		// fix no pin block end
-		return mapAndPack(jsonObject, bitMap);
-	}
-
 	/**
 	 * 冲正
 	 * 
 	 * @return
-	 * @throws Exception
 	 */
-	public boolean chongZheng(byte[] iso8583, String oldTransDate, String name)
-			throws Exception {
+	public boolean chongZheng(byte[] iso8583, String oldTransDate, String name) {
 
 		byte[] data = new byte[iso8583.length - 2];
 		System.arraycopy(iso8583, 2, data, 0, data.length - 2);
@@ -510,13 +448,7 @@ public class ISO8583Controller implements Constant {
 		}
 
 		OldTrans oldTrans = new OldTrans();
-		try {
-			ChongZheng.chongzhengUnpack(data, oldTrans);
-		} catch (Exception e) {
-			setErrorType(ConstantUtils.ERROR_TYPE_0);
-			e.printStackTrace();
-			throw e;
-		}
+		ChongZheng.chongzhengUnpack(data, oldTrans);
 		paramer.oldTrans = oldTrans;
 		paramer.oldTrans.toString();
 		paramer.oldTrans.setOldTransDate(oldTransDate);
@@ -1581,7 +1513,7 @@ public class ISO8583Controller implements Constant {
 	}
 
 	public void printer(byte[] request, byte[] respons, String operator,
-			String paymentId, String paymentName, Context context)
+			String paymentId, String paymentName, String txnId, Context context)
 			throws PrinterException {
 
 		byte[] data = new byte[request.length - 2];
@@ -1623,6 +1555,17 @@ public class ISO8583Controller implements Constant {
 		oldTrans.setPaymentName(paymentName);
 		oldTrans.setPaymentId(paymentId);
 
+		oldTrans.setTxnId(txnId);
+		oldTrans.setProdNo(prdtNo);
+
+		// txnId not null
+		if (!TextUtils.isEmpty(txnId)) {
+			// insert print data to local database
+			ConsumptionRecordDB cacheDB = ConsumptionRecordDB
+					.getInstance(context);
+			cacheDB.insertPrintRecord(oldTrans);
+		}
+
 		if (!TextUtils.isEmpty(prdtNo)
 				&& prdtNo.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
@@ -1631,12 +1574,23 @@ public class ISO8583Controller implements Constant {
 		}
 	}
 
-	public String getErrorType() {
-		return errorType;
-	}
+	public void printSummary(JSONObject dataSource, Context context) {
+		try {
+			JSONObject jsObj;
+			jsObj = Utils.initSummaryData(dataSource);
+			jsObj.put(ConstantUtils.FOR_PRINT_MERCHANT_NAME,
+					dataSource.optString("merchName"));
+			jsObj.put(ConstantUtils.FOR_PRINT_MERCHANT_ID,
+					dataSource.optString("merchId"));
+			jsObj.put(ConstantUtils.FOR_PRINT_MECHINE_ID,
+					dataSource.optString("machineId"));
 
-	public void setErrorType(String errorType) {
-		this.errorType = errorType;
+			PrinterHelper.getInstance(context).printTransSummary(jsObj);
+		} catch (PrinterException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getResCode() {

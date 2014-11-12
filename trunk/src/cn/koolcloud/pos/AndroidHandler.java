@@ -53,6 +53,8 @@ public class AndroidHandler {
 					clientEngine.clearLocal(jsonObjData, callBackId);
 				} else if ("rmBatchTask".equals(androidHandlerName)) {
 					clientEngine.rmBachCache(jsonObjData, context);
+				} else if ("saveMerchSettingToDataBase".equals(androidHandlerName)) {
+					clientEngine.saveMerchSettingToDataBase(callBackId, context);
 				} else if ("readLocal".equals(androidHandlerName)) {
 					clientEngine.readLocal(jsonObjData, callBackId);
 				} else if ("readLocalBatch".equals(androidHandlerName)) {
@@ -71,7 +73,7 @@ public class AndroidHandler {
 						public void run() {
 							clientEngine.convert8583(jsData, callBackId);
 						}
-					}, context.getResources().getString(R.string.msg_analyzing_data));
+					}, "正在解析数据");
 
 				} else if ("get8583".equals(androidHandlerName)) {
 					final JSONObject jsData = jsonObjData;
@@ -81,7 +83,7 @@ public class AndroidHandler {
 						public void run() {
 							clientEngine.get8583(jsData, callBackId);
 						}
-					}, context.getResources().getString(R.string.msg_organizing_data));
+					}, "正在组织数据");
 				} else if ("printTrans".equals(androidHandlerName)) {
 					clientEngine.print(jsonObjData, context);
 				} else if ("insertTransData8583".equals(androidHandlerName)) {
@@ -96,6 +98,8 @@ public class AndroidHandler {
 					clientEngine.serviceSecureInfo(jsonObjData, callBackId);
 				} else if ("ServiceMerchInfo".equals(androidHandlerName)) {
 					clientEngine.serviceMerchantInfo(jsonObjData, callBackId);
+				} else if ("summaryCallBack".equals(androidHandlerName)) {
+					clientEngine.summaryCallBack(jsonObjData, callBackId);
 				}
 			}
 		});

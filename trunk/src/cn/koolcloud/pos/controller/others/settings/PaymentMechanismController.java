@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
+import cn.koolcloud.pos.wd.R;
 
 public class PaymentMechanismController extends BaseHomeController {
 
@@ -92,8 +92,7 @@ public class PaymentMechanismController extends BaseHomeController {
 			JSONObject moduleData = mDataArray.optJSONObject(i);
 			String funcModuleName = moduleData.optString("typeName");
 			String funcModuleId = moduleData.optString("typeId");
-			if (funcModuleId.equals("BALANCE") || funcModuleId.equals("coupon")
-					|| funcModuleId.equals("cash")) {
+			if (funcModuleId.equals("BALANCE")) {
 				continue;
 			}
 			btnFuncModule.setText(funcModuleName);

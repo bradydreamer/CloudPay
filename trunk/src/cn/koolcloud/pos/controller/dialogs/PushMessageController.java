@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.wd.R;
 
 public class PushMessageController extends Activity implements View.OnClickListener {
 	

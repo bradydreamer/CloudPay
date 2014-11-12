@@ -15,19 +15,48 @@
 	  gotoLogin(params)
 	}
 
+  	function autoLogin(msg){		
+		var params = JSON.parse(msg)
+		ConsumptionData.dataForPayment.isExternalOrder = true;
+		if(params.INIT != null || params.INIT != undefined){
+			window.BackgroundInit = params.INIT;
+		}	
+//		ServiceMerchInfo.getInfo(userInfo);
+//		function userInfo(data){
+//			if (null != data) {
+//				var lastLoginTime = data.lastLoginTime + "";
+//				if (lastLoginTime != null && window.util.isReverseToday(lastLoginTime)) {
+//					window.user.init(data);
+//				};
+//			}
+//			if(window.user.userStatus == "0")
+//			{
+//				if(window.BackgroundInit){
+//					window.AppInit.initResult(window.SUCC);
+//					return;
+//				}
+//			}
+//			window.user.init({});
+//			window.COMM.stopCheckSession();
+//		  	gotoLogin(params);
+//		}
+		window.user.init({});
+		window.COMM.stopCheckSession();
+		gotoLogin(params);
+		
+  	}
+
 
 	function gotoLogin(params) {
 		var req = {
 		  merchId: params.merchId,
 		  operator: params.userName,
 		  pwd: params.pwd,
-		  iposSn: params.ssn,
+		  iposSn: params.ssn
 		}
 
 		g_loginReq = req
-		g_loginReq.remenber_tag = params.remenber_tag;
-		g_loginReq.pwd_len = params.pwd_len;
-		Net.connect("msc/user/login", req, actionAfterVerifyLogin)  //For real envir.
+		Net.connect("msc/user/login", req, actionAfterVerifyLogin, true)  //For real envir.
 	}
 	
 
@@ -58,30 +87,20 @@
 			ConsumptionData.startProcessBatchTasks();
 			//start batch task to write back --end add by Teddy on September 5th.
 		} else {
-			Scene.alert(g_loginRes.errorMsg)
+			if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+//				Scene.alert(g_loginRes.errorMsg)
+			}
 		}	
 
 		function getParamsVersion(verParams){
-			if(g_loginReq.remenber_tag){
-				var params = {
-					merchId : g_loginReq.merchId,
-					machineId : g_loginRes.iposId,
-					operator: g_loginRes.userName,
-					pwd: g_loginReq.pwd,
-					pwd_len: g_loginReq.pwd_len,
-					payParamVersion: g_loginRes.payParamVersion,
-					remenber_tag: g_loginReq.remenber_tag
-				}
-			}else{
-				var params = {
-					merchId : g_loginReq.merchId,
-					machineId : g_loginRes.iposId,
-					operator: g_loginRes.userName,
-					pwd: "0",
-					pwd_len: -1,
-					payParamVersion: g_loginRes.payParamVersion,
-					remenber_tag: "0"
-				}
+			
+			var params = {
+				merchId : g_loginReq.merchId,
+				machineId : g_loginRes.iposId,
+				operator: g_loginRes.userName,
+				payParamVersion: g_loginRes.payParamVersion
 			}
 			RMS.save("merchant",params);
 			
@@ -91,13 +110,22 @@
 			window.user.userName = g_loginRes.userName;
 			window.user.gradeId = g_loginRes.gradeId;
 			//SettingsIndex.getMerchantInfoAfterLogin();
-			if(g_loginRes.payParamVersion != verParams.payParamVersion){
+			if(g_loginRes.payParamVersion != verParams.payParamVersion || verParams.paramDownload != true || window.BackgroundInit){
 				var mParam = {
-					shouldRemoveCurCtrl: false,
+					shouldRemoveCurCtrl: false
 				};
-				Scene.showScene("SettingsDownload", "", mParam);
+				
+				if(window.BackgroundInit){
+					SettingsDownload.start();
+				}else{
+//					Scene.showScene("SettingsDownload", "", mParam);
+				}
 			}else{
-				window.user.reloginAction(g_loginRes);
+				if(window.BackgroundInit){
+					window.AppInit.initResult(window.SUCC);
+				}else{
+					window.user.reloginAction(g_loginRes);
+				}
 			}
 		}
 	}
@@ -150,9 +178,7 @@
 	    		
 		    	Scene.alert("权限确认成功",function(){
 			    	var sceneName = "MisposController";
-			    	//rm goBack statement otherwise can't call back to the 3rd part app --start mod by Teddy on 11th November
-//	  				Scene.goBack("Home");
-			    	//rm goBack statement otherwise can't call back to the 3rd part app --end mod by Teddy on 11th November
+	  				Scene.goBack("Home");
 	  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
 		    	});
 	    	} else if(ConsumptionData.dataForPayment.payKeyIndex == "91"){
@@ -197,9 +223,10 @@
   }
     
   window.LoginIndex = {
-    onLogin: onLogin,
+    	onLogin: onLogin,
+		autoLogin:autoLogin,
 		refundConfirmLogin: refundConfirmLogin,
 		voidConfirmLogin: voidConfirmLogin
-  }
+  }  
 
 })()

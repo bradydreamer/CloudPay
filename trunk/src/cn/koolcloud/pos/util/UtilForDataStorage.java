@@ -9,9 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class UtilForDataStorage {
-	
-	public static final String PREFS_NAME 	= "date_preference_file";
-	public static final String DATE_KEY 	= "date_key";
 
 //	/**
 //	 * 
@@ -91,16 +88,6 @@ public class UtilForDataStorage {
 		} else if (value instanceof String) {
 			editor.putString(key, (String) value);
 		}
-	}
-	
-	public static String getSavedDate(Context context) {
-		SharedPreferences prefer = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-		return prefer.getString(DATE_KEY, "");
-	}
-
-	public static void saveDate(Context context, String date) {
-		SharedPreferences prefer = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-		prefer.edit().putString(DATE_KEY, date).commit();
 	}
 	
 }

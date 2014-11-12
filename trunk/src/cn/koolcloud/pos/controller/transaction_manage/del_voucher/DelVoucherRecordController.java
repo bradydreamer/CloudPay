@@ -10,10 +10,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.DelVoucherRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.wd.R;
 
 public class DelVoucherRecordController extends BaseController {
 

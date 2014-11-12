@@ -22,7 +22,7 @@
 			"openBrh": "",
 			"paymentId": "",
 			"flowList": [],
-			"step": 0
+			"step": 0,
 		};
 	}
 
@@ -89,10 +89,6 @@
 		    	window.RMS.rmBatchByPrimaryKey(ConsumptionData.dataForBatchTask);
 		    }
 	  	} else {
-	  		//cache txnId for mispos --start mod by Teddy on 10th November
-	  		ConsumptionData.dataForPayment.txnId = data.txnId;
-	  		//cache txnId for mispos --end mod by Teddy on 10th November
-	  		
 		  	//remove the record from cache db
 		  	window.RMS.rmBatchByPrimaryKey(ConsumptionData.dataForBatchTask);
 	  	}
@@ -139,7 +135,7 @@
 			"balancePwd": "",
 			"cardID": "",
 			"openBrh": "",
-			"paymentId": ""
+			"paymentId": "",
 		};
 	}
 	
@@ -151,7 +147,7 @@
 				"desc" : "请输入交易总金额",
 				"matchRegex" : "",
 				"inputRegex" : "",
-				"packTag" : "totalAmount"
+				"packTag" : "totalAmount",
 			}],
 			"step" : 0,
 			"completed": false,

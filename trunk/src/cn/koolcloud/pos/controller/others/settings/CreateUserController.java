@@ -10,9 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
+import cn.koolcloud.pos.wd.R;
 
 public class CreateUserController extends BaseController {
 

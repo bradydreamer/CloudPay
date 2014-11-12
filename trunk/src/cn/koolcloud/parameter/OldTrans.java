@@ -50,6 +50,34 @@ public class OldTrans implements Constant {
 	private String oldCardOrganization; // 国际卡组织:
 
 	private String oper; // 操作员
+	
+	private String txnId; // txnId
+	private String prodNo; // prodNo
+	private String respCode; // respCode
+
+	public String getRespCode() {
+		return respCode;
+	}
+
+	public void setRespCode(String respCode) {
+		this.respCode = respCode;
+	}
+
+	public String getProdNo() {
+		return prodNo;
+	}
+
+	public void setProdNo(String prodNo) {
+		this.prodNo = prodNo;
+	}
+
+	public String getTxnId() {
+		return txnId;
+	}
+
+	public void setTxnId(String txnId) {
+		this.txnId = txnId;
+	}
 
 	public String getKoolCloudTID() {
 		return koolCloudTID;

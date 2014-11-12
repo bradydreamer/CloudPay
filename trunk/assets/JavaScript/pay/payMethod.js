@@ -10,7 +10,6 @@
 	var transType_PreAuth = "1011";
 	var transType_preAuthComplete= "1031";
 	var transType_preAuthSettlement = "1091";
-	var transType_superTransfer = "1721";
 	var transType_preAuthCancel = "3011";
 	var transType_preAuthCompleteCancel = "3031";
 
@@ -47,9 +46,7 @@
 			payType = transType_Consume;
 		}else if(product.typeId == "PREPAID"){
 			payType = transType_PreAuth;
-		} else if (product.typeId == "SUPERTRANSER") {
-			payType = transType_superTransfer;
-		}	
+		}		
 		
 		if (product[payType] != null && product[payType].length != 0) {
 			if (window.payTemplates == null) {
@@ -149,9 +146,7 @@
 				Pay.gotoAuthFlow();
 				return;
 
-			} else if (typeId == util.getTransType("SUPERTRANSER")) {
-				ConsumptionData.dataForPayment.typeOf8583 = "superTransfer";
-			} else if ((typeId != util.getTransType("SALE")) && (typeId != util.getTransType("coupon"))) {
+			}else if ((typeId != util.getTransType("SALE")) && (typeId != util.getTransType("coupon"))) {
 				Scene.alert(product);
 				return;
 			};
@@ -175,28 +170,11 @@
 
 	function gotoBalanceResult(data) {
 		var params = JSON.parse(data);
-		if (params.isCancelled) {
-			if (ConsumptionData.dataForPayment.isExternalOrder) {
-				Pay.flowRestartFunction();
-			}else{
-				Scene.goBack("Home");
-			}
-			return;			
-		}
+
 		ConsumptionData.dataForBalance.track2 = params.track2;
 		ConsumptionData.dataForBalance.track3 = params.track3;
 		ConsumptionData.dataForBalance.cardID = params.cardID;
-		var cardId = params.cardID;
-		if(!(params.servicesCode == null || params.servicesCode == undefined)){
-			var serviesCode = (params.servicesCode).substring(0,1);
-			if( (serviesCode == "2" || serviesCode == "6") && cardId.substring(0,6) != "666010"){
-				Scene.alert("JSLOG,serviesCode  is IC !" + serviesCode);
-				var datalist = [{ }];
-				Scene.setProperty("PayAccount",datalist);	
-				return;
-			}
-		}
-		//ICÂç°‰∫§ÊòìÔºåÂú®Ê≠§Ê£ÄÊµã
+		//ICø®Ωª“◊£¨‘⁄¥ÀºÏ≤‚
 		if(!(params.pwd == null || params.pwd == undefined)){
 				ConsumptionData.dataForBalance.balancePwd = params.pwd;				
 				Pay.checkTransReverse("msc/balance",function(){

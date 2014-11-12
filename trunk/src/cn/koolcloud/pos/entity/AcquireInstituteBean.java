@@ -21,8 +21,6 @@ public class AcquireInstituteBean {
 	private String brhMsgType;
 	private String brhMchtMcc;
 	private String jsonItem;
-	private String openBrh;
-	private String openBrhName;
 	
 	public String getJsonItem() {
 		return jsonItem;
@@ -30,22 +28,6 @@ public class AcquireInstituteBean {
 
 	public void setJsonItem(String jsonItem) {
 		this.jsonItem = jsonItem;
-	}
-
-	public String getOpenBrh() {
-		return openBrh;
-	}
-
-	public void setOpenBrh(String openBrh) {
-		this.openBrh = openBrh;
-	}
-
-	public String getOpenBrhName() {
-		return openBrhName;
-	}
-
-	public void setOpenBrhName(String openBrhName) {
-		this.openBrhName = openBrhName;
 	}
 
 	public String getBrhKeyIndex() {

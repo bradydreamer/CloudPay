@@ -245,15 +245,49 @@
   function rmBatchByPrimaryKey(data) {
 	Global.callObjcHandler("rmBatchTask", data);
   }
+  
+  function saveMerchSettingToDataBase(callbackfunc) {
+	Global.callObjcHandler("saveMerchSettingToDataBase", "", callbackfunc);
+  }
 
   window.RMS = {
     "read": readLocal,
     "save": saveLocal,
     "clear": clearLocal,
     "rmBatchByPrimaryKey": rmBatchByPrimaryKey,
+    "saveMerchSettingToDataBase": saveMerchSettingToDataBase,
     "readLocalBatch": readLocalBatch
   };
 })();
+
+(function() {
+  if (window.AppInit) {
+    return
+  }
+
+  function initResult(value) {
+  	var param = {
+		"value": value
+	}
+	if(value == window.FAIL){
+		window.user.init({});
+	}
+	window.BackgroundInit = false;
+	Global.callObjcHandler("initResult", param);
+  }
+  
+  function summaryCallBack(params) {
+  	Global.callObjcHandler("summaryCallBack", params);
+  }
+
+  window.AppInit = {
+    "initResult": initResult,
+    "summaryCallBack" : summaryCallBack
+  };  
+})();
+window.SUCC = 0;
+window.FAIL = 1;
+window.BackgroundInit = false;
 window.downloadParams = false;
 (function() {
   if (window.COMM) {

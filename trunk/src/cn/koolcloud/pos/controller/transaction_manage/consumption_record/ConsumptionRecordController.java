@@ -12,11 +12,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import cn.koolcloud.interfaces.OrderHeaderInterface;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.wd.R;
 import cn.koolcloud.pos.widget.ContentHeader;
 
 public class ConsumptionRecordController extends BaseController implements OrderHeaderInterface {
@@ -117,14 +117,6 @@ public class ConsumptionRecordController extends BaseController implements Order
 				new CacheRecordThread().start();
 			}
 			//cache record to sqlite --end by Teddy 17th July
-		} else if (key.equals("updateList")) {
-			//clear ListView data first after finish revoke order --start mod by Teddy on 29th September
-			if (recordDataList != null) {
-				recordDataList.clear();
-			}
-			
-			adapter.notifyDataSetChanged();	
-			//clear ListView data first after finish revoke order --end mod by Teddy on 29th September
 		}
 		super.setView(view, key, value);
 	}

@@ -5,8 +5,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.wd.R;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

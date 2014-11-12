@@ -6,11 +6,7 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,21 +17,16 @@ import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
-import cn.koolcloud.pos.database.CacheDB;
-import cn.koolcloud.pos.database.ConsumptionRecordDB;
-import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.MisposData;
-import cn.koolcloud.pos.service.ICouponService;
 import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
-import cn.koolcloud.printer.PrinterException;
+import cn.koolcloud.pos.wd.R;
 import cn.koolcloud.printer.PrinterHelper;
+import cn.koolcloud.printer.exception.PrinterException;
 
 public class OrderDetailController extends BaseController {
 
-	public final static int REQUEST_CODE = 11;
 	private final static int PAY_SUCCESS = 1;
 	private final static int ORDER_STATUS_SUCCESS = 0;
 	private final static int TRAN_TYPE_REVERSE = 3021;
@@ -44,8 +35,6 @@ public class OrderDetailController extends BaseController {
 	private final static int TRAN_TYPE_AUTH_CANCEL = 3011;
 	private final static int TRAN_TYPE_AUTH_COMPLETE_CANCEL = 3031;
 	private final static int TRAN_TYPE_AUTH_SETTLEMENT = 1091;
-
-	private final static String MISC_CASH = "CASH";
 
 	private boolean cancelEnable;
 	private String rrn;
@@ -58,8 +47,6 @@ public class OrderDetailController extends BaseController {
 	private String paymentName;
 	private String txnId;
 	private String authCode;
-	private String typeId;
-	private String misc;
 	private int orderState = -1;
 	private int paymentOrder = -1;
 	private boolean removeJSTag = true;
@@ -89,24 +76,8 @@ public class OrderDetailController extends BaseController {
 	UtilFor8583 util8583 = UtilFor8583.getInstance();
 
 	private boolean isExternalOrder = false;
-
 	// private Typeface faceTypeLanTing;
-	
-	private ICouponService iCouponService;
-	
-	private ServiceConnection conn = new ServiceConnection() {
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			iCouponService = null;
-		}
 
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			// IPaySDK.Stub.asInterface，获取接口
-			iCouponService = ICouponService.Stub.asInterface(service);
-		}
-	};
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -165,29 +136,6 @@ public class OrderDetailController extends BaseController {
 		paymentName = data.optString("paymentName");
 		paymentOrder = data.optInt("paymentOrder");
 		authCode = data.optString("authNo");
-		typeId = data.optString("typeId");
-		misc = data.optString("misc");
-		if (typeId == null || typeId.equals("") || misc == null
-				|| misc.equals("")) {
-			Map<String, ?> map = UtilForDataStorage
-					.readPropertyBySharedPreferences(this, "paymentInfo");
-			try {
-				JSONObject paymentInfo = new JSONObject(
-						(String) map.get(paymentId));
-				if (paymentInfo != null) {
-					if (typeId == null || typeId.equals("")) {
-						typeId = paymentInfo.optString("typeId", "");
-					}
-					if (misc == null || misc.equals("")) {
-						misc = paymentInfo.optString("misc", "");
-					}
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
 
 		// get batch no. and trace no.
 		// set default value
@@ -197,15 +145,6 @@ public class OrderDetailController extends BaseController {
 		util8583.terminalConfig.setKeyIndex(payKeyIndex);
 		findViews();
 		initButtons();
-		
-		//bind coupon service for revoking coupon order
-		if (Env.checkApkExist(this,
-				ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
-			
-			Intent intent = new Intent();
-			intent.setAction("com.koolyun.coupon.service.permission.COUPON");
-			bindService(intent, conn, BIND_AUTO_CREATE);
-		}
 	}
 
 	private void initTextView(int resourceId, JSONObject data, String key) {
@@ -259,57 +198,7 @@ public class OrderDetailController extends BaseController {
 
 		if (Env.checkApkExist(OrderDetailController.this,
 				ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
-			String transType = data.optString("transType");
-			String orderState = data.optString("orderState");
-
-			String paymentId = data.optString("paymentId");
-			if (!TextUtils.isEmpty(paymentId)) {
-				CacheDB cacheDB = CacheDB
-						.getInstance(OrderDetailController.this);
-				AcquireInstituteBean acquireInfo = cacheDB
-						.getAcquireByPaymentId(paymentId);
-				if (acquireInfo != null) {
-					String tabType = acquireInfo.getTypeId();
-					if (!TextUtils.isEmpty(tabType)
-							&& tabType.equals(ConstantUtils.TAB_TYPE_COUPON)) {
-						couponButton.setVisibility(View.GONE);
-					} else {
-						if (!TextUtils.isEmpty(transType)
-								&& !TextUtils.isEmpty(orderState)) {
-							if ((transType
-									.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUME)
-									|| transType
-											.equals(ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
-									|| transType
-											.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE) || transType
-										.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
-									&& orderState
-											.equals(ConstantUtils.ORDER_STATE_SUCCESS)) {
-								couponButton.setVisibility(View.VISIBLE);
-							} else {
-								couponButton.setVisibility(View.GONE);
-							}
-						}
-					}
-				}
-			} else {
-
-				if (!TextUtils.isEmpty(transType)
-						&& !TextUtils.isEmpty(orderState)) {
-					if ((transType.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUME)
-							|| transType
-									.equals(ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
-							|| transType
-									.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE) || transType
-								.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
-							&& orderState
-									.equals(ConstantUtils.ORDER_STATE_SUCCESS)) {
-						couponButton.setVisibility(View.VISIBLE);
-					} else {
-						couponButton.setVisibility(View.GONE);
-					}
-				}
-			}
+			couponButton.setVisibility(View.VISIBLE);
 		} else {
 			couponButton.setVisibility(View.GONE);
 		}
@@ -330,20 +219,15 @@ public class OrderDetailController extends BaseController {
 		Button reverseBtn = (Button) findViewById(R.id.order_detail_btn_cancel);
 		Button authCompleteBtn = (Button) findViewById(R.id.order_detail_btn_auth_complete);
 		Button authSettlementBtn = (Button) findViewById(R.id.order_detail_btn_auth_settlement);
-		Button printBtn = (Button) findViewById(R.id.order_detail_btn_print);
 		RelativeLayout layout_auth_complete = (RelativeLayout) findViewById(R.id.layout_auth_complete);
 		RelativeLayout layout_auth_settlement = (RelativeLayout) findViewById(R.id.layout_auth_settlement);
-		if (misc.equals(MISC_CASH)) {
-			printBtn.setClickable(false);
-			printBtn.setBackgroundResource(R.drawable.button_disable_background_color);
-		}
 		if (paymentOrder == PAY_SUCCESS
 				|| orderState != ORDER_STATUS_SUCCESS
 				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_REVERSE)
 				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_REFUND)
-				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_CANCEL)
-				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_COMPLETE_CANCEL)
-				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_SETTLEMENT)) {
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == this.TRAN_TYPE_AUTH_CANCEL)
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == this.TRAN_TYPE_AUTH_COMPLETE_CANCEL)
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == this.TRAN_TYPE_AUTH_SETTLEMENT)) {
 			if (transType == TRAN_TYPE_AUTH) {
 				layout_auth_complete.setVisibility(View.VISIBLE);
 				layout_auth_settlement.setVisibility(View.VISIBLE);
@@ -404,11 +288,6 @@ public class OrderDetailController extends BaseController {
 			msg.put("transAmount", transAmount);
 			msg.put("txnId", txnId);
 			msg.put("payKeyIndex", payKeyIndex);
-			if (!TextUtils.isEmpty(openBrh)
-					&& openBrh.equals(ConstantUtils.ALIIPAY_OPEN_BRH)) {
-				msg.put("alipayTag", true);
-			}
-			msg.put("txnId", txnId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -573,11 +452,11 @@ public class OrderDetailController extends BaseController {
 
 		// if (!TextUtils.isEmpty(orderStatus) && (orderStatus.equals("已撤销") ||
 		// orderStatus.equals("已退货"))) {
-		// external order return directly fixed by Teddy on 7th August --start
+		//external order return directly fixed by Teddy on 7th August --start
 		if (isExternalOrder) {
 			return;
 		}
-		// external order return directly fixed by Teddy on 7th August --end
+		//external order return directly fixed by Teddy on 7th August --end
 		if (!orderStateSet.contains(orderStatus)) {// refresh the record list
 													// when status changed
 			onCall("TransactionManageIndex.refreshResearch", null);
@@ -619,20 +498,6 @@ public class OrderDetailController extends BaseController {
 					.setBackgroundResource(R.drawable.button_disable_background_color);
 			authSettlementBtn
 					.setBackgroundResource(R.drawable.button_disable_background_color);
-			
-			//revoke conpon order if it is exist.
-			try {
-				if (Env.checkApkExist(this, ConstantUtils.COUPON_APP_PACKAGE_NAME) && iCouponService != null) {
-					iCouponService.cancelCoupon(Env.getPackageName(OrderDetailController.this), txnId);
-				}
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-			
-			//update record status of database --start mod by Teddy on November 3th
-			ConsumptionRecordDB db = ConsumptionRecordDB.getInstance(OrderDetailController.this);
-			db.updateRecordStatusByTxnId(txnId, orderStatus);
-			//update record status of database --end mod by Teddy on November 3th
 		}
 	}
 
@@ -657,27 +522,6 @@ public class OrderDetailController extends BaseController {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (null != data) {
-
-			Bundle bundle = data.getExtras();
-			String couponCount = bundle.getString("couponCount");
-			String couponAmount = bundle.getString("couponAmount");
-			String time = bundle.getString("time");
-
-			if (!TextUtils.isEmpty(couponCount)
-					&& Integer.parseInt(couponCount) > 0) {
-				couponButton.setBackgroundDrawable(getResources().getDrawable(
-						R.drawable.button_gray_background_release));
-				couponButton.setClickable(false);
-				couponButton.setText(getResources().getString(
-						R.string.order_detail_btn_sent_text_coupon));
-			}
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	@Override
 	protected void setRemoveJSTag(boolean tag) {
 		removeJSTag = tag;
 
@@ -688,18 +532,6 @@ public class OrderDetailController extends BaseController {
 		// TODO Auto-generated method stub
 		return removeJSTag;
 	}
-
-	
-	@Override
-	protected void onDestroy() {
-		if (Env.checkApkExist(this,
-				ConstantUtils.COUPON_APP_PACKAGE_NAME) && conn != null) {
-			unbindService(conn);
-		}
-		iCouponService = null;
-		super.onDestroy();
-	}
-
 
 	class PrinterThread extends Thread {
 		private MisposData beanData;

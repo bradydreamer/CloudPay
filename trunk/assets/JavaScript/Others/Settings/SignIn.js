@@ -2,6 +2,7 @@
  if (window.SignIn) { return }
   
   var paramType;
+  var paramDownloadFlag = false;
   function gotoSignIn() {  	
   	var data = {
   	          typeOf8583: "signin",
@@ -43,10 +44,20 @@
 	ConsumptionData.dataForPayment.txnId = params.txnId;
 	window.data8583.convert8583(convertData, afterConvertMsg);
 	}else{
-		Scene.alert(params.errorMsg,errOKProcess);
+		if(signActionTag == 0){
+			SettingsDownload.resetParamsVersion();
+			window.AppInit.initResult(window.FAIL);
+		 }else{
+		 	if(window.BackgroundInit){
+		 		SettingsDownload.resetParamsVersion();
+				window.AppInit.initResult(window.FAIL);
+		 	}else{
+				Scene.alert(params.errorMsg,errOKProcess);
+		 	}
+		 }
 	}   
-  }  
-
+  } 
+  
   function errOKProcess(){
 	  if(ConsumptionData.dataForPayment.isExternalOrder){
 			Pay.restart();
@@ -56,20 +67,32 @@
   }
   
   function afterConvertMsg(params){
+	paramDownloadFlag = params.paramDownloadFlag;
 	  if("00" == params.resCode){
 		  var brhKeyIndex = ConsumptionData.dataForPayment.brhKeyIndex;
 		  var _params = {
-	 				"signature" : true
+	 				"signature" : true,
 	 		  }
 		  RMS.save(brhKeyIndex, _params);
-		  if(params.paramDownloadFlag == true){			  
+		  if(paramDownloadFlag == true){		
 			  paramType = "CAPK";
 			  posUpStatus(downloadCAPK);
-		  }else{		  
-			  actionAfterSet();		  
+		  }else{
+			  if(signActionTag == 0){
+				currentIndex++;
+			  	parseMerchSettings();
+			  }else{
+			  	actionAfterSet();
+			  }
 		  }
+		  //Net.asynConnect("msc/txn/update",req,afterBackupInfo);
 	  }else{
-		  Scene.alert(params.resMessage,errOKProcess);
+		  if(signActionTag == 0){
+		  		SettingsDownload.resetParamsVersion();
+				window.AppInit.initResult(window.FAIL);
+		  }else{
+				Scene.alert(params.resMessage,errOKProcess);
+		  }
 	  }	  
   }
   
@@ -204,8 +227,12 @@
 			  ConsumptionData.dataForPayment.txnId = params.txnId;
 			  window.data8583.convert8583(convertData, afterConvert);
 		  }else{
-		      window.COMM.deleteParamsFiles();
-			  Scene.alert(params.errorMsg,errOKProcess);
+		  	window.COMM.deleteParamsFiles();
+	  		if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+		  		Scene.alert(params.errorMsg,errOKProcess);
+			}
 		  }  	  
 	  }	
 	  
@@ -222,8 +249,12 @@
 				  });					  		  
 			  }
 		  }else{
-		      window.COMM.deleteParamsFiles();
-			  Scene.alert(params.resMessage,errOKProcess);
+		  	window.COMM.deleteParamsFiles();
+	  		if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+		  		Scene.alert(params.resMessage,errOKProcess);
+			}
 		  }	
 	  
 	  }  
@@ -276,8 +307,12 @@
 			  ConsumptionData.dataForPayment.txnId = params.txnId;
 			  window.data8583.convert8583(convertData, afterConvert);
 		  }else{
-		      window.COMM.deleteParamsFiles();
-			  Scene.alert(params.errorMsg,errOKProcess);
+		  	window.COMM.deleteParamsFiles();
+	  		if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+		  		Scene.alert(params.errorMsg,errOKProcess);
+			}
 		  }  
 	  
 	  }
@@ -296,8 +331,12 @@
 				  });				  
 			  }
 		  }else{
-		      window.COMM.deleteParamsFiles();
-			  Scene.alert(params.resMessage,errOKProcess);
+		  	window.COMM.deleteParamsFiles();
+	  		if(window.BackgroundInit){
+				window.AppInit.initResult(window.FAIL);
+			}else{
+		  		Scene.alert(params.resMessage,errOKProcess);
+			}
 		  }		  
 	  }  
   }  
@@ -354,18 +393,34 @@
 				  ConsumptionData.dataForPayment.txnId = params.txnId;
 				  window.data8583.convert8583(convertData, afterConvert);
 			 }else{
-			      window.COMM.deleteParamsFiles();
+			 	window.COMM.deleteParamsFiles();
+			 	if(window.BackgroundInit){
+					window.AppInit.initResult(window.FAIL);
+				}else{
 				  Scene.alert(params.errorMsg,errOKProcess);
+				}
 			 }  
 		}	
 		
 		function afterConvert(params){
 			if("00" == params.resCode){
 				window.downloadParams = false;
+				if(paramType == "PARAM"){
+					if(window.BackgroundInit){
+						window.AppInit.initResult(window.SUCC);
+					}else{
+						actionAfterSet();
+					}
+					return;
+				}
 				nextCallback();
 			}else{
 				window.COMM.deleteParamsFiles();
-				Scene.alert(params.resMessage,errOKProcess);
+				if(window.BackgroundInit){
+					window.AppInit.initResult(window.FAIL);
+				}else{
+					Scene.alert(params.resMessage,errOKProcess);
+				}
 			}	
 		}
 		
@@ -377,12 +432,17 @@
   var keyIndex = -1;
   var signTag = {};
   var merchSettings = {};
+  var signActionTag = -1;
   
   function gotoSignOut(){	  
 	currentIndex = 0;
   	keyIndex = -1;
   	signTag = {};
   	merchSettings = {};
+	signActionTag = 1;
+	getMerchSettings();
+  }
+  function getMerchSettings(){
 	if (window.merchSettings == null) {
 		window.RMS.read("merchSettings", afterGetTransInfo);
 	} else {
@@ -405,18 +465,40 @@
   }
   function parseMerchSettings(){			
 	if(currentIndex < merchSettings.length){
-		keyIndex = merchSettings[currentIndex].brhKeyIndex;
+		keyIndex = merchSettings[currentIndex].brhKeyIndex;		
+		//通联MISpos方案，这里进行滤掉
+		if(keyIndex == "90" || keyIndex == "91"){
+			currentIndex++;
+			parseMerchSettings();
+			return;
+		}
+		
 		if(signTag[keyIndex] == "" || signTag[keyIndex] == null){
-			signOut(keyIndex);
+			if(signActionTag == 1){
+				signOut(keyIndex);
+			}else if(signActionTag == 0){
+				ConsumptionData.dataForPayment.paymentId = merchSettings[currentIndex].paymentId;
+			  	ConsumptionData.dataForPayment.brhKeyIndex = keyIndex;
+				gotoSignIn();
+			}
 			signTag[keyIndex] = true;
-			
 		}else{
 			currentIndex++;
 			parseMerchSettings();
 		}		
 	}else{
-//	    Scene.alert("签退完成！",errOKProcess);
-		errOKProcess();
+		if(signActionTag == 0){
+			if(paramDownloadFlag == true){		
+			  paramType = "CAPK";
+			  posUpStatus(downloadCAPK);
+		  	}else{		  
+			  window.AppInit.initResult(window.SUCC);	  
+		  	}
+			
+		}else if(signActionTag == 1){		
+//			Scene.alert("签退完成！",errOKProcess);
+			errOKProcess();
+		}
 	}			
   }	
   
@@ -475,10 +557,20 @@
 	  		parseMerchSettings();
 		}	
 	}
+
+	function gotoAllSignIn(){
+		currentIndex = 0;
+	  	keyIndex = -1;
+	  	signTag = {};
+	  	merchSettings = {};
+		signActionTag = 0;
+		getMerchSettings();
+	}
   
   window.SignIn = {
 	"gotoSignIn": gotoSignIn,
  	"gotoSignOut": gotoSignOut,
+ 	"gotoAllSignIn": gotoAllSignIn,
   }
   
 })()

@@ -375,7 +375,7 @@
 		            />
 		        <Button
 			        android:id="@+id/order_detail_btn_coupon"
-			        android:layout_width="128dp"
+			        android:layout_width="90dp"
 			        android:layout_height="40dp"
 			        android:background="@drawable/button_green_background"
 			        android:onClick="onCoupon"

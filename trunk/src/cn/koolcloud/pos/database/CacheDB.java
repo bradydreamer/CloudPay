@@ -1,9 +1,7 @@
 package cn.koolcloud.pos.database;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,12 +12,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.service.PaymentInfo;
 import cn.koolcloud.pos.util.Logger;
-import cn.koolcloud.pos.util.UtilForDataStorage;
 
 /**
  * <p>Title: CacheDB.java </p>
@@ -33,7 +29,7 @@ import cn.koolcloud.pos.util.UtilForDataStorage;
 public class CacheDB extends BaseSqlAdapter {
 
 	private final static String DATABASE_NAME = "Cache.db";
-	private final static int DATABASE_VERSION = 3;
+	private final static int DATABASE_VERSION = 2;
     private final static String BATCH_PROCESSING_TABLE_NAME = "batch_processing_table";
     private final static String ACQUIRE_INSTITUTE_TABLE_NAME = "acquire_institute_table";
     private final static String PAYMENT_ACTIVITY_TABLE_NAME = "payment_activity_table";
@@ -85,7 +81,6 @@ public class CacheDB extends BaseSqlAdapter {
     private final static String ACQUIRE_BRH_KEY_INDEX = "brhKeyIndex";
     private final static String ACQUIRE_BRH_MSG_TYPE = "brhMsgType";
     private final static String ACQUIRE_BRH_MCHT_MCC = "brhMchtMcc";
-    private final static String ACQUIRE_TAB_TYPE_ID = "tabType";
     
     private final static String PAYMENT_ACTIVITY_JSON = "payment_json";
   
@@ -279,8 +274,7 @@ public class CacheDB extends BaseSqlAdapter {
     				ACQUIRE_PRODUCT_DESC + ", " +
     				ACQUIRE_DEVICE_NUM_OF_MERCH + ", " +
     				ACQUIRE_INSTITUTE_NAME + ", " +
-    				ACQUIRE_TAB_TYPE_ID + ", " +
-    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    				PAYMENT_ACTIVITY_JSON + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     		
     		if (paymentActivity != null && paymentActivity.size() > 0) {
     			for (int i = 0; i < paymentActivity.size(); i++) {
@@ -295,7 +289,7 @@ public class CacheDB extends BaseSqlAdapter {
     						acquireInstituteBean.getBrhTermId(), acquireInstituteBean.getPrintType(), 
     						acquireInstituteBean.getProductNo(), acquireInstituteBean.getProductTitle(), 
     						acquireInstituteBean.getProductDesc(), acquireInstituteBean.getDeviceNumOfMerch(),
-    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getTypeId(), acquireInstituteBean.getJsonItem()
+    						acquireInstituteBean.getInstituteName(), acquireInstituteBean.getJsonItem(),
     						
     				};
     				sqlList.add(new SQLEntity(sql, params));
@@ -408,15 +402,6 @@ public class CacheDB extends BaseSqlAdapter {
     	return cursor;
     }
     
-    public int getPaymentsCount() { 
-    	String sql = "select count(*) from " + PAYMENT_ACTIVITY_TABLE_NAME;
-    	Cursor cursor = getCursor(sql, null);
-    	cursor.moveToFirst();
-		int count = cursor.getInt(0);
-		cursor.close();
-    	return count;
-    }
-    
     public PaymentInfo getPaymentByPaymentId(String paymentId) { 
     	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
     	PaymentInfo paymentInfo = null;
@@ -432,40 +417,7 @@ public class CacheDB extends BaseSqlAdapter {
     		String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
     		paymentInfo = new PaymentInfo(paymentId, paymentName, brhKeyIndex, prodtNo, prdtTitle, prdtDesc, openBrh, openBrhName);
     	}
-    	
-    	cursor.close();
     	return paymentInfo;
-    }
-    
-    public AcquireInstituteBean getAcquireByPaymentId(String paymentId) { 
-    	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
-    	AcquireInstituteBean acquireInfo = null;
-    	Cursor cursor = getCursor(sql, null);
-    	if (cursor.getCount() > 0) {
-    		cursor.moveToNext();
-    		String paymentName = cursor.getString(cursor.getColumnIndex(ACQUIRE_PAYMENT_NAME));
-    		String brhKeyIndex = cursor.getString(cursor.getColumnIndex(ACQUIRE_BRH_KEY_INDEX));
-    		String productNo = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_NO));
-    		String prdtTitle = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_TITLE));
-    		String prdtDesc = cursor.getString(cursor.getColumnIndex(ACQUIRE_PRODUCT_DESC));
-    		String openBrh = cursor.getString(cursor.getColumnIndex(ACQUIRE_DEVICE_NUM_OF_MERCH));
-    		String tabType = cursor.getString(cursor.getColumnIndex(ACQUIRE_TAB_TYPE_ID));
-    		String openBrhName = cursor.getString(cursor.getColumnIndex(ACQUIRE_INSTITUTE_NAME));
-    		acquireInfo = new AcquireInstituteBean();
-    		acquireInfo.setPaymentId(paymentId);
-    		acquireInfo.setPaymentName(paymentName);
-    		acquireInfo.setBrhKeyIndex(brhKeyIndex);
-    		acquireInfo.setProductNo(productNo);
-    		acquireInfo.setProductTitle(prdtTitle);
-    		acquireInfo.setProductDesc(prdtDesc);
-    		acquireInfo.setOpenBrh(openBrh);
-    		acquireInfo.setOpenBrhName(openBrhName);
-    		acquireInfo.setTypeId(tabType);
-    		
-    	}
-    	
-    	cursor.close();
-    	return acquireInfo;
     }
     
     public JSONArray selectAllBatchStack() {
@@ -631,20 +583,12 @@ public class CacheDB extends BaseSqlAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if (newVersion == 3) {
+			if (oldVersion == 1 && newVersion == 2) {
 				// Drop tables  
 		        db.execSQL("DROP TABLE IF EXISTS " + BATCH_PROCESSING_TABLE_NAME);
 		        db.execSQL("DROP TABLE IF EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME);
-		        db.execSQL("DROP TABLE IF EXISTS " + PAYMENT_ACTIVITY_TABLE_NAME);
 		        // Create tables  
-		        onCreate(db);
-		        
-		        //clear saved parameter preference
-		        Map<String, Object> map = new HashMap<String, Object>();
-		        map.put("payParamVersion", "UPD");
-		        map.put("pwd", "0");
-		        UtilForDataStorage.savePropertyBySharedPreferences(context,	"merchant", map);
-		        UtilForDataStorage.saveDate(context, "");
+		        onCreate(db); 
 			}
 		}
 		
@@ -725,7 +669,6 @@ public class CacheDB extends BaseSqlAdapter {
 					+ ACQUIRE_PRODUCT_DESC + " varchar, " 
 					+ ACQUIRE_DEVICE_NUM_OF_MERCH + " varchar, " 
 					+ ACQUIRE_INSTITUTE_NAME + " varchar, " 
-					+ ACQUIRE_TAB_TYPE_ID + " varchar, " 
 					+ PAYMENT_ACTIVITY_JSON + " nvarchar, " 
 					+ " CONSTRAINT PK_PAYMENT_ACTIVITY PRIMARY KEY (" + ACQUIRE_PAYMENT_ID + ")" +
 					");";

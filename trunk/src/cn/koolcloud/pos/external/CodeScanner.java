@@ -1,6 +1,6 @@
 package cn.koolcloud.pos.external;
 
-import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.wd.R;
 
 import com.google.zxing.Result;
 import com.google.zxing.client.android.IScanEvent;

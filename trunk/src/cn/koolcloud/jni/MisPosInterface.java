@@ -11,13 +11,10 @@ public class MisPosInterface {
 	public static final int TRANS_TYPE_PRE_AUTH_COMPLETE = 0x08;
 	public static final int TRANS_TYPE_GET_BALANCE = 0x12;
 	public static final int TRANS_TYPE_GET_PAN = 0x62;
-	public static final int TRANS_TYPE_DOWNLOAD_CAPK = 0x81;
-	public static final int TRANS_TYPE_DOWNLOAD_AID = 0x82;
 	
 	static {
-		System.loadLibrary("koolcloud_mispos");
 		System.loadLibrary("MisPos");
-		//System.loadLibrary("data/data/com.koolpos.demo/lib/libMisPos.so");
+		System.loadLibrary("koolcloud_mispos"); 
 	}
 	
 	/**
@@ -145,20 +142,6 @@ public class MisPosInterface {
 	public native static int getPAN(int transType);
 	
 	/**
-	 * Mispos Download CAPK
-	 * @return >= 0 : succ
-	 * 			< 0 : fail
-	 */
-	public native static int downloadCAPK();
-	
-	/**
-	 * Mispos Download AID
-	 * @return >= 0 : succ
-	 * 			< 0 : fail
-	 */
-	public native static int downloadAID();
-	
-	/**
 	 * Mispos Send Data
 	 * @param sendData : send data content
 	 * @param sendDataLen : send data length
@@ -192,13 +175,4 @@ public class MisPosInterface {
 	 * 			< 0 : fail
 	 */
 	public native static int getIso8583FieldValue(int tag, byte[] value);
-	
-	/**
-	 * Mispos Event Occure
-	 * @param misposEventType
-	 */
-	public static void misposEventOccure(int misposEventType) {
-		// get mispos callback event - misposEventOccure
-		MisPosEvent.setMisposEvent(misposEventType);
-	}
 }

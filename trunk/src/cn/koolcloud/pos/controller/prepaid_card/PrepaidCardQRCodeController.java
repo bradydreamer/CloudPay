@@ -21,12 +21,12 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.UtilFor8583;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CodeScanner;
 import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 import cn.koolcloud.pos.external.scanner.ZBarScanner;
+import cn.koolcloud.pos.wd.R;
 
 public class PrepaidCardQRCodeController extends BaseController implements
 		SoundWaveListener, CodeScannerListener, Camera.PreviewCallback {
@@ -61,7 +61,7 @@ public class PrepaidCardQRCodeController extends BaseController implements
 		func_nearfieldAccount = data.optString("nearfieldAccount");
 
 		UtilFor8583.getInstance().trans
-				.setEntryMode(ConstantUtils.ENTRY_PREPAID_COUPON_QRCODE_MODE);
+				.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
 		codeScanner = new CodeScanner();
 		codeScanner.onCreate(PrepaidCardQRCodeController.this,
 				PrepaidCardQRCodeController.this);

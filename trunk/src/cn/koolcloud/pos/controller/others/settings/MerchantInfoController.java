@@ -14,13 +14,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.ListView;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.AcquireListAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.wd.R;
 
 public class MerchantInfoController extends BaseController {
 	

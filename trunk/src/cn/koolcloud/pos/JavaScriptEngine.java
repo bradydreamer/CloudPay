@@ -145,11 +145,16 @@ public class JavaScriptEngine {
 				if (null != message.optString("callbackId")) {
 					callBackHandler = message.optString("callbackId");
 				}
-
 				if (null != message.optString("handler")) {
 					String androidHandlerName = message.optString("handler");
-					AndroidHandler.handle(androidHandlerName,
-							message.opt("params"), callBackHandler, ctx);
+					if (androidHandlerName.equals("initResult")) {
+						AppInitManager.getInstance().precessResult(
+								(JSONObject) message.opt("params"));
+						WelcomeScreen.exit();
+					} else {
+						AndroidHandler.handle(androidHandlerName,
+								message.opt("params"), callBackHandler, ctx);
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

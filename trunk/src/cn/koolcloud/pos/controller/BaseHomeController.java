@@ -1,6 +1,5 @@
 package cn.koolcloud.pos.controller;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,11 +23,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,14 +35,13 @@ import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.MyApplication;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
 import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForMoney;
+import cn.koolcloud.pos.wd.R;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
 import cn.koolcloud.printer.PrinterHelper;
-import cn.koolcloud.util.NumberUtil;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -80,9 +76,6 @@ public abstract class BaseHomeController extends BaseController {
 	private TextView cashChange = null;
 	private String paidHint = null;
 	private String sumPayableHint = null;
-
-	private boolean isPaymentClicked = false;
-	private String typeId = null;
 
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory(true).cacheOnDisc(true)
@@ -159,11 +152,11 @@ public abstract class BaseHomeController extends BaseController {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				// if ((jsonData.optString("typeId")).equals(CASHCONSUME)) {
-				// setMethods(data, cashAmount);
-				// } else {
-				setMethods(data);
-				// }
+				if ((jsonData.optString("typeId")).equals(CASHCONSUME)) {
+					setMethods(data, cashAmount);
+				} else {
+					setMethods(data);
+				}
 			}
 		} else if (layout_funcModule.equals(view)) {
 			if ("data".equals(key)) {
@@ -267,7 +260,6 @@ public abstract class BaseHomeController extends BaseController {
 		brhMchtId = mData.optString("brhMchtId");
 		brhTermId = mData.optString("brhTermId");
 		keyIndex = mData.optString("brhKeyIndex");
-		typeId = mData.optString("typeId");
 		LayoutInflater inflater = LayoutInflater.from(this);
 		ArrayList<View> viewList = new ArrayList<View>();
 		View myView = inflater.inflate(R.layout.cash_consume, null);
@@ -276,46 +268,6 @@ public abstract class BaseHomeController extends BaseController {
 		cashChange = (TextView) myView.findViewById(R.id.cash_change_amount);
 		paidHint = paidAmount.getHint().toString();
 		sumPayableHint = sumPayable.getHint().toString();
-		paidAmount.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				String paidAmountStr = paidAmount.getText().toString();
-				paidAmount.setSelection(paidAmountStr.length());
-			}
-
-		});
-		paidAmount.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				paidAmount.requestFocus();
-				String paidAmountStr = paidAmount.getText().toString();
-				paidAmount.setSelection(paidAmountStr.length());
-				return false;
-			}
-
-		});
-		sumPayable.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				String sumPayableStr = sumPayable.getText().toString();
-				sumPayable.setSelection(sumPayableStr.length());
-			}
-
-		});
-		sumPayable.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				sumPayable.requestFocus();
-				String sumPayableStr = sumPayable.getText().toString();
-				sumPayable.setSelection(sumPayableStr.length());
-				return false;
-			}
-
-		});
 		sumPayable.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -328,22 +280,22 @@ public abstract class BaseHomeController extends BaseController {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				String change = "0.00";
-
+				Float change = (float) 0.00;
 				String paidAmountStr = paidAmount.getText().toString();
 				String sumPayableStr = sumPayable.getText().toString();
-
-				sumPayable.setSelection(sumPayableStr.length());
-				Boolean needGoOn = checkAmount(sumPayableStr, sumPayable);
-				if (!needGoOn) {
-					return;
+				if (sumPayableStr.equals("")) {
+					sumPayableStr = "0.00";
 				}
 				if (paidAmountStr.equals("")) {
 					paidAmountStr = "0.00";
+					change = (float) 0.00;
+				} else {
+					change = Float.valueOf(paidAmountStr)
+							- Float.valueOf(sumPayableStr);
 				}
-				change = NumberUtil.sub(paidAmountStr, sumPayableStr);
-				changeAmountStr = change;
-				cashChange.setText(change);
+				changeAmountStr = String.valueOf(change);
+				cashChange.setText(changeAmountStr);
+
 			}
 
 			@Override
@@ -364,22 +316,21 @@ public abstract class BaseHomeController extends BaseController {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				String change = "0.00";
+				Float change = (float) 0.00;
 				String paidAmountStr = paidAmount.getText().toString();
 				String sumPayableStr = sumPayable.getText().toString();
-
-				paidAmount.setSelection(paidAmountStr.length());
-				Boolean needGoOn = checkAmount(paidAmountStr, paidAmount);
-				if (!needGoOn) {
-					return;
-				}
-
 				if (sumPayableStr.equals("")) {
 					sumPayableStr = "0.00";
 				}
-				change = NumberUtil.sub(paidAmountStr, sumPayableStr);
-				changeAmountStr = change;
-				cashChange.setText(change);
+				if (paidAmountStr.equals("")) {
+					paidAmountStr = "0.00";
+					change = (float) 0.00;
+				} else {
+					change = Float.valueOf(paidAmountStr)
+							- Float.valueOf(sumPayableStr);
+				}
+				changeAmountStr = String.valueOf(change);
+				cashChange.setText(changeAmountStr);
 			}
 
 			@Override
@@ -433,37 +384,6 @@ public abstract class BaseHomeController extends BaseController {
 			pageIndicator.setVisibility(View.VISIBLE);
 		}
 		viewPager.setAdapter(new HomePagerAdapter(viewList));
-	}
-
-	private Boolean checkAmount(String amount, EditText edit) {
-		String amountStr;
-		String[] amStr = amount.split("\\.");
-		if (amount.length() == 1 && amount.equals("0")) {
-			edit.setText("0.00");
-			return false;
-		}
-		if (amStr.length == 2) {
-			if (amStr[1].length() > 2) {
-				BigDecimal b1 = new BigDecimal(amount);
-				BigDecimal b2 = new BigDecimal("1000");
-				amountStr = String.valueOf(b1.multiply(b2).intValue());
-				edit.setText(NumberUtil.mul(amountStr, "0.01"));
-				return false;
-			} else if (amStr[1].length() == 1) {
-				BigDecimal b1 = new BigDecimal(amount);
-				BigDecimal b2 = new BigDecimal("10");
-				amountStr = String.valueOf(b1.multiply(b2).intValue());
-				edit.setText(NumberUtil.mul(amountStr, "0.01"));
-				return false;
-			} else {
-				amountStr = amount;
-				return true;
-			}
-		} else {
-			amountStr = NumberUtil.add("0.0" + amount, "0.00");
-			edit.setText(amountStr);
-			return false;
-		}
 	}
 
 	private void openCashBox() {
@@ -521,8 +441,6 @@ public abstract class BaseHomeController extends BaseController {
 				iv.setImageResource(R.drawable.logo_search_balance);
 			} else if (imageName.startsWith("logo_test")) {
 				iv.setImageResource(R.drawable.logo_test);
-			} else if (imageName.startsWith("logo_cash")) {
-				iv.setImageResource(R.drawable.logo_cash);
 			} else if (imageName.startsWith("logo_unionpay")) {
 				iv.setImageResource(R.drawable.logo_unionpay);
 			} else if (imageName.startsWith("logo_wechat")) {
@@ -541,54 +459,6 @@ public abstract class BaseHomeController extends BaseController {
 				iv.setImageResource(R.drawable.logo_xunlian);
 			} else if (imageName.startsWith("logo_payfortune")) {
 				iv.setImageResource(R.drawable.logo_payfortune);
-			} else if (imageName.startsWith("amex")) {
-				iv.setImageResource(R.drawable.amex);
-			} else if (imageName.startsWith("boc")) {
-				iv.setImageResource(R.drawable.boc);
-			} else if (imageName.startsWith("dinersclub")) {
-				iv.setImageResource(R.drawable.dinersclub);
-			} else if (imageName.startsWith("discover")) {
-				iv.setImageResource(R.drawable.discover);
-			} else if (imageName.startsWith("hsb")) {
-				iv.setImageResource(R.drawable.hsb);
-			} else if (imageName.startsWith("icbc")) {
-				iv.setImageResource(R.drawable.icbc);
-			} else if (imageName.startsWith("jcb")) {
-				iv.setImageResource(R.drawable.jcb);
-			} else if (imageName.startsWith("master")) {
-				iv.setImageResource(R.drawable.master);
-			} else if (imageName.startsWith("visa")) {
-				iv.setImageResource(R.drawable.visa);
-			} else if (imageName.startsWith("Asia-Miles")) {
-				iv.setImageResource(R.drawable.asia_miles);
-			} else if (imageName.startsWith("Caltex")) {
-				iv.setImageResource(R.drawable.caltex);
-			} else if (imageName.startsWith("Carrefour")) {
-				iv.setImageResource(R.drawable.carrefour);
-			} else if (imageName.startsWith("city'super")) {
-				iv.setImageResource(R.drawable.city_super);
-			} else if (imageName.startsWith("CNPC")) {
-				iv.setImageResource(R.drawable.cnpc);
-			} else if (imageName.startsWith("CODE")) {
-				iv.setImageResource(R.drawable.code);
-			} else if (imageName.startsWith("Dickson")) {
-				iv.setImageResource(R.drawable.dickson);
-			} else if (imageName.startsWith("Esso")) {
-				iv.setImageResource(R.drawable.esso);
-			} else if (imageName.startsWith("Harvey-Nichols")) {
-				iv.setImageResource(R.drawable.harvey_nichols);
-			} else if (imageName.startsWith("Lane-Crawford")) {
-				iv.setImageResource(R.drawable.lane_crawford);
-			} else if (imageName.startsWith("NWDS")) {
-				iv.setImageResource(R.drawable.nwds);
-			} else if (imageName.startsWith("Shell")) {
-				iv.setImageResource(R.drawable.shell);
-			} else if (imageName.startsWith("SINOPEC")) {
-				iv.setImageResource(R.drawable.sinopec);
-			} else if (imageName.startsWith("Wal-Mart")) {
-				iv.setImageResource(R.drawable.wal_mart);
-			} else if (imageName.startsWith("Wing-On")) {
-				iv.setImageResource(R.drawable.wing_on);
 			}
 		}
 	}
@@ -644,12 +514,7 @@ public abstract class BaseHomeController extends BaseController {
 						paramObj.put("misc", misc);
 					}
 
-					if (!isPaymentClicked) {
-
-						onCall("window.util.showMisposWithLoginChecked",
-								paramObj);
-						isPaymentClicked = true;
-					}
+					onCall("window.util.showMisposWithLoginChecked", paramObj);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -667,13 +532,9 @@ public abstract class BaseHomeController extends BaseController {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				onCall("window.util.showCouponWithLoginChecked", paramObj);
 			} else {
-				if (!isPaymentClicked) {
-					onCall("PayMethod.onConfirmMethod", msg);
-					isPaymentClicked = true;
-				}
+				onCall("PayMethod.onConfirmMethod", msg);
 			}
 
 			// get index no (90) from tag then using for mispos --end mod by
@@ -744,7 +605,6 @@ public abstract class BaseHomeController extends BaseController {
 			msg.put("openBrhName", openBrhName);
 			msg.put("brhMchtId", brhMchtId);
 			msg.put("brhTermId", brhTermId);
-			msg.put("typeId", typeId);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -764,8 +624,6 @@ public abstract class BaseHomeController extends BaseController {
 			paidAmount.setCursorVisible(true);
 			paidAmount.setHint("");
 		}
-
-		isPaymentClicked = false;
 		super.onResume();
 	}
 

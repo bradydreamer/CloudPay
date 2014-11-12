@@ -499,7 +499,8 @@ Pay.cancelOrderResult = function(params) {
 };
 
 Pay.cancelEnd = function() {
-	Scene.goBack("OrderDetail");
+//	Scene.goBack("OrderDetail");
+	Pay.errRestart();
 };
 
 Pay.refundOrder = function(params, callBack) {

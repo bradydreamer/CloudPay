@@ -1,5 +1,8 @@
 package cn.koolcloud.pos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,12 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.controller.HomeController;
-import cn.koolcloud.pos.controller.dialogs.PushMessageController;
-import cn.koolcloud.pos.database.CacheDB;
-import cn.koolcloud.pos.service.local.LocalService;
 import cn.koolcloud.pos.util.PushUtils;
+import cn.koolcloud.pos.wd.R;
 
 public class WelcomeScreen extends Activity {
 	protected Handler mainHandler;
@@ -21,11 +21,12 @@ public class WelcomeScreen extends Activity {
 	protected boolean hasInit;
 	protected boolean exitOnDestroy = true;
 	protected final String TAG = "WelcomeScreen";
-	protected boolean isExternalOrder = false;
+	public static List<Activity> activityList = new ArrayList<Activity>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activityList.add(this);
         
         Log.d(TAG, this.toString() + "onCreate");
         context = this;
@@ -35,17 +36,7 @@ public class WelcomeScreen extends Activity {
         PushUtils.logStringCache = PushUtils.getLogText(getApplicationContext());
         PushUtils.loginBaiduCloud(getApplicationContext());
         
-		//start Local Service but don't execute checking
-        if (!isExternalOrder) {
-        	Intent bindIntent = new Intent(this, LocalService.class);
-        	bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, false);
-        	startService(bindIntent);
-        }
-        
         this.setContentView();
-        
-        //make CacheDB go upgrade
-        CacheDB.getInstance(WelcomeScreen.this).getPaymentsCount();
     }
     
     protected void setContentView() {
@@ -90,9 +81,7 @@ public class WelcomeScreen extends Activity {
 		intent.setClass(context, HomeController.class);
 //		intent.setClass(context, PayExScreen.class);
 //		intent.putExtra(PayExScreen.ACTION, PayExScreen.ACTION_MERCH_INFO);
-		//fix appstore can't open smartpay (SMTPS-113) --start fixed by Teddy on 26th September
-		intent.setFlags(/*Intent.FLAG_ACTIVITY_CLEAR_TOP|*/Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		//fix appstore can't open smartpay (SMTPS-113) --end fixed by Teddy on 26th September
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivityForResult(intent, ClientEngine.engineInstance().mRequestCode);
 	}
 	
@@ -107,6 +96,15 @@ public class WelcomeScreen extends Activity {
 		Log.d(TAG, this.toString() + " onStop");
 		super.onStop();
 	}
+	
+	public static void exit() {
+		if (activityList != null && activityList.size() > 0) {
+			for (int i = 0; i < activityList.size(); i++) {
+				Activity activity = activityList.get(i);
+				activity.finish();
+			}
+		}
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -114,12 +112,6 @@ public class WelcomeScreen extends Activity {
 		super.onDestroy();
 		if(exitOnDestroy){
 			System.exit(0);
-		}
-		//stop Local service
-		if (!isExternalOrder) {
-			
-			Intent bindIntent = new Intent(this, LocalService.class);  
-			stopService(bindIntent);  
 		}
 	}
 }

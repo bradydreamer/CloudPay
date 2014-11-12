@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.koolcloud.pos"
-    android:versionCode="38"
-    android:versionName="3.0.1" >
+    package="cn.koolcloud.pos.wd"
+    android:versionCode="37"
+    android:versionName="3.0.0" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -15,7 +15,8 @@
         
  	</supports-screens>
     <uses-permission android:name="android.permission.GET_TASKS" />
-    
+    <uses-permission android:name="com.koolyun.coupon.permission.COUPON" />
+  
     <!-- Baidu push services -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -74,6 +75,39 @@
             android:theme="@style/ExTheme" >
             <intent-filter>
                 <action android:name="cn.koolcloud.pos.PayExScreen" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.PrintSummaryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/ExTheme" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.controller.PrintSummaryActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.GetSummaryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/ExTheme" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.controller.GetSummaryActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.AppInitScreen"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/ExTheme" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.AppInitScreen" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -288,14 +322,6 @@
                 android:value=".controller.BaseController" />
         </activity>
         <activity
-            android:name="cn.koolcloud.pos.controller.pay.CashConsumeController"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
-        </activity>
-        <activity
             android:name="cn.koolcloud.pos.controller.PinPadController"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape" >
@@ -376,23 +402,6 @@
                 android:value=".controller.BaseController" />
         </activity>
         <activity
-            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionSummaryController"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
-        </activity>
-        <activity
-            android:name="cn.koolcloud.pos.controller.transfer.SuperTransferController"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateVisible|stateAlwaysHidden" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
-        </activity>
-        <activity
             android:name="cn.koolcloud.pos.controller.dialogs.PushMessageController"
             android:theme="@style/dialog" android:launchMode="singleTop"  />
         <activity
@@ -400,11 +409,7 @@
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog" android:theme="@style/dialog"/>
         <activity
-			android:name="cn.koolcloud.pos.controller.dialogs.ServiceCheckingDevicesDialog" android:theme="@style/dialog"/>
-        <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.CheckingUpdateDialog" android:theme="@style/dialog"/>
-        <activity
-			android:name="cn.koolcloud.pos.controller.dialogs.ServiceCheckingUpdateDialog" android:theme="@style/dialog"/>
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.AlertCommonDialog" android:theme="@style/dialog"/>
         <!-- <activity
@@ -441,7 +446,17 @@
                 <action android:name="cn.koolcloud.pos.service.ISecureService" />
             </intent-filter>
         </service>
-        <service android:name="cn.koolcloud.pos.service.local.LocalService" />
+        
+        <service
+            android:name="cn.koolcloud.pos.service.RunBackgroundService"
+            android:exported="true"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.service.RunBackgroundService" />
+            </intent-filter>
+        </service>
+        
+        
         
          <!-- Baidu push custom receiver -->
         <receiver android:name="cn.koolcloud.pos.receiver.MyPushMessageReceiver">

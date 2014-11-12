@@ -1,5 +1,8 @@
 package cn.koolcloud.pos;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,15 +10,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.ValueCallback;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.service.SmartIposRunBackground;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.pos.wd.R;
 
 public class PayExScreen extends WelcomeScreen {
 	private PayInfo payInfo;
@@ -30,6 +38,9 @@ public class PayExScreen extends WelcomeScreen {
 	public final static String ACTION_LOGIN = "login";
 	public final static String ACTION_LOGOUT = "logout";
 	public final static String ACTION_REVERSE = "reverse";
+	public final static String ACTION_INIT = "appInit";
+	public final static String TAG = "PayExScreen";
+	private SmartIposRunBackground sRunbackService;
 
 	private BaseController currentController;
 
@@ -37,11 +48,38 @@ public class PayExScreen extends WelcomeScreen {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.i(TAG, "onCreate----------------------");
+		activityList.add(this);
+		initData();
+		super.onCreate(savedInstanceState);
+
+		if (ACTION_INIT.equalsIgnoreCase(action)) {
+			if (!hasInit) {
+				mainHandler.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						initApp();
+						startScene();
+					}
+				}, 1500);
+
+				hasInit = true;
+			}
+		}
+		this.exitOnDestroy = false;
+	}
+
+	private void initData() {
 		Intent intent = getIntent();
 		action = intent.getStringExtra(ACTION);
 		orderNo = intent.getStringExtra("orderNo");
 
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
+			// ActivityManager am = (ActivityManager) this
+			// .getSystemService(ACTIVITY_SERVICE);
+			// am.moveTaskToFront(this.getTaskId(),
+			// ActivityManager.MOVE_TASK_NO_USER_ACTION); 将后台的运行的Task移到前台。
 			String pMethod = intent.getStringExtra("pMethod");
 			String transAmount = intent.getStringExtra("transAmount");
 			String openBrh = intent.getStringExtra("acquId");
@@ -65,18 +103,13 @@ public class PayExScreen extends WelcomeScreen {
 			payInfo.txnId = txnId;
 			payInfo.packageName = packageName;
 			((MyApplication) getApplication()).setPkgName(packageName);
-
-		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
-
-		} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
-
+		} else if (ACTION_INIT.equalsIgnoreCase(action)) {
+			moveTaskToBack(true);
+			Intent it = new Intent();
+			it.setAction(AppInitScreen.STARTSERVICE);
+			this.bindService(it, mServiceConnection, Service.BIND_AUTO_CREATE);
 		}
-		
-		//set this is external order
-		isExternalOrder = true;
-		super.onCreate(savedInstanceState);
 
-		this.exitOnDestroy = false;
 	}
 
 	protected void setContentView() {
@@ -128,10 +161,12 @@ public class PayExScreen extends WelcomeScreen {
 							startReverse();
 						}
 					});
-		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
-			startLogin();
-		} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
-			startLogout();
+		} else if (ACTION_INIT.equalsIgnoreCase(action)) {
+			AppInitManager aim = AppInitManager.getInstance();
+			if (sRunbackService != null) {
+				aim.Init(sRunbackService, this);
+				aim.autoLogin();
+			}
 		}
 	}
 
@@ -156,10 +191,6 @@ public class PayExScreen extends WelcomeScreen {
 					} else if (ACTION_REVERSE.equalsIgnoreCase(action)) {
 						// endReverse(result);
 						endPay(result);
-					} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
-						endLogin(result);
-					} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
-						endLogout(result);
 					}
 					ClientEngine.engineInstance().getMerchService()
 							.endCallPayEx();
@@ -182,9 +213,49 @@ public class PayExScreen extends WelcomeScreen {
 	}
 
 	@Override
+	protected void onStart() {
+		Log.i(TAG, "onStart----------------------");
+		if (ACTION_INIT.equalsIgnoreCase(action)) {
+			moveTaskToBack(true);
+		}
+		super.onStart();
+	}
+
+	@Override
+	protected void onRestart() {
+		Log.i(TAG, "onRestart----------------------");
+		initData();
+		Log.i(TAG, "onRestart------action=" + action);
+		if (ACTION_INIT.equalsIgnoreCase(action) && sRunbackService != null) {
+			AppInitManager aim = AppInitManager.getInstance();
+			aim.Init(sRunbackService, this);
+			aim.autoLogin();
+		}
+		// TODO Auto-generated method stub
+		super.onRestart();
+	}
+
+	@Override
+	protected void onResume() {
+		Log.i(TAG, "onResume----------------------");
+		// TODO Auto-generated method stub
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		Log.i(TAG, "onPause----------------------");
+		// TODO Auto-generated method stub
+		super.onPause();
+	}
+
+	@Override
 	protected void onDestroy() {
+		Log.i(TAG, "onDestroy----------------");
+		if (ACTION_INIT.equalsIgnoreCase(action)) {
+			this.unbindService(mServiceConnection);
+		}
 		super.onDestroy();
-		Log.i(TAG, "onDestroy()");
 	}
 
 	public void initPay(String pMethod, String transAmount, String openBrh,
@@ -240,23 +311,40 @@ public class PayExScreen extends WelcomeScreen {
 		} catch (Exception e) {
 
 		}
-		if (payInfo.pwd != null && payInfo.userName != null) {
-			Map<String, Object> newMerchantMap = new HashMap<String, Object>();
-			Map<String, ?> map = UtilForDataStorage
-					.readPropertyBySharedPreferences(
-							MyApplication.getContext(), "merchant");
-			newMerchantMap.put("pwd", "_TDS_" + payInfo.pwd);
-			newMerchantMap.put("ssn", android.os.Build.SERIAL);
-			if (null != map.get("merchId")) {
-				newMerchantMap.put("merchId", map.get("merchId").toString());
-			}
-			newMerchantMap.put("operator", payInfo.userName);
-			UtilForDataStorage.savePropertyBySharedPreferences(
-					MyApplication.getContext(), "merchant", newMerchantMap);
-		}
-
+		initLoginData();
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
 		js.callJsHandler("External.onPay", msg);
+	}
+
+	private void initLoginData() {
+		Map<String, Object> newMerchantMap = new HashMap<String, Object>();
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
+		String pwd = payInfo.pwd;
+		String ssn = android.os.Build.SERIAL;
+		String merchId = "999290053110041";
+		String operator = payInfo.userName;
+		if (pwd == null || pwd.equals("")) {
+			pwd = "_TDS_" + stringToMD5("123456");
+		} else {
+			pwd = "_TDS_" + pwd;
+		}
+		if (map.get("merchId") == null) {
+			merchId = "999290053110041";
+		} else {
+			merchId = map.get("merchId").toString();
+		}
+		if (operator == null || operator.equals("") || operator.equals("null")) {
+			operator = "wan";
+		}
+
+		newMerchantMap.put("pwd", pwd);
+		newMerchantMap.put("ssn", ssn);
+		newMerchantMap.put("merchId", merchId);
+		newMerchantMap.put("operator", operator);
+		UtilForDataStorage.savePropertyBySharedPreferences(
+				MyApplication.getContext(), "merchant", newMerchantMap);
 	}
 
 	private void endPay(JSONObject result) {
@@ -325,7 +413,7 @@ public class PayExScreen extends WelcomeScreen {
 							MyApplication.getContext(), "merchant");
 			operatorName = String.valueOf(map.get("operator"));
 
-//			i.putExtra(ACTION, ACTION_PAY);
+			// i.putExtra(ACTION, ACTION_PAY);
 			i.putExtra(ACTION, action);
 			i.putExtra("operatorName", operatorName);
 			i.putExtra("totalAmount", totalAmount);
@@ -342,6 +430,30 @@ public class PayExScreen extends WelcomeScreen {
 
 			setResult(RESULT_OK, i);
 		}
+	}
+
+	private String stringToMD5(String string) {
+		byte[] hash;
+
+		try {
+			hash = MessageDigest.getInstance("MD5").digest(
+					string.getBytes("UTF-8"));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		StringBuilder hex = new StringBuilder(hash.length * 2);
+		for (byte b : hash) {
+			if ((b & 0xFF) < 0x10)
+				hex.append("0");
+			hex.append(Integer.toHexString(b & 0xFF));
+		}
+
+		return hex.toString();
 	}
 
 	private void startReverse() {
@@ -368,7 +480,7 @@ public class PayExScreen extends WelcomeScreen {
 		} catch (Exception e) {
 
 		}
-
+		initLoginData();
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
 		js.loadJs(getString(R.string.controllerJSName_OrderDetail));
 		js.callJsHandler("External.startReverse", msg);
@@ -390,36 +502,22 @@ public class PayExScreen extends WelcomeScreen {
 		setResult(RESULT_OK, intent);
 	}
 
-	private void startLogin() {
-		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.callJsHandler("External.onLogin", null);
-	}
+	ServiceConnection mServiceConnection = new ServiceConnection() {
 
-	private void endLogin(JSONObject result) {
-		Intent i = new Intent();
-		setResult(RESULT_OK, null);
-	}
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			// TODO Auto-generated method stub
+			sRunbackService = SmartIposRunBackground.Stub.asInterface(service);
 
-	private void startLogout() {
-		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
-		js.callJsHandler("External.onLogout", null,
-				new ValueCallback<String>() {
+		}
 
-					@Override
-					public void onReceiveValue(String value) {
-						try {
-							endLogout(new JSONObject(value));
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-					}
-				});
-	}
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			// TODO Auto-generated method stub
 
-	private void endLogout(JSONObject result) {
-		Intent i = new Intent();
-		setResult(RESULT_OK, null);
-	}
+		}
+
+	};
 
 	private class PayInfo {
 		public String pMethod;

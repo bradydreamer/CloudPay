@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
+import cn.koolcloud.pos.wd.R;
 
 public class ModifyPWDController extends BaseController {
 

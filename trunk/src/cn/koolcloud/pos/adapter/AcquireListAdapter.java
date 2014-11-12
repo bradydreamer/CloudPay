@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
+import cn.koolcloud.pos.wd.R;
 
 public class AcquireListAdapter extends BaseAdapter {
 

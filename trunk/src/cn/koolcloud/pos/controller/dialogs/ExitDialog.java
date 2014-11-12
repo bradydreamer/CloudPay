@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.wd.R;
 
 public class ExitDialog extends BaseHomeController implements View.OnClickListener {
 

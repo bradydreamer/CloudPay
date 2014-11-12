@@ -1,14 +1,18 @@
 package cn.koolcloud.pos.service;
 
+import cn.koolcloud.pos.service.ISecureService;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 
 public class SecureService extends IntentService {
 	protected final static String TAG = "SecureService";
+	
+	public final static String ACTION = "ex_action";
 	
 	private SecureInfo secureInfo;
 	private String userInfo;
@@ -51,7 +55,8 @@ public class SecureService extends IntentService {
 	}
 	
 	ISecureService.Stub secureStub = new ISecureService.Stub() {
-
+		ICallBack mCallBack;
+		
 		@Override
 		public SecureInfo getSecureInfo() throws RemoteException {
 			if(secureInfo == null){
@@ -73,6 +78,37 @@ public class SecureService extends IntentService {
 		@Override
 		public void setUserInfo(String ui) throws RemoteException {
 			userInfo = ui;
+		}
+		
+		@Override
+		public boolean onTransact(int code, Parcel data, Parcel reply, int flags)
+				throws RemoteException {
+			String packageName = "";
+			String[] packages = SecureService.this.getPackageManager().getPackagesForUid(getCallingUid());
+			if (packages != null && packages.length > 0) {
+				packageName = packages[0];
+				Log.i(TAG, "onTransact  service----------------------");
+				Log.i(TAG, "onTransact  packageName=" + packageName);
+			}
+			return super.onTransact(code, data, reply, flags);
+		}
+		
+		@Override
+		public void getSummary(ICallBack iCallBack) throws RemoteException {
+			// TODO Auto-generated method stub
+			mCallBack = iCallBack;
+			Log.w("getSummary", "--------------------------getSummary");
+			Intent intent = new Intent();
+			intent.setAction("cn.koolcloud.pos.controller.GetSummaryActivity");
+			intent.putExtra(ACTION, "getSummary");
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+		}
+		
+		public void getSummaryCallBack(String summary) throws RemoteException {
+			Log.i(TAG, "getSummaryCallBack-----------result----------" + summary);
+			mCallBack.summaryDataCallBack(summary);
 		}
 	};
 	

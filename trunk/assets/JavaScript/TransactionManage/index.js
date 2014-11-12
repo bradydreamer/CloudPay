@@ -8,18 +8,20 @@
 
 	function handleResFromReqRecord(msg) {
 		var recordDisplayedList = msg.recordList;
-		if(recordDisplayedList instanceof Array){
+		if (recordDisplayedList instanceof Array) {
 			for (var i = 0, j = recordDisplayedList.length; i < j; i++) {
 				var recordData = recordDisplayedList[i];
 				handleRecordData(recordData);
 			};
-		}else{
+		} else {
 			handleRecordData(recordDisplayedList);
 			recordDisplayedList.confirm = "TransactionManageIndex.gotoIndex";
 			return;
 		}
 		var pageSize = msg.pageSize == null ? 20 : msg.pageSize;
-		var totalSize = msg.totalSize == null ? recordDisplayedList.length : msg.totalSize;
+		var totalSize = msg.totalSize == null
+				? recordDisplayedList.length
+				: msg.totalSize;
 		var pageNo = req_loadMore.pageNo;
 
 		var totalPages;
@@ -32,54 +34,47 @@
 		req_loadMore.pageNo = req_loadMore.pageNo + 1;
 
 		var hasMore = (parseInt(pageNo) < parseInt("" + totalPages));
-		/*var params = {
-			hasMore : hasMore,
-			recordList : recordDisplayedList,
-			start_date : msg.start_date,
-			end_date : msg.end_date
-		};*/
+		/*
+		 * var params = { hasMore : hasMore, recordList : recordDisplayedList,
+		 * start_date : msg.start_date, end_date : msg.end_date };
+		 */
 		var params = {
 			hasMore : hasMore,
 			recordList : recordDisplayedList
 		};
-		//pass start date and end date to order details page --start mod by Teddy on 25th July
-		if ((null != window.TransactionManageIndex.params &&
-			undefined != window.TransactionManageIndex.params) &&
-			(null != window.TransactionManageIndex.params.startDate && 
-				null != window.TransactionManageIndex.params.endDate)) {
+		// pass start date and end date to order details page --start mod by
+		// Teddy on 25th July
+		if ((null != window.TransactionManageIndex.params && undefined != window.TransactionManageIndex.params)
+				&& (null != window.TransactionManageIndex.params.startDate && null != window.TransactionManageIndex.params.endDate)) {
 			params.start_date = window.TransactionManageIndex.params.startDate;
 			params.end_date = window.TransactionManageIndex.params.endDate;
 		} else {
 			params.start_date = msg.start_date;
 			params.end_date = msg.end_date;
 		}
-		//pass start date and end date to order details page --end mod by Teddy on 25th July
+		// pass start date and end date to order details page --end mod by Teddy
+		// on 25th July
 		if (window.TransactionManageIndex.refresh !== undefined) {
-			//refresh consumption data ListView with new data --start mod by Teddy on 29th September
-			/*params.shouldRemoveCurCtrl = true;
-			Scene.showScene("ConsumptionRecord", "消费记录", params);*/
-			var propertyList = [{
-					name : "lv_record",
-					key : "addList",
-					value : params
-				}];
-			Scene.setProperty("ConsumptionRecord", propertyList);
-			//refresh consumption data ListView with new data --end mod by Teddy on 29th September
+			params.shouldRemoveCurCtrl = true;
+			Scene.showScene("ConsumptionRecord", "消费记录", params);
 		} else {
-			
+
 			if (1 == pageNo) {
-				/*if (recordDisplayedList.length == 1) {
-					recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
-					Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
-				} else {*/
-					Scene.showScene("ConsumptionRecord", "", params);
-				//};
+				/*
+				 * if (recordDisplayedList.length == 1) {
+				 * recordDisplayedList[0].confirm =
+				 * "TransactionManageIndex.gotoIndex";
+				 * Scene.showScene("OrderDetail", "", recordDisplayedList[0]); }
+				 * else {
+				 */
+				Scene.showScene("ConsumptionRecord", "", params);
+				// };
 			} else {
 				var propertyList = [{
-					name : "lv_record",
-					key : "addList",
-					value : params
-				}];
+							name : "lv_record",
+							key : "addList",
+							value : params
+						}];
 				Scene.setProperty("ConsumptionRecord", propertyList);
 			};
 		}
@@ -87,11 +82,12 @@
 
 	function handleRecordData(params) {
 
-		var transTime = ""+params.transTime;	
+		var transTime = "" + params.transTime;
 		var tDate = transTime.substring(0, 8);
 		var tTime = transTime.substring(8);
 
-		tTime = tTime.substring(0, 2) + ":" + tTime.substring(2, 4) + ":" + tTime.substring(4);
+		tTime = tTime.substring(0, 2) + ":" + tTime.substring(2, 4) + ":"
+				+ tTime.substring(4);
 
 		params.tDate = tDate;
 		params.tTime = tTime;
@@ -111,14 +107,14 @@
 
 	function getTransTypeDesc(transType) {
 		// 交易类型
-		// 1021 	消费
-		// 3021 	消费撤销
-		// 3051 	退货
-		// 1011 	预授权
-		// 3011 	预授权撤销
-		// 1031 	预授权完成联机
-		// 3031 	预授权完成联机撤销
-		// 1091 	预授权完成离线
+		// 1021 消费
+		// 3021 消费撤销
+		// 3051 退货
+		// 1011 预授权
+		// 3011 预授权撤销
+		// 1031 预授权完成联机
+		// 3031 预授权完成联机撤销
+		// 1091 预授权完成离线
 
 		var transTypeDesc = "";
 		if (transType == "1021") {
@@ -137,20 +133,19 @@
 			transTypeDesc = "预授权完成联机撤销";
 		} else if (transType == "1091") {
 			transTypeDesc = "预授权完成离线";
-		}
-		;
+		};
 		return transTypeDesc;
 	}
 
 	function getOrderStateDesc(orderState) {
-		// 		订单状态
-		// 0	成功
-		// 1	失败
-		// 2	已冲正
-		// 3	已撤销
-		// 4	预授权已完成
-		// 5 	未知
-		// 9	超时
+		// 订单状态
+		// 0 成功
+		// 1 失败
+		// 2 已冲正
+		// 3 已撤销
+		// 4 预授权已完成
+		// 5 未知
+		// 9 超时
 
 		var orderStateDesc = "";
 		if (orderState == "0") {
@@ -167,8 +162,7 @@
 			orderStateDesc = "交易中断";
 		} else if (orderState == "9") {
 			orderStateDesc = "超时";
-		}
-		;
+		};
 		return orderStateDesc;
 	}
 
@@ -180,7 +174,7 @@
 			"pageNo" : 1,
 			"pageSize" : 20,
 			"refNo" : refNo,
-			"paymentId": paymentId
+			"paymentId" : paymentId
 		};
 		req_loadMore = req;
 		singleResearchTag = true;
@@ -204,46 +198,22 @@
 		}
 		req_loadMore = req;
 
-		/*if (req.startDate != null) {
-			Net.connect("merchant/iposHistoryRecordList", req, handleResFromReqRecord);
-		} else {
-			Net.connect("merchant/iposCurrentRecordList", req, handleResFromReqRecord);
-		}*/
+		/*
+		 * if (req.startDate != null) {
+		 * Net.connect("merchant/iposHistoryRecordList", req,
+		 * handleResFromReqRecord); } else {
+		 * Net.connect("merchant/iposCurrentRecordList", req,
+		 * handleResFromReqRecord); }
+		 */
 		singleResearchTag = false;
 		Net.connect("msc/txn/page/query", req, handleResFromReqRecord);
 
 	}
 
-	function gotoGetConsumptionSummary(){
-		var summaryData;
-		var req = {
-
-			};		
-		Scene.alert("JSLOG,gotoGetConsumptionSummary,before connect.");
-		Net.connect("msc/txn/statistic", req, afterGetSummary);
-		
-		function afterGetSummary(params){
-			if("0" == params.responseCode){
-				Scene.alert("JSLOG,afterGetSummary,params=" + JSON.stringify(params));
-				summaryData = params;
-				RMS.read("merchant", afterGetMerchantInfo);
-			}else{
-				Scene.alert(params.errorMsg);
-			}
-		}
-		function afterGetMerchantInfo(info){
-			summaryData.merchName = info.merchName;
-			summaryData.merchId = window.user.merchId;
-			summaryData.machineId = window.user.machineId;
-			Scene.alert("JSLOG,afterGetSummary,summaryData=" + JSON.stringify(summaryData));
-			Scene.showScene("ConsumptionSummary",null,summaryData);
-		}		
-	}
-	
 	function onConsumptionRecord() {
-		//request tag
+		// request tag
 		window.TransactionManageIndex.refresh = undefined;
-		//delete global variable date object
+		// delete global variable date object
 		window.TransactionManageIndex.params = undefined;
 		window.util.exeActionWithLoginChecked(gotoConsumptionRecord);
 	}
@@ -264,39 +234,90 @@
 		Scene.goBack("TransactionManageIndex");
 	}
 
-	function gotoConsumptionSummary(){
-		window.util.exeActionWithLoginChecked(gotoGetConsumptionSummary);
-	}
-
 	function refreshResearch() {
-		//clear old data first and then refresh ListView --start mod by Teddy on 29th September
-		var propertyList = [{
-					name : "lv_record",
-					key : "updateList",
-					value : params
-				}];
-		Scene.setProperty("ConsumptionRecord", propertyList);
-		//clear old data first and then refresh ListView --end mod by Teddy on 29th September
-		
 		window.TransactionManageIndex.refresh = true;
-	  	if (window.TransactionManageIndex.params === undefined || window.TransactionManageIndex.params === "") {
-	  		//delete global variable date object
+		if (window.TransactionManageIndex.params === undefined
+				|| window.TransactionManageIndex.params === "") {
+			// delete global variable date object
 			window.TransactionManageIndex.params = undefined;
-			if(singleResearchTag == false){
+			if (singleResearchTag == false) {
 				window.util.exeActionWithLoginChecked(gotoConsumptionRecord);
-			}else{
+			} else {
 				var req = {
-					"id": ConsumptionData.dataForPayment.rrn,
-					"paymentId": ConsumptionData.dataForPayment.paymentId,
+					"id" : ConsumptionData.dataForPayment.rrn,
+					"paymentId" : ConsumptionData.dataForPayment.paymentId
+					,
 				}
 				var jsonStr = JSON.stringify(req);
-				var params = jsonStr.replace(/"([^"]*)"/g,"\"$1\"");
+				var params = jsonStr.replace(/"([^"]*)"/g, "\"$1\"");
 				gotoSingleRecord(params);
 			}
-	  	} else {
-	  		var param = window.TransactionManageIndex.params;
-	  		gotoConsumptionRecord(param);
-	  	}
+		} else {
+			var param = window.TransactionManageIndex.params;
+			gotoConsumptionRecord(param);
+		}
+	}
+
+	function startPrintSummary() {
+		window.ConsumptionData.resetConsumptionData();
+		ConsumptionData.dataForPayment.isExternalOrder = true;
+		window.util.exeActionWithLoginChecked(function() {
+			gotoGetConsumptionSummary();
+		}, true);
+	}
+
+	function gotoGetConsumptionSummary() {
+		var summaryData;
+		var req = {
+
+		};
+		Scene.alert("JSLOG,gotoGetConsumptionSummary,before connect.");
+		Net.connect("msc/txn/statistic", req, afterGetSummary, true);
+
+		function afterGetSummary(params) {
+			Scene.alert("JSLOG,afterGetSummary,params=" + JSON.stringify(params));
+			/*summaryData = params;
+			RMS.read("merchant", afterGetMerchantInfo);*/
+			if (params.responseCode) {
+				summaryData = params;
+				RMS.read("merchant", afterGetMerchantInfo);
+			} else {
+				if (ConsumptionData.dataForPayment.summaryType == "getData") {
+					window.AppInit.summaryCallBack(params);
+				} else {
+					Scene.alert(params.errorMsg);
+				}
+			}
+		}
+		function afterGetMerchantInfo(info) {
+			summaryData.merchName = info.merchName;
+			summaryData.merchId = info.merchId;
+			summaryData.machineId = info.machineId;
+			summaryData.printType = "0001";
+			Scene.alert("JSLOG,afterGetSummary, summaryData=" + JSON.stringify(summaryData));
+			if (ConsumptionData.dataForPayment.isExternalOrder) {
+				if (ConsumptionData.dataForPayment.summaryType == "getData") {
+					window.AppInit.summaryCallBack(summaryData);
+				} else {
+				
+					setTimeout(function() {
+						window.posPrint.printData(summaryData);
+					}, 300);
+				}
+			} else {
+//				Scene.showScene("ConsumptionSummary", null, summaryData);
+			}
+		}
+	}
+	
+	function getSummary() {
+	
+		window.ConsumptionData.resetConsumptionData();
+		ConsumptionData.dataForPayment.isExternalOrder = true;
+		ConsumptionData.dataForPayment.summaryType = "getData";
+		window.util.exeActionWithLoginChecked(function() {
+			gotoGetConsumptionSummary();
+		}, true);
 	}
 
 	window.TransactionManageIndex = {
@@ -305,11 +326,12 @@
 		"onDelVoucherRecordSearch" : onDelVoucherRecordSearch,
 		"onSingleRecordSearch" : onSingleRecordSearch,
 		"gotoConsumptionRecord" : gotoConsumptionRecord,
-		"gotoConsumptionSummary" : gotoConsumptionSummary,
 		"gotoSingleRecord" : gotoSingleRecord,
+		"gotoGetConsumptionSummary" : gotoGetConsumptionSummary,
+		"startPrintSummary" : startPrintSummary,
+		"getSummary" : getSummary,
 		"gotoIndex" : gotoIndex,
 		"refreshResearch" : refreshResearch
-	}; 
+	};
 
-
-})(); 
+})();

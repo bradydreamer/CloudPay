@@ -16,9 +16,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.PushMessageController;
 import cn.koolcloud.pos.util.PushUtils;
+import cn.koolcloud.pos.wd.R;
 
 import com.baidu.frontia.api.FrontiaPushMessageReceiver;
 

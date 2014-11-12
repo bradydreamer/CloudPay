@@ -1,4 +1,4 @@
-package cn.koolcloud.printer;
+package cn.koolcloud.printer.exception;
 
 public class PrinterException extends Exception {
 

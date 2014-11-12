@@ -18,10 +18,10 @@ import android.net.Uri;
 import android.util.Log;
 import cn.koolcloud.APDefine;
 import cn.koolcloud.pos.ClientEngine;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.secure.SecureEngine;
 import cn.koolcloud.pos.service.SecureInfo;
 import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.wd.R;
 
 public class NetEngine {
 

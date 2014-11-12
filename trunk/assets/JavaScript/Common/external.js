@@ -29,12 +29,12 @@ External.startReverseAfterLogin = function(data) {
 		var transTime = reverseData.transTime;
 		reverseData.formatedTransDate = transTime.substring(0,4) + "," + transTime.substring(4,6) + "," + transTime.substring(6,8);
 				
-		// window.OrderDetail.onCancel(JSON.stringify(reverseData));
 		handleRecordData(reverseData);
 		// reverseData.confirm = "window.External.goBack";
 		reverseData.confirm = "window.Pay.restart";
 		reverseData.isExternalOrder = ConsumptionData.dataForPayment.isExternalOrder;
-		Scene.showScene("OrderDetail", "", reverseData);
+		window.OrderDetail.onCancel(JSON.stringify(reverseData));
+//		Scene.showScene("OrderDetail", "", reverseData);
 	}
 	
 	function handleRecordData(params) {
@@ -166,10 +166,9 @@ External.onPay = function(data) {
 	ConsumptionData.dataForPayment.packageName = packageName;
 	ConsumptionData.dataForPayment.orderNo = orderNo;
 	ConsumptionData.dataForPayment.orderDesc = orderDesc;
-	params.isExternalOrder = true;
 
 	if (params.openBrh == null || params.openBrh == "") {
-		Scene.showScene("Home", "", params);
+		Scene.showScene("Home", "");
 	} else {
 		updateTransInfo();
 	};
@@ -219,7 +218,7 @@ External.onPay = function(data) {
 			}
 			
 		} else {
-			Scene.showScene("Home", "", params);
+			Scene.showScene("Home", "");
 		};
 	}
 

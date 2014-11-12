@@ -9,7 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import cn.koolcloud.interfaces.OrderHeaderInterface;
-import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.wd.R;
 
 public class ContentHeader extends LinearLayout implements OnClickListener {
 	/** Column Titles */

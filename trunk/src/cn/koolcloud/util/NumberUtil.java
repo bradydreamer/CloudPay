@@ -1,7 +1,5 @@
 package cn.koolcloud.util;
 
-import java.math.BigDecimal;
-
 public class NumberUtil {
 	public NumberUtil() {
 	}
@@ -542,99 +540,5 @@ public class NumberUtil {
 			tmp_num = tmp_num >> 8;
 		}
 		return byte4;
-	}
-
-	/**
-	 * 提供精确的加法运算。
-	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
-	 * @return 两个参数的和
-	 */
-
-	public static float add(float v1, float v2) {
-		BigDecimal b1 = new BigDecimal(Float.toString(v1));
-		BigDecimal b2 = new BigDecimal(Float.toString(v2));
-		return b1.add(b2).floatValue();
-	}
-
-	/**
-	 * 提供精确的减法运算。
-	 * 
-	 * @param v1
-	 *            被减数
-	 * @param v2
-	 *            减数
-	 * @return 两个参数的差
-	 */
-
-	public static float sub(float v1, float v2) {
-		BigDecimal b1 = new BigDecimal(Float.toString(v1));
-		BigDecimal b2 = new BigDecimal(Float.toString(v2));
-		return b1.subtract(b2).floatValue();
-	}
-
-	/**
-	 * 提供精确的乘法运算。
-	 * 
-	 * @param v1
-	 *            被乘数
-	 * @param v2
-	 *            乘数
-	 * @return 两个参数的积
-	 */
-
-	public static float mul(float v1, float v2) {
-		BigDecimal b1 = new BigDecimal(Float.toString(v1));
-		BigDecimal b2 = new BigDecimal(Float.toString(v2));
-		return b1.multiply(b2).floatValue();
-	}
-
-	/**
-	 * 字符串型符点数相加
-	 * 
-	 * @param v1
-	 *            被加数字符串
-	 * @param v2
-	 *            加数字符串
-	 * @return 两个参数的和
-	 */
-	public static String add(String v1, String v2) {
-		BigDecimal b1 = new BigDecimal(v1);
-		BigDecimal b2 = new BigDecimal(v2);
-		return b1.add(b2).toString();
-	}
-
-	/**
-	 * 字符串型符点数减法运算。
-	 * 
-	 * @param v1
-	 *            被减数字符串
-	 * @param v2
-	 *            减数字符串
-	 * @return 两个参数的差
-	 */
-
-	public static String sub(String v1, String v2) {
-		BigDecimal b1 = new BigDecimal(v1);
-		BigDecimal b2 = new BigDecimal(v2);
-		return b1.subtract(b2).toString();
-	}
-
-	/**
-	 * 字符串型符点数相乘
-	 * 
-	 * @param v1
-	 *            被乘数字符串
-	 * @param v2
-	 *            乘数字符串
-	 * @return 两个参数的积
-	 */
-	public static String mul(String v1, String v2) {
-		BigDecimal b1 = new BigDecimal(v1);
-		BigDecimal b2 = new BigDecimal(v2);
-		return b1.multiply(b2).toString();
 	}
 }

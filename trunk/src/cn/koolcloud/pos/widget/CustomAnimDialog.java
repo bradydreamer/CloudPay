@@ -1,5 +1,10 @@
 package cn.koolcloud.pos.widget;
 
+import cn.koolcloud.pos.util.UtilForDensity;
+import cn.koolcloud.pos.util.UtilForGraghic;
+import cn.koolcloud.pos.wd.R;
+import cn.koolcloud.pos.AndroidHandler;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,10 +20,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import cn.koolcloud.pos.AndroidHandler;
-import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.util.UtilForDensity;
-import cn.koolcloud.pos.util.UtilForGraghic;
 
 public class CustomAnimDialog extends Dialog{
 
@@ -248,11 +249,11 @@ public class CustomAnimDialog extends Dialog{
 		if (showCalledCount > 1) {
 			return;
 		}
-		//fix SmartPos SMTPS-87 bug --start mod by Teddy on 22th September
+		//fix SmartPos bug(BadTokenException: Unable to add window) for wanda version --start mod by Teddy on 21th October
 		if(!((Activity) context).isFinishing()) {
 			show();
 		}
-		//fix SmartPos SMTPS-87 bug --end mod by Teddy on 22th September
+		//fix SmartPos bug(BadTokenException: Unable to add window) for wanda version --end mod by Teddy on 21th October
 		HandlerThread backgroundThread = new HandlerThread("showWhileExecuting");
 		backgroundThread.start();
 		showWhileExecutingLooper = backgroundThread.getLooper();

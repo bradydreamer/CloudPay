@@ -1,8 +1,8 @@
 package cn.koolcloud.pos.controller.others.settings;
 
 import android.os.Bundle;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.wd.R;
 
 public class TransBatchController extends BaseController {
 

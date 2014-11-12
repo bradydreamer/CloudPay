@@ -242,7 +242,9 @@ public class ChongZheng implements Constant {
 			Log.i(APP_TAG, "F38_AUTH = " + oldAuthCode);
 			break;
 		case ISOField.F39_RSP:
-			Log.i(APP_TAG, "F39_RSP = " + StringUtil.toString(tempBuffer));
+			String respCode = StringUtil.toString(tempBuffer);
+			Log.i(APP_TAG, "F39_RSP = " + respCode);
+			oldTrans.setRespCode(respCode);
 			break;
 		case ISOField.F40:
 			procB40_CUP(tempBuffer);

@@ -1,17 +1,25 @@
 package cn.koolcloud.pos.controller.dialogs;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import cn.koolcloud.pos.R;
+import android.widget.Toast;
+import cn.koolcloud.ipos.appstore.service.aidl.IMSCService;
+import cn.koolcloud.ipos.appstore.service.aidl.ParcelableApp;
 import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.util.Logger;
+import cn.koolcloud.pos.wd.R;
 
 public class AboutDialog extends Activity implements View.OnClickListener {
 
