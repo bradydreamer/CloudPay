@@ -22,6 +22,7 @@ public class PinPadController extends BaseController {
 	private boolean removeJSTag = true;
 	private String brhKeyIndex = "";
 	private UtilFor8583 util8583 = UtilFor8583.getInstance();
+	private int willShowCount = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,12 @@ public class PinPadController extends BaseController {
 
 	@Override
 	protected void willShow() {
+		//fix SMTPS-153 --start mod by teddy on November 3th
+		willShowCount++;
+		if (willShowCount >= 2) {
+			return;
+		}
+		//fix SMTPS-153 --end mod by teddy on November 3th
 		super.willShow();
 		Handler handler = new Handler(looper);
 		handler.post(new Runnable() {

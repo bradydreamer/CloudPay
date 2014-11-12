@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="@dimen/cash_layout_width"
         android:layout_height="@dimen/cash_layout_height"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="70dp"
         android:gravity="center"
         android:orientation="horizontal" >
 

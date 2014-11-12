@@ -1,6 +1,7 @@
 ;(function(){
  if (window.SignIn) { return }
   
+  var paramType;
   function gotoSignIn() {  	
   	var data = {
   	          typeOf8583: "signin",
@@ -27,7 +28,7 @@
 	   		"oriTxnId": params.oriTxnId,
 	   		"oriBatchNo": params.oriBatchNo,
 	   		"oriTraceNo": params.oriTraceNo,
-	   		"oriTransTime": params.oriTransTime,
+	   		"oriTransTime": params.oriTransTime
 	   	};
 	  Net.connect("msc/pay/signin",req,actionAfterSignIn);  
   }
@@ -56,23 +57,17 @@
   
   function afterConvertMsg(params){
 	  if("00" == params.resCode){
-		  var req = {
-		        "txnId": ConsumptionData.dataForPayment.txnId,
-				"resCode": params.resCode,
-				"resMsg": params.resMessage,
-				"refNo": params.rrn,
-				"authNo": params.authNo,
-				"issuerId": params.issuerId,
-				"dateExpr": params.dateExpr,
-				"stlmDate": params.stlmDate,
-			};
 		  var brhKeyIndex = ConsumptionData.dataForPayment.brhKeyIndex;
 		  var _params = {
-	 				"signature" : true,
+	 				"signature" : true
 	 		  }
 		  RMS.save(brhKeyIndex, _params);
-		  actionAfterSet();
-		  Net.asynConnect("msc/txn/update",req,afterBackupInfo);
+		  if(params.paramDownloadFlag == true){			  
+			  paramType = "CAPK";
+			  posUpStatus(downloadCAPK);
+		  }else{		  
+			  actionAfterSet();		  
+		  }
 	  }else{
 		  Scene.alert(params.resMessage,errOKProcess);
 	  }	  
@@ -89,6 +84,294 @@
   function actionAfterSet() {
       window.user.afterSignInAction();
   }
+  
+  var ICCapkParamsCount = 1
+  
+  function posUpStatus(callback){
+  	  window.downloadParams = true;
+	  var datalist = [{
+		  title: "参数下载",
+		  content: "正在查询参数，请稍后！"
+	  }];
+	  Scene.setProperty("SignIn",datalist);
+	  
+	  var data = {
+	  	          typeOf8583: "posUpStatus",
+				  paymentId: ConsumptionData.dataForPayment.paymentId,
+				  brhKeyIndex: ConsumptionData.dataForPayment.brhKeyIndex,
+				  paramType: paramType
+	  	    }
+	  Pay.checkTransReverse("msc/pay/signin",function(){
+			window.data8583.get8583(data, actionAfterGet);
+		});
+	  
+	  function actionAfterGet(params){
+		  var req = {
+				"data": params.data8583,
+				"paymentId": params.paymentId,
+				"transType": params.transType,
+				"batchNo": params.batchNo,
+				"traceNo": params.traceNo,
+				"transTime": params.transTime,
+				"cardNo": params.cardNo,
+				"transAmount": params.transAmount,
+				"oriTxnId": params.oriTxnId,
+				"oriBatchNo": params.oriBatchNo,
+				"oriTraceNo": params.oriTraceNo,
+				"oriTransTime": params.oriTransTime
+		  };
+			  
+		  Net.connect("msc/pay/signin",req,actionAfterUpStatus); 
+	  }
+	  
+	  function actionAfterUpStatus(params){
+		  if("0" == params.responseCode){			  
+			  var convertData = {
+					  "data8583": params.data,
+					  "brhKeyIndex": ConsumptionData.dataForPayment.brhKeyIndex
+			  };			
+			  ConsumptionData.dataForPayment.res8583 = params.data;	
+			  ConsumptionData.dataForPayment.txnId = params.txnId;
+			  window.data8583.convert8583(convertData, afterConvert);
+		  }else{
+		  	  window.COMM.deleteParamsFiles();
+			  Scene.alert(params.errorMsg,errOKProcess);
+		  } 
+	  
+	  }
+	  
+	  function afterConvert(params){
+		  if("00" == params.resCode){
+			  if(params.paramsCapkCheckNeed == true){
+				  posUpStatus(callback);
+			  }else{
+				  callback();		  
+			  }
+		  }else{
+		  	  window.COMM.deleteParamsFiles();
+			  Scene.alert(params.resMessage,errOKProcess);
+		  }	
+	  
+	  }
+	  
+	  
+  }
+  
+  function downloadICParams(){
+	  var content = "正在下载第" + ICCapkParamsCount + "组参数！";
+	  var datalist = [{
+		  title: "参数下载",
+		  content: content 
+	  }];
+	  Scene.setProperty("SignIn",datalist);
+	  
+	  var data = {
+	  	          typeOf8583: "downloadParams",
+				  paymentId: ConsumptionData.dataForPayment.paymentId,
+				  brhKeyIndex: ConsumptionData.dataForPayment.brhKeyIndex,
+				  paramType: paramType
+	  	    }
+	  Pay.checkTransReverse("msc/pay/signin",function(){
+			window.data8583.get8583(data, actionAfterGet);
+		});
+	  
+	  function actionAfterGet(params){
+		  var req = {
+		 	   		"data": params.data8583,
+		 	   		"paymentId": params.paymentId,
+		 	   		"transType": params.transType,
+		 	   		"batchNo": params.batchNo,
+		 	   		"traceNo": params.traceNo,
+		 	   		"transTime": params.transTime,
+		 	   		"cardNo": params.cardNo,
+		 	   		"transAmount": params.transAmount,
+		 	   		"oriTxnId": params.oriTxnId,
+		 	   		"oriBatchNo": params.oriBatchNo,
+		 	   		"oriTraceNo": params.oriTraceNo,
+		 	   		"oriTransTime": params.oriTransTime
+		 	   	};
+		  
+		  Net.connect("msc/pay/signin",req,actionAfterDownload); 
+	  }
+	  
+	  function actionAfterDownload(params){
+		  if("0" == params.responseCode){			  
+			  var convertData = {
+					  "data8583": params.data,
+					  "brhKeyIndex": ConsumptionData.dataForPayment.brhKeyIndex
+			  };			
+			  ConsumptionData.dataForPayment.res8583 = params.data;	
+			  ConsumptionData.dataForPayment.txnId = params.txnId;
+			  window.data8583.convert8583(convertData, afterConvert);
+		  }else{
+		      window.COMM.deleteParamsFiles();
+			  Scene.alert(params.errorMsg,errOKProcess);
+		  }  	  
+	  }	
+	  
+	  function afterConvert(params){
+		  if("00" == params.resCode){
+			  if(params.paramsCapkDownloadNeed == true){				 
+				  ICCapkParamsCount ++;
+				  //TOD0：下载参数
+				  downloadICParams();
+			  }else{
+				  downloadCAPKParamEnd(function(){
+					  ICCapkParamsCount = 1;
+					  actionAfterSet();
+				  });					  		  
+			  }
+		  }else{
+		      window.COMM.deleteParamsFiles();
+			  Scene.alert(params.resMessage,errOKProcess);
+		  }	
+	  
+	  }  
+  }
+  
+  function downloadCAPK(){
+	  var content = "正在下载第" + ICCapkParamsCount + "组公钥！";
+	  var datalist = [{
+		  title: "参数下载",
+		  content: content 
+	  }];
+	  Scene.setProperty("SignIn",datalist);
+	  var data = {
+	  	          typeOf8583: "downloadParams",
+				  paymentId: ConsumptionData.dataForPayment.paymentId,
+				  brhKeyIndex: ConsumptionData.dataForPayment.brhKeyIndex,
+				  paramType: paramType
+	  	    }
+	  Pay.checkTransReverse("msc/pay/signin",function(){
+			window.data8583.get8583(data, actionAfterGet);
+		});
+	  
+	  function actionAfterGet(params){
+		  var req = {
+		 	   		"data": params.data8583,
+		 	   		"paymentId": params.paymentId,
+		 	   		"transType": params.transType,
+		 	   		"batchNo": params.batchNo,
+		 	   		"traceNo": params.traceNo,
+		 	   		"transTime": params.transTime,
+		 	   		"cardNo": params.cardNo,
+		 	   		"transAmount": params.transAmount,
+		 	   		"oriTxnId": params.oriTxnId,
+		 	   		"oriBatchNo": params.oriBatchNo,
+		 	   		"oriTraceNo": params.oriTraceNo,
+		 	   		"oriTransTime": params.oriTransTime
+		 	   	};
+		  
+		  Net.connect("msc/pay/signin",req,actionAfterDownload);
+	  
+	  }
+	  
+	  function actionAfterDownload(params){
+		  if("0" == params.responseCode){			  
+			  var convertData = {
+					  "data8583": params.data,
+					  "brhKeyIndex": ConsumptionData.dataForPayment.brhKeyIndex
+			  };			
+			  ConsumptionData.dataForPayment.res8583 = params.data;	
+			  ConsumptionData.dataForPayment.txnId = params.txnId;
+			  window.data8583.convert8583(convertData, afterConvert);
+		  }else{
+		      window.COMM.deleteParamsFiles();
+			  Scene.alert(params.errorMsg,errOKProcess);
+		  }  
+	  
+	  }
+	  
+	  function afterConvert(params){
+		  if("00" == params.resCode){
+			  if(params.paramsCapkDownloadNeed == true){				 
+				  ICCapkParamsCount ++;
+				  //TOD0：下载参数
+				  downloadCAPK();
+			  }else{
+				  downloadCAPKParamEnd(function(){
+					  ICCapkParamsCount = 1;
+					  paramType = "PARAM";
+					  posUpStatus(downloadICParams);
+				  });				  
+			  }
+		  }else{
+		      window.COMM.deleteParamsFiles();
+			  Scene.alert(params.resMessage,errOKProcess);
+		  }		  
+	  }  
+  }  
+  
+  function downloadCAPKParamEnd(nextCallback){
+		var content;
+		if(paramType == "PARAM"){
+			content = "正在结束下载参数！"
+		}else{	  
+			content = "正在结束下载公钥！";
+		}	  
+		var datalist = [{
+			  title: "参数下载",
+			  content: content 
+		}];
+		Scene.setProperty("SignIn",datalist);
+	  
+		var data = {
+			          typeOf8583: "downloadEnd",
+					  paymentId: ConsumptionData.dataForPayment.paymentId,
+					  brhKeyIndex: ConsumptionData.dataForPayment.brhKeyIndex,
+					  paramType: paramType
+			    }
+		Pay.checkTransReverse("msc/pay/signin",function(){
+				window.data8583.get8583(data, actionAfterGet);
+			});
+		
+		function actionAfterGet(params){
+			  var req = {
+			 	   		"data": params.data8583,
+			 	   		"paymentId": params.paymentId,
+			 	   		"transType": params.transType,
+			 	   		"batchNo": params.batchNo,
+			 	   		"traceNo": params.traceNo,
+			 	   		"transTime": params.transTime,
+			 	   		"cardNo": params.cardNo,
+			 	   		"transAmount": params.transAmount,
+			 	   		"oriTxnId": params.oriTxnId,
+			 	   		"oriBatchNo": params.oriBatchNo,
+			 	   		"oriTraceNo": params.oriTraceNo,
+			 	   		"oriTransTime": params.oriTransTime
+			 	   	};
+			  
+			  Net.connect("msc/pay/signin",req,actionAfterEnd);		
+		}
+		
+		function actionAfterEnd(params){
+			if("0" == params.responseCode){			  
+				  var convertData = {
+						  "data8583": params.data,
+						  "brhKeyIndex": ConsumptionData.dataForPayment.brhKeyIndex
+				  };			
+				  ConsumptionData.dataForPayment.res8583 = params.data;	
+				  ConsumptionData.dataForPayment.txnId = params.txnId;
+				  window.data8583.convert8583(convertData, afterConvert);
+			 }else{
+			      window.COMM.deleteParamsFiles();
+				  Scene.alert(params.errorMsg,errOKProcess);
+			 }  
+		}	
+		
+		function afterConvert(params){
+			if("00" == params.resCode){
+				window.downloadParams = false;
+				nextCallback();
+			}else{
+				window.COMM.deleteParamsFiles();
+				Scene.alert(params.resMessage,errOKProcess);
+			}	
+		}
+		
+  }
+  
+  
   
   var currentIndex = 0;
   var keyIndex = -1;
@@ -132,7 +415,8 @@
 			parseMerchSettings();
 		}		
 	}else{
-	    Scene.alert("签退完成！",errOKProcess);
+//	    Scene.alert("签退完成！",errOKProcess);
+		errOKProcess();
 	}			
   }	
   

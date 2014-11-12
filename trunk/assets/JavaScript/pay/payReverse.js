@@ -91,7 +91,10 @@ Pay.reverseResult = function(params) {
 	}
 	
 	function afterConvertReverseRes(params) {
-		if ("00" == params.resCode || "25" == params.resCode) {
+		if ("00" == params.resCode || "25" == params.resCode 
+			|| "12" == params.resCode || "40" == params.resCode
+			|| "B1" == params.resCode || "B2" == params.resCode
+			|| "B3" == params.resCode || "B4" == params.resCode) {
 			window.RMS.clear("savedTransData");
 		} else {
 			Scene.alert(params.resMessage);
@@ -182,7 +185,11 @@ Pay.cancelOrder = function(params, callBack) {
 	oriData.params = params;
 	oriData.transType = transType_ConsumeCancel;
 	if (params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("交易已经过期");
+		Scene.alert("交易已经过期", function() {
+			if (ConsumptionData.dataForPayment.isExternalOrder) {
+				Pay.errRestart();
+			}
+		});
 		return;
 	};
 	Pay.cancelCallBack = callBack;
@@ -235,6 +242,7 @@ Pay.getProductInfo = function(data){
 		}
 		if(oriData.transType == transType_ConsumeCancel){
 			ConsumptionData.dataForCancellingOrder.rrn = oriData.params.rrn;
+			ConsumptionData.dataForCancellingOrder.transTime = oriData.params.transTime;
 			ConsumptionData.dataForCancellingOrder.transDate = oriData.params.transTime.substring(4, 8);
 			ConsumptionData.dataForCancellingOrder.transData8583 = oriData.params.transData8583;
 			ConsumptionData.dataForCancellingOrder.transAmount = oriData.params.transAmount;
@@ -319,10 +327,28 @@ Pay.cancelOrderExe = function(params) {
 
 	if(params.cardNo != "9999999999999999" && params.cardNo != ConsumptionData.dataForCancellingOrder.F02){
 		Scene.alert("刷卡错误，请刷原卡!",function(){
-			Scene.goBack("OrderDetail");
+//			Scene.goBack("OrderDetail");
+			if (ConsumptionData.dataForPayment.isExternalOrder) {
+				Pay.errRestart();
+			} else {
+				Scene.goBack("OrderDetail");
+			}
 		});
 		return;
 	}
+	
+	if (!isTodayOrder(ConsumptionData.dataForCancellingOrder)) {
+		Scene.alert("交易已经过期", function() {
+//			Scene.goBack("OrderDetail");
+			if (ConsumptionData.dataForPayment.isExternalOrder) {
+				Pay.errRestart();
+			} else {
+				Scene.goBack("OrderDetail");
+			}
+		});
+		return;
+	}
+	
 	ConsumptionData.dataForCancellingOrder.req8583 = req.data;
 
 	var action = "msc/pay/consume/cancel";
@@ -354,6 +380,28 @@ Pay.cancelOrderExe = function(params) {
 		ConsumptionData.saveProcessBatchTask(data);
 		ConsumptionData.startSingleBatchTask(data);
 		Pay.cancelOrderResult(params);		
+	}
+	
+	function isTodayOrder(params) {
+		//check date on reverse --start mod by Teddy 11th July
+		var currentDate = new Date();
+		var currentYear = currentDate.getFullYear();
+		var currentMonth = currentDate.getMonth();
+		var currentDay = currentDate.getDate();
+		
+		var formatedTransDateStr = params.transTime.substring(0,4) + "," + params.transTime.substring(4,6) + "," + params.transTime.substring(6,8);
+		var formatedTransDate = new Date(formatedTransDateStr);
+		var transYear = formatedTransDate.getFullYear();
+		var transMonth = formatedTransDate.getMonth();
+		var transDay = formatedTransDate.getDate();
+		Scene.alert("JSLOG, isTodayOrder:" + formatedTransDateStr);
+		//fix smtp-151
+		if (transYear != currentYear || transMonth != currentMonth || transDay != currentDay) {
+			
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 };
@@ -408,9 +456,25 @@ Pay.cancelOrderResult = function(params) {
 			Pay.cancelCallBack();
 			Pay.cancelCallBack = null;
 		};
-	} else if ("98" == params.resCode) {
+	} else if ("98" == params.resCode || "68" == params.resCode) {
 		Pay.reverseOrder(Pay.cancelEnd);
-	} else {
+	} else if("C1" == params.resCode){
+		Scene.alert(params.resMessage,function(){
+			Pay.reverseOrder(Pay.restart);
+			});
+	}else if("C2" == params.resCode){
+		Scene.alert(params.resMessage,function(){
+			Pay.reverseOrder(Pay.cancelEnd);
+			});
+	}else if("C3" == params.resCode){
+		Scene.alert(params.resMessage,function(){
+			Pay.reverseOrder(Pay.cancelEnd);
+			});
+	}else if("C4" == params.resCode){
+		Scene.alert(params.resMessage,function(){
+			Pay.reverseOrder(Pay.cancelEnd);
+			});
+	}else {
 		Pay.cancelEnd();
 		setTimeout(function() {
 			Scene.alert(params.resMessage);

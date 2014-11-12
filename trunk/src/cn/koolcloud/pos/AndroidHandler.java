@@ -36,7 +36,9 @@ public class AndroidHandler {
 					clientEngine.startSessionTest();
 				} else if ("stopCheckSessionTime".equals(androidHandlerName)) {
 					clientEngine.stopSessionTest();
-				} else if ("goBack".equals(androidHandlerName)) {
+				} else if("deleteParamsFiles".equals(androidHandlerName)){
+					clientEngine.deleteParamsFiles();
+				}else if ("goBack".equals(androidHandlerName)) {
 					clientEngine.showController(jsonObjData, callBackId);
 				} else if ("setProperty".equals(androidHandlerName)) {
 					clientEngine.setControllerProperty(jsonObjData, callBackId);

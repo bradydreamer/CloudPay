@@ -1,11 +1,17 @@
 package cn.koolcloud.iso8583;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Locale;
 
 import android.util.Log;
 import cn.koolcloud.constant.Constant;
+import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.jni.EmvL2Interface;
+import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.UtilFor8583;
+import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.util.AppUtil;
 import cn.koolcloud.util.ByteUtil;
 import cn.koolcloud.util.NumberUtil;
@@ -27,6 +33,17 @@ public class ISOPackager implements Constant {
 	private static ISOData iso = new ISOData();
 	private static byte[] sendData = null;
 	private static int sendDataLength = 0;
+	/*
+	 * 对55域 的解析
+	 */
+	static byte[] t9f36 = { (byte) 0x9F, (byte) 0x36 };
+	static byte[] t91 = { (byte) 0x91 };
+	static byte[] t71 = { (byte) 0x71 };
+	static byte[] t72 = { (byte) 0x72 };
+	static byte[] c9f36 = null;
+	static byte[] c91 = null;
+	static byte[] c71 = null;
+	static byte[] c72 = null;
 
 	public static byte[] getSendData() {
 		return sendData;
@@ -508,14 +525,14 @@ public class ISOPackager implements Constant {
 		case TRAN_DOWN_PARAM:
 			if (appState.trans.getParamType() == PARAM_CAPK) {
 				tmpBuf[F60_Length / 2] = 0x37;
-				if (appState.trans.getParamNextFlag() == 0) {
+				if (!appState.trans.getIcParamsCapkDownloadNeed()) {
 					tmpBuf[F60_Length / 2 + 1] = 0x10;
 				} else {
 					tmpBuf[F60_Length / 2 + 1] = 0x00;
 				}
 			} else if (appState.trans.getParamType() == PARAM_IC) {
 				tmpBuf[F60_Length / 2] = 0x38;
-				if (appState.trans.getParamNextFlag() == 0) {
+				if (!appState.trans.getIcParamsCapkDownloadNeed()) {
 					tmpBuf[F60_Length / 2 + 1] = 0x10;
 				} else {
 					tmpBuf[F60_Length / 2 + 1] = 0x00;
@@ -532,6 +549,15 @@ public class ISOPackager implements Constant {
 				tmpBuf[F60_Length / 2 + 1] = 0x00;
 			}
 
+			F60_Length += 3;
+			break;
+		case TRAN_DWON_CAPK_PARAM_END:
+			if (appState.trans.getParamType() == PARAM_CAPK) {
+				tmpBuf[F60_Length / 2] = 0x37;
+			} else if (appState.trans.getParamType() == PARAM_IC) {
+				tmpBuf[F60_Length / 2] = 0x38;
+			}
+			tmpBuf[F60_Length / 2 + 1] = 0x10;
 			F60_Length += 3;
 			break;
 		case TRAN_DOWN_CAPK:
@@ -669,9 +695,24 @@ public class ISOPackager implements Constant {
 	private static void setF61_CUP(UtilFor8583 appState) {
 		int F61_Length = 0;
 		byte[] tmpBuf = new byte[20];
+
+		// use full 61 from 0 to end for saving id card on super transfer
+		// --start add by Teddy on 22th October
+		if (appState.trans.getTransType() == TRAN_SUPER_TRANSFER) {
+			tmpBuf = ByteUtil.str2Bcd(appState.trans.getIdCardNo());
+			// System.arraycopy(ByteUtil.ASCII_To_BCD(appState.trans.getIdCardNo().getBytes(),
+			// appState.trans.getIdCardNo().getBytes().length), 0, tmpBuf, 0,
+			// StringUtil.hexString2bytes(appState.trans.getIdCardNo()).length);
+			// movGen(ISOField.F61, tmpBuf, tmpBuf.length);
+			movGen(ISOField.F61, tmpBuf, tmpBuf.length);
+			return;
+		}
+		// use full 61 from 0 to end for saving id card on super transfer --end
+		// add by Teddy on 22th October
+
 		// 61.1
 		/* Check if Original Batch no. has data */
-		if (appState.oldTrans.getOldBatch() >= 0) {
+		if (appState.oldTrans != null && appState.oldTrans.getOldBatch() >= 0) {
 			/* Yes; data in field exists */
 			/* Moves the original batch number into SENDBUF */
 			System.arraycopy(
@@ -682,7 +723,7 @@ public class ISOPackager implements Constant {
 
 		// 61.2
 		// 撤销
-		if (appState.oldTrans.getOldTrace() >= 0) {
+		if (appState.oldTrans != null && appState.oldTrans.getOldTrace() >= 0) {
 			/* Yes; data in field exists */
 			/* Moves the original batch number into SENDBUF */
 			System.arraycopy(
@@ -908,6 +949,13 @@ public class ISOPackager implements Constant {
 					appState.trans.setParamOffset(appState.trans
 							.getParamOffset() + 23);
 					movGen(ISOField.F62, tmpBuf, tmpBuf.length);
+					if (appState.trans.getParamOffset() >= appState.trans
+							.getParamDataLength()) {
+						appState.trans.setIcParamsCapkDownloadNeed(false);
+						appState.trans.setParamCount(0);
+					} else {
+						appState.trans.setIcParamsCapkDownloadNeed(true);
+					}
 				}
 			} else if (appState.trans.getParamType() == PARAM_IC) {
 				if (appState.trans.getParamOffset() < appState.trans
@@ -921,6 +969,13 @@ public class ISOPackager implements Constant {
 					appState.trans.setParamOffset(appState.trans
 							.getParamOffset() + tmpBuf.length);
 					movGen(ISOField.F62, tmpBuf, tmpBuf.length);
+					if (appState.trans.getParamOffset() >= appState.trans
+							.getParamDataLength()) {
+						appState.trans.setIcParamsCapkDownloadNeed(false);
+						appState.trans.setParamCount(0);
+					} else {
+						appState.trans.setIcParamsCapkDownloadNeed(true);
+					}
 				}
 			} else if (appState.trans.getParamType() == PARAM_BLACKLIST) {
 				tmpBuf = StringUtil.fillZero(
@@ -931,6 +986,12 @@ public class ISOPackager implements Constant {
 			break;
 		case TRAN_EC_REFUND:
 			movGen(ISOField.F62, appState.oldTrans.getOldTID().getBytes(), 8);
+			break;
+		case TRAN_SUPER_TRANSFER:
+
+			movGen(ISOField.F62,
+					appState.trans.getToAccountCardNo().getBytes(),
+					appState.trans.getToAccountCardNo().length());
 			break;
 		}
 
@@ -1031,6 +1092,122 @@ public class ISOPackager implements Constant {
 		}
 	}
 
+	private static void procB55_CUP(byte[] F55_Field, UtilFor8583 appState) {
+		appState.trans.setIssuerAuthData(F55_Field, 0, F55_Field.length);
+		int ker_ret = -1;
+		int c72_len = 0;
+		int c91_len = 0;
+		int cAuthCode_len = 0;
+		byte[] cAuthCode = null;
+		String resCode = "";
+		EMVICManager emvICManager = EMVICManager.getEMVICManagerInstance();
+		int trade_ret = -1;
+
+		if (UtilFor8583.getInstance().trans.getEntryMode() == ConstantUtils.ENTRY_IC_MODE) {
+			if (Arrays
+					.equals(appState.trans.getResponseCode(), "98".getBytes())
+					|| Arrays.equals(appState.trans.getResponseCode(),
+							"68".getBytes())) {
+
+			} else {
+				c9f36 = null;
+				c91 = null;
+				c71 = null;
+				c72 = null;
+				convertF55(F55_Field);
+				if (c72 != null) {
+					c72_len = c72.length;
+				}
+				if (c91 != null) {
+					c91_len = c91.length;
+				}
+				if (appState.trans.getAuthCode() == null
+						|| appState.trans.getAuthCode().equals("")) {
+					cAuthCode = null;
+					cAuthCode_len = 0;
+				}
+				Log.i("ISOPackager",
+						"===,Response Code:"
+								+ appState.trans.getResponseCode()[0] + " "
+								+ appState.trans.getResponseCode()[1]);
+				if (c72 == null) {
+					Log.i("ISOPackager", "===,c72:null,c72_len:0");
+				} else {
+					String str = "";
+					for (int i = 0; i < c72_len; i++) {
+						str += String.format("%02X ", c72[i]);
+					}
+					Log.i("ISOPackager", "===,c72:" + str);
+				}
+				if (c91 == null) {
+					Log.i("ISOPackager", "===,c91:null,c91_len:0");
+				} else {
+					String str = "";
+					for (int i = 0; i < c91_len; i++) {
+						str += String.format("%02X ", c91[i]);
+					}
+					Log.i("ISOPackager", "===,c91:" + str + ",c91_len:"
+							+ c91_len);
+				}
+				ker_ret = EmvL2Interface.recvOnlineMessage(c72,
+						(char) (c72_len), c91, (char) (c91_len), cAuthCode,
+						(char) (cAuthCode_len),
+						appState.trans.getResponseCode(),
+						(char) (appState.trans.getResponseCode().length));
+				Log.i("ISOPackager", "===,recvOnlineMessage,ker_ret:" + ker_ret);
+				appState.trans.setIcTransferMsgResult(ker_ret);
+			}
+		}
+	}
+
+	private static void convertF55(byte[] F55_Field) {
+		int offset = 0;
+
+		if (F55_Field[0] == t9f36[0]) {
+			if (F55_Field[1] == t9f36[1]) {
+				offset += 2 + 1;
+				c9f36 = new byte[F55_Field[2]];
+				System.arraycopy(F55_Field, offset, c9f36, 0, c9f36.length);
+				offset += F55_Field[2];
+				if (offset < F55_Field.length) {
+					byte[] temp = new byte[F55_Field.length - offset];
+					System.arraycopy(F55_Field, offset, temp, 0, temp.length);
+					convertF55(temp);
+				}
+			}
+		} else if (F55_Field[0] == t91[0]) {
+			offset += 1 + 1;
+			c91 = new byte[F55_Field[1]];
+			System.arraycopy(F55_Field, offset, c91, 0, c91.length);
+			offset += F55_Field[1];
+			if (offset < F55_Field.length) {
+				byte[] temp = new byte[F55_Field.length - offset];
+				System.arraycopy(F55_Field, offset, temp, 0, temp.length);
+				convertF55(temp);
+			}
+		} else if (F55_Field[0] == t71[0]) {
+			offset += 1 + 1;
+			offset += F55_Field[1];
+			c71 = new byte[offset];
+			System.arraycopy(F55_Field, 0, c71, 0, c71.length);
+			if (offset < F55_Field.length) {
+				byte[] temp = new byte[F55_Field.length - offset];
+				System.arraycopy(F55_Field, offset, temp, 0, temp.length);
+				convertF55(temp);
+			}
+		} else if (F55_Field[0] == t72[0]) {
+			offset += 1 + 1;
+			offset += F55_Field[1];
+			c72 = new byte[offset];
+			System.arraycopy(F55_Field, 0, c72, 0, c72.length);
+			if (offset < F55_Field.length) {
+				byte[] temp = new byte[F55_Field.length - offset];
+				System.arraycopy(F55_Field, offset, temp, 0, temp.length);
+				convertF55(temp);
+			}
+		}
+	}
+
 	private static void procB60_CUP(byte[] F60_Field, UtilFor8583 appState) {
 		if (TRAN_LOGIN == appState.trans.getTransType()) {
 			byte[] batchNumber = new byte[3];
@@ -1041,7 +1218,10 @@ public class ISOPackager implements Constant {
 	}
 
 	private static void getCAPKParamInfo(UtilFor8583 appState, byte[] data) {
+		byte[] capk = new byte[data.length - 1];
+		System.arraycopy(data, 1, capk, 0, capk.length);
 
+		EmvL2Interface.downloadParam(capk, capk.length, 1);
 	}
 
 	private static void getBlackList(UtilFor8583 appState, byte[] data) {
@@ -1054,6 +1234,10 @@ public class ISOPackager implements Constant {
 	}
 
 	private static void getEMVParamInfo(UtilFor8583 appState, byte[] data) {
+		byte[] aParams = new byte[data.length - 1];
+		System.arraycopy(data, 1, aParams, 0, aParams.length);
+
+		EmvL2Interface.downloadParam(aParams, aParams.length, 0);
 
 	}
 
@@ -1159,6 +1343,13 @@ public class ISOPackager implements Constant {
 				}
 				appState.trans.setParamCount(appState.trans
 						.getParamDataLength() / 23);
+				if (F62_Field[0] != '3') {
+					appState.trans.setIcParamsCapkCheckNeed(true);
+				} else {
+					appState.trans.setIcParamsCapkCheckNeed(false);
+					appState.trans.setIcParamsCapkDownloadNeed(true);
+					appState.trans.setParamCount(0);
+				}
 			} else if (appState.trans.getParamType() == PARAM_IC) {
 				appState.trans.setParamNextFlag(F62_Field[0]);
 				if (F62_Field[0] != '0' && F62_Field.length > 1) {
@@ -1171,13 +1362,22 @@ public class ISOPackager implements Constant {
 					appState.trans.addParamData(F62_Field, 1,
 							F62_Field.length - 1);
 				}
+				if (F62_Field[0] != '3') {
+					appState.trans.setIcParamsCapkCheckNeed(true);
+				} else {
+					appState.trans.setIcParamsCapkCheckNeed(false);
+					appState.trans.setIcParamsCapkDownloadNeed(true);
+					appState.trans.setParamCount(0);
+				}
 			}
 			break;
 		case TRAN_DOWN_PARAM:
 			if (appState.trans.getParamType() == PARAM_CAPK) {
 				getCAPKParamInfo(appState, F62_Field);
+				break;
 			} else if (appState.trans.getParamType() == PARAM_IC) {
 				getEMVParamInfo(appState, F62_Field);
+				break;
 			} else if (appState.trans.getParamType() == PARAM_BLACKLIST) {
 				getBlackList(appState, F62_Field);
 			} else {
@@ -1375,6 +1575,8 @@ public class ISOPackager implements Constant {
 					} // switch*/
 				} // while
 			}
+		default:
+			break;
 		}
 	}
 
@@ -1630,9 +1832,18 @@ public class ISOPackager implements Constant {
 				movGen(ISOField.F22_POSE, F22_Pose, 0);
 				break;
 			case ISOField.F23:
-				if (appState.trans.getCSN() > 0) {
+				// if (appState.trans.getCSN() > 0) {
+				// byte[] F23_CSN = new byte[2];
+				// F23_CSN[1] = appState.trans.getCSN();
+				// movGen(ISOField.F23, F23_CSN, 0);
+				// }
+				EMVICData mEMVICData = EMVICData.getEMVICInstance();
+				String csn = mEMVICData.getCardSeqNo();
+				// byte[] b_csn = csn.getBytes();
+				if (!csn.equals("") && csn != null) {
 					byte[] F23_CSN = new byte[2];
-					F23_CSN[1] = appState.trans.getCSN();
+					// ByteUtil.ASCII_To_BCD(b_csn, b_csn.length);
+					ByteUtil.asciiToBCD(csn.getBytes(), 0, F23_CSN, 0, 3, 1);
 					movGen(ISOField.F23, F23_CSN, 0);
 				}
 				break;
@@ -1681,6 +1892,9 @@ public class ISOPackager implements Constant {
 					break;
 				case TRAN_MAG_LOAD_ACCOUNT:
 					F25_POCC[0] = (byte) 0x66;
+					break;
+				case TRAN_SUPER_TRANSFER:
+					F25_POCC[0] = (byte) 0x82;
 					break;
 				default:
 					if (null != appState.oldTrans) {
@@ -1967,10 +2181,14 @@ public class ISOPackager implements Constant {
 				0, sendData, 0, 5);
 		// APDU
 		// 报文头信息
-		sendData[5] = 0x60;
-		sendData[6] = 0x31;
-		sendData[7] = 0x00;
-		sendData[8] = 0x31;
+		if (appState.trans.getEntryMode() == ConstantUtils.ENTRY_IC_MODE) {
+			sendData[5] = 0x61;// 应用类别定义
+		} else {
+			sendData[5] = 0x60;// 应用类别定义
+		}
+		sendData[6] = 0x31;// 终端遵循的规范
+		sendData[7] = 0x00;// 终端状态/处理要求
+		sendData[8] = 0x31;// 业务编码
 		System.arraycopy(StringUtil.hexString2bytes(APP_VERSION.substring(3)),
 				0, sendData, 9, 2);
 		// Data
@@ -2008,6 +2226,20 @@ public class ISOPackager implements Constant {
 		// TPDU
 		offset += 5;
 		// APDU
+		byte[] temp = new byte[1];
+		System.arraycopy(databuf, offset + 2, temp, 0, 1);
+		byte[] pos_Status_Require = ByteUtil.bcdToAscii(temp, 0, 1);
+		if (pos_Status_Require[1] == 9 + 48) {
+			appState.trans.setParamDownloadFlag(true);
+			ClientEngine.engineInstance().deleteParamsFiles();
+		} else {
+			appState.trans.setParamDownloadFlag(false);
+		}
+		if (appState.trans.getTransType() == TRAN_LOGIN) {
+			if (!ClientEngine.engineInstance().paramsFilesIsExists()) {
+				appState.trans.setParamDownloadFlag(true);
+			}
+		}
 		offset += 6;
 
 		iso.setOffset((short) 0);
@@ -2212,8 +2444,8 @@ public class ISOPackager implements Constant {
 			if (appState.trans.getTransType() == TRAN_RESERV_SALE) {
 				int panLength = ((llvar[0] >> 4) & 0x0F) * 10
 						+ (llvar[0] & 0x0F);
-//				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber)
-//						.substring(0, panLength));
+				// appState.trans.setPAN(StringUtil.toString(F2_AccountNumber)
+				// .substring(0, panLength));
 				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber));
 			} else {
 				// if( appState.getProcessType() != PROCESS_REVERSAL
@@ -2369,7 +2601,7 @@ public class ISOPackager implements Constant {
 			}
 			break;
 		case ISOField.F55_ICC:
-			appState.trans.setIssuerAuthData(tempBuffer, 0, tempBuffer.length);
+			procB55_CUP(tempBuffer, appState);
 			break;
 		case ISOField.F60:
 			procB60_CUP(tempBuffer, appState);

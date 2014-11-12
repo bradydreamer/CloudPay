@@ -184,12 +184,32 @@ Pay.payResult = function(params) {
 	//	);
 
 	if ("00" != params.resCode) {
-		if ("98" != params.resCode) {
+		if("98" == params.resCode && "68" == params.resCode){
+			Pay.reverseOrder(Pay.restart);
+		}else if("C1" == params.resCode){
+			Scene.alert(params.resMessage,function(){
+				Pay.reverseOrder(Pay.restart);
+				});
+		}else if("C2" == params.resCode){
+			Scene.alert(params.resMessage,function(){
+				Pay.reverseOrder(Pay.restart);
+				});
+		}else if("C3" == params.resCode){
+			Scene.alert(params.resMessage,function(){
+				Pay.reverseOrder(Pay.restart);
+				});
+		}else if("C4" == params.resCode){
+			Scene.alert(params.resMessage,function(){
+				Pay.reverseOrder(Pay.restart);
+				});
+		}else{
 			window.RMS.clear("savedTransData");
 			if("22" == params.resCode){
-				Scene.alert(params.resMessage,batchErroProcess);
+//				Scene.alert(params.resMessage,batchErroProcess);
+				batchErroProcess();
 			}else if("A0" == params.resCode){
-				Scene.alert(params.resMessage,reSignAction);
+//				Scene.alert(params.resMessage,reSignAction);
+				reSignAction();
 			}else{				
 				setTimeout(function() {
 					Scene.alert(params.resMessage, function(){
@@ -197,8 +217,6 @@ Pay.payResult = function(params) {
 					});
 				}, 300);
 			}
-		} else {
-			Pay.reverseOrder(Pay.restart);
 		}
 	} else {
 		window.RMS.clear("savedTransData");
@@ -290,6 +308,7 @@ Pay.misposSuccRestart = function(params) {
 	ConsumptionData.dataForPayment.transAmount = data.transAmount;
 	ConsumptionData.dataForPayment.paidAmount = data.paidAmount;
 	ConsumptionData.dataForPayment.bankCardNum = data.bankCardNum;
+	ConsumptionData.dataForPayment.transType = data.transType;
 	ConsumptionData.dataForPayment.result = "success";
 	Pay.restart();
 };
@@ -334,12 +353,8 @@ Pay.writeBackAPMPCouponData = function(params) {
 
 Pay.cashSuccRestart = function(params){
 	var cashData = JSON.parse(params);
-	window.util.exeActionWithLoginChecked(function(){
 		if(parseInt(cashData.transAmount) > parseInt(cashData.cashPaidAmount)){
-			Scene.alert("您输入的金额不足，请重新输入！",function(){
-				Scene.goBack("Home");
-				}
-			);
+			Scene.alert("您输入的金额不足，请重新输入！");
 			return;
 		}
 		ConsumptionData.dataForPayment.cashPay = true;
@@ -348,9 +363,8 @@ Pay.cashSuccRestart = function(params){
 		ConsumptionData.dataForPayment.paidAmount = cashData.cashPaidAmount;
 		ConsumptionData.dataForPayment.changeAmount = cashData.changeAmount;
 		ConsumptionData.dataForPayment.transTime = cashData.transTime;
-		ConsumptionData.dataForPayment.paymentName = cashData.paymentName;
 		var req = {
-			"paymentId": cashData.paymentId,
+			"paymentId": ConsumptionData.dataForPayment.paymentId,
 			"transType": cashData.transType,
 			"batchNo": cashData.batchNo,
 			"traceNo": cashData.traceNo,
@@ -360,8 +374,8 @@ Pay.cashSuccRestart = function(params){
 			"resCode": cashData.resCode,
 			"resMsg": cashData.resMsg
 		}
-		Net.asynConnect("txn/"+cashData.keyIndex,req,afterUpdateInfo);	
-	});	
+		Net.asynConnect("txn/"+ConsumptionData.dataForPayment.brhKeyIndex,req,afterUpdateInfo);	
+
 
 	function afterUpdateInfo(data){
 		//var data = JSON.parse(params);
@@ -377,20 +391,21 @@ Pay.cashSuccRestart = function(params){
 			var msg = {
 				"refNo": ConsumptionData.dataForPayment.rrn,
 				"orderStateDesc": "成功",
-				"payTypeDesc": cashData.paymentName,
+				"payTypeDesc": ConsumptionData.dataForPayment.paymentName,
 				"transAmount": util.formatAmountStr(cashData.transAmount),
 				"transTime": transTime,
-				"transTypeDesc": cashData.typeName,
-				"openBrh": cashData.openBrh,
-				"paymentId": cashData.paymentId,
+				"transTypeDesc": ConsumptionData.dataForPayment.typeName,
+				"openBrh": ConsumptionData.dataForPayment.openBrh,
+				"paymentId": ConsumptionData.dataForPayment.paymentId,
 				"paymentOrder": 1,
-				"openBrhName": cashData.openBrhName,
-				"brhMchtId": cashData.brhMchtId,
-				"brhTermId": cashData.brhTermId,
-				"merchId": cashData.merchId,
-				"iposId": cashData.iposId,
-				"transType": cashData.transType,
-				"typeId": cashData.typeId
+				"openBrhName": ConsumptionData.dataForPayment.openBrhName,
+				"brhMchtId": ConsumptionData.dataForPayment.brhMchtId,
+				"brhTermId": ConsumptionData.dataForPayment.brhTermId,
+				"merchId": ConsumptionData.dataForPayment.merchId,
+				"iposId": ConsumptionData.dataForPayment.iposId,
+				"transType": ConsumptionData.dataForPayment.transType,
+				"typeId": ConsumptionData.dataForPayment.typeId,
+				"misc": ConsumptionData.dataForPayment.misc
 			};
 			msg.confirm = "Pay.restart";
 			Scene.showScene("OrderDetail", "", msg);
@@ -738,6 +753,95 @@ Pay.exePreAuthCompleteCancel = function(params){
    	
 }
 
+Pay.transferReq = function() {
+	//window.data8583.get8583(ConsumptionData.dataForPayment, Pay.exePreAuthCompleteCancel);
+	Pay.checkTransReverse("msc/pay/transfer", function() {
+		window.data8583.get8583(ConsumptionData.dataForPayment, Pay.exeSuperTransfer);
+	});	
+}
+
+Pay.exeSuperTransfer = function(params) {
+	var req = {
+		   		"data": params.data8583,
+		   		"paymentId": params.paymentId,
+		   		"transType": params.transType,
+		   		"batchNo": params.batchNo,
+		   		"traceNo": params.traceNo,
+		   		"transTime": params.transTime,
+		   		"cardNo": params.cardNo,
+		   		"transAmount": params.transAmount,
+		   		"oriTxnId": ConsumptionData.dataForPayment.txnId,
+		   		"oriBatchNo": params.oriBatchNo,
+		   		"oriTraceNo": params.oriTraceNo,
+		   		"oriTransTime": params.oriTransTime,
+		   	};
+/*	if(params.cardNo != ConsumptionData.dataForPayment.F02) {
+		Scene.alert("刷卡错误，请刷原卡!", function(){
+			Scene.goBack("Home");
+		});
+		return;
+	}*/
+	ConsumptionData.dataForPayment.req8583 = params.data8583;
+	ConsumptionData.dataForPayment.transType = params.transType;
+	
+   	Net.connect("msc/pay/consume", req, actionAfterSuperTransfer, true);   	
+   	
+   	function actionAfterSuperTransfer(params) {
+   		Scene.alert("JSLOG, actionAfterSuperTransfer response params:" + JSON.stringify(params));
+   		if (params.responseCode == "0") {
+			var convertData = {
+				"data8583": params.data
+			};
+			ConsumptionData.dataForPayment.res8583 = params.data;			
+			ConsumptionData.dataForPayment.txnId = params.txnId;			
+			window.data8583.convert8583(convertData, afterConfvertTransferData);
+//			transferSuccess();
+		} else {
+			transferFailure();
+		}
+		
+   	}
+   	function afterConfvertTransferData(params) {
+   		Scene.alert("JSLOG, afterConfvertTransferData params:" + JSON.stringify(params));
+   		Scene.alert("JSLOG, afterConfvertTransferData dataForPayemnt:" + JSON.stringify(ConsumptionData.dataForPayment));
+   		
+   		if ("00" != params.resCode ) {
+			if ("98" != params.resCode) {
+				setTimeout(function() {
+					Scene.alert(params.resMessage, goBackHome);
+				}, 300);
+			} else {
+				Scene.alert(params.resMessage, goBackHome);
+			}
+		} else {
+			
+			window.Database.insertTransData8583(
+				ConsumptionData.dataForPayment.txnId,
+				ConsumptionData.dataForPayment.req8583,
+				ConsumptionData.dataForPayment.res8583
+			);
+			
+			setTimeout(function() {
+				window.posPrint.printTrans(ConsumptionData.dataForPayment.txnId);
+			}, 300);
+			
+			transferSuccess();
+		}
+   	}
+   	
+   	function transferSuccess() {
+   		Scene.alert("转账成功", goBackHome);
+   	}
+   	
+   	function transferFailure() {
+   		Scene.alert("转账失败", goBackHome);
+   	}
+   	
+   	function goBackHome() {
+   		Scene.goBack("Home");
+   	}
+}
+
 
 Pay.checkTransReverse =  function(action,callBack){
 
@@ -751,6 +855,7 @@ Pay.checkTransReverse =  function(action,callBack){
         && !isActionEqual("msc/txn/update",action)
         && !isActionEqual("msc/payment/info/query", action)
         && !isActionEqual("msc/payment/template/query", action)
+        && !isActionEqual("msc/pay/transfer", action)
         && !isActionEqual("msc/cust/info/query", action)) {
       Pay.reverseOrder(callBack);
     } else {

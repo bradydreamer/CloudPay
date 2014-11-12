@@ -170,12 +170,68 @@ public class ByteUtil {
 		return new String(temp);
 	}
 
+	public static String bcd_2_Str(byte[] bytes, int len) {
+		char temp[] = new char[len * 2], val;
+
+		for (int i = 0; i < len; i++) {
+			val = (char) (((bytes[i] & 0xf0) >> 4) & 0x0f);
+			temp[i * 2] = (char) (val > 9 ? val + 'A' - 10 : val + '0');
+
+			val = (char) (bytes[i] & 0x0f);
+			temp[i * 2 + 1] = (char) (val > 9 ? val + 'A' - 10 : val + '0');
+		}
+		return new String(temp);
+	}
+
 	public static String asc_to_str(byte[] bytes) {
 		String result = "";
 		byte[] bcd = ASCII_To_BCD(bytes, bytes.length);
 		result = bcd_2_Str(bcd);
 		return result;
 	}
+
+	public static byte[] str2Bcd(String asc) {
+		int len = asc.length();
+		int mod = len % 2;
+
+		if (mod != 0) {
+			asc = "0" + asc;
+			len = asc.length();
+		}
+
+		byte abt[] = new byte[len];
+		if (len >= 2) {
+			len = len / 2;
+		}
+
+		byte bbt[] = new byte[len];
+		abt = asc.getBytes();
+		int j, k;
+
+		for (int p = 0; p < asc.length() / 2; p++) {
+			if ((abt[2 * p] >= '0') && (abt[2 * p] <= '9')) {
+				j = abt[2 * p] - '0';
+			} else if ((abt[2 * p] >= 'a') && (abt[2 * p] <= 'z')) {
+				j = abt[2 * p] - 'a' + 0x0a;
+			} else {
+				j = abt[2 * p] - 'A' + 0x0a;
+			}
+
+			if ((abt[2 * p + 1] >= '0') && (abt[2 * p + 1] <= '9')) {
+				k = abt[2 * p + 1] - '0';
+			} else if ((abt[2 * p + 1] >= 'a') && (abt[2 * p + 1] <= 'z')) {
+				k = abt[2 * p + 1] - 'a' + 0x0a;
+			} else {
+				k = abt[2 * p + 1] - 'A' + 0x0a;
+			}
+
+			int a = (j << 4) + k;
+			byte b = (byte) a;
+			bbt[p] = b;
+		}
+		return bbt;
+	}
+
 	/**
 	 * Compares this byte arrary to the specified object. The result is
 	 * <code>true</code> if and only if the argument is not <code>null</code>

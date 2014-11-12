@@ -697,7 +697,7 @@ public class ISOField
       /* 63 TRAN_DOWN_IC_PARAM */
    	  { 
 			F41_TID,    F42_ACCID,
-   			F60
+   			F60,        F62
       },
       
       /* 64 TRAN_DOWN_BLACKLIST */
@@ -705,17 +705,23 @@ public class ISOField
    			F41_TID,    F42_ACCID,
    			F60
       },
-      /* 65 TRAN_SALE 9121 协议支付 */
+
+      /* 65 TRAN_DWON_CAPK_PARAM_END */
       { 
-		  	F02_PAN,    F03_PROC, 	F04_AMOUNT,
-		  	F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F26_CAPTURE, 
-			/*F35_TRACK2, F36_TRACK3, *//*F38_AUTH, */     F39_RSP,
-			F40,
-			F41_TID,    F42_ACCID,  F49_CURRENCY,
-			/*F52_PIN, */   F53_SCI,    F55_ICC, 
-			F60,        F64_MAC
-	  },
+    	  F41_TID,    F42_ACCID,
+    	  F60
+      },
+//      /* 65 TRAN_SALE 9121 协议支付 */
+//      { 
+//		  	F02_PAN,    F03_PROC, 	F04_AMOUNT,
+//		  	F11_STAN,   F14_EXP, 
+//		  	F22_POSE,   F23,        F25_POCC,   F26_CAPTURE, 
+//			/*F35_TRACK2, F36_TRACK3, *//*F38_AUTH, */     F39_RSP,
+//			F40,
+//			F41_TID,    F42_ACCID,  F49_CURRENCY,
+//			/*F52_PIN, */   F53_SCI,    F55_ICC, 
+//			F60,        F64_MAC
+//	  },
 	  /* 66 TRAN_SALE_9100 现金消费 */
 	  { 
 		  	F02_PAN,    F03_PROC, 	F04_AMOUNT,
@@ -764,7 +770,7 @@ public class ISOField
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F22_POSE,   F23,        F25_POCC,
 		  	F38_AUTH,	
 			F39_RSP,	F40,		F41_TID,    F42_ACCID,
 			F49_CURRENCY,F55_ICC, 
@@ -775,10 +781,10 @@ public class ISOField
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F22_POSE,   F23,        F25_POCC,
 		  	F38_AUTH,	
 			F39_RSP,	F40,		F41_TID,    F42_ACCID,
-			F49_CURRENCY,F55_ICC, 
+			F49_CURRENCY, 
 			F60,        F61,		F64_MAC
 		  
 	  },
@@ -786,7 +792,7 @@ public class ISOField
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F22_POSE,   F23,        F25_POCC,   
 		  	F38_AUTH,	
 			F39_RSP,	F40,		F41_TID,    F42_ACCID,
 			F49_CURRENCY,F55_ICC, 
@@ -797,10 +803,10 @@ public class ISOField
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F22_POSE,   F23,        F25_POCC,   
 		  	F38_AUTH,	
 			F39_RSP,	F40,		F41_TID,    F42_ACCID,
-			F49_CURRENCY,F55_ICC, 
+			F49_CURRENCY, 
 			F60,        F61,		F64_MAC
 		  
 	  },
@@ -808,10 +814,10 @@ public class ISOField
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F22_POSE,   F23,        F25_POCC,   
 		  	F38_AUTH,	
 			F39_RSP,	F40,		F41_TID,    F42_ACCID,
-			F49_CURRENCY,F55_ICC, 
+			F49_CURRENCY, 
 			F60,        F61,		F64_MAC
 		  
 	  },
@@ -819,10 +825,10 @@ public class ISOField
 	  {
 		    F02_PAN,    
 		    F03_PROC, 	F04_AMOUNT, F11_STAN,   F14_EXP, 
-		  	F22_POSE,   F23,        F25_POCC,   F32_ACQUIRER,
+		  	F22_POSE,   F23,        F25_POCC,   
 		  	F38_AUTH,	
 			F39_RSP,	F40,		F41_TID,    F42_ACCID,
-			F49_CURRENCY,F55_ICC, 
+			F49_CURRENCY, 
 			F60,        F61,		F64_MAC
 		  
 	  }

@@ -150,7 +150,9 @@
 	    		
 		    	Scene.alert("权限确认成功",function(){
 			    	var sceneName = "MisposController";
-	  				Scene.goBack("Home");
+			    	//rm goBack statement otherwise can't call back to the 3rd part app --start mod by Teddy on 11th November
+//	  				Scene.goBack("Home");
+			    	//rm goBack statement otherwise can't call back to the 3rd part app --end mod by Teddy on 11th November
 	  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
 		    	});
 	    	} else if(ConsumptionData.dataForPayment.payKeyIndex == "91"){

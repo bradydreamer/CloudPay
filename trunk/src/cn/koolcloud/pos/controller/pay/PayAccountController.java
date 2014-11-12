@@ -9,6 +9,7 @@ import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,17 +28,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
 import cn.koolcloud.pos.external.CardSwiper.CardSwiperListener;
 import cn.koolcloud.pos.external.CodeScanner;
 import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
+import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.external.SoundWave;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 import cn.koolcloud.pos.external.scanner.ZBarScanner;
@@ -53,8 +58,10 @@ public class PayAccountController extends BaseController implements
 	private final int OPEN_CAMERA_DELAY_TIME = 50;
 	protected LinearLayout layout_qrcode;
 	protected LinearLayout layout_sound;
-	protected LinearLayout layout_swiper;
+	protected RelativeLayout layout_swiper;
 	protected LinearLayout layout_keyboard;
+	protected LinearLayout layout_ic;
+	protected TextView ic_dis;
 
 	protected EditText et_id;
 
@@ -68,6 +75,7 @@ public class PayAccountController extends BaseController implements
 	protected String func_swipeCard;
 	protected String func_inputAccount;
 	protected String func_nearfieldAccount;
+	protected String func_icSwipeCard;
 	private String transType;
 	private boolean removeJSTag = true;
 
@@ -80,6 +88,11 @@ public class PayAccountController extends BaseController implements
 	private static final float BEEP_VOLUME = 0.10f;
 	private static final long VIBRATE_DURATION = 200L;
 	private static final String ZBTAG = "alipay";
+	private static final String PREPAID_QRCODE = "prepaid_qrcode";
+
+	private EMVICManager emvManager = null;
+	private Boolean needPwd = false;
+	private Boolean backEnable = true;
 
 	// muilti info bar components
 	private RelativeLayout barTitleLayout;
@@ -95,6 +108,8 @@ public class PayAccountController extends BaseController implements
 	private TextView acquireTerminalNumTextView;
 	private TextView amountMarkTextView;
 	private TextView amountTextView;
+	private TextView ic_swiper_guide_text;
+	private ImageView icswiper_img;
 	private ScannerRelativeLayout zscanner;
 
 	private final String APMP_TRAN_PREAUTH = "1011";
@@ -127,13 +142,14 @@ public class PayAccountController extends BaseController implements
 
 		layout_qrcode = (LinearLayout) findViewById(R.id.pay_account_layout_qrcode);
 		layout_sound = (LinearLayout) findViewById(R.id.pay_account_layout_sound);
-		layout_swiper = (LinearLayout) findViewById(R.id.pay_account_layout_swiper);
+		layout_swiper = (RelativeLayout) findViewById(R.id.pay_account_layout_swiper);
 		layout_keyboard = (LinearLayout) findViewById(R.id.pay_account_layout_keyboard);
-
 		et_id = (EditText) findViewById(R.id.pay_account_et_id);
 		setCurrentNumberEditText(et_id);
+		ic_swiper_guide_text = (TextView) findViewById(R.id.pay_account_swiper_ic_text_guide);
 		transType = data.optString("transType");
 		misc = data.optString("misc");
+		icswiper_img = (ImageView) findViewById(R.id.icswiper_img);
 
 		amountTextView = (TextView) findViewById(R.id.pay_account_tv_amount);
 		if (transType.equals(APMP_TRAN_CONSUMECANCE)
@@ -148,26 +164,27 @@ public class PayAccountController extends BaseController implements
 		func_swipeCard = data.optString("swipeCard");
 		func_inputAccount = data.optString("inputAccount");
 		func_nearfieldAccount = data.optString("nearfieldAccount");
-		
+		func_icSwipeCard = data.optString("icSwipeCard");
+
 		preview = (FrameLayout) findViewById(R.id.scanner_zb);
 		zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-		
+
 		if (misc != null && misc.equals(ZBTAG)) {
-			/*preview = (FrameLayout) findViewById(R.id.scanner_zb);
+			/*
+			 * preview = (FrameLayout) findViewById(R.id.scanner_zb);
+			 * preview.setVisibility(View.VISIBLE); ScannerRelativeLayout
+			 * zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
+			 * zscanner.setVisibility(View.GONE); scanner = new
+			 * ZBarScanner(this); preview.addView(scanner.getMpreview());
+			 * imageScanner = scanner.getMscanner(); initBeepSound();
+			 */
+
 			preview.setVisibility(View.VISIBLE);
-			ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-			zscanner.setVisibility(View.GONE);
-			scanner = new ZBarScanner(this);
-			preview.addView(scanner.getMpreview());
-			imageScanner = scanner.getMscanner();
-			initBeepSound();*/
-			
-			preview.setVisibility(View.VISIBLE);
-			
+
 			zscanner.setVisibility(View.GONE);
 		} else {
 			preview.setVisibility(View.GONE);
-			
+
 			zscanner.setVisibility(View.VISIBLE);
 			if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
 				ex_codeScanner = new CodeScanner();
@@ -302,10 +319,16 @@ public class PayAccountController extends BaseController implements
 			btn.setTextColor(getResources().getColor(
 					R.color.trade_statistics_textcolor_gray));
 			break;
-
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public void setProperty(JSONArray data) {
+		ic_swiper_guide_text.setText("请插入IC卡！");
+		Drawable icDrawable = getResources().getDrawable(R.drawable.start_ic);
+		icswiper_img.setImageDrawable(icDrawable);
 	}
 
 	public void onSwitchAccount(View view) {
@@ -335,24 +358,25 @@ public class PayAccountController extends BaseController implements
 		String actionTag = getString(R.string.pay_account_tag_qrcode);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_qrcode.setVisibility(View.VISIBLE);
-			UtilFor8583.getInstance().trans
-					.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
-			// onStartQRScanner();
 			if (misc != null && misc.equals(ZBTAG)) {
-//				scanner.startScanner();
-				mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER, OPEN_CAMERA_DELAY_TIME);
-			} else {
+				// scanner.startScanner();
+				mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER,
+						OPEN_CAMERA_DELAY_TIME);
+				UtilFor8583.getInstance().trans
+						.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
+			} else if (misc != null && misc.equals(PREPAID_QRCODE)) {
+				// for prepaid card then set entry mode
+				UtilFor8583.getInstance().trans
+						.setEntryMode(ConstantUtils.ENTRY_PREPAID_CARD_QRCODE_MODE);
 				onStartQRScanner();
 			}
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
-			// onStopQRScanner();
 			if (misc != null && misc.equals(ZBTAG)) {
 				scanner.destroyedScanner();
 			} else {
 				onStopQRScanner();
 			}
 		}
-
 		actionTag = getString(R.string.pay_account_tag_sound);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_sound.setVisibility(View.VISIBLE);
@@ -365,10 +389,10 @@ public class PayAccountController extends BaseController implements
 		actionTag = getString(R.string.pay_account_tag_swiper);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_swiper.setVisibility(View.VISIBLE);
-			UtilFor8583.getInstance().trans
-					.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
 			onStartSwiper();
+			onStartReadICData();
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
+			onStopReadICData();
 			onStopSwiper();
 		}
 
@@ -382,7 +406,7 @@ public class PayAccountController extends BaseController implements
 			onStopKeyBoard();
 		}
 	}
-	
+
 	Handler mHandler = new Handler() {
 
 		@Override
@@ -397,15 +421,169 @@ public class PayAccountController extends BaseController implements
 				preview.addView(scanner.getMpreview());
 				imageScanner = scanner.getMscanner();
 				initBeepSound();
-				
 				scanner.startScanner();
-				
 				break;
+			case EMVICManager.STATUS_VALUE_0: {
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("IC卡已插入，正在处理，请勿拔卡！");
+				Drawable icDrawable = getResources().getDrawable(
+						R.drawable.start_ic);
+				icswiper_img.setImageDrawable(icDrawable);
+				setLeftButtonHidden();
+				backEnable = false;
+				break;
+			}
+			case EMVICManager.STATUS_VALUE_1: {
+				if (needPwd) {
+					ic_swiper_guide_text.setTextColor(getResources().getColor(
+							R.color.red));
+					ic_swiper_guide_text.setText("IC卡已拔出！请点击密码键盘上的取消键！");
+				} else {
+					ic_swiper_guide_text.setTextColor(getResources().getColor(
+							R.color.blue));
+					ic_swiper_guide_text.setText("IC卡已拔出！");
+				}
+				Drawable icDrawable = getResources().getDrawable(
+						R.drawable.start_icswiper);
+				icswiper_img.setImageDrawable(icDrawable);
+				setLeftButtonVisible();
+				backEnable = true;
+				break;
+			}
+			case EMVICManager.STATUS_VALUE_2:
+				break;
+			case EMVICManager.STATUS_VALUE_3:
+				break;
+			case EMVICManager.STATUS_VALUE_4: {
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("密码获取中，请勿拔卡");
+				needPwd = true;
+				Drawable icDrawable = getResources().getDrawable(
+						R.drawable.pin_pad_tv_input_pwd_bg);
+				icswiper_img.setImageDrawable(icDrawable);
+				break;
+			}
+			case EMVICManager.TRADE_STATUS_0:
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
+				break;
+			case EMVICManager.TRADE_STATUS_1:
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
+				break;
+			case EMVICManager.TRADE_STATUS_2:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡...");
+				break;
+			case EMVICManager.TRADE_STATUS_3:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
+				break;
+			case EMVICManager.TRADE_STATUS_4:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
+				break;
+			case EMVICManager.TRADE_STATUS_5:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡...");
+				break;
+			case EMVICManager.TRADE_STATUS_6:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
+				break;
+			case EMVICManager.TRADE_STATUS_7:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
+				break;
+			case EMVICManager.TRADE_STATUS_8:
+				ic_swiper_guide_text.setText("交易处理中，请勿拔卡...");
+				break;
+			case EMVICManager.TRADE_STATUS_9:
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.red));
+				ic_swiper_guide_text.setText("请先点击密码键盘上的“取消”按键！  ");
+				break;
+			case EMVICManager.TRADE_STATUS_BAN: {
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("交易拒绝!");
+				needPwd = false;
+				JSONObject transData = new JSONObject();
+				try {
+					transData.put("isCancelled", true);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				onStopReadICData();
+				onCall(func_icSwipeCard, transData);
+				break;
+			}
+			case EMVICManager.TRADE_STATUS_ABORT: {
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("交易中止,请拔卡");
+				needPwd = false;
+				JSONObject transData = new JSONObject();
+				try {
+					transData.put("isCancelled", true);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				onStopReadICData();
+				onCall(func_icSwipeCard, transData);
+				break;
+			}
+			case EMVICManager.TRADE_STATUS_APPROVED:
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("交易批准!");
+				needPwd = false;
+				break;
+			case EMVICManager.TRADE_STATUS_DISABLESERVICE: {
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				needPwd = false;
+				ic_swiper_guide_text.setText("不允许服务，交易中止，请取卡!");
+				JSONObject transData = new JSONObject();
+				try {
+					transData.put("isCancelled", true);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				onStopReadICData();
+				onCall(func_icSwipeCard, transData);
+				break;
+			}
+			case EMVICManager.TRADE_STATUS_ONLINE:
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText("正在联机，请勿拔卡...");
+				needPwd = false;
+				break;
+			case EMVICManager.TRADE_STATUS_AFGETICDATA: {
+				JSONObject transData = new JSONObject();
+				EMVICData mEMVICData = EMVICData.getEMVICInstance();
+				String pwd = Utility.hexString(mEMVICData.getPinBlock());
+				try {
+					transData.put("cardID", mEMVICData.getICPan());
+					transData.put("track2", mEMVICData.getTrack2());
+					transData.put("validTime", mEMVICData.getDataOfExpired());
+					transData.put("pwd", pwd);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				UtilFor8583.getInstance().trans
+						.setEntryMode(ConstantUtils.ENTRY_IC_MODE);
+				onCall(func_icSwipeCard, transData);
+				break;
+			}
 			default:
 				break;
 			}
 		}
-		
+
 	};
 
 	private void onStartSwiper() {
@@ -419,6 +597,7 @@ public class PayAccountController extends BaseController implements
 	private void onStopSwiper() {
 		if (ex_cardSwiper != null) {
 			ex_cardSwiper.onPause();
+			ex_cardSwiper = null;
 		}
 	}
 
@@ -459,12 +638,41 @@ public class PayAccountController extends BaseController implements
 		}
 	}
 
+	private void onDestroySound() {
+		if (ex_soundWave != null) {
+			ex_soundWave.onDestroy();
+			ex_soundWave = null;
+		}
+	}
+
 	private void onStartKeyBoard() {
 
 	}
 
 	private void onStopKeyBoard() {
 
+	}
+
+	/**
+	 * 读取IC卡信息
+	 */
+	private void onStartReadICData() {
+		if (emvManager == null) {
+			emvManager = EMVICManager.getEMVICManagerInstance();
+			emvManager.setTransAmount(data.optString("transAmount"));
+			emvManager.onCreate(this, mHandler);
+		}
+		emvManager.onStart();
+	}
+
+	/**
+	 * 停止读取IC卡信息
+	 */
+	private void onStopReadICData() {
+		if (emvManager != null) {
+			emvManager.onPause();
+			emvManager = null;
+		}
 	}
 
 	/**
@@ -517,15 +725,10 @@ public class PayAccountController extends BaseController implements
 	@Override
 	protected void onPause() {
 		isPause = true;
-		if (ex_cardSwiper != null) {
-			ex_cardSwiper.onPause();
-		}
-		if (ex_soundWave != null) {
-			ex_soundWave.onPause();
-		}
-		// if (ex_codeScanner != null) {
-		// ex_codeScanner.onPause();
-		// }
+		// onStopReadICData();
+		// onStopSwiper();
+		onStopSound();
+		// onStopReadICData();
 		if (misc != null && misc.equals(ZBTAG)) {
 			if (scanner != null) {
 				scanner.destroyedScanner();
@@ -547,15 +750,14 @@ public class PayAccountController extends BaseController implements
 			isPause = false;
 		}
 		Log.d(TAG, "NearFieldController onResume");
-		if (ex_cardSwiper != null) {
-			ex_cardSwiper.onStart();
-		}
+		/*
+		 * if (emvManager != null) { emvManager.onStart(); } else {
+		 * onStartReadICData(); } if (ex_cardSwiper != null) {
+		 * ex_cardSwiper.onStart(); } else { onStartSwiper(); }
+		 */
 		if (ex_soundWave != null) {
 			ex_soundWave.onStart();
 		}
-		// if (ex_codeScanner != null) {
-		// ex_codeScanner.onResume();
-		// }
 		if (misc != null && misc.equals(ZBTAG)) {
 			if (scanner != null) {
 				scanner.startScanner();
@@ -572,18 +774,9 @@ public class PayAccountController extends BaseController implements
 	protected void onDestroy() {
 		Log.d(TAG, this + "onDestroy");
 
-		if (ex_cardSwiper != null) {
-			ex_cardSwiper.onDestroy();
-			ex_cardSwiper = null;
-		}
-		if (ex_soundWave != null) {
-			ex_soundWave.onDestroy();
-			ex_soundWave = null;
-		}
-		// if (ex_codeScanner != null) {
-		// ex_codeScanner.onDestroy();
-		// ex_codeScanner = null;
-		// }
+		onStopReadICData();
+		onStopSwiper();
+		onDestroySound();
 		if (misc != null && misc.equals(ZBTAG)) {
 			if (scanner != null) {
 				scanner.destroyedScanner();
@@ -600,15 +793,25 @@ public class PayAccountController extends BaseController implements
 	@Override
 	public void onClickLeftButton(View view) {
 		// TODO Auto-generated method stub
-		onPause();
-		super.onClickLeftButton(view);
+		if (needPwd) {
+			onCall("PayAccount.cancelDialog", null);
+		} else {
+			onPause();
+			super.onClickLeftButton(view);
+		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		onCall("PayAccount.clear", null);
-		onPause();
-		super.onBackPressed();
+		if (needPwd) {
+			onCall("PayAccount.cancelDialog", null);
+		} else {
+			if (backEnable) {
+				onCall("PayAccount.clear", null);
+				onPause();
+				super.onBackPressed();
+			}
+		}
 	}
 
 	@Override
@@ -679,7 +882,8 @@ public class PayAccountController extends BaseController implements
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
+		UtilFor8583.getInstance().trans
+				.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
 		onCall(func_swipeCard, msg);
 	}
 

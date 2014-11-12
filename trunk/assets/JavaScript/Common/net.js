@@ -25,6 +25,7 @@
         && !isActionEqual("msc/pay/reverse", action, params)
         && !isActionEqual("msc/pay/signin", action, params)
         && !isActionEqual("msc/pay/signout", action, params)
+        && !isActionEqual("msc/pay/dwonload", action, params)
         && !isActionEqual("msc/pay/batch/settle", action, params)
         && !isActionEqual("msc/txn/update",action, params)
         && !isActionEqual("msc/payment/info/query", action, params)
@@ -147,6 +148,9 @@
 
   function _callBackConnect(response) {
     if (response == null) {
+	if(window.downloadParams){
+	  	window.COMM.deleteParamsFiles();
+	}
       return;
     }
 
@@ -156,10 +160,14 @@
         _keyExchange = true;
       }
       if (_customAction == "") {
+	  	if(window.downloadParams){
+	  		window.COMM.deleteParamsFiles();
+	  	}
         Scene.alert(response.errorMsg,actionAfterError);
       } else {
         var func = _callbackQueue[_customAction];
         if (func) {
+		  saveTouchApmpTime();
           func(response);
         };
       };
@@ -186,15 +194,21 @@
         if (data.action == null || data.action.length == 0) {
           if (_customAction == "") {
             if (data.errorMsg != null) {
+			  if(window.downloadParams){
+	  			window.COMM.deleteParamsFiles();
+	  		  }
               Scene.alert(data.errorMsg,actionAfterError)
             } else {
+              if(window.downloadParams){
+	  			window.COMM.deleteParamsFiles();
+	  		  }
               Scene.alert("通信故障",actionAfterError)
             }
           } else {
             var func = _callbackQueue[_customAction];
             if (func) {
-              func(response);
 			  saveTouchApmpTime();
+              func(response);			  
             };
           };
           return;
@@ -236,6 +250,9 @@
       saveTouchApmpTime();
       return func(data)
     } else {
+      if(window.downloadParams){
+	  	window.COMM.deleteParamsFiles();
+	  }
       Scene.alert(data.errorMsg,actionAfterError);
     }
   }
@@ -290,6 +307,9 @@
       
       _sessionId = "-1";
       _keyExchange = true;
+	  if(window.downloadParams){
+	  	window.COMM.deleteParamsFiles();
+	  }
       Scene.alert(data.errorMsg,function(){
 	  	window.RMS.clear("savedTransData");
       	window.user.init({});

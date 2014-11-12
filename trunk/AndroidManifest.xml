@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="37"
-    android:versionName="2.1.2" >
+    android:versionCode="38"
+    android:versionName="3.0.1" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -281,6 +281,14 @@
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.pay.PayMethodController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.BaseController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.pay.CashConsumeController"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape" >
             <meta-data

@@ -1,6 +1,8 @@
 package cn.koolcloud.pos;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +37,8 @@ import android.widget.Toast;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.control.ISO8583Controller;
 import cn.koolcloud.interfaces.MisposEventInterface;
+import cn.koolcloud.jni.EmvL2Interface;
+import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.HomeController;
 import cn.koolcloud.pos.controller.PinPadController;
@@ -60,6 +64,7 @@ import cn.koolcloud.pos.controller.others.settings.SetTransIdController;
 import cn.koolcloud.pos.controller.others.settings.SettingsDownloadController;
 import cn.koolcloud.pos.controller.others.settings.SigninController;
 import cn.koolcloud.pos.controller.others.settings.TransBatchController;
+import cn.koolcloud.pos.controller.pay.CashConsumeController;
 import cn.koolcloud.pos.controller.pay.PayAccountController;
 import cn.koolcloud.pos.controller.pay.PayMethodController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
@@ -74,6 +79,7 @@ import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherReco
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController;
 import cn.koolcloud.pos.controller.transfer.SuperTransferController;
 import cn.koolcloud.pos.database.CacheDB;
+import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.net.NetEngine;
 import cn.koolcloud.pos.secure.SecureEngine;
 import cn.koolcloud.pos.service.IMerchService;
@@ -110,10 +116,10 @@ public class ClientEngine implements MisposEventInterface {
 	public static final int REQUEST_EXTERNAL = 2;
 	private static final long SESSION_TIMEOUT = 8 * 60;// 分钟
 	private Thread sessionThread = null;
-	
+
 	private MisposCheckingThread misposCheckingThread;
-	
-	//cache mispos data
+
+	// cache mispos data
 	private JSONObject misposJsonObj;
 
 	private ClientEngine() {
@@ -426,6 +432,7 @@ public class ClientEngine implements MisposEventInterface {
 
 				@Override
 				public void run() {
+					JavaScriptEngine js = null;
 					while (true) {
 						Date now = new Date();
 						long curTime = now.getTime();
@@ -438,8 +445,12 @@ public class ClientEngine implements MisposEventInterface {
 								"Session Test---------------Through the time:"
 										+ period_min);
 						if (SESSION_TIMEOUT - period_min < 30) {
-							((BaseController) context).onCall(
-									"Home.checkSessionByEchoTest", null);
+							if (js == null) {
+								js = ClientEngine.engineInstance()
+										.javaScriptEngine();
+							}
+							js.callJsHandler("Home.checkSessionByEchoTest",
+									null);
 						}
 						try {
 							Thread.sleep(1000 * 60 * 2);
@@ -457,8 +468,35 @@ public class ClientEngine implements MisposEventInterface {
 	}
 
 	public void stopSessionTest() {
-		sessionThread.interrupt();
+		if (sessionThread != null) {
+			sessionThread.interrupt();
+		}
 		Log.i(TAG, "stopSessionTest success--------------");
+	}
+
+	public void deleteParamsFiles() {
+		File file1 = new File("/mnt/sdcard/aid_param.ini");
+		if (file1.exists()) {
+			file1.delete();
+		}
+		File file2 = new File("/mnt/sdcard/ca_param.ini");
+		if (file2.exists()) {
+			file2.delete();
+		}
+	}
+
+	public Boolean paramsFilesIsExists() {
+		Boolean existsTag = false;
+		File file1 = new File("/mnt/sdcard/aid_param.ini");
+		File file2 = new File("/mnt/sdcard/ca_param.ini");
+		if (!file1.exists() || !file2.exists()) {
+			file1.delete();
+			file2.delete();
+			existsTag = false;
+		} else {
+			existsTag = true;
+		}
+		return existsTag;
 	}
 
 	public void showAlert(final JSONObject data, final String identifier) {
@@ -833,8 +871,10 @@ public class ClientEngine implements MisposEventInterface {
 									"com.koolyun.coupon.LoginActivity"));
 							mIntent.putExtra("transAmount", transAmount);
 							mIntent.putExtra("packagename",
-									getCurrentController().getPackageName());
+									Env.getPackageName(context));
 							mIntent.putExtra("orderNo", "");
+							mIntent.putExtra("txnId",
+									couponData.optString("txnId"));
 							mIntent.putExtra("orderDesc", "");
 							mIntent.putExtra("actionType", couponType);
 							// startActivity(intent);
@@ -863,9 +903,11 @@ public class ClientEngine implements MisposEventInterface {
 							e.printStackTrace();
 						}
 					}
-				} else if ("MisposController".equals(name) && formData.optString("actionType").equals("mispos")) {
+				} else if ("MisposController".equals(name)
+						&& formData.optString("actionType").equals("mispos")) {
 					misposJsonObj = data;
-					misposCheckingThread = new MisposCheckingThread(ClientEngine.this);
+					misposCheckingThread = new MisposCheckingThread(
+							ClientEngine.this);
 					misposCheckingThread.start();
 				} else {
 					int requestCode = mRequestCode;
@@ -927,6 +969,8 @@ public class ClientEngine implements MisposEventInterface {
 			controllerClass = LoginVerifyController.class;
 		} else if (className.equals("Signin")) {
 			controllerClass = SigninController.class;
+		} else if (className.equals("CashConsume")) {
+			controllerClass = CashConsumeController.class;
 		} else if (className.equals("Home")) {
 			controllerClass = HomeController.class;
 		} else if (className.equals("SetMerchId")) {
@@ -1117,6 +1161,15 @@ public class ClientEngine implements MisposEventInterface {
 				jsonObject.remove("transData8583");
 				iso8583Controller.preAuthCompleteCancel(
 						Utility.hex2byte(data8583), jsonObject);
+			} else if (typeOf8583.equals("posUpStatus")) {
+				iso8583Controller.posUpStatus(jsonObject);
+			} else if (typeOf8583.equals("downloadParams")) {
+				iso8583Controller.downloadParams(jsonObject);
+			} else if (typeOf8583.equals("downloadEnd")) {
+				iso8583Controller.endDownloadParams(jsonObject);
+			} else if (typeOf8583.equals("superTransfer")) {
+				iso8583Controller.superTransfer(jsonObject);
+
 			}
 
 			data8583 = iso8583Controller.toString();
@@ -1150,8 +1203,13 @@ public class ClientEngine implements MisposEventInterface {
 			Log.d(TAG, "get8583 : " + data8583);
 			callBack(callBackId, businessJsonObject);
 		} catch (Exception e1) {
+			String errorType = "ERROR";
+			if (iso8583Controller.getErrorType().equals(
+					ConstantUtils.ERROR_TYPE_0)) {
+				errorType = ConstantUtils.ERROR_TYPE_0;
+			}
 			try {
-				businessJsonObject.put("error", "ERROR");
+				businessJsonObject.put("error", errorType);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1172,6 +1230,117 @@ public class ClientEngine implements MisposEventInterface {
 			boolean load8583Result = iso8583Controller.load(Utility
 					.hex2byte(data8583));
 			Log.d(TAG, "load8583 load8583Result : " + load8583Result);
+			/*-------------------for ic trans--------------------*/
+			UtilFor8583 uf8 = UtilFor8583.getInstance();
+			EMVICManager emvICManager = EMVICManager.getEMVICManagerInstance();
+			String resCodeStr = "";
+			int res = -1;
+			int cAuthCode_len = 0;
+			byte[] cAuthCode = null;
+			int trade_ret = -1;
+			if (uf8.trans.getEntryMode() == ConstantUtils.ENTRY_IC_MODE) {
+				// TODO:后续可能再加上类型。
+				if (uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_CONSUMECANCE
+						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PRAUTHCANCEL
+						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PRAUTHCOMPLETE
+						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PRAUTHSETTLEMENT
+						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PREAUTHCOMPLETECANCEL) {
+					if (uf8.trans.getAuthCode() == null
+							|| uf8.trans.getAuthCode().equals("")) {
+						cAuthCode = null;
+						cAuthCode_len = 0;
+					}
+					res = EmvL2Interface.recvOnlineMessage(null, (char) (0),
+							null, (char) (0), cAuthCode,
+							(char) (cAuthCode_len),
+							uf8.trans.getResponseCode(),
+							(char) (uf8.trans.getResponseCode().length));
+					Log.i("convert8583", "===,recvOnlineMessage,ker_ret:" + res);
+				} else {
+					res = iso8583Controller.getICTranserMsgResult();
+				}
+				if (res >= 0) {
+					trade_ret = emvICManager.tradeEnd();
+					Log.i("convert8583", "===,tradeEnd,trade_ret:" + trade_ret);
+					if (trade_ret < 0) {
+						if (Arrays.equals(uf8.trans.getResponseCode(),
+								"98".getBytes())
+								|| Arrays.equals(uf8.trans.getResponseCode(),
+										"00".getBytes())) {
+							if (trade_ret == -12009) {
+								uf8.trans.setResponseCode("C2".getBytes());
+							} else if (trade_ret == -12010) {
+								uf8.trans.setResponseCode("C3".getBytes());
+							} else if (trade_ret == -12011) {
+								uf8.trans.setResponseCode("C4".getBytes());
+							} else if (trade_ret == -1) {
+								uf8.trans.setResponseCode("C1".getBytes());
+							}
+						} else if (Arrays.equals(uf8.trans.getResponseCode(),
+								"22".getBytes())
+								|| Arrays.equals(uf8.trans.getResponseCode(),
+										"55".getBytes())) {
+							// 返回原响应码
+						} else if (Arrays.equals(uf8.trans.getResponseCode(),
+								"12".getBytes())
+								|| Arrays.equals(uf8.trans.getResponseCode(),
+										"40".getBytes())) {
+							if (trade_ret == -12009) {
+								uf8.trans.setResponseCode("B2".getBytes());
+							} else if (trade_ret == -12010) {
+								uf8.trans.setResponseCode("B3".getBytes());
+							} else if (trade_ret == -12011) {
+								uf8.trans.setResponseCode("B4".getBytes());
+							} else if (trade_ret == -1) {
+								uf8.trans.setResponseCode("B1".getBytes());
+							}
+						} else {
+							if (trade_ret == -12009) {
+								uf8.trans.setResponseCode("D2".getBytes());
+							} else if (trade_ret == -12010) {
+								uf8.trans.setResponseCode("D3".getBytes());
+							} else if (trade_ret == -12011) {
+								uf8.trans.setResponseCode("C4".getBytes());
+							} else if (trade_ret == -1) {
+								uf8.trans.setResponseCode("D1".getBytes());
+							}
+						}
+					} else {
+						// 交易成功，返回原响应码
+					}
+					// for chongzheng test:
+					// uf8.trans.setResponseCode("C1".getBytes());
+					resCodeStr += String.format("%02X ",
+							uf8.trans.getResponseCode()[0]);
+					resCodeStr += String.format("%02X ",
+							uf8.trans.getResponseCode()[1]);
+					Log.i("convert8583", "===,after tradeEnd,responseCode:"
+							+ resCodeStr);
+				} else if (res == -12009) {
+					if (Arrays.equals(uf8.trans.getResponseCode(),
+							"00".getBytes())
+							|| Arrays.equals(uf8.trans.getResponseCode(),
+									"98".getBytes())) {
+						uf8.trans.setResponseCode("C2".getBytes());
+					} else if (Arrays.equals(uf8.trans.getResponseCode(),
+							"22".getBytes())
+							|| Arrays.equals(uf8.trans.getResponseCode(),
+									"55".getBytes())) {
+						// 返回原响应码
+					} else {
+						uf8.trans.setResponseCode("D2".getBytes());
+					}
+					// for chongzheng test:
+					// uf8.trans.setResponseCode("C1".getBytes());
+					resCodeStr += String.format("%02X ",
+							uf8.trans.getResponseCode()[0]);
+					resCodeStr += String.format("%02X ",
+							uf8.trans.getResponseCode()[1]);
+					Log.i("convert8583", "===,after tradeEnd,responseCode:"
+							+ resCodeStr);
+				}
+				uf8.trans.setEntryMode((byte) 0);
+			}
 			String resCode = iso8583Controller.getResCode();
 			Log.d(TAG, "load8583 resCode : " + resCode);
 			String resMessage = HostMessage.getMessage(resCode);
@@ -1179,6 +1348,12 @@ public class ClientEngine implements MisposEventInterface {
 			data8583JsonObject.put("resCode", resCode);
 			data8583JsonObject.put("resMessage", resMessage);
 			data8583JsonObject.put("rrn", iso8583Controller.getApOrderId());// 使用机构的参考号
+			data8583JsonObject.put("paramDownloadFlag",
+					iso8583Controller.getParamDownloadFlag());
+			data8583JsonObject.put("paramsCapkDownloadNeed",
+					iso8583Controller.getParamsCapkDownloadNeed());
+			data8583JsonObject.put("paramsCapkCheckNeed",
+					iso8583Controller.getIcParamsCapkCheckNeed());
 			data8583JsonObject.put("apOrderId",
 					iso8583Controller.getApOrderId());// 机构参考号
 			data8583JsonObject.put("payOrderBatch",
@@ -1343,7 +1518,7 @@ public class ClientEngine implements MisposEventInterface {
 
 	@Override
 	public void misposConnectStatus(boolean isConnected) {
-		//TODO:checking mispos call back to show Mispos page whether or not
+		// TODO:checking mispos call back to show Mispos page whether or not
 		Log.w(TAG, "isConnected:" + isConnected);
 		misposCheckingThread.setEventThreadRunning(false);
 		if (isConnected) {
@@ -1353,17 +1528,22 @@ public class ClientEngine implements MisposEventInterface {
 				startController(controllerClass, misposJsonObj, 0);
 			}
 		} else {
-//			callBack("SettingsIndex.batchCallBack", null);
+			// callBack("SettingsIndex.batchCallBack", null);
 			JSONObject formData = misposJsonObj.optJSONObject("data");
 			if (formData.optString("actionType").equals("mispos")) {
-				JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+				JavaScriptEngine js = ClientEngine.engineInstance()
+						.javaScriptEngine();
 				if (js != null) {
 					js.callJsHandler("SettingsIndex.batchCallBack", null);
 				}
 			} else {
 				JSONObject jsObj = new JSONObject();
 				try {
-					jsObj.put("msg", context.getResources().getString(R.string.dialog_device_check_mispos_unusual));
+					jsObj.put(
+							"msg",
+							context.getResources()
+									.getString(
+											R.string.dialog_device_check_mispos_unusual));
 					jsObj.put("onCall", true);
 					jsObj.put("transAmount", formData.optString("transAmount"));
 					String identifier = "";

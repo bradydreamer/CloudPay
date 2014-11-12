@@ -3,7 +3,9 @@
   if (window.data8583) {
     return;
   }
-
+  var ERROR_TYPE_0 = "0x00";
+  var ERROR_TYPE_1 = "0x01";
+  var ERROR_TYPE_2 = "0x02";
   function convert8583(data, callback) {
     Global.callObjcHandler("convert8583", data, convert8583_callback);
     function convert8583_callback(data){
@@ -26,7 +28,17 @@
   function get8583(data, callback) {
     Global.callObjcHandler("get8583", data, get8583_callback);
 	function get8583_callback(data){
-		if(data.error == "ERROR"){
+		if(data.error == ERROR_TYPE_0){
+			Scene.alert("程序异常，请重新操作或重新启动！",function(){
+				window.RMS.clear("savedTransData");
+				if(ConsumptionData.dataForPayment.isExternalOrder){
+					Pay.restart();
+				}else{			
+					Scene.goBack("Home");
+				}
+			});
+			return;
+		}else if(data.error != null && data.error != undefined){
 			Scene.alert("程序异常，请重新操作或重新启动！",function(){
 				if(ConsumptionData.dataForPayment.isExternalOrder){
 					Pay.restart();
@@ -36,6 +48,7 @@
 			});
 			return;
 		}
+		
 		if(callback != null){
 			callback(data);
 		}

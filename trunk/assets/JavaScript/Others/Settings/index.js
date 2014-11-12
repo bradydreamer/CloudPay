@@ -112,7 +112,8 @@
 				actionLogout();
 		    }else{
 		    	if(!MISTAG){
-			    	Scene.alert("批结算完成！",afterTransBatchCallback);
+//			    	Scene.alert("批结算完成！",afterTransBatchCallback);
+		    		afterTransBatchCallback();
 		    	}else{
 			    	var formData = {
 						typeId : "LOGOUT",
@@ -137,7 +138,8 @@
 			window.COMM.stopCheckSession();
 			Scene.alert("退出成功！");
 		} else {
-			Scene.alert("批结算完成！",afterTransBatchCallback);
+			//Scene.alert("批结算完成！",afterTransBatchCallback);
+			afterTransBatchCallback();
 		}
 	}
 

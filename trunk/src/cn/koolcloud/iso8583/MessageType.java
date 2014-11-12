@@ -119,6 +119,8 @@ public class MessageType implements Constant {
 					"00"), // 63
 			new MessageTypeTable(TRAN_DOWN_BLACKLIST, "0800", "      ", "00",
 					"00"), // 64
+			new MessageTypeTable(TRAN_DWON_CAPK_PARAM_END, "0800", "      ",
+					"00", "00"), // 65
 			/*
 			 * //自定义 快捷支付 new MessageTypeTable(TRAN_SALE_9121, "0200",
 			 * "000000"), // 65 new MessageTypeTable(TRAN_SALE_9100, "0200",
@@ -138,7 +140,9 @@ public class MessageType implements Constant {
 			new MessageTypeTable(TRAN_AUTH_COMPLETE_REVERSAL, "0400", "000000",
 					"06", "20"), // 74
 			new MessageTypeTable(TRAN_AUTH_COMPLETE_CANCEL_REVERSAL, "0400",
-					"200000", "06", "21") // 75
+					"200000", "06", "21"), // 75
+			
+			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0200", "383003", "82", "82") // 76
 	};
 
 	private static int i;

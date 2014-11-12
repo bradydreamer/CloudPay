@@ -26,6 +26,7 @@ public class HostMessage {
 			messageMap.put("13", "无效金额");
 			messageMap.put("14", "无效卡号");
 			messageMap.put("15", "此卡无对应发卡方");
+			messageMap.put("19", "交易失败，请联系发卡机构");
 			messageMap.put("21", "该卡未初始化或睡眠卡");
 			messageMap.put("22", "请在批结、签退之后重新操作");
 			messageMap.put("25", "无原始交易，请联系发卡行");
@@ -57,6 +58,19 @@ public class HostMessage {
 			messageMap.put("99", "PIN格式错，请重新签到");
 			messageMap.put("A0", "MAC校验错，请重新签到");
 			messageMap.put("F0", "设置密码键盘失败，请重新签到");
+			messageMap.put("B1", "交易拒绝，请取卡！");
+			messageMap.put("B2", "交易中止，请取卡！");
+			messageMap.put("B3", "不允许的服务，请取卡！");
+			messageMap.put("B4", "交易批准，冲正！");
+			messageMap.put("C1", "交易拒绝，请取卡！");
+			messageMap.put("C2", "交易中止，请取卡！");
+			messageMap.put("C3", "不允许的服务，请取卡！");
+			messageMap.put("C4", "交易批准，冲正！");
+			messageMap.put("D1", "交易拒绝，请取卡！");
+			messageMap.put("D2", "交易中止，请取卡！");
+			messageMap.put("D3", "不允许的服务，请取卡！");
+			messageMap.put("D4", "交易批准，冲正！");
+
 		}
 	}
 

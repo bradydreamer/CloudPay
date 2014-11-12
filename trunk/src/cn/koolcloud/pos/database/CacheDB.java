@@ -1,7 +1,9 @@
 package cn.koolcloud.pos.database;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,10 +14,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
 import cn.koolcloud.pos.service.PaymentInfo;
 import cn.koolcloud.pos.util.Logger;
+import cn.koolcloud.pos.util.UtilForDataStorage;
 
 /**
  * <p>Title: CacheDB.java </p>
@@ -404,6 +408,15 @@ public class CacheDB extends BaseSqlAdapter {
     	return cursor;
     }
     
+    public int getPaymentsCount() { 
+    	String sql = "select count(*) from " + PAYMENT_ACTIVITY_TABLE_NAME;
+    	Cursor cursor = getCursor(sql, null);
+    	cursor.moveToFirst();
+		int count = cursor.getInt(0);
+		cursor.close();
+    	return count;
+    }
+    
     public PaymentInfo getPaymentByPaymentId(String paymentId) { 
     	String sql = "select * from " + PAYMENT_ACTIVITY_TABLE_NAME + " where " + ACQUIRE_PAYMENT_ID + " = '" + paymentId + "'";
     	PaymentInfo paymentInfo = null;
@@ -618,12 +631,20 @@ public class CacheDB extends BaseSqlAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if (oldVersion == 2 && newVersion == 3) {
+			if (newVersion == 3) {
 				// Drop tables  
 		        db.execSQL("DROP TABLE IF EXISTS " + BATCH_PROCESSING_TABLE_NAME);
 		        db.execSQL("DROP TABLE IF EXISTS " + ACQUIRE_INSTITUTE_TABLE_NAME);
+		        db.execSQL("DROP TABLE IF EXISTS " + PAYMENT_ACTIVITY_TABLE_NAME);
 		        // Create tables  
-		        onCreate(db); 
+		        onCreate(db);
+		        
+		        //clear saved parameter preference
+		        Map<String, Object> map = new HashMap<String, Object>();
+		        map.put("payParamVersion", "UPD");
+		        map.put("pwd", "0");
+		        UtilForDataStorage.savePropertyBySharedPreferences(context,	"merchant", map);
+		        UtilForDataStorage.saveDate(context, "");
 			}
 		}
 		

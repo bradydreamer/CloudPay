@@ -61,7 +61,7 @@ public class PrepaidCardQRCodeController extends BaseController implements
 		func_nearfieldAccount = data.optString("nearfieldAccount");
 
 		UtilFor8583.getInstance().trans
-				.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
+				.setEntryMode(ConstantUtils.ENTRY_PREPAID_COUPON_QRCODE_MODE);
 		codeScanner = new CodeScanner();
 		codeScanner.onCreate(PrepaidCardQRCodeController.this,
 				PrepaidCardQRCodeController.this);

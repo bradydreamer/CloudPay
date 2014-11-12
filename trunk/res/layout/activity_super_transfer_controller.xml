@@ -10,11 +10,10 @@
 	    android:gravity="center_vertical"
 	    android:orientation="horizontal">
 	    <LinearLayout 
-	        android:layout_width="wrap_content"
+	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:orientation="vertical"
-	        android:layout_marginLeft="80dp"
-	        android:layout_marginRight="100dp"
+	        android:layout_weight="1"
 	        android:gravity="center">
 	        <LinearLayout 
 	            android:layout_width="wrap_content"
@@ -70,7 +69,7 @@
 	            android:textSize="20px"
 	            android:layout_marginTop="10dp"/>
 	        <Button
-                android:id="@+id/ok"
+                android:id="@+id/btnConfirm"
                 android:layout_width="@dimen/dialog_soft_update_ok_button_width"
                 android:layout_height="50dp"
                 android:background="@drawable/button_blue_background"
@@ -79,7 +78,11 @@
                 android:textSize="@dimen/dialog_btn_text_size"
                 android:layout_marginTop="20dp"/>
 	    </LinearLayout>
-	    
-	    <include layout="@layout/keyboard_layout"/>
+	    <LinearLayout 
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1">
+		    <include layout="@layout/keyboard_layout"/>
+	    </LinearLayout>
 	</LinearLayout>
 </RelativeLayout>

@@ -289,6 +289,10 @@ public abstract class BaseController extends Activity {
 		titlebar_btn_left.setVisibility(View.INVISIBLE);
 	}
 
+	protected void setLeftButtonVisible() {
+		titlebar_btn_left.setVisibility(View.VISIBLE);
+	}
+
 	protected void setRightButtonHidden() {
 		titlebar_btn_right.setVisibility(View.INVISIBLE);
 	}

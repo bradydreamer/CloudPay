@@ -243,13 +243,18 @@
 		Home.needUpdateUI = true;
 		window.merchSettings = null;
 
-		Scene.alert("系统初始化成功", function() {
+		/*Scene.alert("系统初始化成功", function() {
 			if(ConsumptionData.dataForPayment.isExternalOrder){
 				Pay.restart();
 			}else{
 				Scene.goBack("Home");
 			}
-		});
+		});*/
+		if (ConsumptionData.dataForPayment.isExternalOrder) {
+			Pay.restart();
+		} else {
+			Scene.goBack("Home");
+		}
 	}
 
 	function objLength(o) {

@@ -71,6 +71,9 @@ public class PayExScreen extends WelcomeScreen {
 		} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
 
 		}
+		
+		//set this is external order
+		isExternalOrder = true;
 		super.onCreate(savedInstanceState);
 
 		this.exitOnDestroy = false;
@@ -322,7 +325,8 @@ public class PayExScreen extends WelcomeScreen {
 							MyApplication.getContext(), "merchant");
 			operatorName = String.valueOf(map.get("operator"));
 
-			i.putExtra(ACTION, ACTION_PAY);
+//			i.putExtra(ACTION, ACTION_PAY);
+			i.putExtra(ACTION, action);
 			i.putExtra("operatorName", operatorName);
 			i.putExtra("totalAmount", totalAmount);
 			i.putExtra("actualAmount", paidAmount);

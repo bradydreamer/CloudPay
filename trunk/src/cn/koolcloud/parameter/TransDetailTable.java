@@ -65,6 +65,9 @@ public class TransDetailTable {
 	private Integer ecBalance;
 	private String iccData;
 	private String scriptResult;
+	private String icParamsCapkDownloadCount;
+	private Boolean icParamsCapkDownloadNeed;
+	private Boolean icParamsCapkCheckNeed;
 
 	public TransDetailTable() {
 		init();
@@ -130,6 +133,9 @@ public class TransDetailTable {
 		ecBalance = -1;
 		scriptResult = "";
 		iccData = "";
+		icParamsCapkDownloadCount = "0";
+		icParamsCapkDownloadNeed = false;
+		icParamsCapkCheckNeed = false;
 	}
 
 	public Integer getId() {
@@ -686,6 +692,30 @@ public class TransDetailTable {
 		if (data != null && (offset + length) <= data.length) {
 			StringUtil.toHexString(data, offset, length, false);
 		}
+	}
+
+	public String getIcParamsCapkDownloadCount() {
+		return icParamsCapkDownloadCount;
+	}
+
+	public void setIcParamsCapkDownloadCount(String icParamsCapkDownloadCount) {
+		this.icParamsCapkDownloadCount = icParamsCapkDownloadCount;
+	}
+
+	public Boolean getIcParamsCapkDownloadNeed() {
+		return icParamsCapkDownloadNeed;
+	}
+
+	public void setIcParamsCapkDownloadNeed(Boolean icParamsCapkDownloadNeed) {
+		this.icParamsCapkDownloadNeed = icParamsCapkDownloadNeed;
+	}
+
+	public Boolean getIcParamsCapkCheckNeed() {
+		return icParamsCapkCheckNeed;
+	}
+
+	public void setIcParamsCapkCheckNeed(Boolean icParamsCapkCheckNeed) {
+		this.icParamsCapkCheckNeed = icParamsCapkCheckNeed;
 	}
 
 	@Override

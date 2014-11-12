@@ -32,7 +32,7 @@
 	var transYear = formatedTransDate.getFullYear();
 	var transMonth = formatedTransDate.getMonth();
 	var transDay = formatedTransDate.getDate();
-	if (transYear != currentYear || transMonth != currentMonth || transDay != currentDay) {
+	if (params.transType != transType_PreAuth &&(transYear != currentYear || transMonth != currentMonth || transDay != currentDay)) {
 		Scene.alert("交易已经过期");
 		return;
 	}
@@ -40,9 +40,11 @@
 	//check date on reverse --end mod by Teddy 11th July
 	
 	//check index no, if it is mispos then don't get 8583 go pay flow --start add by Teddy on 3th July
+	//fix SMTPS-171 --start fixed by Teddy on 10th November
+  	ConsumptionData.dataForPayment.payKeyIndex = params.payKeyIndex;
+  	//fix SMTPS-171 --end fixed by Teddy on 10th November
 	if (params.payKeyIndex == "90") {
-  		ConsumptionData.dataForPayment.payKeyIndex = params.payKeyIndex;
-  		ConsumptionData.dataForPayment.transAmount = params.transAmount;
+  		ConsumptionData.dataForPayment.transAmount = util.yuan2fenStr(params.transAmount);
   		ConsumptionData.dataForPayment.batchNo = params.batchNo;
   		ConsumptionData.dataForPayment.traceNo = params.traceNo;
   		ConsumptionData.dataForPayment.ref = params.ref;
@@ -59,7 +61,6 @@
 			params.transType = transType_ConsumeCancel;
   		}
   		ConsumptionData.dataForPayment.cashdata = params;
-  		ConsumptionData.dataForPayment.payKeyIndex = params.payKeyIndex
   		var formData = {
   		};  		
   		formData.Login = "LoginIndex.voidConfirmLogin";

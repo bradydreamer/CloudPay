@@ -59,8 +59,8 @@ public class CardSwiper {
 	}
 
 	public void onDestroy() {
-		MsrInterface.cancelPoll();
 		isPollCanceled = true;
+		MsrInterface.cancelPoll();
 		MsrInterface.close();
 		if (null != waitDataLooper) {
 			waitDataLooper.quit();
@@ -113,14 +113,32 @@ public class CardSwiper {
 	}
 
 	public String getCardValidTime(String msg) {
+		String str = null;
 		String[] strs = msg.split("=");
-		String str = strs[1].substring(0, 4);
+		if (strs.length == 1) {
+			str = strs[0];
+		} else if (strs.length > 1) {
+			if (strs[1].length() < 4) {
+				str = strs[1];
+			} else {
+				str = strs[1].substring(0, 4);
+			}
+		}
 		return str;
 	}
 
 	public String getServicesCode(String msg) {
+		String str = null;
 		String[] strs = msg.split("=");
-		String str = strs[1].substring(4, 7);
+		if (strs.length == 1) {
+			str = strs[0];
+		} else if (strs.length > 1) {
+			if (strs[1].length() < 7) {
+				str = strs[1];
+			} else {
+				str = strs[1].substring(4, 7);
+			}
+		}
 		return str;
 	}
 

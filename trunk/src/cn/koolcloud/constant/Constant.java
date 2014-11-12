@@ -27,6 +27,7 @@ public interface Constant {
 	final String APMP_TRAN_SIGNOUT = "8021";
 	final String APMP_TRAN_BATCHSETTLE = "8031";
 	final String APMP_TRAN_BALANCE = "1041";
+	final String APMP_TRAN_SUPER_TRANSFER = "1721";
 
 	/*-----  TRANSACTION TYPES  ---------------------------------*/
 	final byte TRAN_BALANCE = 0; // 余额查询
@@ -116,6 +117,7 @@ public interface Constant {
 	final byte TRAN_DOWN_CAPK = 62;
 	final byte TRAN_DOWN_IC_PARAM = 63;
 	final byte TRAN_DOWN_BLACKLIST = 64;
+	final byte TRAN_DWON_CAPK_PARAM_END = 65;
 
 	/*
 	 * final byte TRAN_SALE_9121 = 65; final byte TRAN_SALE_9100 = 66; final
@@ -128,6 +130,8 @@ public interface Constant {
 	final byte TRAN_AUTH_CANCEL_REVERSAL = 73;
 	final byte TRAN_AUTH_COMPLETE_REVERSAL = 74;
 	final byte TRAN_AUTH_COMPLETE_CANCEL_REVERSAL = 75;
+	
+	final byte TRAN_SUPER_TRANSFER = 76;
 
 	// 自定义交易
 

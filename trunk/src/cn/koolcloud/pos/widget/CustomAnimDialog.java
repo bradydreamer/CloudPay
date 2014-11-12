@@ -262,7 +262,7 @@ public class CustomAnimDialog extends Dialog{
 			
 			@Override
 			public void run() {
-				if (null != dialog && dialog.isShowing()) {
+				if (!((Activity) context).isFinishing() && null != dialog && dialog.isShowing()) {
 					mainHandler.post(new Runnable() {
 						
 						@Override

@@ -1,11 +1,18 @@
 package cn.koolcloud.pos.controller.transfer;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.InputFilter;
-import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 import android.view.Menu;
@@ -13,14 +20,21 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.external.CardSwiper;
+import cn.koolcloud.pos.external.CardSwiper.CardSwiperListener;
 import cn.koolcloud.pos.util.UtilForMoney;
 
-public class SuperTransferController extends BaseController implements View.OnClickListener, OnTouchListener {
+public class SuperTransferController extends BaseController implements View.OnClickListener, OnTouchListener, CardSwiperListener {
 	private static final String TAG = "SuperTransferController";
+	
+	private static final int HANDLE_TRACK_DATA = 0;
+	private static final int ID_CARD_MIM_LENGTH = 12;
 	
 	private EditText keyboardScreenEditText;
 	private EditText fromAccountEditText;
@@ -28,14 +42,19 @@ public class SuperTransferController extends BaseController implements View.OnCl
 	private EditText idCardEditText;
 	private EditText amountEditText;
 	private ImageView btnXImageView;
+	private Button btnConfirm;
 	
 	private int currentEditText;
+	private int position = 0;
+	private static final int MAX_COUNT = 4;
+	private boolean removeJSTag = true;
+	private CardSwiper mCardSwiper;
+	private EditText currentView = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		findViews();
-		
 	}
 
 	private void findViews() {
@@ -51,6 +70,7 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		fromAccountEditText.setLongClickable(false);
 		fromAccountEditText.setCustomSelectionActionModeCallback(actionModeCallback);
 		currentEditText = fromAccountEditText.getId();
+		currentView = fromAccountEditText;
 		
 		toAccountEditText = (EditText) findViewById(R.id.toAccountEditText);
 		toAccountEditText.setOnTouchListener(this);
@@ -69,8 +89,57 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		
 		btnXImageView = (ImageView) findViewById(R.id.btnXImageView);
 		
+		btnConfirm = (Button) findViewById(R.id.btnConfirm);
+		btnConfirm.setOnClickListener(this);
 	}
 	
+	@Override
+	protected void onResume() {
+		if (currentEditText == R.id.fromAccountEditText && mCardSwiper != null) {
+			mCardSwiper.onStart();
+		} else {
+			onStartSwiper();
+		}
+		super.onResume();
+	}
+	
+	Handler mHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			
+			switch (msg.what) {
+			case HANDLE_TRACK_DATA:
+				JSONObject jsObj = (JSONObject) msg.obj;
+				if (currentEditText == R.id.fromAccountEditText) {
+					fromAccountEditText.setText("");
+					fromAccountEditText.setText(jsObj.optString("cardID"));
+					if (!TextUtils.isEmpty(jsObj.optString("cardID"))) {
+						int length = jsObj.optString("cardID").length();
+						fromAccountEditText.setSelection(length, length);
+					}
+				}
+				
+				if (currentEditText == R.id.toAccountEditText) {
+					toAccountEditText.setText("");
+					toAccountEditText.setText(jsObj.optString("cardID"));
+					if (!TextUtils.isEmpty(jsObj.optString("cardID"))) {
+						int length = jsObj.optString("cardID").length();
+						toAccountEditText.setSelection(length, length);
+					}
+				}
+				
+				initCalculateWithEditText(currentView);
+				onStopSwiper();
+				break;
+
+			default:
+				break;
+			}
+		}
+		
+	};
+
 	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_super_transfer_controller);
@@ -83,12 +152,12 @@ public class SuperTransferController extends BaseController implements View.OnCl
 
 	@Override
 	protected String getControllerName() {
-		return null;
+		return getString(R.string.controllerName_SuperTransfer);
 	}
 
 	@Override
 	protected String getControllerJSName() {
-		return null;
+		return getString(R.string.controllerJSName_SuperTransfer);
 	}
 	
 	protected void showInputNumber() {
@@ -147,23 +216,110 @@ public class SuperTransferController extends BaseController implements View.OnCl
 			numberInputString.append(text);
 		}
 	}
+	
+	@Override
+	public void onClickBtnC(View view) {
+		super.onClickBtnC(view);
+		if (currentEditText == R.id.fromAccountEditText || currentEditText == R.id.toAccountEditText) {
+			onStartSwiper();
+		}
+	}
+
+	@Override
+	public void onClickBtnOK(View view) {
+		position++;
+		position = position % MAX_COUNT;
+		
+		switch (position) {
+		case 0:
+			fromAccountEditText.requestFocus();
+			currentEditText = R.id.fromAccountEditText;
+			currentView = fromAccountEditText;
+			onStartSwiper();
+			break;
+		case 1:
+			toAccountEditText.requestFocus();
+			currentEditText = R.id.toAccountEditText;
+			currentView = toAccountEditText;
+			onStartSwiper();
+			break;
+		case 2:
+			idCardEditText.requestFocus();
+			currentEditText = R.id.idCardEditText;
+			currentView = idCardEditText;
+			onStopSwiper();
+			break;
+		case 3:
+			amountEditText.requestFocus();
+			currentEditText = R.id.amountEditText;
+			currentView = amountEditText;
+			onStopSwiper();
+			break;
+
+		default:
+			break;
+		}
+		
+		initCalculateWithEditText(currentView);
+	}
 
 	@Override
 	protected void setRemoveJSTag(boolean tag) {
-		
+		removeJSTag = tag;
+
 	}
 
 	@Override
 	protected boolean getRemoveJSTag() {
-		return false;
+		// TODO Auto-generated method stub
+		return removeJSTag;
+	}
+	
+	@Override
+	public void onBackPressed() {
+		onCall("window.SuperTransfer.clear", null);
+		onPause();
+		super.onBackPressed();
 	}
 
 	@Override
 	public void onClick(View view) {
-		Log.i(TAG, "view.getId(): " + view.getId());
 		switch (view.getId()) {
-		case R.id.fromAccountEditText:
+		case R.id.btnConfirm:
+			JSONObject msg = new JSONObject();
+			try {
+				String amountStr = amountEditText.getText().toString().trim();
+				if (amountStr.isEmpty() || 0 == Long.parseLong(UtilForMoney.yuan2fen(amountStr))) {
+					return;
+				}
+				
+				msg.put(getString(R.string.formData_key_transAmount), UtilForMoney.yuan2fen(amountStr));
+				
+				String fromAccountStr = fromAccountEditText.getText().toString().trim();
+				if (TextUtils.isEmpty(fromAccountStr)) {
+					return;
+				}
+				msg.put("fromAccount", fromAccountStr);
+				
+				String toAccountStr = toAccountEditText.getText().toString().trim();
+				if (TextUtils.isEmpty(toAccountStr)) {
+					return;
+				}
+				msg.put("toAccount", toAccountStr);
+				
+				String idCardStr = idCardEditText.getText().toString().trim();
+				if (TextUtils.isEmpty(idCardStr) || idCardStr.length() < ID_CARD_MIM_LENGTH) {
+					Toast.makeText(SuperTransferController.this, getResources().getString(R.string.msg_idcard_error), Toast.LENGTH_SHORT).show();
+					return;
+				}
+				msg.put("idCard", idCardStr);
+				
+				onCall("window.SuperTransfer.onCompleteInput", msg);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 			
+//			finish();
 			break;
 
 		default:
@@ -184,23 +340,56 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			if (view.getId() != currentEditText) {
 				currentEditText = view.getId();
-//				clearInputNumber();
 			}
-			if (currentEditText == R.id.amountEditText) {
-				clearInputNumber();
-				btnXImageView.setClickable(false);
-				keyboardScreenEditText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(13)});
-			} else {
-				btnXImageView.setClickable(true);
-				keyboardScreenEditText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(999999999)});  
+			
+			switch (view.getId()) {
+			case R.id.fromAccountEditText:
+				position = 0;
+				if (mCardSwiper != null) {
+					mCardSwiper.onStart();
+				}
+				currentView = fromAccountEditText;
+				break;
+			case R.id.toAccountEditText:
+				position = 1;
+				if (mCardSwiper != null) {
+					mCardSwiper.onStart();
+				}
+				currentView = toAccountEditText;
+				break;
+			case R.id.idCardEditText:
+				position = 2;
+				onStopSwiper();
+				currentView = idCardEditText;
+				break;
+			case R.id.amountEditText:
+				position = 3;
+				onStopSwiper();
+				currentView = amountEditText;
+				break;
+			default:
+				break;
 			}
-			keyboardScreenEditText.setText(mEditText.getText());
-			numberInputString = new StringBuilder(mEditText.getText().toString());
-			keyboardScreenEditText.setSelection(mEditText.getText().length(), mEditText.getText().length());
-			Log.i(TAG, "onTouch:" + view.getId());
+			
+			
+			initCalculateWithEditText(mEditText);
 		}
 		
 		return true;
+	}
+	
+	private void initCalculateWithEditText(EditText mEditText) {
+		if (currentEditText == R.id.amountEditText) {
+			clearInputNumber();
+			btnXImageView.setClickable(false);
+			keyboardScreenEditText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(13)});
+		} else {
+			btnXImageView.setClickable(true);
+			keyboardScreenEditText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(999999999)});  
+		}
+		keyboardScreenEditText.setText(mEditText.getText());
+		numberInputString = new StringBuilder(mEditText.getText().toString());
+		keyboardScreenEditText.setSelection(mEditText.getText().length(), mEditText.getText().length());
 	}
 	
 	//class for hidden select all, copy panel
@@ -226,5 +415,55 @@ public class SuperTransferController extends BaseController implements View.OnCl
 			
 		}
 		
+	}
+	
+	@Override
+	protected void onPause() {
+		if (mCardSwiper != null) {
+			mCardSwiper.onPause();
+		}
+		super.onPause();
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (mCardSwiper != null) {
+			mCardSwiper.onDestroy();
+			mCardSwiper = null;
+		}
+		super.onDestroy();
+	}
+
+	private void onStartSwiper() {
+		if (mCardSwiper == null) {
+			mCardSwiper = new CardSwiper();
+			mCardSwiper.onCreate(this, this);
+		}
+		mCardSwiper.onStart();
+	}
+
+	private void onStopSwiper() {
+		if (mCardSwiper != null) {
+			mCardSwiper.onPause();
+		}
+	}
+
+	@Override
+	public void onRecvTrackData(Hashtable<String, String> trackData) {
+		JSONObject jsObj = new JSONObject();
+		try {
+			Enumeration<String> keys = trackData.keys();
+			while (keys.hasMoreElements()) {
+				String key = keys.nextElement();
+				jsObj.putOpt(key, trackData.get(key));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		Message msg = mHandler.obtainMessage();
+		msg.obj = jsObj;
+		msg.what = HANDLE_TRACK_DATA;
+		msg.sendToTarget();
 	}
 }

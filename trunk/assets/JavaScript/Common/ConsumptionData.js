@@ -89,6 +89,10 @@
 		    	window.RMS.rmBatchByPrimaryKey(ConsumptionData.dataForBatchTask);
 		    }
 	  	} else {
+	  		//cache txnId for mispos --start mod by Teddy on 10th November
+	  		ConsumptionData.dataForPayment.txnId = data.txnId;
+	  		//cache txnId for mispos --end mod by Teddy on 10th November
+	  		
 		  	//remove the record from cache db
 		  	window.RMS.rmBatchByPrimaryKey(ConsumptionData.dataForBatchTask);
 	  	}

@@ -3,14 +3,13 @@ function External() {};
 var transType_Consume = 1021;
 
 External.startReverse = function(data) {
-	
+	window.ConsumptionData.resetConsumptionData();
+	ConsumptionData.dataForPayment.isExternalOrder = true;
 	window.util.exeActionWithLoginChecked(function() {
 		External.startReverseAfterLogin(data);
 	}, true);
 };
-External.startReverseAfterLogin = function(data) {
-	window.ConsumptionData.resetConsumptionData();
-	ConsumptionData.dataForPayment.isExternalOrder = true;
+External.startReverseAfterLogin = function(data) {	
 	var params = JSON.parse(data);
 	var req = {
 			txnId : params.txnId

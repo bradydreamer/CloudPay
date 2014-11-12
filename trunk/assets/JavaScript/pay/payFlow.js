@@ -6,6 +6,14 @@ Pay.gotoPayFlow = function() {
 	Pay.gotoFlow();
 };
 
+Pay.gotoTransferFlow = function() {
+	Pay.cacheData = ConsumptionData.dataForPayment;
+	Pay.flowEndFunction = Pay.transferReq;
+	Pay.flowRestartFunction = Pay.restart;
+
+	Pay.gotoFlow();
+};
+
 Pay.gotoAuthFlow = function(){
 	Pay.cacheData = ConsumptionData.dataForPayment;
 	Pay.flowEndFunction = Pay.preAuthReq;
@@ -135,7 +143,7 @@ Pay.gotoFlow = function() {
 		cacheData.step = step + 1;
 		Pay.gotoFlow();
 		return;
-	} else if (method == "00" || method == "01" || method == "02" || method == "03") {
+	} else if (method == "00" || method == "01" || method == "02" || method == "03" || method == "09") {
 		sceneName = "PayAccount";
 		initPayAccountData();
 	} else if(method == "04"){
@@ -163,6 +171,9 @@ Pay.gotoFlow = function() {
 		formData = {
 			
 		};
+	} else if (method == "15") {
+		sceneName = "CashConsume";
+		initAmountData();
 	} else if (method == "30") {
 		sceneName = "PinPad";
 		initPinData();
@@ -194,7 +205,7 @@ Pay.gotoFlow = function() {
 		if (cacheData[packTag] != null) {
 			return true;
 		} else if (compare("F35", "track2") || compare("F36", "track3") || compare("F40_6F12", "field4") || compare("F40_6F08", "field1") || compare("F40_6F11", "authCode") || compare("F40_6F20", "openBrh")
-		 || compare("F60.6", "paymentId") || compare("F04", "transAmount")) {
+		 || compare("F52", "pwd") ||compare("F60.6", "paymentId") || compare("F04", "transAmount") || compare("F02", "fromAccount") || compare("F61", "idCard") || compare("F62", "toAccount")) {
 			return true;
 		}
 		return false;
@@ -221,7 +232,10 @@ Pay.gotoFlow = function() {
 				balance = 0.00;
 			}
 			formData.maxAmount = "" + balance;
+		}else if(ConsumptionData.dataForPayment.isExternalOrder){
+			formData.maxAmount = ConsumptionData.dataForPayment.transAmount; 
 		}
+		
 	}
 
 	function initPrepaidCardInfo(){
@@ -252,6 +266,7 @@ Pay.gotoFlow = function() {
 			"swipeCard": "PayAccount.exeSwipeResponse",
 			"nearfieldAccount": "PayAccount.exeRecvData",
 			"inputAccount": "PayAccount.exeCardIdResponse",
+			"icSwipeCard": "PayAccount.exeICSwipeResponse"
 		};
 
 		var transAmount = cacheData.transAmount;
@@ -276,6 +291,8 @@ Pay.gotoFlow = function() {
 				btn_name = "btn_sound";
 			} else if (method == "03") {
 				btn_name = "btn_qrcode";
+			}else if(method == "09"){
+				btn_name = "btn_ic";
 			}
 			if (btn_name != null) {
 				formData[btn_name] = i == 0 ? 1 : 0;

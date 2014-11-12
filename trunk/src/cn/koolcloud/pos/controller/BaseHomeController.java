@@ -159,11 +159,11 @@ public abstract class BaseHomeController extends BaseController {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if ((jsonData.optString("typeId")).equals(CASHCONSUME)) {
-					setMethods(data, cashAmount);
-				} else {
-					setMethods(data);
-				}
+				// if ((jsonData.optString("typeId")).equals(CASHCONSUME)) {
+				// setMethods(data, cashAmount);
+				// } else {
+				setMethods(data);
+				// }
 			}
 		} else if (layout_funcModule.equals(view)) {
 			if ("data".equals(key)) {
@@ -521,6 +521,8 @@ public abstract class BaseHomeController extends BaseController {
 				iv.setImageResource(R.drawable.logo_search_balance);
 			} else if (imageName.startsWith("logo_test")) {
 				iv.setImageResource(R.drawable.logo_test);
+			} else if (imageName.startsWith("logo_cash")) {
+				iv.setImageResource(R.drawable.logo_cash);
 			} else if (imageName.startsWith("logo_unionpay")) {
 				iv.setImageResource(R.drawable.logo_unionpay);
 			} else if (imageName.startsWith("logo_wechat")) {
@@ -666,11 +668,7 @@ public abstract class BaseHomeController extends BaseController {
 					e.printStackTrace();
 				}
 
-				if (!isPaymentClicked) {
-
-					onCall("window.util.showCouponWithLoginChecked", paramObj);
-					isPaymentClicked = true;
-				}
+				onCall("window.util.showCouponWithLoginChecked", paramObj);
 			} else {
 				if (!isPaymentClicked) {
 					onCall("PayMethod.onConfirmMethod", msg);

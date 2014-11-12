@@ -254,7 +254,7 @@
     "readLocalBatch": readLocalBatch
   };
 })();
-
+window.downloadParams = false;
 (function() {
   if (window.COMM) {
     return
@@ -268,8 +268,13 @@
 	Global.callObjcHandler("stopCheckSessionTime", null, null);
   }
 
+  function deleteParamsFiles(){
+  	window.downloadParams = false;
+	Global.callObjcHandler("deleteParamsFiles", null, null);
+  }
   window.COMM = {
     "checkSession": checkSession,
-	"stopCheckSession": stopCheckSession
+	"stopCheckSession": stopCheckSession,
+	"deleteParamsFiles": deleteParamsFiles
   };
 })();

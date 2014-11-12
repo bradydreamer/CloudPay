@@ -11,6 +11,7 @@ import android.view.View;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.controller.HomeController;
 import cn.koolcloud.pos.controller.dialogs.PushMessageController;
+import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.service.local.LocalService;
 import cn.koolcloud.pos.util.PushUtils;
 
@@ -20,6 +21,7 @@ public class WelcomeScreen extends Activity {
 	protected boolean hasInit;
 	protected boolean exitOnDestroy = true;
 	protected final String TAG = "WelcomeScreen";
+	protected boolean isExternalOrder = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +35,17 @@ public class WelcomeScreen extends Activity {
         PushUtils.logStringCache = PushUtils.getLogText(getApplicationContext());
         PushUtils.loginBaiduCloud(getApplicationContext());
         
-		//start Local Service but don't execute chekcing
-        Intent bindIntent = new Intent(this, LocalService.class);
-		bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, false);
-		startService(bindIntent);
+		//start Local Service but don't execute checking
+        if (!isExternalOrder) {
+        	Intent bindIntent = new Intent(this, LocalService.class);
+        	bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, false);
+        	startService(bindIntent);
+        }
         
         this.setContentView();
+        
+        //make CacheDB go upgrade
+        CacheDB.getInstance(WelcomeScreen.this).getPaymentsCount();
     }
     
     protected void setContentView() {
@@ -109,7 +116,10 @@ public class WelcomeScreen extends Activity {
 			System.exit(0);
 		}
 		//stop Local service
-		Intent bindIntent = new Intent(this, LocalService.class);  
-		stopService(bindIntent);  
+		if (!isExternalOrder) {
+			
+			Intent bindIntent = new Intent(this, LocalService.class);  
+			stopService(bindIntent);  
+		}
 	}
 }

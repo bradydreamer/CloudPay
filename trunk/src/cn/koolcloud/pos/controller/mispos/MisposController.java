@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -44,6 +45,7 @@ public class MisposController extends BaseHomeController implements
 	private static final int RECEIVE_BEAN_DATA_HANDLER = 1;
 	private static final int SEND_COMMAND_HANDLER = 2;
 	private static final int GET_AMMOUNT_HANDLER = 3;
+	private static final int DETAIL_PAGE_VIEWS_HANDLER = 4;
 	
 	private static final int MISPOS_CONN_FAILED = 0;
 
@@ -232,8 +234,13 @@ public class MisposController extends BaseHomeController implements
 
 		order_detail_btn_confirm = (Button) findViewById(R.id.order_detail_btn_confirm);
 		order_detail_btn_confirm.setOnClickListener(this);
-
+		//hidden left button and confirm button
+		order_detail_btn_confirm.setVisibility(View.INVISIBLE);
+		
 		setLeftButton(R.drawable.titlebar_btn_back);
+		if (isExternalOrder) {
+			setLeftButtonHidden();
+		}
 	}
 	
 	private Handler mDeviceHandler = new Handler() {
@@ -446,6 +453,12 @@ public class MisposController extends BaseHomeController implements
 				Log.i(TAG, "startAmountActivity()");
 				startAmountActivity();
 				break;
+			case DETAIL_PAGE_VIEWS_HANDLER:
+				if (!isExternalOrder) {
+					setLeftButtonVisible();
+				}
+				order_detail_btn_confirm.setVisibility(View.VISIBLE);
+				break;
 			default:
 				break;
 			}
@@ -527,9 +540,17 @@ public class MisposController extends BaseHomeController implements
 	private void showBalance(MisposData beanData) {
 		hiddenLayouts();
 		balanceLayout.setVisibility(View.VISIBLE);
+		//fix SMTPS-173 mod by Teddy --start on 11th November 
+		String strAmount = "";
+		if (!TextUtils.isEmpty(beanData.getAmount())) {
+			strAmount = AppUtil.formatAmount(Long.parseLong(beanData.getAmount()));
+		} else {
+			strAmount = "0.00";
+		}
+		//fix SMTPS-173 mod by Teddy --end on 11th November 
 		balanceAmountTextView.setText(getResources().getString(
 				R.string.mispos_str_balance)
-				+ AppUtil.formatAmount(Long.parseLong(beanData.getAmount()))
+				+ strAmount
 				+ getResources().getString(R.string.mispos_str_dollar));
 		balanceAmountTextView.setTextColor(getResources().getColor(
 				R.color.black));
@@ -558,7 +579,9 @@ public class MisposController extends BaseHomeController implements
 					jsObj.put("transTime",
 							beanData.getTranDate() + beanData.getTranTime());
 					jsObj.put("paymentName", beanData.getPaymentName());
+					jsObj.put("paymentId", paymentId);
 					jsObj.put("transAmount", amount);
+					jsObj.put("transType", deliveryTranType);
 					jsObj.put("paidAmount", beanData.getAmount());
 					jsObj.put("bankCardNum", beanData.getCardNo());
 					onCall("Pay.misposSuccRestart", jsObj);
@@ -570,6 +593,8 @@ public class MisposController extends BaseHomeController implements
 				e.printStackTrace();
 			}
 			
+		} else {
+			onCall("window.util.goBackHome", null);
 		}
 	}
 
@@ -597,7 +622,10 @@ public class MisposController extends BaseHomeController implements
 		switch (view.getId()) {
 		case R.id.order_detail_btn_confirm:
 			handleExtenalOrder(currentBean);
-			finish();
+			if (!isExternalOrder) {
+				onCall("window.util.goBackHome", null);
+				finish();
+			}
 			break;
 
 		default:
@@ -781,7 +809,26 @@ public class MisposController extends BaseHomeController implements
 
 			onCall("ConsumptionData.saveProcessBatchTask", req);
 			onCall("ConsumptionData.startSingleBatchTask", req);
+			
+			if (isExternalOrder) {
+				mHandler.sendEmptyMessageDelayed(DETAIL_PAGE_VIEWS_HANDLER, 1500);
+			} else {
+				mHandler.sendEmptyMessage(DETAIL_PAGE_VIEWS_HANDLER);
+			}
 		}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			if (!isExternalOrder) {
+				onCall("window.util.goBackHome", null);
+			}
+		}
+		
+		return true;
 	}
 
 }

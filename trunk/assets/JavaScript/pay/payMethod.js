@@ -113,6 +113,7 @@
 				var formData = {
 					"btn_swipe": 1,
 					"swipeCard": "PayMethod.gotoBalanceResult",
+					"icSwipeCard":"PayMethod.gotoBalanceResult"
 				};
 				formData.openBrhName = open_brh_name;
 				formData.brhMchtId = brhMchtId;
@@ -149,6 +150,7 @@
 				return;
 
 			} else if (typeId == util.getTransType("SUPERTRANSER")) {
+				ConsumptionData.dataForPayment.typeOf8583 = "superTransfer";
 			} else if ((typeId != util.getTransType("SALE")) && (typeId != util.getTransType("coupon"))) {
 				Scene.alert(product);
 				return;
@@ -173,19 +175,49 @@
 
 	function gotoBalanceResult(data) {
 		var params = JSON.parse(data);
-
+		if (params.isCancelled) {
+			if (ConsumptionData.dataForPayment.isExternalOrder) {
+				Pay.flowRestartFunction();
+			}else{
+				Scene.goBack("Home");
+			}
+			return;			
+		}
 		ConsumptionData.dataForBalance.track2 = params.track2;
 		ConsumptionData.dataForBalance.track3 = params.track3;
 		ConsumptionData.dataForBalance.cardID = params.cardID;
-
+		var cardId = params.cardID;
+		if(!(params.servicesCode == null || params.servicesCode == undefined)){
+			var serviesCode = (params.servicesCode).substring(0,1);
+			if( (serviesCode == "2" || serviesCode == "6") && cardId.substring(0,6) != "666010"){
+				Scene.alert("JSLOG,serviesCode  is IC !" + serviesCode);
+				var datalist = [{ }];
+				Scene.setProperty("PayAccount",datalist);	
+				return;
+			}
+		}
+		//IC卡交易，在此检测
+		if(!(params.pwd == null || params.pwd == undefined)){
+				ConsumptionData.dataForBalance.balancePwd = params.pwd;				
+				Pay.checkTransReverse("msc/balance",function(){
+					window.data8583.get8583(ConsumptionData.dataForBalance, afterGetBalance8583);
+				});		
+				return;
+		}
 		params.actionPurpose = "Balance";
 		Scene.showScene("PinPad", "", params);
+	}
+
+	function afterGetBalance8583(data) {
+		var params = data
+		params.shouldRemoveCurCtrl = true;
+		Scene.showScene("BalanceResult", "", params);
 	}
 
 	window.PayMethod = {
 		"onConfirmMethod": onConfirmMethod,
 		"confirmMethod": confirmMethod,
-		"gotoBalanceResult": gotoBalanceResult,
+		"gotoBalanceResult": gotoBalanceResult
 	};
 })();
 

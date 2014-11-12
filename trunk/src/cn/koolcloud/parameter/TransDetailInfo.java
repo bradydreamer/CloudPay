@@ -19,14 +19,18 @@ public class TransDetailInfo extends TransDetailTable implements Constant, Clone
     public byte[] uploadRecord = null;
     private int batchNumber = 0;
     private String cardholderName = "";
+    private String idCardNo = "";				//user's identifier card number
+    private String toAccountCardNo = "";		//to account card number
     // 用于参数下载
     private byte paramType = PARAM_MAG;
     private byte[] paramData = null;
     private int paramOffset = 0;
     private byte paramNextFlag = 0;
     private int paramCount = 0;
+	private Boolean paramDownloadFlag = false;
     private byte[] iccRevData = null;
     private byte[] issuerAuthData = null;
+	private int icTransferMsgResult = -1;
     public TransDetailInfo()
     {
     	init();
@@ -54,9 +58,17 @@ public class TransDetailInfo extends TransDetailTable implements Constant, Clone
         paramOffset = 0;
         paramNextFlag = 0;
         paramCount = 0;
-        
+        idCardNo = "";
+		icTransferMsgResult = -1;
     }
     
+	public int getIcTransferMsgResult() {
+		return icTransferMsgResult;
+	}
+
+	public void setIcTransferMsgResult(int icTransferMsgResult) {
+		this.icTransferMsgResult = icTransferMsgResult;
+	}
     // responseCode
     public byte[] getResponseCode()
     {
@@ -395,7 +407,23 @@ public class TransDetailInfo extends TransDetailTable implements Constant, Clone
     	this.cardholderName = name;
     }
     
-    public byte getParamType()
+    public String getIdCardNo() {
+		return idCardNo;
+	}
+
+	public void setIdCardNo(String idCardNo) {
+		this.idCardNo = idCardNo;
+	}
+
+	public String getToAccountCardNo() {
+		return toAccountCardNo;
+	}
+
+	public void setToAccountCardNo(String toAccountCardNo) {
+		this.toAccountCardNo = toAccountCardNo;
+	}
+
+	public byte getParamType()
     {
     	return paramType;
     }
@@ -405,6 +433,13 @@ public class TransDetailInfo extends TransDetailTable implements Constant, Clone
     	this.paramType = flag;
     }
     
+	public Boolean getParamDownloadFlag() {
+		return paramDownloadFlag;
+	}
+
+	public void setParamDownloadFlag(Boolean paramDownloadFlag) {
+		this.paramDownloadFlag = paramDownloadFlag;
+	}
     // paramData
     public byte[] getParamData()
     {

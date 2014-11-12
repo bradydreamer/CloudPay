@@ -56,7 +56,7 @@
 				android:onClick="onSwitchAccount"
 				android:tag="@string/pay_account_tag_swiper"
 				android:text="@string/pay_account_btn_swiper" />
-	
+			    
 			<Button
 			    android:id="@+id/pay_account_btn_keyboard"
 			    style="@style/account_btn_style_common"
@@ -76,7 +76,7 @@
 			    android:tag="@string/pay_account_tag_qrcode"
 			    android:text="@string/pay_account_btn_qrcode"
 			    android:layout_below="@+id/pay_account_btn_keyboard" />
-	
+	 
 			<Button
 			    android:id="@+id/pay_account_btn_sound"
 			    style="@style/account_btn_style_common"
@@ -86,6 +86,7 @@
 			    android:tag="@string/pay_account_tag_sound"
 			    android:text="@string/pay_account_btn_sound"
 			    android:layout_below="@+id/pay_account_btn_qrcode" />
+	 
 		</RelativeLayout>
 	
 	    <RelativeLayout
@@ -96,21 +97,32 @@
 	        android:layout_toRightOf="@id/pay_method_view"
 	        android:gravity="center">
 	
-	        <LinearLayout
+	        <RelativeLayout
 	            android:id="@+id/pay_account_layout_swiper"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:orientation="vertical"
-	            android:layout_centerVertical="true"
-	            android:gravity="center"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"	  
 	            android:visibility="gone" >
-	
-	            <ImageView
+		    <TextView 
+	                android:id="@+id/pay_account_swiper_ic_text_guide"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
+	                android:layout_alignParentTop="true"
+	                android:layout_marginTop="20dp"
+	                android:layout_centerHorizontal="true"
+	                android:text="@string/pay_account_input_swiper_ic_guide"
+	                android:textColor="@color/blue"
+	                android:textSize="@dimen/ic_text_size"/>
+	            <ImageView
+	                android:id="@+id/icswiper_img"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_below="@id/pay_account_swiper_ic_text_guide"
+	                android:layout_alignParentBottom="true"
+	                android:layout_marginBottom="20dp"
+	                android:layout_centerHorizontal="true"
 	                android:contentDescription="@string/desc_image"
-	                android:src="@drawable/start_swiper" />
-	        </LinearLayout>
+	                android:src="@drawable/start_icswiper" />
+	        </RelativeLayout>
 	
 	        <LinearLayout
 	            android:id="@+id/pay_account_layout_sound"
@@ -120,7 +132,7 @@
 	            android:layout_centerVertical="true"
 	            android:gravity="center"
 	            android:visibility="gone" >
-	
+				
 	            <ImageView
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"

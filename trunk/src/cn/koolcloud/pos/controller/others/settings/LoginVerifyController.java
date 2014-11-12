@@ -37,10 +37,12 @@ public class LoginVerifyController extends BaseController {
 		et_pwd = (EditText) findViewById(R.id.login_et_pwd);
 		// initETWithKBHiddenListener(et_userName);
 		// initETWithKBHiddenListener(et_pwd);
-		String titleName = formData
-				.optString(getString(R.string.formData_key_title));
-		if (!titleName.equals("")) {
-			setTitle(titleName);
+		if (formData != null) {
+			String titleName = formData
+					.optString(getString(R.string.formData_key_title));
+			if (!titleName.equals("")) {
+				setTitle(titleName);
+			}
 		}
 
 	}

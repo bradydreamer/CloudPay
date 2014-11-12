@@ -153,6 +153,7 @@
     <string name="msg_pwd_hint">请输入密码</string>
     
     <string name="msg_printer_issues">请检查打印机状态及打印纸！</string>
+    <string name="msg_idcard_error">身份证号码长度不正确！</string>
     
     <!-- activity_login_controller.xml -->
     <string name="create_userName">请输入用户名</string>
@@ -207,12 +208,16 @@
     <string name="pay_account_tv_amount">支付金额</string>
     <string name="pay_account_btn_qrcode">二维码</string>
     <string name="pay_account_btn_sound">声波</string>
-    <string name="pay_account_btn_swiper">刷卡</string>
+    <string name="pay_account_btn_swiper">刷卡/插卡</string>
     <string name="pay_account_btn_keyboard">手动输入</string>
+    <string name="pay_account_btn_ic">IC卡</string>
     <string name="pay_account_tag_qrcode">qrcode</string>
     <string name="pay_account_tag_sound">sound</string>
     <string name="pay_account_tag_swiper">swiper</string>
     <string name="pay_account_tag_keyboard">keyboard</string>
+    <string name="pay_account_tag_ic">ic</string>
+    <string name="pay_account_input_ic_guide">请插入IC卡</string>
+    <string name="pay_account_input_swiper_ic_guide">请刷磁卡或者插入IC卡！</string>
 
     <!-- controllerName -->
     <string name="controllerName_Home">Home</string>
@@ -225,9 +230,12 @@
     <string name="controllerName_OthersIndex">OthersIndex</string>
     <string name="controllerName_SettingsIndex">SettingsIndex</string>
     <string name="controllerName_SettingsDownload">SettingsDownload</string>
+    <string name="controllerName_SignIn">SignIn</string>
     <string name="controllerName_InputMoney">InputMoney</string>
     <string name="controllerName_TransAmount">TransAmount</string>
+    <string name="controllerName_SuperTransfer">SuperTransfer</string>
     <string name="controllerName_PayAccount">PayAccount</string>
+    <string name="controllerName_CashConsume">CashConsume</string>
     <string name="controllerName_PayMethod">PayMethod</string>
     <string name="controllerName_TransactionManageIndex">TransactionManageIndex</string>
     <string name="controllerName_MultiPayIndex">MultiPayIndex</string>
@@ -262,7 +270,9 @@
     <string name="controllerJSName_DelVoucherRecord">TransactionManage/DelVoucherRecord</string>
     <string name="controllerJSName_OrderDetail">TransactionManage/OrderDetail</string>
     <string name="controllerJSName_TransAmount">pay/inputAmount</string>
+    <string name="controllerJSName_SuperTransfer">pay/SuperTransfer</string>
     <string name="controllerJSName_PayAccount">pay/payAccount</string>
+    <string name="controllerJSName_CashConsume">pay/cashConsume</string>
     <string name="controllerJSName_PayMethod">pay/payMethod</string>
     <string name="controllerJSName_MultiPay">pay/multipay</string>
 
@@ -311,6 +321,7 @@
     <string name="title_activity_qrcode_controller">请扫码</string>
     <string name="title_activity_my_prepaid_card_controller">我的卡券</string>
     <string name="title_activity_super_transfer_controller">超级转账</string>
+    <string name="title_activity_cash_consume_controller">现金支付</string>
     
     <!-- for home -->
     <string name="home_activity_home">首页</string>

@@ -246,6 +246,15 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
     	return cursor; 
     }
     
+    public void updateRecordStatusByTxnId(String txnId, String orderStatus) { 
+    	String sql = "update " + CONSUMPTION_RECORD_TABLE_NAME + " set " + ORDER_STATE_DESC_RECORD + " = '" + orderStatus + "' where " + TXN_ID_RECORD + " = '" + txnId + "'";
+    	try {
+			excuteWriteAbleSql(sql);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
     public void clearRecordTableData() {
     	String sql = "delete from " + CONSUMPTION_RECORD_TABLE_NAME;
     	

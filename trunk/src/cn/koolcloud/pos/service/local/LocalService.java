@@ -281,10 +281,10 @@ public class LocalService extends Service implements MisposEventInterface {
 	 */
 	private void pushCheckingThreadToStack() {
 		misposCheckingThread = new MisposCheckingThread(this);
-		threadStack.push(misposCheckingThread);
 		threadStack.push(new CheckPinPadThread());
 		threadStack.push(new CheckPrinterThread());
 		threadStack.push(new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)));
+		threadStack.push(misposCheckingThread);
 	}
 	
 	/**

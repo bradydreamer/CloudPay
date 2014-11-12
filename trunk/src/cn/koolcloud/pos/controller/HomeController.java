@@ -36,9 +36,9 @@ import cn.koolcloud.pos.widget.ViewPagerIndicator;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
-	
+
 	public final static int REQUEST_CODE = 10;
-	
+
 	private LinearLayout settingsIndexController;
 	private LinearLayout transactionManageIndexController;
 	private LinearLayout currentLayout;
@@ -56,7 +56,7 @@ public class HomeController extends BaseHomeController implements
 	protected ViewPager settingViewPager;
 	protected ViewPagerIndicator settingPageIndicator;
 	private static final int EXIT_LAST_TIME = 2000;
-	
+
 	private JSONObject data;
 	private boolean isExternalOrder = false;
 
@@ -65,8 +65,11 @@ public class HomeController extends BaseHomeController implements
 		super.onCreate(savedInstanceState);
 		activityList.add(this);
 		if (null != formData) {
-			data = formData.optJSONObject(getString(R.string.formData_key_data));
-			isExternalOrder = data.optBoolean("isExternalOrder");
+			data = formData
+					.optJSONObject(getString(R.string.formData_key_data));
+			if (data != null) {
+				isExternalOrder = data.optBoolean("isExternalOrder");
+			}
 		}
 
 		/*
@@ -99,18 +102,20 @@ public class HomeController extends BaseHomeController implements
 		 * onCall("Home.updateTransInfo", null); }
 		 */
 		if (!isFirstStart) {
-			/*if (Env.checkApkExist(HomeController.this,
-					ConstantUtils.APP_STORE_PACKAGE_NAME)) {
-				startAppVersionChecking();
-			} else {
-				startDeviceChecking();
-			}*/
+			/*
+			 * if (Env.checkApkExist(HomeController.this,
+			 * ConstantUtils.APP_STORE_PACKAGE_NAME)) {
+			 * startAppVersionChecking(); } else { startDeviceChecking(); }
+			 */
 			// application.setFirstStart(true);
-			
-			//add tag for starting service to check app version --start mod by Teddy on 9th October
+
+			// add tag for starting service to check app version --start mod by
+			// Teddy on 9th October
 			if (!isExternalOrder) {
-				
-				Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchSettings");
+
+				Map<String, ?> map = UtilForDataStorage
+						.readPropertyBySharedPreferences(
+								MyApplication.getContext(), "merchSettings");
 				Intent bindIntent = new Intent(this, LocalService.class);
 				if (map != null && map.containsKey("settingString")) {
 					bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, true);
@@ -119,8 +124,9 @@ public class HomeController extends BaseHomeController implements
 				}
 				startService(bindIntent);
 			}
-			//add tag for starting service to check app version --end mod by Teddy on 9th October
-			
+			// add tag for starting service to check app version --end mod by
+			// Teddy on 9th October
+
 		} else {
 			onCall("Home.updateTransInfo", null);
 		}
@@ -143,7 +149,7 @@ public class HomeController extends BaseHomeController implements
 		setRightButtonVisible();
 		setTitleVisible();
 		// get merchant name
-		
+
 		/*
 		 * Map<String, ?> merchMap = UtilForDataStorage
 		 * .readPropertyBySharedPreferences(HomeController.this, "merchant");
@@ -188,37 +194,47 @@ public class HomeController extends BaseHomeController implements
 	protected void willShow() {
 		onCall("Home.onShow", null);
 		super.willShow();
-		
-		//start service after download system parameters --start mod by Teddy 10th October
-		Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchant");
+
+		// start service after download system parameters --start mod by Teddy
+		// 10th October
+		Map<String, ?> map = UtilForDataStorage
+				.readPropertyBySharedPreferences(MyApplication.getContext(),
+						"merchant");
 		if (map != null) {
-			boolean isParamDownloadedChecked = map.containsKey("isSysParamEmpty");
-			
+			boolean isParamDownloadedChecked = map
+					.containsKey("isSysParamEmpty");
+
 			if (!isParamDownloadedChecked) {
-				
-				Map<String, ?> settingMap = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchSettings");
-				if (settingMap != null && settingMap.containsKey("settingString")) {
-					//save data to preference, that tagged first download system params whether or not
+
+				Map<String, ?> settingMap = UtilForDataStorage
+						.readPropertyBySharedPreferences(
+								MyApplication.getContext(), "merchSettings");
+				if (settingMap != null
+						&& settingMap.containsKey("settingString")) {
+					// save data to preference, that tagged first download
+					// system params whether or not
 					Map<String, Object> newMerchantMap = new HashMap<String, Object>();
 					newMerchantMap.put("isSysParamEmpty", false);
 					UtilForDataStorage.savePropertyBySharedPreferences(
-							MyApplication.getContext(), "merchant", newMerchantMap);
+							MyApplication.getContext(), "merchant",
+							newMerchantMap);
 				}
-				
-				//start service
+
+				// start service
 				if (map.containsKey("operator")) {
 					if (!isExternalOrder) {
-						
+
 						Intent bindIntent = new Intent(this, LocalService.class);
-						bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, true);
+						bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG,
+								true);
 						startService(bindIntent);
 					}
 				}
 			}
 		}
-		//start service after download system parameters --end mod by Teddy 10th October
+		// start service after download system parameters --end mod by Teddy
+		// 10th October
 	}
-		
 
 	@Override
 	protected void loadRelatedJS() {
@@ -377,15 +393,12 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoLogout(View view) {
-		/*boolean existMispos = CacheDB.getInstance(HomeController.this)
-				.isMisposConfiged();
-		JSONObject jsObj = new JSONObject();
-		try {
-			jsObj.put("existMispos", existMispos);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		onCall("SettingsIndex.gotoLogout", jsObj);*/
+		/*
+		 * boolean existMispos = CacheDB.getInstance(HomeController.this)
+		 * .isMisposConfiged(); JSONObject jsObj = new JSONObject(); try {
+		 * jsObj.put("existMispos", existMispos); } catch (JSONException e) {
+		 * e.printStackTrace(); } onCall("SettingsIndex.gotoLogout", jsObj);
+		 */
 		onCall("SettingsIndex.gotoLogout", null);
 	}
 
@@ -420,15 +433,12 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoTransBatch(View view) {
-		/*boolean existMispos = CacheDB.getInstance(HomeController.this)
-				.isMisposConfiged();
-		JSONObject jsObj = new JSONObject();
-		try {
-			jsObj.put("existMispos", existMispos);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		onCall("SettingsIndex.gotoTransBatch", jsObj);*/
+		/*
+		 * boolean existMispos = CacheDB.getInstance(HomeController.this)
+		 * .isMisposConfiged(); JSONObject jsObj = new JSONObject(); try {
+		 * jsObj.put("existMispos", existMispos); } catch (JSONException e) {
+		 * e.printStackTrace(); } onCall("SettingsIndex.gotoTransBatch", jsObj);
+		 */
 		onCall("SettingsIndex.gotoTransBatch", null);
 	}
 
@@ -459,17 +469,18 @@ public class HomeController extends BaseHomeController implements
 		if (isExternalOrder) {
 			return super.onKeyDown(keyCode, event);
 		} else {
-			
+
 			if (keyCode == KeyEvent.KEYCODE_BACK
 					&& event.getAction() == KeyEvent.ACTION_DOWN) {
 				// TODO:show exit dialog
 				if ((System.currentTimeMillis() - exitTime) > EXIT_LAST_TIME) {
-					Toast.makeText(HomeController.this, R.string.msg_exist_toast,
-							Toast.LENGTH_SHORT).show();
+					Toast.makeText(HomeController.this,
+							R.string.msg_exist_toast, Toast.LENGTH_SHORT)
+							.show();
 					exitTime = System.currentTimeMillis();
 				} else {
 					moveTaskToBack(true);
-//					exit();
+					// exit();
 				}
 				return true;
 			}

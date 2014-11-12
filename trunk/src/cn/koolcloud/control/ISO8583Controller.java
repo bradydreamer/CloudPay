@@ -17,13 +17,16 @@ import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.iso8583.ChongZheng;
 import cn.koolcloud.iso8583.ISOField;
 import cn.koolcloud.iso8583.ISOPackager;
+import cn.koolcloud.jni.EmvL2Interface;
 import cn.koolcloud.jni.PinPadInterface;
+import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.external.CardSwiper;
+import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
@@ -38,6 +41,7 @@ public class ISO8583Controller implements Constant {
 	private static final String PREAUTHCOMPLETEREVERSE = "preauthcompletereverse";// 预授冲正
 	private static final String PREAUTHCANCELREVERSE = "preauthcancelreverse";// 预授冲正
 	private static final String PREAUTHCOMPLETECANCELREVERSE = "preauthcompletecancelreverse";// 预授冲正
+	private String errorType = null;
 	private String mId = "";
 	private String tId = "";
 	private String oriCardID = "";
@@ -148,6 +152,107 @@ public class ISO8583Controller implements Constant {
 		return isSuccess;
 	}
 
+	/**
+	 * 参数、公钥查询
+	 * 
+	 * @return
+	 */
+	public boolean posUpStatus(JSONObject jsonObject) {
+		paramer.trans.setTransType(TRAN_UPSTATUS);
+		if (jsonObject.optString("paramType").equals("CAPK")) {
+			paramer.trans.setParamType(PARAM_CAPK);
+			// open kernel
+			EMVICManager emvICm = EMVICManager.getEMVICManagerInstance();
+			emvICm.downloadParamsInit();
+		} else if (jsonObject.optString("paramType").equals("PARAM")) {
+			paramer.trans.setParamType(PARAM_IC);
+		}
+		// 设置POS终端交易流水 (11域）
+		paramer.terminalConfig.setTrace(transId);// 流水号
+		// 设置商户号 (41域）
+		paramer.terminalConfig.setMID(mId);
+		// 设置终端号 (42域）
+		paramer.terminalConfig.setTID(tId);
+		// 批次号 (60.2)
+		// 600001暂时写死了。
+		// 操作员代码01?02 (63域）
+		boolean isSuccess = pack8583(paramer);
+		if (isSuccess) {
+			Log.d(APP_TAG, "pack 8583 ok!");
+		} else {
+			Log.e(APP_TAG, "pack 8583 failed!");
+		}
+		return isSuccess;
+
+	}
+
+	/**
+	 * 下载参数、公钥
+	 * 
+	 * @return
+	 */
+	public boolean downloadParams(JSONObject jsonObject) {
+
+		paramer.trans.setTransType(TRAN_DOWN_PARAM);
+		if (jsonObject.optString("paramType").equals("CAPK")) {
+			paramer.trans.setParamType(PARAM_CAPK);
+		} else if (jsonObject.optString("paramType").equals("PARAM")) {
+			paramer.trans.setParamType(PARAM_IC);
+		}
+		// 设置POS终端交易流水 (11域）
+		paramer.terminalConfig.setTrace(transId);// 流水号
+		// 设置商户号 (41域）
+		paramer.terminalConfig.setMID(mId);
+		// 设置终端号 (42域）
+		paramer.terminalConfig.setTID(tId);
+		// 批次号 (60.2)
+		// 600001暂时写死了。
+		// 操作员代码01?02 (63域）
+		boolean isSuccess = pack8583(paramer);
+		if (isSuccess) {
+			Log.d(APP_TAG, "pack 8583 ok!");
+		} else {
+			Log.e(APP_TAG, "pack 8583 failed!");
+		}
+		return isSuccess;
+
+	}
+
+	/**
+	 * 下载参数、公钥结束
+	 * 
+	 * @return
+	 */
+	public boolean endDownloadParams(JSONObject jsonObject) {
+
+		paramer.trans.setTransType(TRAN_DWON_CAPK_PARAM_END);
+		if (jsonObject.optString("paramType").equals("CAPK")) {
+			paramer.trans.setParamType(PARAM_CAPK);
+		} else if (jsonObject.optString("paramType").equals("PARAM")) {
+			paramer.trans.setParamType(PARAM_IC);
+			EmvL2Interface.saveParam();
+			EMVICManager emvICm = EMVICManager.getEMVICManagerInstance();
+			emvICm.downloadParamsFinish();
+		}
+		// 设置POS终端交易流水 (11域）
+		paramer.terminalConfig.setTrace(transId);// 流水号
+		// 设置商户号 (41域）
+		paramer.terminalConfig.setMID(mId);
+		// 设置终端号 (42域）
+		paramer.terminalConfig.setTID(tId);
+		// 批次号 (60.2)
+		// 600001暂时写死了。
+		// 操作员代码01?02 (63域）
+		boolean isSuccess = pack8583(paramer);
+		if (isSuccess) {
+			Log.d(APP_TAG, "pack 8583 ok!");
+		} else {
+			Log.e(APP_TAG, "pack 8583 failed!");
+		}
+		return isSuccess;
+
+	}
+
 	public String getBanlance() {
 		// Log.d(APP_TAG, "balance = " + paramer.trans.getBalance());
 		return "" + paramer.trans.getBalance();
@@ -178,6 +283,12 @@ public class ISO8583Controller implements Constant {
 		paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 		paramer.paymentId = payment_id;
 		paramer.openBrh = open_brh;
+		EMVICData mEMVICData = EMVICData.getEMVICInstance();
+		int f55Len = mEMVICData.getF55Length();
+		byte[] f55 = mEMVICData.getF55();
+		if (f55Len != 0 && f55 != null) {
+			paramer.trans.setICCRevData(f55, 0, f55Len);
+		}
 
 		// fix no pin block start
 		int[] bitMap = null;
@@ -305,12 +416,76 @@ public class ISO8583Controller implements Constant {
 		return mapAndPack(jsonObject, bitMap);
 	}
 
+	public boolean superTransfer(JSONObject jsonObject) {
+		paramer.trans.setTransType(TRAN_SUPER_TRANSFER);
+		paramer.trans.setApmpTransType(APMP_TRAN_SUPER_TRANSFER);
+		paramer.trans.setExpiry(jsonObject.optString("validTime"));
+		// fix no pin block original start
+		/*
+		 * int[] bitMap = { ISOField.F02_PAN, ISOField.F03_PROC,
+		 * ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+		 * ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+		 * ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
+		 * ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60, ISOField.F64_MAC };
+		 */
+		// fix no pin block original end
+
+		// fix no pin block start
+		int[] bitMap = null;
+		String pinblock = jsonObject.optString("F52");
+		if (!pinblock.isEmpty()) {
+			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
+				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+						ISOField.F42_ACCID, ISOField.F44_ADDITIONAL,
+						ISOField.F49_CURRENCY,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */
+						ISOField.F60, ISOField.F61, ISOField.F62,
+						ISOField.F64_MAC };
+			} else {
+				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
+				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
+						ISOField.F42_ACCID, ISOField.F44_ADDITIONAL,
+						ISOField.F49_CURRENCY, ISOField.F52_PIN,
+						ISOField.F53_SCI, ISOField.F60, ISOField.F61,
+						ISOField.F62, ISOField.F64_MAC };
+			}
+		} else {
+			bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+					ISOField.F04_AMOUNT, ISOField.F11_STAN, ISOField.F14_EXP,
+					ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+					ISOField.F26_CAPTURE, ISOField.F35_TRACK2,
+					ISOField.F36_TRACK3, ISOField.F39_RSP, ISOField.F40,
+					ISOField.F41_TID, ISOField.F42_ACCID,
+					ISOField.F44_ADDITIONAL, ISOField.F49_CURRENCY,
+					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F60,
+					ISOField.F61, ISOField.F62, ISOField.F64_MAC };
+		}
+		// fix no pin block end
+		return mapAndPack(jsonObject, bitMap);
+	}
+
 	/**
 	 * 冲正
 	 * 
 	 * @return
+	 * @throws Exception
 	 */
-	public boolean chongZheng(byte[] iso8583, String oldTransDate, String name) {
+	public boolean chongZheng(byte[] iso8583, String oldTransDate, String name)
+			throws Exception {
 
 		byte[] data = new byte[iso8583.length - 2];
 		System.arraycopy(iso8583, 2, data, 0, data.length - 2);
@@ -335,7 +510,13 @@ public class ISO8583Controller implements Constant {
 		}
 
 		OldTrans oldTrans = new OldTrans();
-		ChongZheng.chongzhengUnpack(data, oldTrans);
+		try {
+			ChongZheng.chongzhengUnpack(data, oldTrans);
+		} catch (Exception e) {
+			setErrorType(ConstantUtils.ERROR_TYPE_0);
+			e.printStackTrace();
+			throw e;
+		}
 		paramer.oldTrans = oldTrans;
 		paramer.oldTrans.toString();
 		paramer.oldTrans.setOldTransDate(oldTransDate);
@@ -390,25 +571,16 @@ public class ISO8583Controller implements Constant {
 		if (!pinblock.isEmpty()) {
 			if (pinblock.equals(ConstantUtils.STR_NULL_PIN)) {
 				paramer.trans.setPinMode(ConstantUtils.NO_PIN);
-				bitMap = new int[] {
-						ISOField.F02_PAN,
-						ISOField.F03_PROC,
-						ISOField.F04_AMOUNT,
-						ISOField.F11_STAN,
-						ISOField.F14_EXP,
-						ISOField.F22_POSE,
-						ISOField.F23,
-						ISOField.F25_POCC,
-						ISOField.F26_CAPTURE,
-						ISOField.F35_TRACK2,
-						ISOField.F36_TRACK3,
-						ISOField.F37_RRN,
-						ISOField.F38_AUTH,
-						ISOField.F40,
-						ISOField.F41_TID,
-						ISOField.F42_ACCID,
+				bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+						ISOField.F04_AMOUNT, ISOField.F11_STAN,
+						ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23,
+						ISOField.F25_POCC, ISOField.F26_CAPTURE,
+						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
+						ISOField.F41_TID, ISOField.F42_ACCID,
 						ISOField.F49_CURRENCY,
-						/* ISOField.F52_PIN, ISOField.F53_SCI, */ISOField.F55_ICC,
+						/* ISOField.F52_PIN, ISOField.F53_SCI, */
+						/* ISOField.F55_ICC, */
 						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
@@ -421,7 +593,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40,
 						ISOField.F41_TID, ISOField.F42_ACCID,
 						ISOField.F49_CURRENCY, ISOField.F52_PIN,
-						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F53_SCI, /* ISOField.F55_ICC, */ISOField.F60,
 						ISOField.F61, ISOField.F64_MAC };
 			}
 		} else {
@@ -528,8 +700,8 @@ public class ISO8583Controller implements Constant {
 						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
 						ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40,
 						ISOField.F41_TID, ISOField.F42_ACCID,
-						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
-						ISOField.F61, ISOField.F64_MAC };
+						ISOField.F49_CURRENCY,/* ISOField.F55_ICC, */
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
@@ -541,7 +713,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
 						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
 						ISOField.F49_CURRENCY, ISOField.F52_PIN,
-						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F53_SCI, /* ISOField.F55_ICC, */ISOField.F60,
 						ISOField.F61, ISOField.F64_MAC };
 			}
 		} else {
@@ -552,7 +724,7 @@ public class ISO8583Controller implements Constant {
 					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
 					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
 					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F52_PIN, ISOField.F53_SCI, ISOField.F55_ICC,
+					ISOField.F52_PIN, ISOField.F53_SCI, /* ISOField.F55_ICC, */
 					ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 		}
 		// fix no pin block end
@@ -591,8 +763,8 @@ public class ISO8583Controller implements Constant {
 						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
 						ISOField.F38_AUTH, ISOField.F39_RSP, ISOField.F40,
 						ISOField.F41_TID, ISOField.F42_ACCID,
-						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
-						ISOField.F61, ISOField.F64_MAC };
+						ISOField.F49_CURRENCY, /* ISOField.F55_ICC, */
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
@@ -604,7 +776,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
 						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
 						ISOField.F49_CURRENCY, ISOField.F52_PIN,
-						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F53_SCI, /* ISOField.F55_ICC, */ISOField.F60,
 						ISOField.F61, ISOField.F64_MAC };
 			}
 		} else {
@@ -615,7 +787,7 @@ public class ISO8583Controller implements Constant {
 					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
 					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
 					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					/* ISOField.F55_ICC, */ISOField.F60, ISOField.F61,
 					ISOField.F64_MAC };
 		}
 		// fix no pin block end
@@ -653,8 +825,8 @@ public class ISO8583Controller implements Constant {
 						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
 						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
-						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
-						ISOField.F61, ISOField.F64_MAC };
+						ISOField.F49_CURRENCY, /* ISOField.F55_ICC, */
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
@@ -666,7 +838,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
 						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
 						ISOField.F49_CURRENCY, ISOField.F52_PIN,
-						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F53_SCI, /* ISOField.F55_ICC, */ISOField.F60,
 						ISOField.F61, ISOField.F64_MAC };
 			}
 		} else {
@@ -677,7 +849,7 @@ public class ISO8583Controller implements Constant {
 					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
 					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
 					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					/* ISOField.F55_ICC, */ISOField.F60, ISOField.F61,
 					ISOField.F64_MAC };
 		}
 		// fix no pin block end
@@ -715,8 +887,8 @@ public class ISO8583Controller implements Constant {
 						ISOField.F35_TRACK2, ISOField.F36_TRACK3,
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
 						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
-						ISOField.F49_CURRENCY, ISOField.F55_ICC, ISOField.F60,
-						ISOField.F61, ISOField.F64_MAC };
+						ISOField.F49_CURRENCY, /* ISOField.F55_ICC, */
+						ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 			} else {
 				paramer.trans.setPinMode(ConstantUtils.HAVE_PIN);
 				paramer.trans.setPinBlock(Utility.hex2byte(pinblock));
@@ -728,7 +900,7 @@ public class ISO8583Controller implements Constant {
 						ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F39_RSP,
 						ISOField.F40, ISOField.F41_TID, ISOField.F42_ACCID,
 						ISOField.F49_CURRENCY, ISOField.F52_PIN,
-						ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60,
+						ISOField.F53_SCI, /* ISOField.F55_ICC, */ISOField.F60,
 						ISOField.F61, ISOField.F64_MAC };
 			}
 		} else {
@@ -739,7 +911,7 @@ public class ISO8583Controller implements Constant {
 					ISOField.F36_TRACK3, ISOField.F37_RRN, ISOField.F38_AUTH,
 					ISOField.F39_RSP, ISOField.F40, ISOField.F41_TID,
 					ISOField.F42_ACCID, ISOField.F49_CURRENCY,
-					ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+					/* ISOField.F55_ICC, */ISOField.F60, ISOField.F61,
 					ISOField.F64_MAC };
 		}
 		// fix no pin block end
@@ -938,12 +1110,25 @@ public class ISO8583Controller implements Constant {
 					save = false;
 				}
 				break;
+			case ISOField.F55_ICC:
+				EMVICData mEMVICData = EMVICData.getEMVICInstance();
+				int f55Len = mEMVICData.getF55Length();
+				byte[] f55 = mEMVICData.getF55();
+				if (f55Len != 0 && f55 != null) {
+					paramer.trans.setICCRevData(f55, 0, f55Len);
+				}
+				break;
 			case ISOField.F60:
 				// 支付活动号 F60.6
 				paramer.paymentId = jsonObject.optString("F60.6");
 				paramer.paymentId = paramer.paymentId
 						.substring(paramer.paymentId.length() - 4);
-
+			case ISOField.F61:
+				paramer.trans.setIdCardNo(jsonObject.optString("F61"));
+				break;
+			case ISOField.F62:
+				paramer.trans.setToAccountCardNo(jsonObject.optString("F62"));
+				break;
 			default:
 				break;
 			}
@@ -1017,7 +1202,7 @@ public class ISO8583Controller implements Constant {
 		byte[] data;
 		if (data1.length >= 2) {
 			data = new byte[data1.length - 2];
-			System.arraycopy(data1, 2, data, 0, data.length - 2);
+			System.arraycopy(data1, 2, data, 0, data.length);
 		} else {
 			data = data1;
 		}
@@ -1446,16 +1631,43 @@ public class ISO8583Controller implements Constant {
 		}
 	}
 
+	public String getErrorType() {
+		return errorType;
+	}
+
+	public void setErrorType(String errorType) {
+		this.errorType = errorType;
+	}
+
 	public String getResCode() {
 		String resCode = "FF";
 		resCode = StringUtil.toString(paramer.trans.getResponseCode());
 		return resCode;
 	}
 
+	public int getICTranserMsgResult() {
+		return paramer.trans.getIcTransferMsgResult();
+	}
+
 	public String getRRN() {
 		String rrn = "";
 		rrn = paramer.trans.getRRN();
 		return rrn;
+	}
+
+	public Boolean getParamDownloadFlag() {
+		Boolean rs = paramer.trans.getParamDownloadFlag();
+		return rs;
+	}
+
+	public Boolean getParamsCapkDownloadNeed() {
+		Boolean rs = paramer.trans.getIcParamsCapkDownloadNeed();
+		return rs;
+	}
+
+	public Boolean getIcParamsCapkCheckNeed() {
+		Boolean rs = paramer.trans.getIcParamsCapkCheckNeed();
+		return rs;
 	}
 
 	public String getApOrderId() {

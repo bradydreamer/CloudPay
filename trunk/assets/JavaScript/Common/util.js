@@ -103,6 +103,10 @@ Util.prototype.uniqueId = function() {
 	return '_' + Math.random().toString(36).substr(2, 9);
 };
 
+Util.prototype.goBackHome = function() {
+	Scene.goBack("Home");
+};
+
 Util.prototype.showMisposWithLoginChecked = function(params) {
 	var data = JSON.parse(params);
 	var sceneName = "MisposController";
@@ -239,7 +243,7 @@ Util.prototype.exeActionWithSigninChecked = function(actionWithLoginNeeded, need
 	
 	function checkSignin(data){
 		var params = data;
-		if(params.signature == "false"||params.signature == false) {
+		if((params.signature == "false"||params.signature == false)&& ConsumptionData.dataForPayment.brhKeyIndex != "91") {
 			signInAction(false);
 		} else {
 			actionWithLoginNeeded();
