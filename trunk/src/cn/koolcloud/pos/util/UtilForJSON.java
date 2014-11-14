@@ -210,5 +210,54 @@ public class UtilForJSON {
 		}
 		return resultArray;
 	}
+	
+	public static JSONArray parseOrderList(JSONArray jsonArray) {
+		JSONArray resultArray = null;
+		
+		try {
+			if (null != jsonArray && jsonArray.length() > 0) {
+				
+				resultArray = new JSONArray();
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject jsObj = jsonArray.getJSONObject(i);
+					jsObj.remove("payKeyIndex");
+					jsObj.remove("authNo");
+					jsObj.remove("batchNo");
+					jsObj.remove("openBrh");
+					jsObj.remove("traceNo");
+					String cardNo = jsObj.optString("cardNo");
+					if (!TextUtils.isEmpty(cardNo) && cardNo.length() > 6) {
+						
+						String tempPan = cardNo.substring(0, 6)
+								+ "******"
+								+ cardNo.substring(cardNo.length() - 4, cardNo.length());
+						jsObj.put("cardNo", tempPan);
+					}
+					int orderState = jsObj.optInt("orderState");
+					if (orderState == 0) {
+						jsObj.put("orderStateDesc", "成功");
+					} else if (orderState == 1) {
+						jsObj.put("orderStateDesc", "失败");
+					} else if (orderState == 2) {
+						jsObj.put("orderStateDesc", "已冲正");
+					} else if (orderState == 3) {
+						jsObj.put("orderStateDesc", "已撤销");
+					}
+					
+					String transType = jsObj.optString("transType");
+					if (!TextUtils.isEmpty(transType) && transType.equals("1021")) {
+						jsObj.put("transTypeDesc", "消费");
+					} else if (!TextUtils.isEmpty(transType) && transType.equals("3021")) {
+						jsObj.put("transTypeDesc", "消费撤销");
+					}
+					
+					resultArray.put(jsObj);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return resultArray;
+	}
 
 }

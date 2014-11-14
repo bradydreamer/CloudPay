@@ -7,4 +7,5 @@ interface ICallBack{
 	**/
 	void handleByServer(int result);
 	void summaryDataCallBack(String summary);
+	void orderListDataCallBack(String orderList);
 }

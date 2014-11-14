@@ -319,6 +319,30 @@
 			gotoGetConsumptionSummary();
 		}, true);
 	}
+	
+	function getOrderList(params) {
+	
+		window.ConsumptionData.resetConsumptionData();
+		ConsumptionData.dataForPayment.isExternalOrder = true;
+		window.util.exeActionWithLoginChecked(function() {
+			gotoGetOrderList(JSON.parse(params));
+		}, true);
+	}
+	
+	function gotoGetOrderList(searchParams) {
+		var req = {
+			pageNo : searchParams.pageNo,
+			pageSize : searchParams.pageSize,
+			startDate : searchParams.startDate + "000000",
+			endDate : searchParams.endDate + "235959"
+		};
+		Scene.alert("JSLOG, gotoGetOrderList:" + JSON.stringify(req));
+		Net.connect("msc/txn/page/query", req, afterGetOrderList);
+		
+		function afterGetOrderList(data) {
+			window.AppInit.orderListCallBack(data);
+		}
+	}
 
 	window.TransactionManageIndex = {
 		"onConsumptionRecord" : onConsumptionRecord,
@@ -330,6 +354,7 @@
 		"gotoGetConsumptionSummary" : gotoGetConsumptionSummary,
 		"startPrintSummary" : startPrintSummary,
 		"getSummary" : getSummary,
+		"getOrderList" : getOrderList,
 		"gotoIndex" : gotoIndex,
 		"refreshResearch" : refreshResearch
 	};

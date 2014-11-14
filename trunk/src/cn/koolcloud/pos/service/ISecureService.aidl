@@ -10,4 +10,7 @@ interface ISecureService {
    	
    	void getSummary(ICallBack iCallBack);
 	void getSummaryCallBack(String summary);
+	
+   	void getOrderList(ICallBack iCallBack, String startDate, String endDate, int pageNo, int pageSize);
+	void getOrderListCallBack(String orderList);
 }

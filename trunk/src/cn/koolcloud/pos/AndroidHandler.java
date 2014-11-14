@@ -100,6 +100,8 @@ public class AndroidHandler {
 					clientEngine.serviceMerchantInfo(jsonObjData, callBackId);
 				} else if ("summaryCallBack".equals(androidHandlerName)) {
 					clientEngine.summaryCallBack(jsonObjData, callBackId);
+				} else if ("orderListCallBack".equals(androidHandlerName)) {
+					clientEngine.orderListCallBack(jsonObjData, callBackId);
 				}
 			}
 		});

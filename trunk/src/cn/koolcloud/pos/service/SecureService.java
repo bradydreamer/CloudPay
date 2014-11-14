@@ -110,6 +110,29 @@ public class SecureService extends IntentService {
 			Log.i(TAG, "getSummaryCallBack-----------result----------" + summary);
 			mCallBack.summaryDataCallBack(summary);
 		}
+
+		@Override
+		public void getOrderList(ICallBack iCallBack, String startDate, String endDate, int pageNo, int pageSize) throws RemoteException {
+			// TODO Auto-generated method stub
+			mCallBack = iCallBack;
+			Log.w("getOrderList", "--------------------------getOrderList");
+			Intent intent = new Intent();
+			intent.setAction("cn.koolcloud.pos.controller.GetOrderListActivity");
+			intent.putExtra(ACTION, "getOrderList");
+			intent.putExtra("startDate", startDate);
+			intent.putExtra("endDate", endDate);
+			intent.putExtra("pageNo", pageNo);
+			intent.putExtra("pageSize", pageSize);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+		}
+
+		@Override
+		public void getOrderListCallBack(String orderList) throws RemoteException {
+			// TODO Auto-generated method stub
+			mCallBack.orderListDataCallBack(orderList);
+		}
 	};
 	
 	@Override

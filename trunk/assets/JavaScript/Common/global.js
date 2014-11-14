@@ -279,9 +279,13 @@
   function summaryCallBack(params) {
   	Global.callObjcHandler("summaryCallBack", params);
   }
+  function orderListCallBack(params) {
+  	Global.callObjcHandler("orderListCallBack", params);
+  }
 
   window.AppInit = {
     "initResult": initResult,
+    "orderListCallBack": orderListCallBack,
     "summaryCallBack" : summaryCallBack
   };  
 })();

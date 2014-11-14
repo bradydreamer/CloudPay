@@ -102,6 +102,17 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="cn.koolcloud.pos.controller.GetOrderListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/ExTheme" >
+            <intent-filter>
+                <action android:name="cn.koolcloud.pos.controller.GetOrderListActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="cn.koolcloud.pos.AppInitScreen"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape"

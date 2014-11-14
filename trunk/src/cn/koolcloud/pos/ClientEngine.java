@@ -1676,6 +1676,40 @@ public class ClientEngine {
 			e.printStackTrace();
 		}
 	}
+	
+	public void orderListCallBack(final JSONObject jsonObjData, final String callBackId) {
+		JSONObject jsObj = new JSONObject();
+		
+		try {
+			JSONArray orderList = jsonObjData.optJSONArray("recordList");
+			int responseCode = jsonObjData.optInt("responseCode");
+			String responseMessage = "";
+			JSONArray jsArray = null;
+			if (responseCode == 0) {
+				responseMessage = context.getResources().getString(R.string.msg_summary_success);
+				if (orderList != null && orderList.length() > 0) {
+					jsArray = UtilForJSON.parseOrderList(orderList);
+				}
+			} else {// there is no items data
+				responseCode = 1;
+				responseMessage = jsonObjData.optString("errorMsg");
+			}
+			
+			if (orderList != null && orderList.length() > 0) {
+				jsObj.put("items", jsArray);
+			}
+			jsObj.put("responseCode", responseCode);
+			jsObj.put("responseMessage", responseMessage);
+			
+			if (mSecureService != null) {
+				mSecureService.getOrderListCallBack(jsObj.toString());
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void updateTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {
