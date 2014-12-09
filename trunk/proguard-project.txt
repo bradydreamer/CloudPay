@@ -45,6 +45,11 @@
 -dontwarn com.baidu.**
 -keep class com.baidu.** { *; }
 
+# aync http
+-libraryjars libs/android-async-http-1.4.6.jar
+-dontwarn com.loopj.android.**
+-keep class com.loopj.android.** { *; }
+
 # zbar
 -libraryjars libs/zbar.jar
 -dontwarn net.sourceforge.zbar.**

@@ -24,7 +24,7 @@ public class TransDetailTable {
 	protected String issuerID;
 	private byte authType;
 	private String authBankCode;
-	private Long transAmount = null;
+	private Long transAmount = 0L;
 	private String transCurrency;
 	private Integer tipAmount;
 	private String hostText1;
@@ -94,7 +94,7 @@ public class TransDetailTable {
 		issuerID = "";
 		authType = -1;
 		authBankCode = "";
-		transAmount = null;
+		transAmount = 0L;
 		tipAmount = 0;
 		transCurrency = "156";
 		hostText1 = "";

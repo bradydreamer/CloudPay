@@ -17,7 +17,7 @@
 //		window.SettingsIndex.existMispos = params.existMispos;
 		logoutTag = true;
 		if(window.user.userStatus == null){
-			Scene.alert("已退出！");
+			Scene.alert("131");
 			return;
 		}		
 		allTransBatch(errorOkprocess);		
@@ -34,7 +34,7 @@
 				if(!MISTAG){
 					logoutTag = false;
 					window.COMM.stopCheckSession();
-					Scene.alert("退出成功！");
+					Scene.alert("170");
 				}else{
 					var formData = {
 						typeId : "LOGOUT",
@@ -112,7 +112,7 @@
 				actionLogout();
 		    }else{
 		    	if(!MISTAG){
-//			    	Scene.alert("批结算完成！",afterTransBatchCallback);
+//			    	Scene.alert("132",afterTransBatchCallback);
 		    		afterTransBatchCallback();
 		    	}else{
 			    	var formData = {
@@ -136,9 +136,9 @@
 		if (logoutTag) {
 			logoutTag = false;
 			window.COMM.stopCheckSession();
-			Scene.alert("退出成功！");
+			Scene.alert("170");
 		} else {
-			//Scene.alert("批结算完成！",afterTransBatchCallback);
+			//Scene.alert("132",afterTransBatchCallback);
 			afterTransBatchCallback();
 		}
 	}
@@ -206,13 +206,13 @@
 
 	function afterClearReverseData() {
 		setTimeout(function() {
-			Scene.alert("冲正数据已清除")
+			Scene.alert("133")
 		}, 300)
 	}
 
 	function gotoLogin() {
 		if("0" == window.user.userStatus){
-			Scene.alert("已登录，是否重新登录？",reLoginAction,"确定","取消");
+			Scene.alert("134",reLoginAction,"确定","取消");
 			return;
 		}else{
 			window.util.exeActionWithLoginChecked(function() {
@@ -241,7 +241,7 @@
 				       merchId : ""
 				};
 				RMS.save("merchant",params);
-				Scene.alert("重置成功,请重新登录！",window.util.exeActionWithLoginChecked);
+				Scene.alert("139",window.util.exeActionWithLoginChecked);
 			}	
 		});
 	}

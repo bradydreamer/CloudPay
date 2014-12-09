@@ -47,7 +47,7 @@ public final class HttpConn {
 	private static final String DEFAULT_HTTPS_PORT = "443";
 
 	private static final int CONNECTION_TIMEOUT = 10000;
-	private static final int WAIT_DATA_TIMEOUT = 60000;
+	private static final int WAIT_DATA_TIMEOUT = 65000;
 	public static final int CACHE_BUFFER_SIZE = 2048;
 
 	private  HttpClient httpClient;

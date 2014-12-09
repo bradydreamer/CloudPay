@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.util.DateUtil;
 
 public class ConsumptionRecordSearchController extends BaseController {
 
@@ -164,8 +165,10 @@ public class ConsumptionRecordSearchController extends BaseController {
 	}
 
 	public void onConfirm(View view) {
-		String startDate = et_startDate.getText().toString().replace("-", "");
-		String endDate = et_endDate.getText().toString().replace("-", "");
+		String startDate = et_startDate.getText().toString() + " 00:00:00";
+		startDate = DateUtil.formatDate(DateUtil.parseDate(startDate), "yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的起始时间
+		String endDate = et_endDate.getText().toString() + " 23:59:59";
+		endDate = DateUtil.formatDate(DateUtil.parseDate(endDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的最终时间
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("startDate", startDate);

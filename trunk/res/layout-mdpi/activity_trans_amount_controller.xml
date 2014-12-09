@@ -37,19 +37,37 @@
 				android:orientation="vertical"
 				android:gravity="center"
 				android:layout_gravity="center"
-				style="@style/calculator_num_key_display_style" >         
-		    	<EditText 
-		    	    android:id="@+id/input_money_et_money"
-			        android:background="@drawable/number_input_edittext_bg"
-			        android:textSize="@dimen/trans_amount_edittext_text_size"
-			       	style="@style/calculator_display_screen_style"
-			        android:hint="@string/input_money_et_money_hint"
-			        android:gravity="right|center_vertical"
-			        android:paddingRight="20dp"
-			        android:textColor="@color/orange"
-			        android:maxLength="13"
-			        />
-		    	
+				style="@style/calculator_num_key_display_style" >
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/input_money_et_money"
+                        android:background="@drawable/number_input_edittext_bg"
+                        android:textSize="@dimen/trans_amount_edittext_text_size"
+                        style="@style/calculator_display_screen_style"
+                        android:hint="@string/input_money_et_money_hint"
+                        android:gravity="right|center_vertical"
+                        android:paddingRight="20dp"
+                        android:textColor="@color/orange"
+                        android:maxLength="13"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="111dp"
+                        android:id="@+id/currencyTextView"
+                        android:text="Hello"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center_vertical"
+                        android:textSize="30dp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/red"
+                        />
+
+                </FrameLayout>
+
 		        <include 
 		            layout="@layout/table_number_input"
 		            />

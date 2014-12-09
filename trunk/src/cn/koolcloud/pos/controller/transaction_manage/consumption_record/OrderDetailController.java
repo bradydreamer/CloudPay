@@ -1,7 +1,12 @@
 package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +26,8 @@ import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.HostMessage;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.database.CacheDB;
@@ -30,8 +37,10 @@ import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.service.ICouponService;
 import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
+import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
+import cn.koolcloud.util.DateUtil;
 
 public class OrderDetailController extends BaseController {
 
@@ -46,6 +55,7 @@ public class OrderDetailController extends BaseController {
 	private final static int TRAN_TYPE_AUTH_SETTLEMENT = 1091;
 
 	private final static String MISC_CASH = "CASH";
+	private final static String MISC_ALIPAY = "alipay";
 
 	private boolean cancelEnable;
 	private String rrn;
@@ -91,9 +101,9 @@ public class OrderDetailController extends BaseController {
 	private boolean isExternalOrder = false;
 
 	// private Typeface faceTypeLanTing;
-	
+
 	private ICouponService iCouponService;
-	
+
 	private ServiceConnection conn = new ServiceConnection() {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
@@ -106,7 +116,7 @@ public class OrderDetailController extends BaseController {
 			iCouponService = ICouponService.Stub.asInterface(service);
 		}
 	};
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -115,6 +125,14 @@ public class OrderDetailController extends BaseController {
 			return;
 		}
 		data = formData.optJSONObject(getString(R.string.formData_key_data));
+		transTime = data.optString("transTime");
+		String localTime = DateUtil.formatDate(DateUtil.parseData(transTime, "yyyy-MM-dd HH:mm:ss", TimeZone.getTimeZone("GMT+08:00")),
+				"yyyy-MM-dd HH:mm:ss", TimeZone.getDefault());
+		try {
+				data.put("transTime",localTime);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		initTextView(R.id.order_detail_tv_orderId, data, "refNo");
 		initTextView(R.id.order_detail_tv_orderStatus, data, "orderStateDesc");
 		initTextView(R.id.order_detail_tv_payType, data, "payTypeDesc");
@@ -147,7 +165,7 @@ public class OrderDetailController extends BaseController {
 		// "font/fzltxhk.ttf");
 
 		rrn = data.optString("refNo");
-		transTime = data.optString("transTime");
+//		transTime = data.optString("transTime");
 		oriTransTime = data.optString("oriTransTime");
 		transAmount = data.optString("transAmount");
 		func_confirm = data.optString("confirm");
@@ -197,11 +215,10 @@ public class OrderDetailController extends BaseController {
 		util8583.terminalConfig.setKeyIndex(payKeyIndex);
 		findViews();
 		initButtons();
-		
-		//bind coupon service for revoking coupon order
-		if (Env.checkApkExist(this,
-				ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
-			
+
+		// bind coupon service for revoking coupon order
+		if (Env.checkApkExist(this, ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
+
 			Intent intent = new Intent();
 			intent.setAction("com.koolyun.coupon.service.permission.COUPON");
 			bindService(intent, conn, BIND_AUTO_CREATE);
@@ -256,7 +273,9 @@ public class OrderDetailController extends BaseController {
 		acquireTerminalNumTextView.setText(data.optString("brhTermId"));
 
 		couponButton = (Button) findViewById(R.id.order_detail_btn_coupon);
-
+		
+		String couponState = data.optString("cpnFlag");
+		
 		if (Env.checkApkExist(OrderDetailController.this,
 				ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
 			String transType = data.optString("transType");
@@ -274,6 +293,7 @@ public class OrderDetailController extends BaseController {
 							&& tabType.equals(ConstantUtils.TAB_TYPE_COUPON)) {
 						couponButton.setVisibility(View.GONE);
 					} else {
+						//show send coupon when tranType is CONSUME, PREAUTH, PRAUTHCOMPLETE, PRAUTHSETTLEMENT and have not sent coupon order.
 						if (!TextUtils.isEmpty(transType)
 								&& !TextUtils.isEmpty(orderState)) {
 							if ((transType
@@ -284,7 +304,7 @@ public class OrderDetailController extends BaseController {
 											.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE) || transType
 										.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
 									&& orderState
-											.equals(ConstantUtils.ORDER_STATE_SUCCESS)) {
+											.equals(ConstantUtils.ORDER_STATE_SUCCESS) && (TextUtils.isEmpty(couponState) ||(!TextUtils.isEmpty(couponState) && !couponState.equals("Y")))) {
 								couponButton.setVisibility(View.VISIBLE);
 							} else {
 								couponButton.setVisibility(View.GONE);
@@ -293,7 +313,7 @@ public class OrderDetailController extends BaseController {
 					}
 				}
 			} else {
-
+				//show send coupon when tranType is CONSUME, PREAUTH, PRAUTHCOMPLETE, PRAUTHSETTLEMENT and have not sent coupon order.
 				if (!TextUtils.isEmpty(transType)
 						&& !TextUtils.isEmpty(orderState)) {
 					if ((transType.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUME)
@@ -302,8 +322,7 @@ public class OrderDetailController extends BaseController {
 							|| transType
 									.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE) || transType
 								.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
-							&& orderState
-									.equals(ConstantUtils.ORDER_STATE_SUCCESS)) {
+							&& orderState.equals(ConstantUtils.ORDER_STATE_SUCCESS) && (TextUtils.isEmpty(couponState) ||(!TextUtils.isEmpty(couponState) && !couponState.equals("Y")))) {
 						couponButton.setVisibility(View.VISIBLE);
 					} else {
 						couponButton.setVisibility(View.GONE);
@@ -319,7 +338,15 @@ public class OrderDetailController extends BaseController {
 	private void initTextView(int resourceId, JSONObject data, String key,
 			boolean removeIfNull) {
 		TextView textView = (TextView) findViewById(resourceId);
-		textView.setText(data.optString(key, ""));
+        if (resourceId == R.id.order_detail_tv_transAmount) {
+            textView.setText(data.optString(key, "") + "(" + Env.getCurrencyResource(this) + ")");
+        } else {
+            if (resourceId == R.id.order_detail_tv_transType || resourceId == R.id.order_detail_tv_orderStatus) {
+                textView.setText(HostMessage.getJsMsg(data.optString(key, "")));
+            } else {
+                textView.setText(data.optString(key, ""));
+            }
+        }
 		if (removeIfNull && textView.getText().equals("")) {
 			((ViewGroup) textView.getParent()).setVisibility(View.GONE);
 		}
@@ -333,9 +360,16 @@ public class OrderDetailController extends BaseController {
 		Button printBtn = (Button) findViewById(R.id.order_detail_btn_print);
 		RelativeLayout layout_auth_complete = (RelativeLayout) findViewById(R.id.layout_auth_complete);
 		RelativeLayout layout_auth_settlement = (RelativeLayout) findViewById(R.id.layout_auth_settlement);
+		RelativeLayout layout_refund = (RelativeLayout) findViewById(R.id.layout_refund);
 		if (misc.equals(MISC_CASH)) {
 			printBtn.setClickable(false);
 			printBtn.setBackgroundResource(R.drawable.button_disable_background_color);
+		}else if(misc.equals(MISC_ALIPAY)){
+			/*
+			 * 这个地方可以开启支付宝的退货功能，只会针对支付宝的。如果要开启所有的退货功能，可以在XML中将此
+			 * layout可见，即可。
+			 */
+			//layout_refund.setVisibility(View.VISIBLE);
 		}
 		if (paymentOrder == PAY_SUCCESS
 				|| orderState != ORDER_STATUS_SUCCESS
@@ -370,8 +404,16 @@ public class OrderDetailController extends BaseController {
 	}
 
 	public void onCancel(View view) {
+		Date date = new Date();
+		String currentTime = DateUtil.formatDate(date,"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00"));
+		String thisTransTime = transTime.substring(5,7) + transTime.substring(8,10);
+		Boolean timeValid = false;
+		if(currentTime.substring(4,8).equals(thisTransTime)){
+			timeValid = true;
+		}
 		JSONObject msg = new JSONObject();
 		try {
+			msg.put("timeValid",timeValid);
 			msg.put("ref", rrn);
 			msg.put("transTime", transTime);
 			msg.put("transAmount", transAmount);
@@ -417,8 +459,18 @@ public class OrderDetailController extends BaseController {
 	}
 
 	public void onRefund(View view) {
+		Date date = new Date();
+		String currentTime = DateUtil.formatDate(date,"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00"));
+		String thisTransTime = transTime.substring(5,7) + transTime.substring(8,10);
+		Boolean timeValid = false;
+		if(currentTime.substring(4,8).equals(thisTransTime)){
+			timeValid = false;
+		}else{
+			timeValid = true;
+		}
 		JSONObject msg = new JSONObject();
 		try {
+			msg.put("timeValid",timeValid);
 			msg.put("ref", rrn);
 			msg.put("transTime", transTime);
 			msg.put("transAmount", transAmount);
@@ -619,20 +671,27 @@ public class OrderDetailController extends BaseController {
 					.setBackgroundResource(R.drawable.button_disable_background_color);
 			authSettlementBtn
 					.setBackgroundResource(R.drawable.button_disable_background_color);
-			
-			//revoke conpon order if it is exist.
+
+			// revoke conpon order if it is exist.
 			try {
-				if (Env.checkApkExist(this, ConstantUtils.COUPON_APP_PACKAGE_NAME) && iCouponService != null) {
-					iCouponService.cancelCoupon(Env.getPackageName(OrderDetailController.this), txnId);
+				if (Env.checkApkExist(this,
+						ConstantUtils.COUPON_APP_PACKAGE_NAME)
+						&& iCouponService != null) {
+					iCouponService.cancelCoupon(
+							Env.getPackageName(OrderDetailController.this),
+							txnId);
 				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			
-			//update record status of database --start mod by Teddy on November 3th
-			ConsumptionRecordDB db = ConsumptionRecordDB.getInstance(OrderDetailController.this);
+
+			// update record status of database --start mod by Teddy on November
+			// 3th
+			ConsumptionRecordDB db = ConsumptionRecordDB
+					.getInstance(OrderDetailController.this);
 			db.updateRecordStatusByTxnId(txnId, orderStatus);
-			//update record status of database --end mod by Teddy on November 3th
+			// update record status of database --end mod by Teddy on November
+			// 3th
 		}
 	}
 
@@ -672,6 +731,10 @@ public class OrderDetailController extends BaseController {
 				couponButton.setClickable(false);
 				couponButton.setText(getResources().getString(
 						R.string.order_detail_btn_sent_text_coupon));
+				
+				//write back to APMP after send coupon --start mod by Teddy on 17th November
+				writeBackSendCoupon();
+				//write back to APMP after send coupon --end mod by Teddy on 17th November
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -689,17 +752,27 @@ public class OrderDetailController extends BaseController {
 		return removeJSTag;
 	}
 
-	
 	@Override
 	protected void onDestroy() {
-		if (Env.checkApkExist(this,
-				ConstantUtils.COUPON_APP_PACKAGE_NAME) && conn != null) {
+		if (Env.checkApkExist(this, ConstantUtils.COUPON_APP_PACKAGE_NAME)
+				&& conn != null) {
 			unbindService(conn);
 		}
 		iCouponService = null;
 		super.onDestroy();
 	}
-
+	
+	private void writeBackSendCoupon() {
+		
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("txnId", txnId);
+			msg.put("stat", "A");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		onCall("OrderDetail.writeBackSendCoupon", msg);
+	}
 
 	class PrinterThread extends Thread {
 		private MisposData beanData;

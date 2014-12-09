@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	
-    <string-array name="package_name_item">
+    <string-array name="package_name_item" translatable="false">
         <item>com.aiphn.endpoint</item>
+    </string-array>
+
+    <integer-array name="currency_code" translatable="false">
+        <item>156</item>
+        <item>764</item>
+        <item>840</item>
+    </integer-array>
+
+    <string-array name="user_grade">
+        <item>收银员</item>
+        <item>主管</item>
     </string-array>
 </resources>

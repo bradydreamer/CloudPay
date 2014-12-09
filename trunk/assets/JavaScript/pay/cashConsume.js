@@ -17,7 +17,7 @@
 	  var params = JSON.parse(data);
 	  currentStep = Pay.cacheData.step;
 	  if(currentStep >= Pay.cacheData.flowList.length){
-		Scene.alert("非正常操作，请重新操作！",function(){
+		Scene.alert("120",function(){
 			Scene.goBack("Home");
 		});
 		return;

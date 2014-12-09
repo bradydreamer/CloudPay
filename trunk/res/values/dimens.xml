@@ -158,7 +158,10 @@
 	<dimen name="cash_unit_height">80dp</dimen>
 	<dimen name="cash_layout_width">540dp</dimen>
 	<dimen name="cash_layout_height">80dp</dimen>
-	
+
+	<dimen name="torch_width">40dp</dimen>
+	<dimen name="torch_height">40dp</dimen>
+
 	<!-- prepaid card -->
 	<dimen name="prepaid_card_content_item_height">160px</dimen>
 	

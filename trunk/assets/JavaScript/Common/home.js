@@ -199,7 +199,7 @@
 	}
 
 	function sessionTimeOut(){
-		Scene.alert("登录过期，请重新登录！",function(){
+		Scene.alert("118",function(){
 	      	window.user.init({});
 			setTimeout(window.util.exeActionWithLoginChecked,500); 
 			if(ConsumptionData.dataForPayment.isExternalOrder){

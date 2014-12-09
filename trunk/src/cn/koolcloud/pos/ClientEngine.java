@@ -440,6 +440,9 @@ public class ClientEngine implements MisposEventInterface {
 								.readPropertyBySharedPreferences(
 										MyApplication.getContext(), "merchant");
 						Long lastTouchTime = (Long) map.get("curTouchTime");
+						if(lastTouchTime == null){
+							lastTouchTime = 0L;
+						}
 						Long period_min = (curTime - lastTouchTime) / 1000 / 60;
 						Log.i(TAG,
 								"Session Test---------------Through the time:"
@@ -801,6 +804,13 @@ public class ClientEngine implements MisposEventInterface {
 		waitingDialog.showWhileExecuting(runnable);
 	}
 
+	public void stopWaitingDialog(){
+		if(waitingDialog != null){
+			waitingDialog.finishDialog();
+			waitingDialog = null;
+		}
+	}
+
 	void showController(final JSONObject data, final String identifier) {
 		if (UtilForThread.isCurrentInMainThread(Thread.currentThread())) {
 			showControllerInMainThread(data, identifier);
@@ -1089,6 +1099,7 @@ public class ClientEngine implements MisposEventInterface {
 		String oriBatchNo;
 		String oriTraceNo;
 		String oriTransTime;
+		Boolean result = false;
 		JSONObject businessJsonObject = new JSONObject();
 		Log.d(TAG, "get8583 jsonObject : " + jsonObject);
 		ISO8583Controller iso8583Controller = ISO8583Engine.getInstance()
@@ -1105,30 +1116,42 @@ public class ClientEngine implements MisposEventInterface {
 
 		try {
 			if (typeOf8583.equals("pay")) {
-				iso8583Controller.purchase(jsonObject);
+				result= iso8583Controller.purchase(jsonObject);
 			} else if (typeOf8583.equals("preAuth")) {
-				iso8583Controller.preAuth(jsonObject);
+				result= iso8583Controller.preAuth(jsonObject);
 			} else if (typeOf8583.equals("signin")) {
-				iso8583Controller.signin();
+				result= iso8583Controller.signin();
 			} else if (typeOf8583.equals("signout")) {
-				iso8583Controller.signout();
+				result= iso8583Controller.signout();
 			} else if (typeOf8583.equals("transBatch")) {
-				iso8583Controller.transBatch();
+				result= iso8583Controller.transBatch();
 			} else if (typeOf8583.equals("chongZheng")) {
 				data8583 = jsonObject.optString("data8583");
 				String transDate = jsonObject.optString("transDate");
 				String subType = jsonObject.optString("subType");
-				iso8583Controller.chongZheng(Utility.hex2byte(data8583),
+				result = iso8583Controller.chongZheng(Utility.hex2byte(data8583),
 						transDate, subType);
+				if(!result){
+					String errorType = ConstantUtils.ERROR_TYPE_0;
+
+					try {
+						businessJsonObject.put("error", errorType);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					callBack(callBackId, businessJsonObject);
+					return;
+				}
 			} else if (typeOf8583.equals("cheXiao")) {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.cheXiao(Utility.hex2byte(data8583),
+				result= iso8583Controller.cheXiao(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("refund")) {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller
+				result= iso8583Controller
 						.refund(Utility.hex2byte(data8583), jsonObject);
 			} else if (typeOf8583.equals("chaxunyue")) {
 				String cardID = jsonObject.optString("cardID");
@@ -1139,39 +1162,49 @@ public class ClientEngine implements MisposEventInterface {
 				String openBrh = jsonObject.optString("openBrh");
 				paymentId = jsonObject.optString("paymentId");
 
-				iso8583Controller.purchaseChaXun(cardID, track2, track3,
+				result= iso8583Controller.purchaseChaXun(cardID, track2, track3,
 						balancePwd, openBrh, paymentId);
 			} else if (typeOf8583.equals("preAuthComplete")) {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.preAuthComplete(Utility.hex2byte(data8583),
+				result= iso8583Controller.preAuthComplete(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("preAuthSettlement")) {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.preAuthSettlement(Utility.hex2byte(data8583),
+				result= iso8583Controller.preAuthSettlement(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("preAuthCancel")) {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.preAuthCancel(Utility.hex2byte(data8583),
+				result= iso8583Controller.preAuthCancel(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("preAuthCompleteCancel")) {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
-				iso8583Controller.preAuthCompleteCancel(
+				result= iso8583Controller.preAuthCompleteCancel(
 						Utility.hex2byte(data8583), jsonObject);
 			} else if (typeOf8583.equals("posUpStatus")) {
-				iso8583Controller.posUpStatus(jsonObject);
+				result= iso8583Controller.posUpStatus(jsonObject);
 			} else if (typeOf8583.equals("downloadParams")) {
-				iso8583Controller.downloadParams(jsonObject);
+				result= iso8583Controller.downloadParams(jsonObject);
 			} else if (typeOf8583.equals("downloadEnd")) {
-				iso8583Controller.endDownloadParams(jsonObject);
+				result= iso8583Controller.endDownloadParams(jsonObject);
 			} else if (typeOf8583.equals("superTransfer")) {
-				iso8583Controller.superTransfer(jsonObject);
-
+				result= iso8583Controller.superTransfer(jsonObject);
 			}
+			if(!result){
+				String errorType = ConstantUtils.ERROR_TYPE_1;
 
+				try {
+					businessJsonObject.put("error", errorType);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				callBack(callBackId, businessJsonObject);
+				return;
+			}
 			data8583 = iso8583Controller.toString();
 			transType = iso8583Controller.getApmpTransType();
 			batchNo = iso8583Controller.getBatchNum();
@@ -1204,9 +1237,14 @@ public class ClientEngine implements MisposEventInterface {
 			callBack(callBackId, businessJsonObject);
 		} catch (Exception e1) {
 			String errorType = "ERROR";
-			if (iso8583Controller.getErrorType().equals(
-					ConstantUtils.ERROR_TYPE_0)) {
+			e1.printStackTrace();
+			if(typeOf8583.equals("chongZheng")){
 				errorType = ConstantUtils.ERROR_TYPE_0;
+
+				if (iso8583Controller.getErrorType() != null && iso8583Controller.getErrorType().equals(
+						ConstantUtils.ERROR_TYPE_0)) {
+					errorType = ConstantUtils.ERROR_TYPE_0;
+				}
 			}
 			try {
 				businessJsonObject.put("error", errorType);
@@ -1215,7 +1253,6 @@ public class ClientEngine implements MisposEventInterface {
 				e.printStackTrace();
 			}
 			callBack(callBackId, businessJsonObject);
-			e1.printStackTrace();
 		}
 	}
 
@@ -1309,7 +1346,7 @@ public class ClientEngine implements MisposEventInterface {
 						// 交易成功，返回原响应码
 					}
 					// for chongzheng test:
-					// uf8.trans.setResponseCode("C1".getBytes());
+//					uf8.trans.setResponseCode("C1".getBytes());
 					resCodeStr += String.format("%02X ",
 							uf8.trans.getResponseCode()[0]);
 					resCodeStr += String.format("%02X ",
@@ -1331,7 +1368,7 @@ public class ClientEngine implements MisposEventInterface {
 						uf8.trans.setResponseCode("D2".getBytes());
 					}
 					// for chongzheng test:
-					// uf8.trans.setResponseCode("C1".getBytes());
+//					uf8.trans.setResponseCode("C1".getBytes());
 					resCodeStr += String.format("%02X ",
 							uf8.trans.getResponseCode()[0]);
 					resCodeStr += String.format("%02X ",
@@ -1431,15 +1468,18 @@ public class ClientEngine implements MisposEventInterface {
 				try {
 					String req8583 = jsonObjData.optString("req8583");
 					String res8583 = jsonObjData.optString("res8583");
-					String userName = jsonObjData.optString("userName");
-					String paymentId = jsonObjData.optString("paymentId");
-					String paymentName = jsonObjData.optString("paymentName");
+
 					Log.d(TAG, "print req8583 : " + req8583);
 					Log.d(TAG, "print res8583 : " + res8583);
-					if (!"".equals(req8583) && !"".equals(res8583)) {
-						iso8583Controller.printer(Utility.hex2byte(req8583),
-								Utility.hex2byte(res8583), userName, paymentId,
-								paymentName, context);
+
+					if (res8583 != null && !"".equals(res8583)) {
+						if(req8583.equals("") || req8583 == null){
+							iso8583Controller.printer(null,
+									Utility.hex2byte(res8583), jsonObjData, context);
+						}else {
+							iso8583Controller.printer(Utility.hex2byte(req8583),
+									Utility.hex2byte(res8583), jsonObjData, context);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

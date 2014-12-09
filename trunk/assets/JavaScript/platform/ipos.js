@@ -10,7 +10,7 @@
     Global.callObjcHandler("convert8583", data, convert8583_callback);
     function convert8583_callback(data){
 		if(data.error == "ERROR"){
-			Scene.alert("程序异常，请重新操作或重新启动！",function(){
+			Scene.alert("161",function(){
 				if(ConsumptionData.dataForPayment.isExternalOrder){
 					Pay.restart();
 				}else{			
@@ -29,7 +29,7 @@
     Global.callObjcHandler("get8583", data, get8583_callback);
 	function get8583_callback(data){
 		if(data.error == ERROR_TYPE_0){
-			Scene.alert("程序异常，请重新操作或重新启动！",function(){
+			Scene.alert("161",function(){
 				window.RMS.clear("savedTransData");
 				if(ConsumptionData.dataForPayment.isExternalOrder){
 					Pay.restart();
@@ -38,8 +38,17 @@
 				}
 			});
 			return;
+		}else if(data.error == ERROR_TYPE_1){
+		    Scene.alert("获取报文失败，确认密码键盘插好后重新操作，或联系客服人员！",function(){
+                if(ConsumptionData.dataForPayment.isExternalOrder){
+                    Pay.restart();
+                }else{
+                    Scene.goBack("Home");
+                }
+            });
+		    return;
 		}else if(data.error != null && data.error != undefined){
-			Scene.alert("程序异常，请重新操作或重新启动！",function(){
+			Scene.alert("161",function(){
 				if(ConsumptionData.dataForPayment.isExternalOrder){
 					Pay.restart();
 				}else{			
@@ -80,7 +89,7 @@
   function gotoPrint(data) {
     if (null != data) {
       	data.userName = window.user.userName;
-      
+        data.txnId = ConsumptionData.dataForPayment.txnId;
       	if ("" === ConsumptionData.dataForPayment.paymentId ||
       		undefined ===ConsumptionData.dataForPayment.paymentId) {
 			data.paymentId = window.OrderDetail.paymentId;      	
@@ -94,7 +103,7 @@
 			data.paymentName =  ConsumptionData.dataForPayment.paymentName;
       	}
     } 
-    if ("" === data.req8583 || null == data.req8583) {
+    if ("" === data.res8583 || null == data.res8583) {
 		Scene.alert("交易已经过期");
     }
     Global.callObjcHandler("printTrans", data);
@@ -115,7 +124,7 @@
 	  window.Database.getTransData8583(txnId, checkTransData8583);
 	  function checkTransData8583(data){
 			data8583 = data;
-			if (data.res8583 == null || data.res8583 == "") {		
+			if (data.res8583 == null || data.res8583 == "") {
 				var req = {
 					"txnId":txnId,
 				}			

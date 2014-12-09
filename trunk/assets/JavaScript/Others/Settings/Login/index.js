@@ -33,18 +33,18 @@
 
 	function actionAfterVerifyLogin(data){
 		g_loginRes = data;
-		if("0" == g_loginRes.loginCount){
-		  	/*
-		  	此处跳转密码修改界面。密码界面修改完成后重新跳转至登录界面。
-		  	*/
-			Scene.alert("首次登录需要修改密码!", function(){
-				var params = {
-								shouldRemoveCurCtrl: true
-							}
-				Scene.showScene("ModifyPwd","",params);
-			});	  	
-			return;
-		  }		
+//		if("0" == g_loginRes.loginCount){
+//		  	/*
+//		  	此处跳转密码修改界面。密码界面修改完成后重新跳转至登录界面。
+//		  	*/
+//			Scene.alert("首次登录需要修改密码!", function(){
+//				var params = {
+//								shouldRemoveCurCtrl: true
+//							}
+//				Scene.showScene("ModifyPwd","",params);
+//			});	  	
+//			return;
+//		  }		
 		if ("0" == g_loginRes.responseCode) {
 			/*if(g_loginRes.gradeId == "1"){
 				Scene.alert("非操作员权限，请重新输入操作员账户！",backLogin);
@@ -148,7 +148,7 @@
 	    if(data.gradeId == "1"){
 	    	if (ConsumptionData.dataForPayment.payKeyIndex == "90") {
 	    		
-		    	Scene.alert("权限确认成功",function(){
+		    	Scene.alert("128",function(){
 			    	var sceneName = "MisposController";
 			    	//rm goBack statement otherwise can't call back to the 3rd part app --start mod by Teddy on 11th November
 //	  				Scene.goBack("Home");
@@ -156,15 +156,15 @@
 	  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
 		    	});
 	    	} else if(ConsumptionData.dataForPayment.payKeyIndex == "91"){
-	    		Scene.alert("权限确认成功",function(){
+	    		Scene.alert("128",function(){
 	    			Pay.cashCancelOrder(ConsumptionData.dataForPayment.cashdata,Pay.updataListCashCancel);
 	    		});
 	    		
-	    	}else {    		
-		    	Scene.alert("权限确认成功",function(){
+	    	}else {
+		    	Scene.alert("128",function(){
 		    	currentStep = Pay.cacheData.step;
 				if(currentStep > Pay.cacheData.flowList.length){
-					Scene.alert("非正常操作，请重新操作！",function(){
+					Scene.alert("120",function(){
 						Scene.goBack("Home");
 					});
 					return;
@@ -174,7 +174,7 @@
 		    	Pay.gotoFlow();});
 	    	}
 	    }else{
-	    	Scene.alert("权限确认失败！",goback);
+	    	Scene.alert("129",goback);
 	    	
 	    }
 	}

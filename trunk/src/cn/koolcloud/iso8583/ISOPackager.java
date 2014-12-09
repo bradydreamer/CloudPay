@@ -699,13 +699,34 @@ public class ISOPackager implements Constant {
 		// use full 61 from 0 to end for saving id card on super transfer
 		// --start add by Teddy on 22th October
 		if (appState.trans.getTransType() == TRAN_SUPER_TRANSFER) {
-			tmpBuf = ByteUtil.str2Bcd(appState.trans.getIdCardNo());
-			// System.arraycopy(ByteUtil.ASCII_To_BCD(appState.trans.getIdCardNo().getBytes(),
+            Log.i("setF61_CUP", "idcard:" + appState.trans.getIdCardNo());
+//			tmpBuf = ByteUtil.str2Bcd(appState.trans.getIdCardNo());
+           /* byte[] F61_idCardNumber = new byte[(appState.trans.getIdCardNo().length() + 1) / 2];
+            ByteUtil.asciiToBCD(appState.trans.getIdCardNo().getBytes(), 0,
+                    F61_idCardNumber, 0, appState.trans.getIdCardNo().length(), 0);
+
+            // System.arraycopy(ByteUtil.ASCII_To_BCD(appState.trans.getIdCardNo().getBytes(),
 			// appState.trans.getIdCardNo().getBytes().length), 0, tmpBuf, 0,
 			// StringUtil.hexString2bytes(appState.trans.getIdCardNo()).length);
 			// movGen(ISOField.F61, tmpBuf, tmpBuf.length);
-			movGen(ISOField.F61, tmpBuf, tmpBuf.length);
-			return;
+			movGen(ISOField.F61, F61_idCardNumber, appState.trans.getIdCardNo().length());
+			return;*/
+
+            byte[] F61_idCardNumber = new byte[3];
+            String idCard = appState.trans.getIdCardNo();
+            String subIdCard = "";
+            if (!idCard.contains("x")) {
+                subIdCard = idCard.substring(idCard.length() - 6, idCard.length());
+            } else {
+                subIdCard = idCard.substring(idCard.length() - 7, idCard.length() - 1);
+            }
+
+//            ByteUtil.asciiToBCD(appState.trans.getIdCardNo().getBytes(), 0,
+//                    F61_idCardNumber, 0, appState.trans.getIdCardNo().length(), 0);
+            F61_idCardNumber = ByteUtil.str2Bcd(subIdCard);
+
+            movGen(ISOField.F61, F61_idCardNumber, 6);
+            return;
 		}
 		// use full 61 from 0 to end for saving id card on super transfer --end
 		// add by Teddy on 22th October
@@ -2383,6 +2404,7 @@ public class ISOPackager implements Constant {
 
 	private static boolean saveData(int bit, UtilFor8583 appState) {
 		int length;
+		int fieldLen;
 		boolean ret = true;
 		ISOTable[] isotable;
 		byte[] llvar = new byte[1];
@@ -2398,18 +2420,22 @@ public class ISOPackager implements Constant {
 		case FFIX + ATTN: // Fixed Numeric
 			// Make length even and divide by 2
 			length = (isotable[bit].fieldLen + 1) / 2;
+			fieldLen = isotable[bit].fieldLen;
 			break;
 		case FFIX + ATTBIN: // Fixed Binary
 			// Divide by 8
 			length = isotable[bit].fieldLen;
+			fieldLen = isotable[bit].fieldLen;
 			break;
 		case FFIX + ATTAN: // Fixed Alpha Numeric
 		case FFIX + ATTANS: // Fixed Alpha Numeric Special
 			length = isotable[bit].fieldLen;
+			fieldLen = isotable[bit].fieldLen;
 			break;
 		case FLLVAR + ATTANS: // LL Variable Alpha Numeric Special
 			iso.fetchDataBuffer(llvar, 0, 1);
 			length = ((llvar[0] >> 4) & 0x0F) * 10 + (llvar[0] & 0x0F);
+			fieldLen = length;
 			break;
 		case FLLLVAR + ATTAN: // LLL Variable Alpha Numeric
 		case FLLLVAR + ATTANS: // LLL Variable Alpha Numeric Special
@@ -2418,10 +2444,12 @@ public class ISOPackager implements Constant {
 			length = lllvar[0] & 0x0F;
 			length = length * 100 + ((lllvar[1] >> 4) & 0x0F) * 10
 					+ (lllvar[1] & 0x0F);
+			fieldLen = length;
 			break;
 		case FLLVAR + ATTN: // LL Variable Numeric
 			iso.fetchDataBuffer(llvar, 0, 1);
 			length = ((llvar[0] >> 4) & 0x0F) * 10 + (llvar[0] & 0x0F);
+			fieldLen = length;
 			length = (length + 1) / 2;
 			break;
 		case FLLLVAR + ATTN: /* LLL Variable Numeric */
@@ -2429,10 +2457,12 @@ public class ISOPackager implements Constant {
 			length = lllvar[0] & 0x0F;
 			length = length * 100 + ((lllvar[1] >> 4) & 0x0F) * 10
 					+ (lllvar[1] & 0x0F);
+			fieldLen = length;
 			length = (length + 1) / 2;
 			break;
 		default: // Unknown format; no data to move
 			length = 0;
+			fieldLen = length;
 			break;
 		}
 		byte[] tempBuffer = new byte[length];
@@ -2442,11 +2472,7 @@ public class ISOPackager implements Constant {
 			byte[] F2_AccountNumber = new byte[tempBuffer.length * 2];
 			ByteUtil.bcdToAscii(tempBuffer, 0, F2_AccountNumber, 0, 20, 0);
 			if (appState.trans.getTransType() == TRAN_RESERV_SALE) {
-				int panLength = ((llvar[0] >> 4) & 0x0F) * 10
-						+ (llvar[0] & 0x0F);
-				// appState.trans.setPAN(StringUtil.toString(F2_AccountNumber)
-				// .substring(0, panLength));
-				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber));
+				appState.trans.setPAN(StringUtil.toString(F2_AccountNumber).substring(0,fieldLen));
 			} else {
 				// if( appState.getProcessType() != PROCESS_REVERSAL
 				// && appState.trans.getTransType() != TRAN_VOID_SALE

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
+
+import cn.koolcloud.pos.R;
 
 /**
  * <p>
@@ -269,6 +272,40 @@ public class Env {
 		SimpleDateFormat df = new SimpleDateFormat(DATE_SMALL_STR);
 		return df.format(new Date());
 	}
+
+    public static String getCurrencyResource(Context ctx) {
+        String currencyResource = "";
+        String formattingCurrency = "";
+        int[] codeItems = ctx.getResources().getIntArray(R.array.currency_code);
+        Map<Integer, Integer> currencyMap;
+        if (codeItems != null && codeItems.length > 0) {
+            currencyMap = new HashMap<Integer, Integer>();
+
+            for (int i = 0; i < codeItems.length; i++) {
+                switch (i) {
+                    case 0:
+                        currencyMap.put(codeItems[i], R.string.currency_msg_156);
+                        break;
+                    case 1:
+                        currencyMap.put(codeItems[i], R.string.currency_msg_764);
+                        break;
+                    case 2:
+                        currencyMap.put(codeItems[i], R.string.currency_msg_840);
+                        break;
+                }
+            }
+
+            Map<String, ?> merchMap = UtilForDataStorage.readPropertyBySharedPreferences(ctx, "merchant");
+            if (merchMap.containsKey("currency")) {
+                int currencyCode = Integer.parseInt(String.valueOf(merchMap.get("currency")));
+                currencyResource = ctx.getResources().getString(currencyMap.get(currencyCode));
+            } else {
+                currencyResource = ctx.getResources().getString(R.string.transCurrency_text);
+            }
+        }
+
+        return currencyResource;
+    }
 
 	public static String getDeviceInfo(Context ctx) {
 		TelephonyManager tm = (TelephonyManager) ctx

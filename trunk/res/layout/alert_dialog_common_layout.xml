@@ -50,6 +50,8 @@
         android:textSize="@dimen/dialog_content_text_size"
         android:textColor="@color/black"
         android:textStyle="normal"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:layout_below="@+id/titleLayout" />
 
     <RelativeLayout

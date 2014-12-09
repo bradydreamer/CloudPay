@@ -3,6 +3,7 @@ package cn.koolcloud.pos.net;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,8 +16,10 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import cn.koolcloud.APDefine;
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.secure.SecureEngine;
@@ -54,10 +57,12 @@ public class NetEngine {
 	private static final String HEADER_KEY_APPKey = "X-APPKey".toLowerCase();// channel
 																				// id
 
-	private static final int PARAM_ENCRYPT = 0;
-	private static final int PARAM_DECRYPT = 1;
+    private static final String HEADER_KEY_LANGUAGE = "Accept-Language";
 
-	private static final int CONNECT_RESULT_SUCCESS = 0;
+    private static final int PARAM_ENCRYPT = 0;
+
+	private static final int PARAM_DECRYPT = 1;
+    private static final int CONNECT_RESULT_SUCCESS = 0;
 	// private static final int CONNECT_RESULT_FAIL = 1;
 	private static final int CONNECT_RESULT_NO_CONNECTION = -1;
 
@@ -74,6 +79,15 @@ public class NetEngine {
 		requestHeaders.put(HEADER_SESSION_ID, "");
 		requestHeaders.put(HEADER_KEY_APChannel, "AP03");
 		requestHeaders.put(HEADER_KEY_APPKey, "kc-ips01");
+		
+        //add language in header mod by Teddy --start on 4th December
+        String language = Locale.getDefault().getLanguage();
+        if (!TextUtils.isEmpty(language) && language.equals(ConstantUtils.LANGUAGE_CHINESE)) {
+            requestHeaders.put(HEADER_KEY_LANGUAGE, "zh_CN");
+        } else {
+            requestHeaders.put(HEADER_KEY_LANGUAGE, "en");
+        }
+		//add language in header mod by Teddy --end on 4th December
 
 		SecureEngine se = ClientEngine.engineInstance().secureEngine();
 		boolean isWorktimeValid = se.isValid();

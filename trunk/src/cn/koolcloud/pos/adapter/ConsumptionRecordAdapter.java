@@ -2,11 +2,16 @@ package cn.koolcloud.pos.adapter;
 
 import org.json.JSONObject;
 
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.util.DateUtil;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.Date;
+import java.util.TimeZone;
 
 public class ConsumptionRecordAdapter  extends LoadMoreAdapter {
 
@@ -34,13 +39,21 @@ public class ConsumptionRecordAdapter  extends LoadMoreAdapter {
 		}
 		
 		JSONObject recordData = this.list.get(position);
-		recordViewHolder.tv_transType.setText(recordData.optString("transTypeDesc"));
+		String localTime = recordData.optString("tDate").substring(0,4) + "-"
+				+ recordData.optString("tDate").substring(4,6) + "-"
+				+ recordData.optString("tDate").substring(6,8) + " "
+				+ recordData.optString("tTime");
+		Date dt = DateUtil.parseData(localTime, "yyyy-MM-dd HH:mm:ss", TimeZone.getTimeZone("GMT+08:00"));
+		localTime = DateUtil.formatDate(dt, "yyyyMMddHHmmss",TimeZone.getDefault());
+		String tDate = localTime.substring(0,8);
+		String tTime = localTime.substring(8,10) + ":" + localTime.substring(10,12) + ":" + localTime.substring(12,14);
+		recordViewHolder.tv_transType.setText(HostMessage.getJsMsg(recordData.optString("transTypeDesc")));
 		recordViewHolder.tv_payType.setText(recordData.optString("payTypeDesc"));
 		recordViewHolder.tv_rrn.setText(recordData.optString("refNo"));
-		recordViewHolder.tv_transDate.setText(recordData.optString("tDate"));
-		recordViewHolder.tv_transTime.setText(recordData.optString("tTime"));
+		recordViewHolder.tv_transDate.setText(tDate);
+		recordViewHolder.tv_transTime.setText(tTime);
 		recordViewHolder.tv_transAmount.setText(recordData.optString("transAmount"));
-		recordViewHolder.tv_orderStatus.setText(recordData.optString("orderStateDesc"));
+		recordViewHolder.tv_orderStatus.setText(HostMessage.getJsMsg(recordData.optString("orderStateDesc")));
 		
 		return convertView;
 	}

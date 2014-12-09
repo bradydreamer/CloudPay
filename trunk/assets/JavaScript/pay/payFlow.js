@@ -147,11 +147,13 @@ Pay.gotoFlow = function() {
 		sceneName = "PayAccount";
 		initPayAccountData();
 	} else if(method == "04"){
-		sceneName = "LoginVerify"	
+
+		sceneName = "LoginVerify"	
 		formData = {"Login":"LoginIndex.refundConfirmLogin",
 					"merchId": cacheData.merchId};
 	} else if(method == "05"){
-		sceneName = "LoginVerify"		
+
+		sceneName = "LoginVerify"		
 		formData = {"Login":"LoginIndex.voidConfirmLogin",
 					"merchId": cacheData.merchId};
 	} else if(method == "07"){
@@ -243,7 +245,7 @@ Pay.gotoFlow = function() {
 		formData.confirm = "InputAmount.onComfirmAction";
 		formData.band_name = cacheData.brand_desc;
 		formData.trans_amount = util.formatAmountStr(cacheData.ori_avail_at) + " 元";
-		formData.card_status = (cacheData.card_state == 1? "已使用":"未使用");
+		formData.card_status = (cacheData.card_state == 1? "156":"157");
 	}
 	
 	function initPinData() {

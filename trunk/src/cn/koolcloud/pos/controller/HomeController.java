@@ -1,8 +1,10 @@
 package cn.koolcloud.pos.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +35,7 @@ import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.local.LocalService;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
+import cn.koolcloud.util.DateUtil;
 
 public class HomeController extends BaseHomeController implements
 		View.OnClickListener {
@@ -117,6 +120,8 @@ public class HomeController extends BaseHomeController implements
 						.readPropertyBySharedPreferences(
 								MyApplication.getContext(), "merchSettings");
 				Intent bindIntent = new Intent(this, LocalService.class);
+				//indicate start a local service from external
+	        	bindIntent.putExtra(ConstantUtils.START_SERVICE_EXTERNAL_TAG, true);
 				if (map != null && map.containsKey("settingString")) {
 					bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, true);
 				} else {
@@ -366,7 +371,20 @@ public class HomeController extends BaseHomeController implements
 	 * 交易查询界面
 	 */
 	public void gotoConsumptionRecord(View view) {
-		onCall("TransactionManageIndex.onConsumptionRecord", null);
+		Date today = new Date();
+		String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
+		String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
+		startDate = DateUtil.formatDate(DateUtil.parseDate(startDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的起始时间
+		String endDate = todayStr + " 23:59:59"; //获取当的日期+最终时间
+		endDate = DateUtil.formatDate(DateUtil.parseDate(endDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的最终时间
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("startDate", startDate);
+			msg.put("endDate", endDate);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		onCall("TransactionManageIndex.onConsumptionRecord", msg);
 	}
 
 	public void gotoConsumptionRecordSearch(View view) {
@@ -382,7 +400,20 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoConsumptionSummary(View view) {
-		onCall("TransactionManageIndex.gotoConsumptionSummary", null);
+		Date today = new Date();
+		String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
+		String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
+		startDate = DateUtil.formatDate(DateUtil.parseDate(startDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的起始时间
+		String endDate = todayStr + " 23:59:59"; //获取当的日期+最终时间
+		endDate = DateUtil.formatDate(DateUtil.parseDate(endDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的最终时间
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("startDate", startDate);
+			msg.put("endDate", endDate);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		onCall("TransactionManageIndex.gotoConsumptionSummary", msg);
 	}
 
 	/*

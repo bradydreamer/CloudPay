@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +25,7 @@ import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
 import cn.koolcloud.pos.MyApplication;
+import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.external.CardSwiper;
 import cn.koolcloud.pos.external.EMVICManager;
@@ -31,6 +33,7 @@ import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.printer.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
 import cn.koolcloud.util.ByteUtil;
+import cn.koolcloud.util.DateUtil;
 import cn.koolcloud.util.StringUtil;
 
 public class ISO8583Controller implements Constant {
@@ -1097,8 +1100,16 @@ public class ISO8583Controller implements Constant {
 				break;
 			case ISOField.F49_CURRENCY:
 				// 消费币种 F49
-				paramer.trans.setTransCurrency(jsonObject.optString("F49",
-						"156"));
+                //upload currency
+                String currency = "";
+
+                Map<String, ?> merchMap = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchant");
+                if (merchMap.containsKey("currency")) {
+                    currency = String.valueOf(merchMap.get("currency"));
+                } else {
+                    currency = "156";
+                }
+				paramer.trans.setTransCurrency(jsonObject.optString("F49", currency));
 				break;
 			case ISOField.F52_PIN:
 				// PIN F52
@@ -1580,16 +1591,20 @@ public class ISO8583Controller implements Constant {
 		return true;
 	}
 
-	public void printer(byte[] request, byte[] respons, String operator,
-			String paymentId, String paymentName, Context context)
+	public void printer(byte[] request, byte[] respons, JSONObject jsonObject, Context context)
 			throws PrinterException {
-
-		byte[] data = new byte[request.length - 2];
-		System.arraycopy(request, 2, data, 0, data.length - 2);
+		byte[] data;
+        String operator = jsonObject.optString("userName");
+		String paymentId = jsonObject.optString("paymentId");
+		String paymentName = jsonObject.optString("paymentName");
+        String txnId = jsonObject.optString("txnId");
 
 		OldTrans oldTrans = new OldTrans();
-		ChongZheng.chongzhengUnpack(data, oldTrans);
-
+		if(request != null) {
+			data = new byte[request.length - 2];
+			System.arraycopy(request, 2, data, 0, data.length - 2);
+			ChongZheng.chongzhengUnpack(data, oldTrans);
+		}
 		data = new byte[respons.length - 2];
 		System.arraycopy(respons, 2, data, 0, data.length - 2);
 		ChongZheng.chongzhengUnpack(data, oldTrans);
@@ -1606,9 +1621,11 @@ public class ISO8583Controller implements Constant {
 		String paymentStr = (String) map.get(paymentId);
 
 		String prdtNo = "";
+        String printType = "";
 		try {
 			JSONObject jsonObj = new JSONObject(paymentStr);
 			prdtNo = jsonObj.getString("prdtNo");
+            printType = jsonObj.getString("printType");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -1622,11 +1639,17 @@ public class ISO8583Controller implements Constant {
 		// set payment name
 		oldTrans.setPaymentName(paymentName);
 		oldTrans.setPaymentId(paymentId);
+        oldTrans.setTxnId(txnId);
 
-		if (!TextUtils.isEmpty(prdtNo)
-				&& prdtNo.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+		if (!TextUtils.isEmpty(printType)
+				&& printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
-		} else {
+		} else if (!TextUtils.isEmpty(printType)
+                && printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY_OVER_SEA)) {
+            PrinterHelper.getInstance(context).printQRCodeOverSeaReceipt(oldTrans);
+        } else if (!TextUtils.isEmpty(printType) && printType.equals(ConstantUtils.PRINT_TYPE_TRANSFER)) {
+            PrinterHelper.getInstance(context).printTransferReceipt(oldTrans);
+        } else {
 			PrinterHelper.getInstance(context).printReceipt(oldTrans);
 		}
 	}
@@ -1700,10 +1723,8 @@ public class ISO8583Controller implements Constant {
 		if (paramer.trans.getTransDate().equals("0000")
 				|| paramer.trans.getTransTime().equals("000000")) {
 			Date now = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");// 可以方便地修改日期格式
-			// dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-			System.setProperty("user.timezone", "GMT+8");
-			transTime = dateFormat.format(now);
+			//这里之所以传8时区，因为这里应该传服务器所在时区的时间。
+			transTime = DateUtil.formatDate(now,"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00"));
 		} else {
 			transTime += paramer.trans.getTransDate();
 			transTime += paramer.trans.getTransTime();
@@ -1714,9 +1735,8 @@ public class ISO8583Controller implements Constant {
 	public String getCurrentTime() {
 		String transTime;
 		Date now = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");// 可以方便地修改日期格式
-		System.setProperty("user.timezone", "GMT+8");
-		transTime = dateFormat.format(now);
+		//这个时间是当前终端的时间，所以获取机器默认时区。
+		transTime = DateUtil.formatDate(now,"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00"));
 		return transTime;
 	}
 
@@ -1798,11 +1818,7 @@ public class ISO8583Controller implements Constant {
 			if (paramer.oldTrans.getOldTransDate() == null
 					|| paramer.oldTrans.getOldTransTime() == null) {
 				Date now = new Date();
-				SimpleDateFormat dateFormat = new SimpleDateFormat(
-						"yyyyMMddHHmmss");// 可以方便地修改日期格式
-				// dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-				System.setProperty("user.timezone", "GMT+8");
-				transTime = dateFormat.format(now);
+				transTime = DateUtil.formatDate(now,"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00"));
 			} else {
 				transTime += paramer.oldTrans.getOldTransDate()
 						+ paramer.oldTrans.getOldTransTime();

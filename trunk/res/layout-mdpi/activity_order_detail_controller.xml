@@ -65,7 +65,8 @@
 				        android:textColor="@android:color/white"
 				        android:textSize="@dimen/order_details_content_text_size" />
 				</RelativeLayout>
-				<RelativeLayout 
+				<RelativeLayout
+                    android:id="@+id/layout_refund"
 				    android:layout_width="0dp"
 				    android:layout_height="wrap_content"
 				    android:layout_weight="1"

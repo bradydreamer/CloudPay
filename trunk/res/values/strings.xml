@@ -22,7 +22,7 @@
     <string name="formData_key_payData_field2">field2</string>
     <string name="formData_key_payData_field3">field3</string>
     <string name="formData_key_payData_field4">field4</string>
-    <string name="transCurrency_text"> 元 </string>
+    <string name="transCurrency_text">元</string>
 
     <!-- for intent -->
     <string name="intent_extra_name_formData">formData</string>
@@ -93,7 +93,7 @@
     <string name="consumption_record_tv_rrn">参考号</string>
     <string name="consumption_record_tv_transDate">日期</string>
     <string name="consumption_record_tv_transTime">时间</string>
-    <string name="consumption_record_tv_transAmount">金额(元)</string>
+    <string name="consumption_record_tv_transAmount">金额(%1$s)</string>
     <string name="consumption_record_tv_orderStatus">状态</string>
     <string name="consumption_record_tv_paidAmount">已付金额</string>
     <string name="consumption_record_tv_balance">差额</string>
@@ -153,7 +153,7 @@
     <string name="msg_pwd_hint">请输入密码</string>
     
     <string name="msg_printer_issues">请检查打印机状态及打印纸！</string>
-    <string name="msg_idcard_error">身份证号码长度不正确！</string>
+    <string name="msg_idcard_error" translatable="false">身份证号码长度不正确！</string>
     
     <!-- activity_login_controller.xml -->
     <string name="create_userName">请输入用户名</string>
@@ -207,17 +207,17 @@
     <!-- activity_pay_account_controller.xml -->
     <string name="pay_account_tv_amount">支付金额</string>
     <string name="pay_account_btn_qrcode">二维码</string>
-    <string name="pay_account_btn_sound">声波</string>
+    <string name="pay_account_btn_sound" >声波</string>
     <string name="pay_account_btn_swiper">刷卡/插卡</string>
     <string name="pay_account_btn_keyboard">手动输入</string>
-    <string name="pay_account_btn_ic">IC卡</string>
+    <string name="pay_account_btn_ic" translatable="false">IC卡</string>
     <string name="pay_account_tag_qrcode">qrcode</string>
     <string name="pay_account_tag_sound">sound</string>
     <string name="pay_account_tag_swiper">swiper</string>
     <string name="pay_account_tag_keyboard">keyboard</string>
-    <string name="pay_account_tag_ic">ic</string>
-    <string name="pay_account_input_ic_guide">请插入IC卡</string>
-    <string name="pay_account_input_swiper_ic_guide">请刷磁卡或者插入IC卡！</string>
+    <string name="pay_account_tag_ic" translatable="false">ic</string>
+    <string name="pay_account_input_ic_guide" translatable="false">请插入IC卡</string>
+    <string name="pay_account_input_swiper_ic_guide" translatable="false">请刷磁卡或者插入IC卡！</string>
 
     <!-- controllerName -->
     <string name="controllerName_Home">Home</string>
@@ -230,12 +230,12 @@
     <string name="controllerName_OthersIndex">OthersIndex</string>
     <string name="controllerName_SettingsIndex">SettingsIndex</string>
     <string name="controllerName_SettingsDownload">SettingsDownload</string>
-    <string name="controllerName_SignIn">SignIn</string>
+    <string name="controllerName_SignIn" translatable="false">SignIn</string>
     <string name="controllerName_InputMoney">InputMoney</string>
     <string name="controllerName_TransAmount">TransAmount</string>
-    <string name="controllerName_SuperTransfer">SuperTransfer</string>
+    <string name="controllerName_SuperTransfer" translatable="false">SuperTransfer</string>
     <string name="controllerName_PayAccount">PayAccount</string>
-    <string name="controllerName_CashConsume">CashConsume</string>
+    <string name="controllerName_CashConsume" translatable="false">CashConsume</string>
     <string name="controllerName_PayMethod">PayMethod</string>
     <string name="controllerName_TransactionManageIndex">TransactionManageIndex</string>
     <string name="controllerName_MultiPayIndex">MultiPayIndex</string>
@@ -270,9 +270,9 @@
     <string name="controllerJSName_DelVoucherRecord">TransactionManage/DelVoucherRecord</string>
     <string name="controllerJSName_OrderDetail">TransactionManage/OrderDetail</string>
     <string name="controllerJSName_TransAmount">pay/inputAmount</string>
-    <string name="controllerJSName_SuperTransfer">pay/SuperTransfer</string>
+    <string name="controllerJSName_SuperTransfer" translatable="false">pay/SuperTransfer</string>
     <string name="controllerJSName_PayAccount">pay/payAccount</string>
-    <string name="controllerJSName_CashConsume">pay/cashConsume</string>
+    <string name="controllerJSName_CashConsume" translatable="false">pay/cashConsume</string>
     <string name="controllerJSName_PayMethod">pay/payMethod</string>
     <string name="controllerJSName_MultiPay">pay/multipay</string>
 
@@ -320,8 +320,8 @@
     <string name="title_activity_list_users_controller">用户详情</string>
     <string name="title_activity_qrcode_controller">请扫码</string>
     <string name="title_activity_my_prepaid_card_controller">我的卡券</string>
-    <string name="title_activity_super_transfer_controller">超级转账</string>
-    <string name="title_activity_cash_consume_controller">现金支付</string>
+    <string name="title_activity_super_transfer_controller" translatable="false">超级转账</string>
+    <string name="title_activity_cash_consume_controller" translatable="false">现金支付</string>
     
     <!-- for home -->
     <string name="home_activity_home">首页</string>
@@ -351,7 +351,7 @@
     <string name="str_install_appstore_first">安装应用中心以查检更新</string>
     <string name="str_exit_message">您真的要退出收银通吗？</string>
     <string name="already_latest_version">已是最新版本</string>
-    <string name="about_info">收银通是新一代基于云POS的超级收银作业平台，集刷卡、二维码支付等多种支付方式于一体，为客户打造全面的收银接入服务。</string>
+    <string name="about_info">收银通作为崭新的支付平台，集合了传统收单支付和移动互联网创新的支付方式，同时通过叠加，可以支持各种电子钱包和电子优惠券。</string>
     
     <!-- coupon msg -->
     <string name="str_coupon_app_not_installed">酷券应用尚未安装，请先安装！</string>
@@ -366,10 +366,10 @@
     <string name="dialog_device_checking_device_msg">正在检查外部设备状态，请稍候！</string>
     <string name="dialog_device_checking_now">设备正在查检中，请稍候！</string>
     <string name="dialog_device_check_devices_unusual">设备发现异常，请您及时处理！</string>
-    <string name="dialog_device_check_pinpad_unusual">密码键盘连接异常，mispos外接刷卡机请忽略。</string>
+    <string name="dialog_device_check_pinpad_unusual">密码键盘连接异常。</string>
     <string name="dialog_device_check_pinpad_usual">密码键盘连接正常。</string>
-    <string name="dialog_device_check_mispos_unusual">Mispos连接异常。</string>
-    <string name="dialog_device_check_mispos_usual">Mispos连接正常。</string>
+    <string name="dialog_device_check_mispos_unusual" translatable="false">Mispos连接异常。</string>
+    <string name="dialog_device_check_mispos_usual" translatable="false">Mispos连接正常。</string>
     <string name="dialog_device_check_printer_unusual">打印机未连接好。</string>
     <string name="dialog_device_check_printer_usual">打印机连接正常。</string>
     <string name="dialog_device_check_network_unusual">网络连接不通。</string>
@@ -378,8 +378,8 @@
     <string name="dialog_device_check_use_anyway">继续使用</string>
     <string name="dialog_device_check_start_to_use">开始使用</string>
     <string name="dialog_device_checking">设备检测中...</string>
-     <string name="device_checking_mispos_result_bad">Mispos连接异常</string>
-    <string name="ping_host_url">www.baidu.com</string>
+     <string name="device_checking_mispos_result_bad" translatable="false">Mispos连接异常</string>
+    <string name="ping_host_url">http://www.baidu.com</string>
     <string name="msg_checking_version_waiting">正在检查新版本，请稍候...</string>
     <string name="alert_common_warn_msg">提示</string>
     <string name="msg_exist_toast">再按一次后退键最小化程序</string>
@@ -426,6 +426,7 @@
     <string name="mispos_str_reconnected">请检查Mispos连接正常后重试</string>
     <string name="mispos_check_bind_config_msg">该mispos未绑定本主机，请联系支付服务商。</string>
     <string name="mispos_amount_msg">金额：</string>
+    <string name="mispos_revoke_msg" translatable="false">已撤销</string>
     
     <!-- 现金支付 -->
     <string name="sum_payable_mark">应付金额： </string>
@@ -454,21 +455,194 @@
     <string name="consumption_summary_mechineID">酷云设备号:</string>
     <string name="consumption_summary_transType">交易类型</string>
     <string name="consumption_summary_transCount">笔数（次）</string>
-    <string name="consumption_summary_transAmount">金额（元）</string>
+    <string name="consumption_summary_transAmount">金额（%1$s）</string>
     <string name="consumption_summary_consume">消费</string>
     <string name="consumption_summary_consumeCancel">消费撤销</string>
     <string name="consumption_summary_preAuth">预授权</string>
-    <string name="consumption_summary_preAuthComplete">预授权完成</string>
-    <string name="consumption_summary_preAuthCompleteOffline">预授权完成（离线）</string>
+    <string name="consumption_summary_preAuthComplete">预授权完成联机</string>
+    <string name="consumption_summary_preAuthCompleteOffline">预授权完成离线</string>
     <string name="consumption_summary_preAuthCancel">预授权撤销</string>
     <string name="consumption_summary_preAuthCompleteCancel">预授权完成撤销</string>
     
     <!-- super transfer msg -->
-   	<string name="transfer_msg_from_account_hint">转款账号</string> 
-   	<string name="transfer_msg_to_account_hint">收款账号</string> 
-   	<string name="transfer_msg_id_card_hint">转款人身份证</string> 
-   	<string name="transfer_msg_amount_hint">转款金额</string> 
-   	<string name="transfer_msg_remark">备注：转款方每笔收10元的转出费</string> 
-   	<string name="transfer_msg_confirm">确定转款</string> 
+   	<string name="transfer_msg_from_account_hint" translatable="false">转出账号</string>
+   	<string name="transfer_msg_to_account_hint" translatable="false">转入账号</string>
+   	<string name="transfer_msg_id_card_hint" translatable="false">收款人身份证</string>
+   	<string name="transfer_msg_amount_hint" translatable="false">转账金额</string>
+   	<string name="transfer_msg_remark" translatable="false">备注：转出方每笔收10元的转出费</string>
+   	<string name="transfer_msg_confirm" translatable="false">确定转款</string>
 
-</resources>
+   	<string name="printer_merchant_copy">商户存根</string>
+   	<string name="printer_cardhoder_copy">买家存根</string>
+   	<string name="printer_tag_merchant">商户名  ：</string>
+   	<string name="printer_tag_kool_cloud_mid">酷云客户号：</string>
+   	<string name="printer_tag_kool_cloud_tid">酷云设备号：</string>
+   	<string name="printer_tag_ref">参考号  ：</string>
+   	<string name="printer_tag_trans_no">交易号  ：</string>
+   	<string name="printer_tag_date_time">日期/时间：</string>
+   	<string name="printer_tag_pay_type">交易类型：</string>
+   	<string name="printer_tag_trace">流水号  ：</string>
+   	<string name="printer_tag_operator">操作员  ：</string>
+   	<string name="printer_tag_channel">支付渠道：</string>
+   	<string name="printer_tag_account">支付账户：</string>
+   	<string name="printer_transaction_id">支付宝流水号：</string>
+   	<string name="printer_partner_id">支付宝合作身份：</string>
+   	<string name="printer_merchant_receipt_id">商户订单号：</string>
+   	<string name="printer_tag_signature">用户签名：</string>
+   	<string name="printer_tag_amount">支付金额：</string>
+   	<string name="printer_tag_trans_amount" translatable="false">交易金额：</string>
+   	<string name="printer_tag_exchange_rate">汇率：</string>
+   	<string name="printer_tag_real_amount">人民币：</string>
+   	<string name="printer_msg_acknowledge">本人确认以上交易，同意将其记入支付宝账户</string>
+
+   	<string name="printer_tran_type_reverse">消费撤销</string>
+   	<string name="printer_tran_type_sale">消费</string>
+   	<string name="printer_tran_type_refund">退货</string>
+   	<string name="printer_tran_type_transfer">转账</string>
+
+   	<string name="printer_bank_card_voucher">银行卡签购单</string>
+   	<string name="printer_bank_card_holder">持卡人存根</string>
+   	<string name="printer_bank_holder">银行存根</string>
+   	<string name="printer_acquirer_merchant_no">收单商户号：</string>
+   	<string name="printer_acquirer_terminal_no">收单终端号：</string>
+   	<string name="printer_batch_no">批次号：</string>
+   	<string name="printer_voucher_no">凭证号：</string>
+   	<string name="printer_auth_no">授权码：</string>
+   	<string name="printer_bank_card">卡号：</string>
+   	<string name="printer_reference">备注</string>
+   	<string name="printer_msg_acknowledge_card">本人确认以上交易，同意将其记入本卡账户</string>
+
+   	<string name="printer_transfer_voucher" translatable="false">银行卡转账签购单</string>
+   	<string name="printer_transfer_from_card_holder" translatable="false">转款人存根</string>
+   	<string name="printer_transfer_to_card_holder" translatable="false">收款人存根</string>
+   	<string name="printer_transfer_from_bank_card" translatable="false">转出卡号：</string>
+   	<string name="printer_transfer_to_bank_card" translatable="false">转入卡号：</string>
+
+   	<string name="currency_msg_156">人民币</string>
+   	<string name="currency_msg_764">泰铢</string>
+   	<string name="currency_msg_840">美元</string>
+
+    <string name="response_msg_transaction_success_00">交易成功</string>
+    <string name="response_msg_contact_with_bank_01">请持卡人与发卡银行联系</string>
+    <string name="response_msg_invalid_merchant_03">无效商户</string>
+    <string name="response_msg_card_forfeited_04">此卡被没收</string>
+    <string name="response_msg_card_holder_verify_failure_05">持卡人认证失败</string>
+    <string name="response_msg_transaction_failure_contact_bank_06">交易失败，请联系发卡机构</string>
+    <string name="response_msg_transaction_success_accepted_part_10">交易成功，但为部分承兑</string>
+    <string name="response_msg_success_vip_11">成功，VIP客户</string>
+    <string name="response_msg_invalid_transaction_12">无效交易</string>
+    <string name="response_msg_invalid_amount_13">无效金额</string>
+    <string name="response_msg_invalid_card_number_14">无效卡号</string>
+    <string name="response_msg_no_bank_card_15">此卡无对应发卡方</string>
+    <string name="response_msg_failure_contact_bank_19">交易失败，请联系发卡机构</string>
+    <string name="response_msg_card_not_active_21">该卡未初始化或睡眠卡</string>
+    <string name="response_msg_reoperation_after_batch_sign_out_22">请在批结、签退之后重新操作</string>
+    <string name="response_msg_no_original_order_contact_bank_25">无原始交易，请联系发卡行</string>
+    <string name="response_msg_try_again_30">请重试</string>
+    <string name="response_msg_warning_fake_card_34">作弊卡</string>
+    <string name="response_msg_pin_error_times_over_contact_bank_38">密码错误次数超限，请与发卡方联系</string>
+    <string name="response_msg_transaction_failure_contact_bank_40">交易失败，请联系发卡方</string>
+    <string name="response_msg_report_loss_card_forfeit_41">挂失卡，请没收</string>
+    <string name="response_msg_lost_card_forfeit_43">被窃卡，请没收</string>
+    <string name="response_msg_insufficient_balance_51">可用余额不足</string>
+    <string name="response_msg_card_out_of_date_54">该卡已过期</string>
+    <string name="response_msg_pin_error_55">密码错</string>
+    <string name="response_msg_transaction_is_not_allowed_57">不允许此卡交易</string>
+    <string name="response_msg_transaction_not_allowed_on_terminal_58">发卡方不允许该卡在本终端进行此交易</string>
+    <string name="response_msg_card_verify_error_59">卡片校验错</string>
+    <string name="response_msg_amount_over_limit_61">交易金额超限</string>
+    <string name="response_msg_limited_card_62">受限制的卡</string>
+    <string name="response_msg_trans_amount_not_match_order_64">交易金额与原交易不匹配</string>
+    <string name="response_msg_out_of_transaction_times_65">超出消费次数限制</string>
+    <string name="response_msg_timeout_try_again_68">交易超时，请重试</string>
+    <string name="response_msg_pin_error_times_out_limit_75">密码错误次数超限</string>
+    <string name="response_msg_date_changing_retry_90">日期切换正在处理，请稍后重试</string>
+    <string name="response_msg_card_status_unnormal_wait_retry_91">发卡方状态不正常，请稍后重试</string>
+    <string name="response_msg_bank_connection_error_wait_retry_92">发卡方线路异常，请稍后重试</string>
+    <string name="response_msg_repeated_transaction_wait_retry_94">拒绝，重复交易，请稍后重试</string>
+    <string name="response_msg_exchange_center_error_wait_retry_96">拒绝，交换中心异常，请稍后重试</string>
+    <string name="response_msg_terminal_not_registered_97">终端未登记</string>
+    <string name="response_msg_bank_respond_timeout_98">发卡方超时</string>
+    <string name="response_msg_pin_formatted_error_sign_in_99">PIN格式错，请重新签到</string>
+    <string name="response_msg_verify_mac_error_sign_in_A0">MAC校验错，请重新签到</string>
+    <string name="response_msg_set_pinpad_error_sign_in_F0">设置密码键盘失败，请重新签到</string>
+    <string name="response_msg_transaction_refused_remove_card_B1">交易拒绝，请取卡！</string>
+    <string name="response_msg_service_not_allowd_remove_card_B2">交易中止，请取卡！</string>
+    <string name="response_msg_transaction_approved_reversal_order_B3">不允许的服务，请取卡！</string>
+    <string name="response_msg_transaction_refused_remove_card_B4">交易批准，冲正！</string>
+    <string name="response_msg_transaction_interupt_remove_card_C1">交易拒绝，请取卡！</string>
+    <string name="response_msg_service_not_allowed_remove_card_C2">交易中止，请取卡！</string>
+    <string name="response_msg_unknown_error">未知错误</string>
+
+    <string name="alert_msg_100">请输入交易总金额</string>
+    <string name="alert_msg_101">原始交易不存在</string>
+    <string name="alert_msg_102">消费</string>
+    <string name="alert_msg_103">消费撤销</string>
+    <string name="alert_msg_104">退货</string>
+    <string name="alert_msg_105">预授权</string>
+    <string name="alert_msg_106">预授权撤销</string>
+    <string name="alert_msg_107">预授权完成联机</string>
+    <string name="alert_msg_108">预授权完成联机撤销</string>
+    <string name="alert_msg_109">预授权完成离线</string>
+    <string name="alert_msg_110">成功</string>
+    <string name="alert_msg_111">失败</string>
+    <string name="alert_msg_112">已冲正</string>
+    <string name="alert_msg_113">已撤销</string>
+    <string name="alert_msg_114">已退货</string>
+    <string name="alert_msg_115">已完成</string>
+    <string name="alert_msg_116">交易中断</string>
+    <string name="alert_msg_117">超时</string>
+    <string name="alert_msg_118">登录过期，请重新登录</string>
+    <string name="alert_msg_119">通信故障</string>
+    <string name="alert_msg_120">非正常操作，请重新操作</string>
+    <string name="alert_msg_121">没有权限，请使用主管账户登录</string>
+    <string name="alert_msg_122">现金</string>
+    <string name="alert_msg_123">会员卡</string>
+    <string name="alert_msg_124">优惠券</string>
+    <string name="alert_msg_125">刷卡</string>
+    <string name="alert_msg_126">其他</string>
+    <string name="alert_msg_127">未知</string>
+    <string name="alert_msg_128">权限确认成功</string>
+    <string name="alert_msg_129">权限确认失败</string>
+    <string name="alert_msg_130">创建用户成功</string>
+    <string name="alert_msg_131">已退出</string>
+    <string name="alert_msg_132">批结算完成</string>
+    <string name="alert_msg_133">冲正数据已清除</string>
+    <string name="alert_msg_134">已登录，是否重新登录</string>
+    <string name="alert_msg_135">确定</string>
+    <string name="alert_msg_136">取消</string>
+    <string name="alert_msg_137">此账户没有权限,无法执行此操作</string>
+    <string name="alert_msg_138">是否删除账户</string>
+    <string name="alert_msg_139">重置成功,请重新登录</string>
+    <string name="alert_msg_140">无法删除自身账户</string>
+    <string name="alert_msg_141">删除成功</string>
+    <string name="alert_msg_142">删除失败</string>
+    <string name="alert_msg_143">密码修改成功，请重新登录</string>
+    <string name="alert_msg_144">参数列表为空</string>
+    <string name="alert_msg_145">参数下载</string>
+    <string name="alert_msg_146">正在查询参数，请稍后</string>
+    <string name="alert_msg_147">正在下载第xxx组参数</string>
+    <string name="alert_msg_148">正在下载第xxx组公钥！</string>
+    <string name="alert_msg_149">您输入的金额不足，请重新输入</string>
+    <string name="alert_msg_150">完成</string>
+    <string name="alert_msg_151">刷卡错误，请刷原卡</string>
+    <string name="alert_msg_152">转账成功</string>
+    <string name="alert_msg_153">转账失败</string>
+    <string name="alert_msg_154">不支持当前操作</string>
+    <string name="alert_msg_155">密码键盘尚未取消输入，请取消后操作</string>
+    <string name="alert_msg_156">已使用</string>
+    <string name="alert_msg_157">未使用</string>
+    <string name="alert_msg_158">冲正失败，请联系代理机构</string>
+    <string name="alert_msg_159">交易已过期</string>
+    <string name="alert_msg_160">不支持该交易</string>
+    <string name="alert_msg_161">程序异常，请重新操作或重新启动</string>
+    <string name="alert_msg_162">串码查询</string>
+    <string name="alert_msg_163">正在结束下载参数！</string>
+    <string name="alert_msg_164">正在结束下载公钥！</string>
+    <string name="alert_msg_165">系统异常</string>
+    <string name="alert_msg_166">撤销登录</string>
+    <string name="alert_msg_167">没有主密钥索引，请联系客服！</string>
+    <string name="alert_msg_168">未知信息</string>
+    <string name="alert_msg_169">您还未登录，请先登录</string>
+    <string name="alert_msg_170">退出成功</string>
+    </resources>

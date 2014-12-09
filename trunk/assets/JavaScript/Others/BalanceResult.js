@@ -33,7 +33,7 @@
     } else {
       var DataErrorMsg = data.errorMsg
       if (null == DataErrorMsg || "" == DataErrorMsg) {
-        DataErrorMsg = "系统异常"
+        DataErrorMsg = "165"
       }
       Scene.alert(DataErrorMsg, goBackToOthers)
     }

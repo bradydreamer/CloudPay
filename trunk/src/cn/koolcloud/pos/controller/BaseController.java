@@ -169,7 +169,7 @@ public abstract class BaseController extends Activity {
 				String couponAmount = bundle.getString("couponAmount");
 
 				if (!TextUtils.isEmpty(couponAmount)
-						&& Integer.parseInt(couponAmount) > 0) {
+						&& Double.parseDouble(couponAmount) > 0) {
 					writeBackAPMPCouponData(couponAmount, couponCount);
 				} else {
 					Log.e("CouponResult", "return value:" + couponAmount);
@@ -386,6 +386,7 @@ public abstract class BaseController extends Activity {
 	protected void onDestroy() {
 		if (!willRestart) {
 			ClientEngine clientEngine = ClientEngine.engineInstance();
+			clientEngine.stopWaitingDialog();
 			clientEngine.removeController(getControllerName());
 			if (null != getControllerJSName()
 					&& !(this instanceof LoginVerifyController)

@@ -15,7 +15,7 @@
 
     currentStep = Pay.cacheData.step;
 	if(currentStep >= Pay.cacheData.flowList.length){
-		Scene.alert("非正常操作，请重新操作！",function(){
+		Scene.alert("120",function(){
 			Scene.goBack("Home");
 		});
 		return;
@@ -26,12 +26,14 @@
     }
     currentTag = Pay.cacheData.flowList[currentStep].packTag;
 
-    //add additinal 10.00 RMB fax
+    //add additional 10.00 RMB fax
     Pay.cacheData.transAmount = parseInt(transAmount) + 1000;
 //    Pay.cacheData.transAmount = parseInt(transAmount);
     Pay.cacheData.fromAccount = fromAccount;
     Pay.cacheData.toAccount = toAccount;
     Pay.cacheData.idCard = idCard;
+    Pay.cacheData.track2 = params.track2;
+    Pay.cacheData.track3 = params.track3;
     Pay.cacheData[currentTag] = fromAccount;
     Pay.cacheData.step = currentStep + 1;
     Pay.gotoTransferFlow();

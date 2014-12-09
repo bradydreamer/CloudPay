@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -78,10 +79,10 @@ public class ServiceCheckingUpdateDialog extends Activity implements View.OnClic
 		okButton = (Button) findViewById(R.id.ok);
 		okButton.setOnClickListener(this);
 		
-		cancelButton = (Button) findViewById(R.id.cancel);
+		/*cancelButton = (Button) findViewById(R.id.cancel);
 		cancelButton.setText(getResources().getString(R.string.alert_btn_negative));
 		cancelButton.setVisibility(View.VISIBLE);
-		cancelButton.setOnClickListener(this);
+		cancelButton.setOnClickListener(this);*/
 		
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
 		
@@ -118,6 +119,11 @@ public class ServiceCheckingUpdateDialog extends Activity implements View.OnClic
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		return false;  
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return true;
 	}
 
 	@Override

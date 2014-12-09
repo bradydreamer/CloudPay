@@ -24,6 +24,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
@@ -50,6 +53,9 @@ public class SuperTransferController extends BaseController implements View.OnCl
 	private boolean removeJSTag = true;
 	private CardSwiper mCardSwiper;
 	private EditText currentView = null;
+
+    private String track2 = "";
+    private String track3 = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +118,8 @@ public class SuperTransferController extends BaseController implements View.OnCl
 			case HANDLE_TRACK_DATA:
 				JSONObject jsObj = (JSONObject) msg.obj;
 				if (currentEditText == R.id.fromAccountEditText) {
+                    track2 = jsObj.optString("track2");
+                    track3 = jsObj.optString("track3");
 					fromAccountEditText.setText("");
 					fromAccountEditText.setText(jsObj.optString("cardID"));
 					if (!TextUtils.isEmpty(jsObj.optString("cardID"))) {
@@ -241,6 +249,7 @@ public class SuperTransferController extends BaseController implements View.OnCl
 			toAccountEditText.requestFocus();
 			currentEditText = R.id.toAccountEditText;
 			currentView = toAccountEditText;
+			onStopSwiper();
 			onStartSwiper();
 			break;
 		case 2:
@@ -313,7 +322,9 @@ public class SuperTransferController extends BaseController implements View.OnCl
 					return;
 				}
 				msg.put("idCard", idCardStr);
-				
+				msg.put("track2", track2);
+				msg.put("track3", track3);
+
 				onCall("window.SuperTransfer.onCompleteInput", msg);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -353,6 +364,7 @@ public class SuperTransferController extends BaseController implements View.OnCl
 			case R.id.toAccountEditText:
 				position = 1;
 				if (mCardSwiper != null) {
+					mCardSwiper.onPause();
 					mCardSwiper.onStart();
 				}
 				currentView = toAccountEditText;
@@ -460,7 +472,7 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+        UtilFor8583.getInstance().trans.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
 		Message msg = mHandler.obtainMessage();
 		msg.obj = jsObj;
 		msg.what = HANDLE_TRACK_DATA;

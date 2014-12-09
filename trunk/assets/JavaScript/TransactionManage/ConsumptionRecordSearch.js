@@ -4,8 +4,8 @@
   function onConfirm(data) {
 	  	var msg = JSON.parse(data)
 	  	var params = {
-	  		startDate : msg.startDate + "000000",
-	  		endDate : msg.endDate + "235959",
+	  		startDate : msg.startDate,
+	  		endDate : msg.endDate
 	  	}
 	  	//save startDate and endDate to global variable
 	  	window.TransactionManageIndex.refresh = undefined;

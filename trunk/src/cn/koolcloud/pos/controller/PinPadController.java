@@ -46,12 +46,12 @@ public class PinPadController extends BaseController {
 
 	@Override
 	protected void willShow() {
-		//fix SMTPS-153 --start mod by teddy on November 3th
+		// fix SMTPS-153 --start mod by teddy on November 3th
 		willShowCount++;
 		if (willShowCount >= 2) {
 			return;
 		}
-		//fix SMTPS-153 --end mod by teddy on November 3th
+		// fix SMTPS-153 --end mod by teddy on November 3th
 		super.willShow();
 		Handler handler = new Handler(looper);
 		handler.post(new Runnable() {
@@ -175,7 +175,9 @@ public class PinPadController extends BaseController {
 
 	@Override
 	protected void onDestroy() {
-		looper.quit();
+		if(looper != null) {
+			looper.quit();
+		}
 		super.onDestroy();
 	}
 

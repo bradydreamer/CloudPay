@@ -64,7 +64,7 @@ public class MerchantInfoController extends BaseController {
 					AcquireListAdapter acquireListAdapter = new AcquireListAdapter(dataSource, MerchantInfoController.this);
 					acquireInstituteList.setAdapter(acquireListAdapter);
 					acquireListAdapter.notifyDataSetChanged();
-					
+
 //					new InsertAcquireInstitutesThread().start();
 				}
 				

@@ -3,7 +3,9 @@ package cn.koolcloud.constant;
 public class ConstantUtils {
 
 	public static final String PRINT_TYPE_DEFAULT = "1"; // default print type
-	public static final String PRINT_TYPE_ALIPAY = "0080"; // Alipay print type
+	public static final String PRINT_TYPE_ALIPAY = "02"; // Alipay print type
+	public static final String PRINT_TYPE_ALIPAY_OVER_SEA = "12"; // Alipay over sea print type
+	public static final String PRINT_TYPE_TRANSFER = "11"; // transfer print type
 	public static final String PRINT_TYPE_MISPOS = "03"; // mispos print type
 	public static final String STR_NULL_PIN = "0000000000000000"; // null pin
 																	// block
@@ -36,6 +38,7 @@ public class ConstantUtils {
 	public static final String SER_KEY = "cn.koolcloud.pos.ser";
 	public static final String UPDATE_INFO_KEY = "update_info_key";
 	public static final String LOCAl_SERVICE_TAG = "local_service_tag";
+	public static final String START_SERVICE_EXTERNAL_TAG = "start_service_external";
 
 	public static final String DEVICE_PINPAD_KEY = "pinpad";
 	public static final String DEVICE_NETWORK_KEY = "network";
@@ -52,7 +55,11 @@ public class ConstantUtils {
 	// public static final int PORT = 8880;
 	// Exception/Error tag
 	public static final String ERROR_TYPE_0 = "0x00"; // 冲正解包出错。
-	public static final String ERROR_TYPE_1 = "0x01"; // 预留
+	/*
+	 *  组织报文失败：1.可能是Mac计算失败（键盘没有插好，或密钥没有灌成功）
+	 *             2.可以是组文过程中返回的报文长度为0.
+	 */
+	public static final String ERROR_TYPE_1 = "0x01";
 	public static final String ERROR_TYPE_2 = "0x02"; // 预留
 
 	public static final String APMP_TRAN_TYPE_CONSUME = "1021";
@@ -76,5 +83,7 @@ public class ConstantUtils {
 	public static final String ORDER_STATE_TIMEOUT = "9";
 
 	public static final String ALIIPAY_OPEN_BRH = "0229000228";
+
+	public static final String LANGUAGE_CHINESE = "zh";
 
 }

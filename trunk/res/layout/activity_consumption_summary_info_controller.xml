@@ -3,227 +3,155 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/main_page_bg_bitmap"
-    android:gravity="center"
+    tools:context=".MerchantInfoController"
     android:orientation="vertical" >
-    <LinearLayout 
-        android:layout_width="900dp"
-        android:layout_height="500dp"
-        android:background="@color/white"
-        android:layout_marginBottom="30dp"
-        android:orientation="vertical">
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/merch_info_kool_cloud_margin_left_right"
+        android:layout_marginRight="@dimen/merch_info_kool_cloud_margin_left_right"
+        android:layout_marginTop="@dimen/merch_info_list_title_margin_left_right"
+        android:orientation="vertical" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textSize="@dimen/consumption_line_content_text_size"
+                android:layout_height="wrap_content"
+                android:text="@string/merchant_info_tv_merchName"
                 android:textColor="@color/gray"
-                android:gravity="center"
-                android:text="@string/consumption_summary_merchantName"/>
-            <TextView 
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textSize="@dimen/consumption_line_content_text_size"
-                android:textColor="@color/gray"
+                android:textSize="@dimen/merchant_info_cloud_text_size" />
+
+            <TextView
                 android:id="@+id/merchantName"
-                android:gravity="center_vertical"
-                android:paddingLeft="20dp"
-                android:text=""/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/merchant_info_cloud_text_size" />
         </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            >
+
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal"
-                android:layout_weight="1" >
-            <TextView 
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textSize="@dimen/consumption_line_content_text_size"
-                android:textColor="@color/gray"
-                android:gravity="center"
-                android:text="@string/consumption_summary_merchantID"/>
-            <TextView 
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textSize="@dimen/consumption_line_content_text_size"
-                android:textColor="@color/gray"
-                android:id="@+id/merchantID"
+                android:layout_height="wrap_content"
+                android:id="@+id/koolCloudMerchNumLayout"
                 android:gravity="center_vertical"
-                android:paddingLeft="20dp"
-                android:text=""/>
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/merchant_info_tv_merchId"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/merchant_info_cloud_text_size" />
+
+                <TextView
+                    android:id="@+id/merchantID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/merchant_info_cloud_text_size" />
             </LinearLayout>
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal"
-                android:layout_weight="1"  >
-            <TextView 
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textSize="@dimen/consumption_line_content_text_size"
-                android:textColor="@color/gray"
-                android:gravity="center"
-                android:text="@string/consumption_summary_mechineID"/>
-            <TextView 
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textSize="@dimen/consumption_line_content_text_size"
-                android:textColor="@color/gray"
-                android:id="@+id/mechineID"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:paddingLeft="20dp"
-                android:text=""/>
+                android:id="@+id/koolCloudDeviceNumLayout"
+                android:orientation="horizontal"
+                android:layout_alignParentRight="true" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/merchant_info_tv_machineId"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/merchant_info_cloud_text_size" />
+
+                <TextView
+                    android:id="@+id/mechineID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/merchant_info_cloud_text_size" />
             </LinearLayout>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style"
-            android:background="@drawable/listview_users_info_title_background">
-            <TextView 
-                style="@style/consumptionSummary_line_title_style"
-                android:textColor="@color/gray"
-                android:gravity="center"
-                android:text="@string/consumption_summary_transType"/>
-            <TextView android:layout_width="1dp"
-	            android:layout_height="30dp"
-	            android:background="@color/white"/>
-            <TextView 
-                style="@style/consumptionSummary_line_title_style"
-                android:textColor="@color/gray"
-                android:gravity="center"
-                android:text="@string/consumption_summary_transCount"/>
-            <TextView android:layout_width="1dp"
-	            android:layout_height="30dp"
-	            android:background="@color/white"/>
-            <TextView 
-                style="@style/consumptionSummary_line_title_style"
-                android:textColor="@color/gray"
-                android:gravity="center"
-                android:text="@string/consumption_summary_transAmount"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_consume"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/consume_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/consume_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_consumeCancel"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/consumeCancel_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/consumeCancel_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_preAuth"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuth_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuth_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-               	style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_preAuthComplete"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthComplete_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthComplete_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_preAuthCompleteOffline"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthCompleteOffline_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthCompleteOffline_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_preAuthCancel"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthCancel_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthCancel_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-        <LinearLayout 
-            style="@style/consumptionSummary_line_style">
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:text="@string/consumption_summary_preAuthCompleteCancel"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthCompleteCancel_count"
-                android:gravity="center"
-                android:text="0"/>
-            <TextView 
-                style="@style/consumptionSummary_line_content_style"
-                android:id="@+id/preAuthCompleteCancel_amount"
-                android:gravity="center"
-                android:text="0.00"/>
-        </LinearLayout>
-	</LinearLayout>
-        <Button 
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/merch_info_list_title_height"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
+        android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/listview_title_background"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/consumption_summary_transType"
+            android:textSize="@dimen/merchant_info_list_title_text_size"
+            android:textColor="@color/gray"
+            android:layout_weight="2"/>
+        <TextView
+            android:layout_width="1dp"
+            android:layout_height="@dimen/merch_info_list_title_interval_height"
+            android:background="@color/white"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/consumption_summary_transCount"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/merchant_info_list_title_text_size"
+            android:layout_weight="2"/>
+        <TextView android:layout_width="1dp"
+                  android:layout_height="@dimen/merch_info_list_title_interval_height"
+                  android:background="@color/white"/>
+        <TextView
+            android:id="@+id/amountTitleTextView"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/consumption_summary_transAmount"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/merchant_info_list_title_text_size"
+            android:layout_weight="1.5"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="391dp"
+            android:id="@+id/summaryList"
+            android:background="@android:color/transparent"
+            android:listSelector="@android:color/transparent"
+            android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
+            android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
+            android:scrollbars="none"/>
+        <Button
             android:layout_width="220dp"
-			android:layout_height="60dp"
-			android:layout_marginBottom="25dp"
-            android:layout_gravity="center"
+            android:layout_height="60dp"
             android:onClick="onPrintSummary"
+            android:layout_marginBottom="25dp"
             android:background="@drawable/button_print_background"
             android:text="@string/order_detail_btn_operation_text_print"
-	        android:textColor="@android:color/white"
-	        android:textSize="@dimen/order_details_content_text_size"/>     
-    
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/order_details_content_text_size"
+            android:layout_below="@+id/summaryListLayout"
+            android:layout_centerHorizontal="true"/>
+    </LinearLayout>
 </LinearLayout>

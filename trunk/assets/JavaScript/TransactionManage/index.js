@@ -119,25 +119,28 @@
 		// 1031 	预授权完成联机
 		// 3031 	预授权完成联机撤销
 		// 1091 	预授权完成离线
+		// 1721     转账
 
 		var transTypeDesc = "";
 		if (transType == "1021") {
-			transTypeDesc = "消费";
+			transTypeDesc = "102";
 		} else if (transType == "3021") {
-			transTypeDesc = "消费撤销";
+			transTypeDesc = "103";
 		} else if (transType == "3051") {
-			transTypeDesc = "退货";
+			transTypeDesc = "104";
 		} else if (transType == "1011") {
-			transTypeDesc = "预授权";
+			transTypeDesc = "105";
 		} else if (transType == "3011") {
-			transTypeDesc = "预授权撤销";
+			transTypeDesc = "106";
 		} else if (transType == "1031") {
-			transTypeDesc = "预授权完成联机";
+			transTypeDesc = "107";
 		} else if (transType == "3031") {
-			transTypeDesc = "预授权完成联机撤销";
+			transTypeDesc = "108";
 		} else if (transType == "1091") {
-			transTypeDesc = "预授权完成离线";
-		}
+			transTypeDesc = "109";
+		} else if (transType == "1721") {
+            transTypeDesc = "转账";
+        }
 		;
 		return transTypeDesc;
 	}
@@ -154,19 +157,19 @@
 
 		var orderStateDesc = "";
 		if (orderState == "0") {
-			orderStateDesc = "成功";
+			orderStateDesc = "110";
 		} else if (orderState == "1") {
-			orderStateDesc = "失败";
+			orderStateDesc = "111";
 		} else if (orderState == "2") {
-			orderStateDesc = "已冲正";
+			orderStateDesc = "112";
 		} else if (orderState == "3") {
-			orderStateDesc = "已撤销";
+			orderStateDesc = "113";
 		} else if (orderState == "4") {
-			orderStateDesc = "已完成";
+			orderStateDesc = "115";
 		} else if (orderState == "5") {
-			orderStateDesc = "交易中断";
+			orderStateDesc = "116";
 		} else if (orderState == "9") {
-			orderStateDesc = "超时";
+			orderStateDesc = "117";
 		}
 		;
 		return orderStateDesc;
@@ -214,17 +217,18 @@
 
 	}
 
-	function gotoGetConsumptionSummary(){
+	function gotoGetConsumptionSummary(params){
 		var summaryData;
 		var req = {
-
+                startDate: params.startDate,
+                endDate: params.endDate
 			};		
-		Scene.alert("JSLOG,gotoGetConsumptionSummary,before connect.");
+
 		Net.connect("msc/txn/statistic", req, afterGetSummary);
 		
 		function afterGetSummary(params){
 			if("0" == params.responseCode){
-				Scene.alert("JSLOG,afterGetSummary,params=" + JSON.stringify(params));
+
 				summaryData = params;
 				RMS.read("merchant", afterGetMerchantInfo);
 			}else{
@@ -240,12 +244,20 @@
 		}		
 	}
 	
-	function onConsumptionRecord() {
+	function onConsumptionRecord(data) {
 		//request tag
 		window.TransactionManageIndex.refresh = undefined;
 		//delete global variable date object
 		window.TransactionManageIndex.params = undefined;
-		window.util.exeActionWithLoginChecked(gotoConsumptionRecord);
+
+		var msg = JSON.parse(data)
+        var params = {
+            startDate : msg.startDate,
+            endDate : msg.endDate
+        }
+		window.util.exeActionWithLoginChecked(function(){
+		    gotoConsumptionRecord(params);
+		});
 	}
 
 	function onSingleRecordSearch() {
@@ -264,8 +276,15 @@
 		Scene.goBack("TransactionManageIndex");
 	}
 
-	function gotoConsumptionSummary(){
-		window.util.exeActionWithLoginChecked(gotoGetConsumptionSummary);
+	function gotoConsumptionSummary(date){
+	    var msg = JSON.stringify(date);
+	    var params = {
+            startDate : msg.startDate,
+            endDate : msg.endDate
+        }
+		window.util.exeActionWithLoginChecked(function(){
+		    gotoGetConsumptionSummary(params);
+		});
 	}
 
 	function refreshResearch() {

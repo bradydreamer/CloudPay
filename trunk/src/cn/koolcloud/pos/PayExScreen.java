@@ -30,6 +30,7 @@ public class PayExScreen extends WelcomeScreen {
 	public final static String ACTION_LOGIN = "login";
 	public final static String ACTION_LOGOUT = "logout";
 	public final static String ACTION_REVERSE = "reverse";
+	public final static String ACTION_BALANCE = "balance";
 
 	private BaseController currentController;
 
@@ -66,8 +67,12 @@ public class PayExScreen extends WelcomeScreen {
 			payInfo.packageName = packageName;
 			((MyApplication) getApplication()).setPkgName(packageName);
 
-		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
-
+		} else if (ACTION_BALANCE.equalsIgnoreCase(action)) {
+			String openBrh = intent.getStringExtra("acquId");
+			String paymentId = intent.getStringExtra("paymentId");
+			payInfo = new PayInfo();
+			payInfo.openBrh = openBrh;
+			payInfo.paymentId = paymentId;
 		} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
 
 		}
@@ -126,6 +131,14 @@ public class PayExScreen extends WelcomeScreen {
 						@Override
 						public void run() {
 							startReverse();
+						}
+					});
+		}  else if (ACTION_BALANCE.equalsIgnoreCase(action)) {
+			ClientEngine.engineInstance().showWaitingDialog(context, null, new Runnable() {
+
+						@Override
+						public void run() {
+							getBalance();
 						}
 					});
 		} else if (ACTION_LOGIN.equalsIgnoreCase(action)) {
@@ -372,6 +385,23 @@ public class PayExScreen extends WelcomeScreen {
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
 		js.loadJs(getString(R.string.controllerJSName_OrderDetail));
 		js.callJsHandler("External.startReverse", msg);
+	}
+	
+	private void getBalance() {
+		Log.d(TAG, "getBalance");
+		JSONObject msg = new JSONObject();
+		try {
+			if (payInfo.openBrh != null) {
+				msg.put("openBrh", payInfo.openBrh);
+			}
+			if (payInfo.paymentId != null) {
+				msg.put("paymentId", payInfo.paymentId);
+			}
+		} catch (Exception e) {
+
+		}
+		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
+		js.callJsHandler("External.getBalance", msg);
 	}
 
 	private void endReverse(JSONObject result) {

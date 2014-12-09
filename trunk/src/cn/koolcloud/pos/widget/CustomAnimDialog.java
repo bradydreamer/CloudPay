@@ -276,9 +276,15 @@ public class CustomAnimDialog extends Dialog{
 		});
 	}
 
+	public void finishDialog(){
+		dismiss();
+		onStop();
+	}
 	@Override
 	protected void onStop() {
-		showWhileExecutingLooper.quit();
+		if(showWhileExecutingLooper != null) {
+			showWhileExecutingLooper.quit();
+		}
 		showCalledCount = 0;
 		super.onStop();
 	}

@@ -3,6 +3,8 @@ package cn.koolcloud.pos.controller.pay;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
@@ -33,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.jni.LedInterface;
 import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.R;
@@ -46,12 +49,13 @@ import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.external.SoundWave;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 import cn.koolcloud.pos.external.scanner.ZBarScanner;
+import cn.koolcloud.pos.util.Env;
 
 import com.google.zxing.client.android.ScannerRelativeLayout;
 
 public class PayAccountController extends BaseController implements
 		CardSwiperListener, SoundWaveListener, CodeScannerListener,
-		Camera.PreviewCallback {
+		Camera.PreviewCallback, View.OnClickListener {
 
 	private final int PAY_ACOUNT_MAX_LENGTH = 20;
 	private final int HANDLE_INIT_QRSCANNER = 1;
@@ -64,6 +68,8 @@ public class PayAccountController extends BaseController implements
 	protected TextView ic_dis;
 
 	protected EditText et_id;
+
+    private ImageView torchImageView;
 
 	private CardSwiper ex_cardSwiper;
 	private CodeScanner ex_codeScanner;
@@ -93,6 +99,7 @@ public class PayAccountController extends BaseController implements
 	private EMVICManager emvManager = null;
 	private Boolean needPwd = false;
 	private Boolean backEnable = true;
+	private Boolean scanerStarted = false;
 
 	// muilti info bar components
 	private RelativeLayout barTitleLayout;
@@ -145,6 +152,20 @@ public class PayAccountController extends BaseController implements
 		layout_swiper = (RelativeLayout) findViewById(R.id.pay_account_layout_swiper);
 		layout_keyboard = (LinearLayout) findViewById(R.id.pay_account_layout_keyboard);
 		et_id = (EditText) findViewById(R.id.pay_account_et_id);
+        torchImageView = (ImageView) findViewById(R.id.torchImageView);
+        torchImageView.setOnClickListener(this);
+
+        //check H4 OR H5
+        String displayVersion = android.os.Build.DISPLAY;
+        String reg = "H5$";
+        Pattern pattern = Pattern.compile(reg);
+        Matcher matcher = pattern.matcher(displayVersion);
+        if (matcher.find()) {
+            torchImageView.setVisibility(View.VISIBLE);
+        } else {
+            torchImageView.setVisibility(View.GONE);
+        }
+
 		setCurrentNumberEditText(et_id);
 		ic_swiper_guide_text = (TextView) findViewById(R.id.pay_account_swiper_ic_text_guide);
 		transType = data.optString("transType");
@@ -159,7 +180,7 @@ public class PayAccountController extends BaseController implements
 		} else {
 			transAmount = data.optString("transAmount");
 		}
-		amountTextView.setText(transAmount);
+		amountTextView.setText(transAmount + "("+ Env.getCurrencyResource(this)+")");
 
 		func_swipeCard = data.optString("swipeCard");
 		func_inputAccount = data.optString("inputAccount");
@@ -169,7 +190,9 @@ public class PayAccountController extends BaseController implements
 		preview = (FrameLayout) findViewById(R.id.scanner_zb);
 		zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
 
-		if (misc != null && misc.equals(ZBTAG)) {
+		if (misc != null && !misc.equals("")) {
+			if(misc.equals(ZBTAG))
+			{
 			/*
 			 * preview = (FrameLayout) findViewById(R.id.scanner_zb);
 			 * preview.setVisibility(View.VISIBLE); ScannerRelativeLayout
@@ -179,17 +202,18 @@ public class PayAccountController extends BaseController implements
 			 * imageScanner = scanner.getMscanner(); initBeepSound();
 			 */
 
-			preview.setVisibility(View.VISIBLE);
+				preview.setVisibility(View.VISIBLE);
 
-			zscanner.setVisibility(View.GONE);
-		} else {
-			preview.setVisibility(View.GONE);
+				zscanner.setVisibility(View.GONE);
+			}else{
+				preview.setVisibility(View.GONE);
 
-			zscanner.setVisibility(View.VISIBLE);
-			if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
-				ex_codeScanner = new CodeScanner();
-				ex_codeScanner.onCreate(PayAccountController.this,
-						PayAccountController.this);
+				zscanner.setVisibility(View.VISIBLE);
+				if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
+					ex_codeScanner = new CodeScanner();
+					ex_codeScanner.onCreate(PayAccountController.this,
+							PayAccountController.this);
+				}
 			}
 		}
 		initBtnStatus(R.id.pay_account_btn_swiper, data.optInt("btn_swipe", -1));
@@ -326,13 +350,25 @@ public class PayAccountController extends BaseController implements
 
 	@Override
 	public void setProperty(JSONArray data) {
-		ic_swiper_guide_text.setText("请插入IC卡！");
-		Drawable icDrawable = getResources().getDrawable(R.drawable.start_ic);
-		icswiper_img.setImageDrawable(icDrawable);
+		JSONObject jsonObj = data.optJSONObject(0);
+		Boolean closeTag = jsonObj.optBoolean("close");
+		if (closeTag) {
+			onStopReadICData();// 停止IC卡读取功能
+		} else {
+			ic_swiper_guide_text.setText("请插入IC卡！");
+			Drawable icDrawable = getResources().getDrawable(
+					R.drawable.start_ic);
+			icswiper_img.setImageDrawable(icDrawable);
+		}
+
 	}
 
 	public void onSwitchAccount(View view) {
 		if (selectedBtn == view) {
+			return;
+		}
+		//如果scanerStarted为true，表示摄像头还未启动完毕，所以禁止其它操作。
+		if(scanerStarted){
 			return;
 		}
 		String tag = view.getTag().toString();
@@ -360,6 +396,7 @@ public class PayAccountController extends BaseController implements
 			layout_qrcode.setVisibility(View.VISIBLE);
 			if (misc != null && misc.equals(ZBTAG)) {
 				// scanner.startScanner();
+				scanerStarted = true;
 				mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER,
 						OPEN_CAMERA_DELAY_TIME);
 				UtilFor8583.getInstance().trans
@@ -373,6 +410,8 @@ public class PayAccountController extends BaseController implements
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			if (misc != null && misc.equals(ZBTAG)) {
 				scanner.destroyedScanner();
+				scanner = null;
+				scanerStarted = false;
 			} else {
 				onStopQRScanner();
 			}
@@ -422,6 +461,7 @@ public class PayAccountController extends BaseController implements
 				imageScanner = scanner.getMscanner();
 				initBeepSound();
 				scanner.startScanner();
+				scanerStarted = false;
 				break;
 			case EMVICManager.STATUS_VALUE_0: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
@@ -471,6 +511,7 @@ public class PayAccountController extends BaseController implements
 				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
 				break;
 			case EMVICManager.TRADE_STATUS_1:
+				onStopSwiper();// 停止刷卡功能
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
 				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
@@ -728,14 +769,15 @@ public class PayAccountController extends BaseController implements
 		// onStopReadICData();
 		// onStopSwiper();
 		onStopSound();
-		// onStopReadICData();
-		if (misc != null && misc.equals(ZBTAG)) {
-			if (scanner != null) {
-				scanner.destroyedScanner();
-			}
-		} else {
-			if (ex_codeScanner != null) {
-				ex_codeScanner.onPause();
+		if (misc != null && !misc.equals("")) {
+			if (misc.equals(ZBTAG)) {
+				if (scanner != null) {
+					scanner.destroyedScanner();
+				}
+			} else {
+				if (ex_codeScanner != null) {
+					ex_codeScanner.onPause();
+				}
 			}
 		}
 		super.onPause();
@@ -758,13 +800,15 @@ public class PayAccountController extends BaseController implements
 		if (ex_soundWave != null) {
 			ex_soundWave.onStart();
 		}
-		if (misc != null && misc.equals(ZBTAG)) {
-			if (scanner != null) {
-				scanner.startScanner();
-			}
-		} else {
-			if (ex_codeScanner != null) {
-				ex_codeScanner.onResume();
+		if (misc != null && !misc.equals("")){
+			if(misc.equals(ZBTAG)) {
+				if (scanner != null) {
+					scanner.startScanner();
+				}
+			} else {
+				if (ex_codeScanner != null) {
+					ex_codeScanner.onResume();
+				}
 			}
 		}
 		super.onResume();
@@ -777,16 +821,19 @@ public class PayAccountController extends BaseController implements
 		onStopReadICData();
 		onStopSwiper();
 		onDestroySound();
-		if (misc != null && misc.equals(ZBTAG)) {
-			if (scanner != null) {
-				scanner.destroyedScanner();
-			}
-		} else {
-			if (ex_codeScanner != null) {
-				ex_codeScanner.onDestroy();
-				ex_codeScanner = null;
+		if (misc != null && !misc.equals("")) {
+			if (misc.equals(ZBTAG)) {
+				if (scanner != null) {
+					scanner.destroyedScanner();
+				}
+			} else {
+				if (ex_codeScanner != null) {
+					ex_codeScanner.onDestroy();
+					ex_codeScanner = null;
+				}
 			}
 		}
+	    closeLed();
 		super.onDestroy();
 	};
 
@@ -935,4 +982,29 @@ public class PayAccountController extends BaseController implements
 		// TODO Auto-generated method stub
 		return removeJSTag;
 	}
+
+    boolean ledTag = false;
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.torchImageView:
+                if (!ledTag) {
+                    LedInterface.open();
+                    LedInterface.set(LedInterface.LED_ON, LedInterface.CAMERA_LED);
+                    LedInterface.close();
+                    ledTag = true;
+                } else {
+                    closeLed();
+                }
+                break;
+        }
+    }
+
+    private void closeLed() {
+        LedInterface.open();
+        LedInterface.set(LedInterface.LED_OFF, LedInterface.CAMERA_LED);
+        LedInterface.close();
+        ledTag = false;
+    }
 }

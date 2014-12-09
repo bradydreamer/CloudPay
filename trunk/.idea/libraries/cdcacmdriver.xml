@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="cdcacmdriver">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/cdcacmdriver.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

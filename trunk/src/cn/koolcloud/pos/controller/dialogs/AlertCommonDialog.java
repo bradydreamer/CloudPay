@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.R;
 
@@ -57,7 +58,7 @@ public class AlertCommonDialog extends Activity implements View.OnClickListener 
 		
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
 		
-		msgBodyTextView.setText(msg);
+		msgBodyTextView.setText(HostMessage.getJsMsg(msg));
 		
 		
 		if (TextUtils.isEmpty(negativeText)) {

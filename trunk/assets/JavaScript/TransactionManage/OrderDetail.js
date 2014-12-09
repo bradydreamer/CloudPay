@@ -15,30 +15,34 @@
   var transCancelTag = false;
   
   function onRefund(data) {
+    var params = JSON.parse(data);
+    if(!params.timeValid){
+        Scene.alert("请隔日以后进行退货", function() {
+            if (ConsumptionData.dataForPayment.isExternalOrder) {
+                Pay.errRestart();
+            } else {
+                Scene.goBack("OrderDetail");
+            }
+        });
+        return;
+    }
     actionTransData8583(data, Pay.refundOrder, updateListRefund);
   }
 
   function onCancel(data) {
   	transCancelTag = true;
 	var params = JSON.parse(data);
-	
-	//check date on reverse --start mod by Teddy 11th July
-	var currentDate = new Date();
-	var currentYear = currentDate.getFullYear();
-	var currentMonth = currentDate.getMonth();
-	var currentDay = currentDate.getDate();
-	
-	var formatedTransDate = new Date(params.formatedTransDate);
-	var transYear = formatedTransDate.getFullYear();
-	var transMonth = formatedTransDate.getMonth();
-	var transDay = formatedTransDate.getDate();
-	if (params.transType != transType_PreAuth &&(transYear != currentYear || transMonth != currentMonth || transDay != currentDay)) {
-		Scene.alert("交易已经过期");
-		return;
-	}
-	
-	//check date on reverse --end mod by Teddy 11th July
-	
+	if(!params.timeValid){
+        Scene.alert("159", function() {
+            if (ConsumptionData.dataForPayment.isExternalOrder) {
+                Pay.errRestart();
+            } else {
+                Scene.goBack("OrderDetail");
+            }
+        });
+        return;
+    }
+
 	//check index no, if it is mispos then don't get 8583 go pay flow --start add by Teddy on 3th July
 	//fix SMTPS-171 --start fixed by Teddy on 10th November
   	ConsumptionData.dataForPayment.payKeyIndex = params.payKeyIndex;
@@ -54,7 +58,7 @@
   		var formData = ConsumptionData.dataForPayment;
   		formData.Login = "LoginIndex.voidConfirmLogin";
   		var sceneName = "LoginVerify";
-  		Scene.showScene(sceneName, "撤销登录", formData);
+  		Scene.showScene(sceneName, "166", formData);
 		return;  	
   	}else if(params.payKeyIndex == "91") {
   		if (params.transType == transType_Consume) {
@@ -65,10 +69,9 @@
   		};  		
   		formData.Login = "LoginIndex.voidConfirmLogin";
   		var sceneName = "LoginVerify";
-  		Scene.showScene(sceneName, "撤销登录", formData);
+  		Scene.showScene(sceneName, "166", formData);
   		return;
   	}
-	
 	//check index no, if it is mispos then don't get 8583 go pay flow --end add by Teddy on 3th July
 	if (params.transType == transType_Consume) {
 		actionTransData8583(data, Pay.cancelOrder, updateList);
@@ -213,12 +216,27 @@
     window.posPrint.printTrans(txnId);
   }
   
+  function writeBackSendCoupon (data) {
+	var msg = JSON.parse(data);
+	var action = "msc/txn/update";
+	var req = {
+  		txnId : msg.txnId,
+  		stat: msg.stat
+  	};
+  	
+  	Net.asynConnect(action, req, afterWriteBackSendCoupon, true);
+  	function afterWriteBackSendCoupon(param) {
+  		TransactionManageIndex.refreshResearch();
+  	}
+  }
+  
   window.OrderDetail = {
     "onRefund": onRefund,
     "onCancel": onCancel,
     "onAuthComplete": onAuthComplete,
     "onAuthSettlement": onAuthSettlement,
     "onPrint": onPrint,
+    "writeBackSendCoupon": writeBackSendCoupon,
     "showCoupon": showCoupon
   };
 

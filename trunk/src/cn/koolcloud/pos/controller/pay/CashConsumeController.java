@@ -218,7 +218,7 @@ public class CashConsumeController extends BaseController {
 	private Boolean checkAmount(String amount, EditText edit) {
 		String amountStr;
 		String[] amStr = amount.split("\\.");
-		if (amount.length() == 1 && amount.equals("0")) {
+		if (amount.length() == 1 && (amount.equals("0") || amount.equals("."))) {
 			edit.setText("0.00");
 			return false;
 		}

@@ -27,7 +27,9 @@ import cn.koolcloud.jni.MisPosInterface;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
+import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
 import cn.koolcloud.pos.database.CacheDB;
+import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.MisposOperationUtil;
@@ -809,6 +811,14 @@ public class MisposController extends BaseHomeController implements
 
 			onCall("ConsumptionData.saveProcessBatchTask", req);
 			onCall("ConsumptionData.startSingleBatchTask", req);
+			
+			//fix mispos revoke state on database --start mod by Teddy on 12th November
+			String transType = beanData.getTransType();
+			if (!TextUtils.isEmpty(transType) && transType.equals(MisposOperationUtil.TRAN_TYPE_CONSUMPTION_REVERSE)) {
+				ConsumptionRecordDB db = ConsumptionRecordDB.getInstance(MisposController.this);
+				db.updateRecordStatusByTxnId(oriTxnId, getResources().getString(R.string.mispos_revoke_msg));
+			}
+			//fix mispos revoke state on database --end mod by Teddy on 12th November
 			
 			if (isExternalOrder) {
 				mHandler.sendEmptyMessageDelayed(DETAIL_PAGE_VIEWS_HANDLER, 1500);

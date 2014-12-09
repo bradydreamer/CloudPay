@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 import cn.koolcloud.pos.entity.BatchTaskBean;
+import cn.koolcloud.pos.util.UtilForMoney;
 
 /**
  * <p>Title: CacheDB.java </p>
@@ -27,7 +28,7 @@ import cn.koolcloud.pos.entity.BatchTaskBean;
 public class ConsumptionRecordDB extends BaseSqlAdapter {
 
 	private final static String DATABASE_NAME = "RecordCache.db";
-	private final static int DATABASE_VERSION = 2;
+	private final static int DATABASE_VERSION = 3;
     private final static String CONSUMPTION_RECORD_TABLE_NAME = "consumption_record_table";
     
     private Context context;
@@ -55,6 +56,7 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
     public final static String TRANS_DATE_TIME_RECORD = "transDateTime";
     public final static String TRANS_DATE_RECORD = "transDate";
     public final static String TRANS_TIME_RECORD = "transTime";
+    public final static String COUPON_FLAG_RECORD = "cpnFlag";
     
     private ConsumptionRecordDB(Context ctx, int version) {
     	this.context = ctx;
@@ -102,7 +104,8 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
     				OPERATOR_RECORD + ", " +
     				TRANS_DATE_TIME_RECORD + ", " +
     				TRANS_DATE_RECORD + ", " +
-    				TRANS_TIME_RECORD + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    				COUPON_FLAG_RECORD + ", " +
+    				TRANS_TIME_RECORD + ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     		
     		if (recordDataList != null && recordDataList.size() > 0) {
 				for (int i = 0; i < recordDataList.size(); i++) {
@@ -115,12 +118,12 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 					String[] params = new String[] { jsonObj.optString(TXN_ID_RECORD), jsonObj.optString(TRANS_TYPE_RECORD),
     						jsonObj.optString(TRANS_TYPE_DESC_RECORD), jsonObj.optString(PAYMENT_ID_RECORD),
     						jsonObj.optString(PAYMENT_NAME_RECORD), jsonObj.optString(REF_NO_RECORD),
-    						jsonObj.optString(TRANS_AMOUNT_RECORD), jsonObj.optString(PAY_KEY_INDEX_RECORD),
+    						UtilForMoney.yuan2fen(jsonObj.optString(TRANS_AMOUNT_RECORD)), jsonObj.optString(PAY_KEY_INDEX_RECORD),
     						jsonObj.optString(PAY_TYPE_DESC_RECORD), jsonObj.optString(BATCH_NO_RECORD),
     						jsonObj.optString(TRACE_NO_RECORD), jsonObj.optString(ORDER_STATE_RECORD),
     						jsonObj.optString(ORDER_STATE_DESC_RECORD), jsonObj.optString(CARD_NO_RECORD),
     						jsonObj.optString(OPEN_BRH_RECORD), jsonObj.optString(OPERATOR_RECORD),
-    						jsonObj.optString("transTime"), jsonObj.optString("tDate"), jsonObj.optString("tTime")
+    						jsonObj.optString("transTime"), jsonObj.optString("tDate"), jsonObj.optString(COUPON_FLAG_RECORD), jsonObj.optString("tTime")
     					};
 					sqlList.add(new SQLEntity(sql, params));
 				}
@@ -193,6 +196,7 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 				String transDateTime = cursor.getString(cursor.getColumnIndex(TRANS_DATE_TIME_RECORD));
 				String transDate = cursor.getString(cursor.getColumnIndex(TRANS_DATE_RECORD));
 				String transTime = cursor.getString(cursor.getColumnIndex(TRANS_TIME_RECORD));
+				String couponFlag = cursor.getString(cursor.getColumnIndex(COUPON_FLAG_RECORD));
 				
 				JSONObject jsObj = new JSONObject();
 				jsObj.put(TXN_ID_RECORD, txnId);
@@ -201,7 +205,7 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 				jsObj.put(PAYMENT_ID_RECORD, paymentId);
 				jsObj.put(PAYMENT_NAME_RECORD, paymentName);
 				jsObj.put(REF_NO_RECORD, refNo);
-				jsObj.put(TRANS_AMOUNT_RECORD, transAmount);
+				jsObj.put(TRANS_AMOUNT_RECORD, UtilForMoney.fen2yuan(transAmount));
 				jsObj.put(PAY_KEY_INDEX_RECORD, payKeyIndex);
 				jsObj.put(PAY_TYPE_DESC_RECORD, payTypeDesc);
 				jsObj.put(BATCH_NO_RECORD, batchNo);
@@ -214,6 +218,7 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 				jsObj.put("transTime", transDateTime);
 				jsObj.put("tDate", transDate);
 				jsObj.put("tTime", transTime);
+				jsObj.put("cpnFlag", couponFlag);
 				
 				resultList.add(jsObj);
 			}
@@ -246,8 +251,11 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
     	return cursor; 
     }
     
+    //method for update state after revoke order
     public void updateRecordStatusByTxnId(String txnId, String orderStatus) { 
-    	String sql = "update " + CONSUMPTION_RECORD_TABLE_NAME + " set " + ORDER_STATE_DESC_RECORD + " = '" + orderStatus + "' where " + TXN_ID_RECORD + " = '" + txnId + "'";
+    	String sql = "update " + CONSUMPTION_RECORD_TABLE_NAME + " set " + ORDER_STATE_DESC_RECORD + " = '" + orderStatus + "', " +
+    			ORDER_STATE_RECORD + " = 3" +	//3 is revoked order state and "revoked " order description
+    			" where " + TXN_ID_RECORD + " = '" + txnId + "'";
     	try {
 			excuteWriteAbleSql(sql);
 		} catch(Exception e) {
@@ -292,7 +300,7 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if (oldVersion == 1 && newVersion == 2) {
+			if (newVersion == 2) {
 				// Drop tables  
 		        db.execSQL("DROP TABLE IF EXISTS " + CONSUMPTION_RECORD_TABLE_NAME);
 		        // Create tables
@@ -321,6 +329,7 @@ public class ConsumptionRecordDB extends BaseSqlAdapter {
 					+ OPERATOR_RECORD + " varchar, "
 					+ TRANS_DATE_TIME_RECORD + " varchar, "
 					+ TRANS_DATE_RECORD + " varchar, "
+					+ COUPON_FLAG_RECORD + " varchar, "
 					+ TRANS_TIME_RECORD + " varchar, "
 					+ " CONSTRAINT PK_CONSUMTION_RECORD PRIMARY KEY (" + TXN_ID_RECORD + ")" +
 					");";

@@ -3,9 +3,12 @@ package cn.koolcloud.pos.service.local;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.http.Header;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -30,9 +33,11 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.dialogs.ServiceCheckingDevicesDialog;
 import cn.koolcloud.pos.controller.dialogs.ServiceCheckingUpdateDialog;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.util.HttpUtil;
 import cn.koolcloud.pos.util.Logger;
 import cn.koolcloud.pos.util.MisposCheckingThread;
-import cn.koolcloud.pos.util.NetUtil;
+
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class LocalService extends Service implements MisposEventInterface {
 	public static final String TAG = "LocalService";
@@ -48,6 +53,8 @@ public class LocalService extends Service implements MisposEventInterface {
 	
 	private final static int SEND_MESSAGE_DELAYED_TIME = 50;
 	
+	private final static int START_CHECKING_THREAD_TIME = 14400000; //start checking every four hour (4h*60m*60s*1000ms=14400000ms)
+	
 	private Context context;
 	
 	//devices checking params
@@ -55,10 +62,15 @@ public class LocalService extends Service implements MisposEventInterface {
 	private HashSet<String> devicesSet = new HashSet<String>();		//the collection of execute checking devices
 	private Stack<Thread> threadStack = new Stack<Thread>();		//the collection which is waiting for checking devices
 	private final int DEVICES_COUNTS = 4;
-	private boolean deviceCheckingLock = false;
 	private Map<String, Boolean> deviceStatusMap = new HashMap<String, Boolean>();
 	
 	private MisposCheckingThread misposCheckingThread;
+	
+	private boolean isStartedFromExtenal = true;
+	
+	//Time for checking app version
+	private final Timer timer = new Timer();
+	private TimerTask task;
 	
 	//AppStore components
 	protected ParcelableApp localParcelableApp;
@@ -146,6 +158,7 @@ public class LocalService extends Service implements MisposEventInterface {
 		boolean startTag = false;
 		if (intent != null && intent.getExtras() != null) {
 			startTag = intent.getExtras().getBoolean(ConstantUtils.LOCAl_SERVICE_TAG, false);
+			isStartedFromExtenal = intent.getExtras().getBoolean(ConstantUtils.START_SERVICE_EXTERNAL_TAG, true);
 		}
 		if (startTag) {
 			//appstore is installed then start service to check new version
@@ -155,12 +168,25 @@ public class LocalService extends Service implements MisposEventInterface {
 				startCheckingDevices();
 			}
 		}
+		
+		task = new TimerTask() {
+		    @Override 
+		    public void run() {
+		    	isStartedFromExtenal = false;
+		    	new CheckUpdateThread().start();
+		    }
+		};
+		
+		timer.schedule(task, START_CHECKING_THREAD_TIME, START_CHECKING_THREAD_TIME);
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy() executed");
+		//cancel cycled task
+		timer.cancel();
 		unbindService(connection);
 		stopSelf();
 		super.onDestroy();
@@ -267,10 +293,10 @@ public class LocalService extends Service implements MisposEventInterface {
 		threadStack.removeAllElements();
 		pushCheckingThreadToStack();
 		
+		startCheckNetwork(Env.getResourceString(this, R.string.ping_host_url));
 		//thread checking devices
-		threadStack.pop().start();
+//		threadStack.pop().start();
 		//checking is locking
-		deviceCheckingLock = true;
 	}
 	
 	/**
@@ -283,7 +309,7 @@ public class LocalService extends Service implements MisposEventInterface {
 		misposCheckingThread = new MisposCheckingThread(this);
 		threadStack.push(new CheckPinPadThread());
 		threadStack.push(new CheckPrinterThread());
-		threadStack.push(new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)));
+//		threadStack.push(new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)));
 		threadStack.push(misposCheckingThread);
 	}
 	
@@ -310,7 +336,9 @@ public class LocalService extends Service implements MisposEventInterface {
 						msg.what = HANDLE_CHECKING_APP_VERSION;
 					} else {//no new version start checking devices.
 						Log.i(TAG, "no need to update");
-						msg.what = HANDLE_CHECKING_DEVICES;
+						if (isStartedFromExtenal) {
+							msg.what = HANDLE_CHECKING_DEVICES;
+						}
 					}
 					
 					msg.obj = localParcelableApp;
@@ -357,7 +385,7 @@ public class LocalService extends Service implements MisposEventInterface {
 		}		
 	}
 	
-	class CheckNetworkThread extends Thread {
+	/*class CheckNetworkThread extends Thread {
 		
 		String str;
 		
@@ -374,6 +402,43 @@ public class LocalService extends Service implements MisposEventInterface {
 			devicesSet.add("network");
 			mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
 		}		
+	}*/
+	
+	private void startCheckNetwork(String url) {
+		devicesSet.add("network");
+		
+		HttpUtil.get(url, new AsyncHttpResponseHandler() {
+	           
+            public void onFinish() {
+            	
+            }
+            
+			@Override
+			public void onFailure(int status, Header[] header, byte[] arg2,
+					Throwable arg3) {
+				// TODO Auto-generated method stub
+				// called when response HTTP status is "4XX" (eg. 401, 403, 404)
+				
+				Message msg = mDeviceHandler.obtainMessage();
+				msg.what = HANDLE_NETWORK_STATUS;
+				msg.obj = false;
+				
+				mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+			}
+			
+			@Override
+			public void onSuccess(int status, Header[] header, byte[] arg2) {
+				// TODO Auto-generated method stub
+				// called when response HTTP status is "200 OK"
+				
+				if (status == 200) {
+					Message msg = mDeviceHandler.obtainMessage();
+					msg.what = HANDLE_NETWORK_STATUS;
+					msg.obj = true;
+					mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+				}
+			};
+        });
 	}
 	
 	class CheckPrinterThread extends Thread {

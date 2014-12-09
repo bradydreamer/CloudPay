@@ -15,6 +15,7 @@ import android.widget.TextView;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.MultiPayRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForJSON;
 
 public class MultiPayRecord extends BaseController {
@@ -108,10 +109,10 @@ public class MultiPayRecord extends BaseController {
 			payFinish = true;
 		}
 		tv_paidAmount.setText(paidAmountStr
-				+ getString(R.string.transCurrency_text));
-		tv_balance.setText(balanceStr + getString(R.string.transCurrency_text));
+				+ "(" + Env.getCurrencyResource(this) + ")");
+		tv_balance.setText(balanceStr + "(" + Env.getCurrencyResource(this) + ")");
 		tv_totalAmount.setText(totalAmountStr
-				+ getString(R.string.transCurrency_text));
+                + "(" + Env.getCurrencyResource(this) + ")");
 	}
 
 	public void onPay(View view) {

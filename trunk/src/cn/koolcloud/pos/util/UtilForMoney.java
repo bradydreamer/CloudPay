@@ -7,7 +7,8 @@ public class UtilForMoney {
 		if (null == fen || fen.isEmpty()) {
 			fen = "0";
 		}
-		double double_fen = Double.parseDouble(String.valueOf(Long.parseLong(fen)));
+//		double double_fen = Double.parseDouble(String.valueOf(Long.parseLong(fen)));
+		double double_fen = Double.parseDouble(String.valueOf((long)Double.parseDouble(fen)));
 		BigDecimal bd = new BigDecimal(double_fen/100.0);
     	bd = bd.setScale(2,BigDecimal.ROUND_HALF_UP); 
 		return bd.toString();

@@ -114,11 +114,12 @@
   }
 
   function connect(action, params, callbackfunc, isCustom, isAsyn) {
-//    checkTransReverse(action, params,
-//      function() {
+    RMS.read("merchant", afterGetMerchantInfo);
+    function afterGetMerchantInfo(info){
+        params.currency = info.currency;
         saveTransData(action, params);
         gotoConnect(action, params, callbackfunc, isCustom, isAsyn);
-//      });
+    }
   }
 
   function gotoConnect(action, params, callbackfunc, isCustom, isAsyn) {
@@ -156,8 +157,22 @@
 
     //联网错误
     if (response.errCode) {
+
       if (response.keyExchange == "1") {
         _keyExchange = true;
+      }
+      /*
+      * 如果联网错误的话，可以直接显示错误信息，并返回主界面。
+      */
+      {
+        if(window.downloadParams){
+            window.COMM.deleteParamsFiles();
+        }
+        Scene.alert(response.errorMsg,function(){
+            window.RMS.clear("savedTransData");
+            actionAfterError();
+        });
+        return;
       }
       if (_customAction == "") {
 	  	if(window.downloadParams){
@@ -171,7 +186,7 @@
           func(response);
         };
       };
-      return
+      return;
     }
 
     //数据错误
@@ -202,7 +217,7 @@
               if(window.downloadParams){
 	  			window.COMM.deleteParamsFiles();
 	  		  }
-              Scene.alert("通信故障",actionAfterError)
+              Scene.alert("119",actionAfterError)
             }
           } else {
             var func = _callbackQueue[_customAction];

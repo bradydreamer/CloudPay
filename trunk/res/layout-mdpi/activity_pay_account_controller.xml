@@ -139,29 +139,41 @@
 	                android:contentDescription="@string/desc_image"
 	                android:src="@drawable/start_sound" />
 	        </LinearLayout>
-	
-	        <LinearLayout
-	            android:id="@+id/pay_account_layout_qrcode"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="center"
-	            android:layout_centerVertical="true"
-	            android:background="@drawable/qrcode_background"
-	            android:orientation="vertical"
-	            android:visibility="visible" >
-	
-	            <FrameLayout
-	                android:id="@+id/scanner_zb"
-	                android:layout_width="400dp"
-	                android:layout_height="300dp"
-	                android:visibility="gone"/>
-	            
-	            <com.google.zxing.client.android.ScannerRelativeLayout
-	                android:id="@+id/scanner"
-	                android:layout_width="380dp"
-	                android:layout_height="380dp"/>
-	            
-	        </LinearLayout>        
+
+            <LinearLayout
+                android:id="@+id/pay_account_layout_qrcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:visibility="visible" >
+                <ImageView
+                    android:layout_width="@dimen/torch_width"
+                    android:layout_height="@dimen/torch_height"
+                    android:id="@+id/torchImageView"
+                    android:src="@drawable/torch_icon"
+                    android:layout_marginBottom="10dp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/qrcode_background"
+                    android:orientation="vertical" >
+                    <FrameLayout
+                        android:id="@+id/scanner_zb"
+                        android:layout_width="400dp"
+                        android:layout_height="300dp"
+                        android:visibility="gone"/>
+
+                    <com.google.zxing.client.android.ScannerRelativeLayout
+                        android:id="@+id/scanner"
+                        android:layout_width="380dp"
+                        android:layout_height="380dp"/>
+
+                </LinearLayout>
+            </LinearLayout>
 	    </RelativeLayout>
 		<LinearLayout
 	            android:id="@+id/pay_account_layout_keyboard"

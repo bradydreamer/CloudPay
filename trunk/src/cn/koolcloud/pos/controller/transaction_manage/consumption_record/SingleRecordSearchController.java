@@ -46,6 +46,13 @@ public class SingleRecordSearchController extends BaseController {
 	}
 
 	@Override
+	protected void addInputNumber(String text) {
+		if (null != text && numberInputString.toString().length() < 25) {
+			numberInputString.append(text);
+		}
+	}
+
+	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_single_record_search_controller);
 	}

@@ -1,7 +1,9 @@
 package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,11 +13,15 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import cn.koolcloud.interfaces.OrderHeaderInterface;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.database.ConsumptionRecordDB;
+import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForJSON;
 import cn.koolcloud.pos.widget.ContentHeader;
 
@@ -81,6 +87,11 @@ public class ConsumptionRecordController extends BaseController implements Order
 		consumptionDB = ConsumptionRecordDB.getInstance(ConsumptionRecordController.this);
 		orderContentHeader = (ContentHeader) findViewById(R.id.header);
 		orderContentHeader.setOrderHeaderInterface(this);
+
+        TextView currencyTextView = (TextView) findViewById(R.id.transAmountHeader);
+        String formattingCurrency = getResources().getString(R.string.consumption_record_tv_transAmount);
+        String currencyResource = Env.getCurrencyResource(this);
+        currencyTextView.setText(String.format(formattingCurrency, currencyResource));
 	}
 
 	@Override

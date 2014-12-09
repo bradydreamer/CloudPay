@@ -61,7 +61,7 @@ Util.prototype.showSceneWithLoginChecked = function(sceneName, params, sceneTitl
 		};
 		if(sceneName == "CreateUser"){
 			if(window.user.gradeId != "1"){
-				Scene.alert("没有权限，请使用主管账户登录！",backHome);
+				Scene.alert("121",backHome);
 				return;
 			}			
 		}
@@ -85,7 +85,7 @@ Util.prototype.clearReverseDataWithLoginChecked = function(sceneName, params, sc
 		}
 		if(sceneName == "clearReverseData"){
 			if(window.user.gradeId != "1"){
-				Scene.alert("没有权限，请使用主管账户登录！",backHome);
+				Scene.alert("121",backHome);
 				return;
 			}			
 		}
@@ -116,7 +116,7 @@ Util.prototype.showMisposWithLoginChecked = function(params) {
 		}
 		if(sceneName == "CreateUser"){
 			if(window.user.gradeId != "1"){
-				Scene.alert("没有权限，请使用主管账户登录！",backHome);
+				Scene.alert("121",backHome);
 				return;
 			}			
 		}
@@ -319,7 +319,7 @@ Util.prototype.getPayTypeCode = function(payTypeKey) {
 
 Util.prototype.payTypeCode2Name = function(payTypeCode) {
 	if ("9100" == payTypeCode) {
-		return "现金"
+		return "122"
 	} else if ("9110" == payTypeCode) {
 		return "通联虚拟账户"
 	} else if ("9120" == payTypeCode) {
@@ -327,15 +327,15 @@ Util.prototype.payTypeCode2Name = function(payTypeCode) {
 	} else if ("9121" == payTypeCode) {
 		return "快捷支付"
 	} else if ("9130" == payTypeCode) {
-		return "会员卡"
+		return "123"
 	} else if ("9142" == payTypeCode) {
-		return "优惠券"
+		return "124"
 	} else if ("9141" == payTypeCode) {
 		return "提货券"
 	} else if ("9150" == payTypeCode) {
-		return "刷卡"
+		return "125"
 	} else if ("9900" == payTypeCode) {
-		return "其他"
+		return "126"
 	} else {
 		return ""
 	}

@@ -22,7 +22,7 @@
 	    Scene.alert(data.errorMsg)
 	    return
   	} else {
-	  	Scene.alert("创建用户成功",resultAction);	  		  	
+	  	Scene.alert("130",resultAction);
   	}	
   }
   

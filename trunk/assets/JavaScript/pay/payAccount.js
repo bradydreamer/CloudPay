@@ -22,7 +22,7 @@
 
     currentStep = Pay.cacheData.step;
 	if(currentStep >= Pay.cacheData.flowList.length){
-		Scene.alert("非正常操作，请重新操作！",function(){
+		Scene.alert("120",function(){
 			Scene.goBack("Home");
 		});
 		return;
@@ -74,7 +74,7 @@
 				Pay.cacheData.ori_avail_at = data.ggpt_saleact_cardcoupon_query_bycardid_response.ori_avail_at;
 				Pay.cacheData.card_state = data.ggpt_saleact_cardcoupon_query_bycardid_response.card_state;
 				if (data.ggpt_saleact_cardcoupon_query_bycardid_response.rsp_code != "0000") {
-					Scene.alert("不支持当前操作", function() {
+					Scene.alert("154", function() {
 						Scene.goBack("Home");
 					});
 				} else {
@@ -118,9 +118,12 @@
 	var serviesCode = (params.servicesCode).substring(0,1);
 	if( (serviesCode == "2" || serviesCode == "6") && cardId.substring(0,6) != "666010"){
 		Scene.alert("JSLOG,serviesCode  is IC !" + serviesCode);
-		var datalist = [{ }];
+		var datalist = [{"close": false }];
 		Scene.setProperty("PayAccount",datalist);	
 		return;
+	}else{
+		var datalist = [{"close": true}];
+		Scene.setProperty("PayAccount",datalist);
 	}
     exePurchase(params);
   }
@@ -170,7 +173,7 @@
   }
 
   function cancelDialog(){
-	  Scene.alert("密码键盘尚未取消输入，请取消后操作！");
+	  Scene.alert("155");
   }
 
   window.PayAccount = {

@@ -23,7 +23,7 @@
 	    Scene.alert(data.errorMsg)
 	    return
   	} else {
-	  	Scene.alert("密码修改成功，请重新登录！",resultAction);	  		  	
+	  	Scene.alert("143",resultAction);
   	}	
   }
   

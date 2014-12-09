@@ -148,7 +148,7 @@
 			"orderList": [],
 			"flowList" : [{
 				"methods" : ["10"],
-				"desc" : "请输入交易总金额",
+				"desc" : "100",
 				"matchRegex" : "",
 				"inputRegex" : "",
 				"packTag" : "totalAmount"

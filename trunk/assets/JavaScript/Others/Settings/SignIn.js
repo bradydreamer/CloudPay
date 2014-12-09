@@ -90,8 +90,8 @@
   function posUpStatus(callback){
   	  window.downloadParams = true;
 	  var datalist = [{
-		  title: "参数下载",
-		  content: "正在查询参数，请稍后！"
+		  title: "145",
+		  content: "146"
 	  }];
 	  Scene.setProperty("SignIn",datalist);
 	  
@@ -160,7 +160,7 @@
   function downloadICParams(){
 	  var content = "正在下载第" + ICCapkParamsCount + "组参数！";
 	  var datalist = [{
-		  title: "参数下载",
+		  title: "145",
 		  content: content 
 	  }];
 	  Scene.setProperty("SignIn",datalist);
@@ -232,7 +232,7 @@
   function downloadCAPK(){
 	  var content = "正在下载第" + ICCapkParamsCount + "组公钥！";
 	  var datalist = [{
-		  title: "参数下载",
+		  title: "145",
 		  content: content 
 	  }];
 	  Scene.setProperty("SignIn",datalist);
@@ -305,12 +305,12 @@
   function downloadCAPKParamEnd(nextCallback){
 		var content;
 		if(paramType == "PARAM"){
-			content = "正在结束下载参数！"
+			content = "163"
 		}else{	  
-			content = "正在结束下载公钥！";
+			content = "164";
 		}	  
 		var datalist = [{
-			  title: "参数下载",
+			  title: "145",
 			  content: content 
 		}];
 		Scene.setProperty("SignIn",datalist);

@@ -27,6 +27,7 @@ public class ZBarScanner implements ZBarConstants {
 	private TextView scanText;
 	private Context context;
 	private Looper waitDataLooper;
+	private Boolean cameraOpenStatus = false;
 
 	static {
 		System.loadLibrary("iconv");
@@ -80,6 +81,9 @@ public class ZBarScanner implements ZBarConstants {
 
 	public void startScanner() {
 		// Open the default i.e. the first rear facing camera.
+		if(cameraOpenStatus){
+			return;
+		}
 		mCamera = Camera.open();
 		if (mCamera == null) {
 			// Cancel request if mCamera is null.
@@ -91,11 +95,15 @@ public class ZBarScanner implements ZBarConstants {
 		mPreview.showSurfaceView();
 
 		mPreviewing = true;
+		cameraOpenStatus = true;
 	}
 
 	public void stopScanner() {
 		// Because the Camera object is a shared resource, it's very
 		// important to release it when the activity is paused.
+		if(!cameraOpenStatus){
+			return;
+		}
 		if (mCamera != null) {
 			mPreview.setCamera(null);
 			mCamera.cancelAutoFocus();
@@ -112,12 +120,16 @@ public class ZBarScanner implements ZBarConstants {
 
 			mPreviewing = false;
 			mCamera = null;
+			cameraOpenStatus = false;
 		}
 	}
 
 	public void destroyedScanner() {
 		// Because the Camera object is a shared resource, it's very
 		// important to release it when the activity is paused.
+		if(!cameraOpenStatus){
+			return;
+		}
 		if (mCamera != null) {
 			mPreview.setCamera(null);
 			mCamera.cancelAutoFocus();
@@ -134,6 +146,7 @@ public class ZBarScanner implements ZBarConstants {
 
 			mPreviewing = false;
 			mCamera = null;
+			cameraOpenStatus = false;
 		}
 	}
 

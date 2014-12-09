@@ -16,10 +16,11 @@ public class MessageTypeTable {
 	 *            - transType
 	 * @param reqType
 	 *            - reqMsgType
-	 * @param respType
-	 *            - respMsgType
 	 * @param procCode
-	 *            - processingCode
+	 *            - Processing Code F3
+	 * @param pocc
+	 *            - Point Of Service Condition Mode F25
+     * @param transTypeCode - tran type code F60.1
 	 */
 	public MessageTypeTable(int trans, String reqType, String procCode,
 			String pocc, String transTypeCode) {

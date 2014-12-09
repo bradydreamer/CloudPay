@@ -30,14 +30,14 @@
 	  function afterVertifyAction(backParams){		  
 		  if(backParams.isPositiveClicked == true){
 			  if(window.user.gradeId != "1"){
-				  Scene.alert("此账户没有权限,无法执行此操作！",function(){
+				  Scene.alert("137",function(){
 					  	updateUserInfo();
 						Scene.goBack("UsersList");  
 					  });
 				  return;
 			  }	
 			  if(window.user.userName == userInfoList[position].operator){
-				  Scene.alert("无法删除自身账户！",function(){
+				  Scene.alert("140",function(){
 					  	updateUserInfo();
 						Scene.goBack("UsersList"); 				
 					  });
@@ -54,11 +54,11 @@
 	  
 	  function afterDeleteUser(params){
 		  if(params.responseCode == "0"){
-			  Scene.alert("删除成功！",function(){
+			  Scene.alert("141",function(){
 				Scene.goBack("UsersList");  
 			  });
 		  }else{
-			  Scene.alert("删除失败！",updateUserInfo);
+			  Scene.alert("142",updateUserInfo);
 		  }		  
 	  }
 	  

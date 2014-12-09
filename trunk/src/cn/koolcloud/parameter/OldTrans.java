@@ -11,8 +11,8 @@ public class OldTrans implements Constant {
 	private int transType;
 
 	// 原始交易信息
-	private Long oldTransAmount;// 交易金额
-	private Integer oldTrace; // 流水号
+	private Long oldTransAmount = 0L;// 交易金额
+	private Integer oldTrace = 0; // 流水号
 	private String oldTransYear; // YYYY
 	private String oldTransDate; // MMDD
 	private String oldTransTime; //
@@ -36,6 +36,9 @@ public class OldTrans implements Constant {
 	private String alipayPId; // alipay PID
 	private String alipayAccount; // alipay account
 	private String alipayTransactionID; // alipay Transaction ID
+	private String exchangeRate; // exchange rate
+	private String realAmount; // real amount
+	private String toAccount; // to account bank card number
 	private String pocc;
 
 	private byte oldEntryMode;
@@ -51,7 +54,41 @@ public class OldTrans implements Constant {
 
 	private String oper; // 操作员
 
-	public String getKoolCloudTID() {
+    private String txnId;   //txnId
+
+    public String getTxnId() {
+        return txnId;
+    }
+
+    public void setTxnId(String txnId) {
+        this.txnId = txnId;
+    }
+
+    public String getToAccount() {
+        return toAccount;
+    }
+
+    public void setToAccount(String toAccount) {
+        this.toAccount = toAccount;
+    }
+
+    public String getRealAmount() {
+        return realAmount;
+    }
+
+    public void setRealAmount(String realAmount) {
+        this.realAmount = realAmount;
+    }
+
+    public String getExchangeRate() {
+        return exchangeRate;
+    }
+
+    public void setExchangeRate(String exchangeRate) {
+        this.exchangeRate = exchangeRate;
+    }
+
+    public String getKoolCloudTID() {
 		return koolCloudTID;
 	}
 

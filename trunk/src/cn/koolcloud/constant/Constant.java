@@ -218,6 +218,8 @@ public interface Constant {
 	public static final String TAG_LINE2 = "------------------------------";
 
 	public static final String TAG_MERCHANT = "商户名  ：";
+	public static final String TAG_MERCHANT_COPY = "MERCHANT COPY";
+	public static final String TAG_CARDHODER_COPY = "CARDHOLDER COPY";
 
 	public static final String TAG_KOOL_CLOUD_MID = "酷云客户号：";
 	public static final String TAG_KOOL_CLOUD_TID = "酷云设备号：";
@@ -244,7 +246,7 @@ public interface Constant {
 
 	public static final String TAG_AMOUNT = "支付金额：";
 
-	public static final String TAG_TELLERNO = "操作员  ：";
+	public static final String TAG_OPERATOR = "操作员  ：";
 
 	public static final String TRANSACTION_ID = "支付宝流水号：";
 

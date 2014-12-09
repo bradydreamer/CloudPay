@@ -20,7 +20,7 @@ public class CreateUserController extends BaseController {
 	private EditText userName = null;
 	private EditText firstPassword = null;
 	private EditText secondPassword = null;
-	private static final String gradeIdName[] = new String[] { "收银员", "主管" };
+	private static String gradeIdName[] = null;//new String[] { "收银员", "主管" };
 	private Spinner spinner;
 	private String spinnerStr;
 	private ArrayAdapter<String> adapter;
@@ -32,6 +32,7 @@ public class CreateUserController extends BaseController {
 		firstPassword = (EditText) findViewById(R.id.text_first_password);
 		secondPassword = (EditText) findViewById(R.id.text_second_password);
 		spinner = (Spinner) findViewById(R.id.Spinner01);
+        gradeIdName = getResources().getStringArray(R.array.user_grade);
 		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, gradeIdName);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

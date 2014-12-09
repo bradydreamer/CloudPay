@@ -21,7 +21,7 @@ External.startReverseAfterLogin = function(data) {
 	function handleResFromReqRecord(resData) {
 		var recordList = resData.recordList;
 		if (recordList == null || recordList.length == 0) {
-			Scene.alert("原始交易不存在！");
+			Scene.alert("101");
 			return;
 		}
 
@@ -74,21 +74,21 @@ External.startReverseAfterLogin = function(data) {
 
 		var transTypeDesc = "";
 		if (transType == "1021") {
-			transTypeDesc = "消费";
+			transTypeDesc = "102";
 		} else if (transType == "3021") {
-			transTypeDesc = "消费撤销";
+			transTypeDesc = "103";
 		} else if (transType == "3051") {
-			transTypeDesc = "退货";
+			transTypeDesc = "104";
 		} else if (transType == "1011") {
-			transTypeDesc = "预授权";
+			transTypeDesc = "105";
 		} else if (transType == "3011") {
-			transTypeDesc = "预授权撤销";
+			transTypeDesc = "106";
 		} else if (transType == "1031") {
-			transTypeDesc = "预授权完成联机";
+			transTypeDesc = "107";
 		} else if (transType == "3031") {
-			transTypeDesc = "预授权完成联机撤销";
+			transTypeDesc = "108";
 		} else if (transType == "1091") {
-			transTypeDesc = "预授权完成离线";
+			transTypeDesc = "109";
 		}
 		;
 		return transTypeDesc;
@@ -106,19 +106,19 @@ External.startReverseAfterLogin = function(data) {
 
 		var orderStateDesc = "";
 		if (orderState == "0") {
-			orderStateDesc = "成功";
+			orderStateDesc = "110";
 		} else if (orderState == "1") {
-			orderStateDesc = "失败";
+			orderStateDesc = "111";
 		} else if (orderState == "2") {
-			orderStateDesc = "已冲正";
+			orderStateDesc = "112";
 		} else if (orderState == "3") {
-			orderStateDesc = "已撤销";
+			orderStateDesc = "113";
 		} else if (orderState == "4") {
-			orderStateDesc = "已完成";
+			orderStateDesc = "115";
 		} else if (orderState == "5") {
-			orderStateDesc = "交易中断";
+			orderStateDesc = "116";
 		} else if (orderState == "9") {
-			orderStateDesc = "超时";
+			orderStateDesc = "117";
 		}
 		;
 		return orderStateDesc;
@@ -216,6 +216,75 @@ External.onPay = function(data) {
 					window.PayMethod.confirmMethod(transInfo, window.payTemplates[transInfo[transType_Consume]]);
 				});
 				// window.PayMethod.confirmMethod(transInfo);
+			}
+			
+		} else {
+			Scene.showScene("Home", "", params);
+		};
+	}
+
+};
+
+External.getBalance = function(data) {
+	window.ConsumptionData.resetConsumptionData();
+
+	var params = {};
+	var openBrh, paymentId;
+	if (data != null) {
+		params = JSON.parse(data);
+		openBrh = params.openBrh;
+		paymentId = params.paymentId;
+	};
+	ConsumptionData.dataForPayment.isExternalOrder = true;
+	params.isExternalOrder = true;
+
+	if (params.openBrh == null || params.openBrh == "") {
+		Scene.showScene("Home", "", params);
+	} else {
+		updateTransInfo();
+	};
+
+	function updateTransInfo() {
+		window.RMS.read("merchSettings", initTransInfo);
+	}
+
+	function initTransInfo(data) {
+		var settingString = data.settingString;
+		if (settingString == null || settingString.length == 0) {
+			window.util.showSceneWithLoginChecked("SettingsIndex");
+			return;
+		};
+		var merchSettings = JSON.parse(settingString);
+		if (merchSettings == null || merchSettings.length == 0) {
+			return;
+		};
+
+		transInfo = null;
+		for (var i = 0; i < merchSettings.length; i++) {
+			var merchSetting = merchSettings[i];
+			if (merchSetting.openBrh == openBrh && merchSetting.paymentId == paymentId) {
+				transInfo = merchSetting;
+				break;
+			};
+		};
+		if (transInfo != null) {
+			var payKeyIndex = transInfo.brhKeyIndex;
+		
+			if (payKeyIndex === "90") {
+				
+				var params = {
+					typeId : transInfo.typeId,
+					payKeyIndex : transInfo.brhKeyIndex,
+					paymentId : transInfo.paymentId,
+					misc : transInfo.misc
+				};
+				window.util.showMisposWithLoginChecked(JSON.stringify(params));
+			} else {
+				
+				window.RMS.read("templateList", function(data) {
+					window.payTemplates = data;
+					window.PayMethod.confirmMethod(transInfo, window.payTemplates[transInfo[transType_Consume]]);
+				});
 			}
 			
 		} else {

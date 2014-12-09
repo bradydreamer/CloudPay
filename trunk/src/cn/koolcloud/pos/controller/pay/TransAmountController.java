@@ -15,6 +15,7 @@ import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.controller.mispos.MisposController;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForMoney;
 
 public class TransAmountController extends BaseController {
@@ -71,6 +72,12 @@ public class TransAmountController extends BaseController {
 			}
 		}
 		findViews();
+
+        //add Currency by Teddy --start on 3th December
+        TextView currencyTextView = (TextView) findViewById(R.id.currencyTextView);
+        String currencyResource = Env.getCurrencyResource(this);
+        currencyTextView.setText(currencyResource);
+        //add Currency by Teddy --end on 3th December
 	}
 	
 	private void findViews() {

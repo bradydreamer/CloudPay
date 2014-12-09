@@ -589,7 +589,9 @@ public abstract class BaseHomeController extends BaseController {
 				iv.setImageResource(R.drawable.wal_mart);
 			} else if (imageName.startsWith("Wing-On")) {
 				iv.setImageResource(R.drawable.wing_on);
-			}
+			} else if (imageName.startsWith("logo_fufeitong_transfer")) {
+                iv.setImageResource(R.drawable.logo_fufeitong_transfer);
+            }
 		}
 	}
 
@@ -621,7 +623,7 @@ public abstract class BaseHomeController extends BaseController {
 					misc = tagObj.optString("misc");
 					msg.put("tag", tag);
 				} else {
-					msg.put("error", "没有主密钥索引，请联系客服！");
+					msg.put("error", "167");
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

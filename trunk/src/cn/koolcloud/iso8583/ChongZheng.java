@@ -88,6 +88,7 @@ public class ChongZheng implements Constant {
 
 	private static boolean saveData(int bit) {
 		int length;
+		int fieldLen;
 		boolean ret = true;
 		ISOTable[] isotable;
 		byte[] llvar = new byte[1];
@@ -103,18 +104,22 @@ public class ChongZheng implements Constant {
 		case FFIX + ATTN: // Fixed Numeric
 			// Make length even and divide by 2
 			length = (isotable[bit].fieldLen + 1) / 2;
+			fieldLen = isotable[bit].fieldLen;
 			break;
 		case FFIX + ATTBIN: // Fixed Binary
 			// Divide by 8
 			length = isotable[bit].fieldLen;
+			fieldLen = isotable[bit].fieldLen;
 			break;
 		case FFIX + ATTAN: // Fixed Alpha Numeric
 		case FFIX + ATTANS: // Fixed Alpha Numeric Special
 			length = isotable[bit].fieldLen;
+			fieldLen = isotable[bit].fieldLen;
 			break;
 		case FLLVAR + ATTANS: // LL Variable Alpha Numeric Special
 			iso.fetchDataBuffer(llvar, 0, 1);
 			length = ((llvar[0] >> 4) & 0x0F) * 10 + (llvar[0] & 0x0F);
+			fieldLen = length;
 			break;
 		case FLLLVAR + ATTAN: // LLL Variable Alpha Numeric
 
@@ -124,10 +129,12 @@ public class ChongZheng implements Constant {
 			length = lllvar[0] & 0x0F;
 			length = length * 100 + ((lllvar[1] >> 4) & 0x0F) * 10
 					+ (lllvar[1] & 0x0F);
+			fieldLen = length;
 			break;
 		case FLLVAR + ATTN: // LL Variable Numeric
 			iso.fetchDataBuffer(llvar, 0, 1);
 			length = ((llvar[0] >> 4) & 0x0F) * 10 + (llvar[0] & 0x0F);
+			fieldLen = length;
 			length = (length + 1) / 2;
 			break;
 		case FLLLVAR + ATTN: /* LLL Variable Numeric */
@@ -135,10 +142,12 @@ public class ChongZheng implements Constant {
 			length = lllvar[0] & 0x0F;
 			length = length * 100 + ((lllvar[1] >> 4) & 0x0F) * 10
 					+ (lllvar[1] & 0x0F);
+			fieldLen = length;
 			length = (length + 1) / 2;
 			break;
 		default: // Unknown format; no data to move
 			length = 0;
+			fieldLen = length;
 			break;
 		}
 		byte[] tempBuffer = new byte[length];
@@ -148,9 +157,7 @@ public class ChongZheng implements Constant {
 			byte[] F2_AccountNumber = new byte[tempBuffer.length * 2];
 			ByteUtil.bcdToAscii(tempBuffer, 0, F2_AccountNumber, 0, 20, 0);
 			String oldPan = StringUtil.toString(F2_AccountNumber);
-			if (oldPan.length() == 20) {
-				oldPan = oldPan.substring(0, 19);
-			}
+			oldPan = oldPan.substring(0, fieldLen);
 			oldTrans.setOldPan(oldPan);
 			Log.i(APP_TAG, "F2_AccountNumber : oldPan = " + oldPan);
 			break;
@@ -302,7 +309,7 @@ public class ChongZheng implements Constant {
 			Log.i(APP_TAG, "F61 is :" + StringUtil.toString(tempBuffer));
 			break;
 		case ISOField.F62:
-			// procB62_CUP(tempBuffer, oldTrans);
+			procB62_CUP(tempBuffer, oldTrans);
 			break;
 		case ISOField.F63:
 			// procB63_CUP(tempBuffer, appState);
@@ -320,8 +327,7 @@ public class ChongZheng implements Constant {
 	private static void procB60_CUP(byte[] F60_Field) {
 		byte[] transTypeCode = new byte[1];
 		System.arraycopy(F60_Field, 0, transTypeCode, 0, 1);
-		String transTypeCodeStr = StringUtil.toString(ByteUtil
-				.bcdToAscii(transTypeCode));
+		String transTypeCodeStr = StringUtil.toString(ByteUtil.bcdToAscii(transTypeCode));
 		int oldTransType = MessageType.getTransType(
 				oldTrans.getOldProcesscode(), F_MessageType,
 				oldTrans.getOldPocc(), transTypeCodeStr);
@@ -394,6 +400,25 @@ public class ChongZheng implements Constant {
 				oldTrans.setAlipayTransactionID(alipayTransactionID);
 				continue;
 			}
+
+            if (flag.equals("28")) {
+                String exchangeRate = s.substring(8);
+                oldTrans.setExchangeRate(exchangeRate);
+                continue;
+            }
+
+            if (flag.equals("29")) {
+                String realAmount = s.substring(8);
+                oldTrans.setRealAmount(realAmount);
+                continue;
+            }
+
+            /*//merchant order id
+            if (flag.equals("30")) {
+                String merchOrderId = s.substring(8);
+                oldTrans.setMerchOrderId(merchOrderId);
+                continue;
+            }*/
 		}
 
 	}
@@ -413,6 +438,16 @@ public class ChongZheng implements Constant {
 		if (textLength > 0) {
 
 		}
+	}
+
+    private static void procB62_CUP(byte[] F62_Field, OldTrans trans) {
+
+		int offset = 0;
+		byte[] toAcount = new byte[F62_Field.length];
+		System.arraycopy(F62_Field, 0, toAcount, 0, F62_Field.length);
+		trans.setToAccount(StringUtil.toString(toAcount));
+
+		Log.i(APP_TAG, "B62_CUP : to account number = " + trans.getToAccount());
 	}
 
 }

@@ -79,7 +79,7 @@
 			if (null != endTime && endTime.length > 8) {
 				endTime = util.formatDateTime(endTime.substring(0, 8));
 			};
-			var dateRange = "未知";
+			var dateRange = "127";
 			if (null != startTime) {
 				dateRange = startTime + "至" + endTime;
 			}

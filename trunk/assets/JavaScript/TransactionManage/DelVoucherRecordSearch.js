@@ -46,9 +46,9 @@
 				// recordData.brhId = "0229000184";
 				var cancelEnable = 0;
 				if (recordData.txnCode == "6871") {
-					recordData.txn = "串码查询";
+					recordData.txn = "162";
 				} else if (recordData.txnCode == "6872") {
-					recordData.txn = "消费";
+					recordData.txn = "102";
 					cancelEnable = cancelEnable + 1;
 				} else if (recordData.txnCode == "6873") {
 					recordData.txn = "撤销";

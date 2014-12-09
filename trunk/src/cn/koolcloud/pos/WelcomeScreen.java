@@ -38,6 +38,8 @@ public class WelcomeScreen extends Activity {
 		//start Local Service but don't execute checking
         if (!isExternalOrder) {
         	Intent bindIntent = new Intent(this, LocalService.class);
+        	//indicate start a local service from external
+        	bindIntent.putExtra(ConstantUtils.START_SERVICE_EXTERNAL_TAG, true);
         	bindIntent.putExtra(ConstantUtils.LOCAl_SERVICE_TAG, false);
         	startService(bindIntent);
         }

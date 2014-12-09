@@ -72,7 +72,7 @@ Pay.reverseResult = function(params) {
 			Pay.reverseCallBack = null;
 		};
 	}else{	
-		Scene.alert("冲正失败，请联系代理机构");
+		Scene.alert("158");
 		if (Pay.reverseCallBack) {
 			Pay.reverseCallBack();
 			Pay.reverseCallBack = null;
@@ -117,7 +117,7 @@ Pay.authCancelOrder = function(params,callBack){
 	oriData.params = params;
 	oriData.transType = transType_preAuthCancel;
 	if(params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("交易已过期");
+		Scene.alert("159");
 		return;
 	}
 	Pay.authTransCallBack = callBack;
@@ -134,7 +134,7 @@ Pay.authCompleteCancelOrder = function(params,callBack){
 	oriData.params = params;
 	oriData.transType = transType_preAuthCompleteCancel;
 	if(params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("交易已过期");
+		Scene.alert("159");
 		return;
 	}
 	Pay.authTransCallBack = callBack;
@@ -151,7 +151,7 @@ Pay.authCompleterOrder = function(params,callBack){
 	oriData.params = params;
 	oriData.transType = transType_preAuthComplete;
 	if(params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("交易已过期");
+		Scene.alert("159");
 		return;
 	}
 	Pay.authTransCallBack = callBack;
@@ -168,7 +168,7 @@ Pay.authSettlementOrder = function(params,callBack){
 	oriData.params = params;
 	oriData.transType = transType_preAuthSettlement;
 	if(params.transData8583 == null || params.transData8583 == "") {
-		Scene.alert("交易已过期");
+		Scene.alert("159");
 		return;
 	}
 	Pay.authTransCallBack = callBack;
@@ -220,9 +220,11 @@ Pay.getProductInfo = function(data){
 		payType = transType_preAuthCancel;
 	}else if(oriData.transType == transType_preAuthCompleteCancel){
 		payType = transType_preAuthCompleteCancel;
-	}	
+	}else if(oriData.transType == transType_Refund){
+        payType = transType_Refund;
+	}
 	if (product == null || product[payType] == null || product[payType].length == 0) {
-		Scene.alert("不支持该交易！" + JSON.stringify(product));
+		Scene.alert("160" + JSON.stringify(product));
 		return;
 	}
 	
@@ -240,7 +242,8 @@ Pay.getProductInfo = function(data){
 			flowList = JSON.parse(flowList);
 			flowList = JSON.parse(flowList);
 		}
-		if(oriData.transType == transType_ConsumeCancel){
+
+		if(oriData.transType == transType_Refund){
 			ConsumptionData.dataForCancellingOrder.rrn = oriData.params.rrn;
 			ConsumptionData.dataForCancellingOrder.transTime = oriData.params.transTime;
 			ConsumptionData.dataForCancellingOrder.transDate = oriData.params.transTime.substring(4, 8);
@@ -248,11 +251,23 @@ Pay.getProductInfo = function(data){
 			ConsumptionData.dataForCancellingOrder.transAmount = oriData.params.transAmount;
 			ConsumptionData.dataForCancellingOrder.paymentId = oriData.params.paymentId;
 			ConsumptionData.dataForCancellingOrder.transType = oriData.params.transType;
-			ConsumptionData.dataForCancellingOrder.typeOf8583 = "cheXiao";
+			ConsumptionData.dataForCancellingOrder.typeOf8583 = "refund";
 			ConsumptionData.dataForCancellingOrder.flowList = flowList;	
 			ConsumptionData.dataForCancellingOrder.step = 0;
 			Pay.gotoCancelFlow();
-		}else if(oriData.transType == transType_preAuthComplete){
+		}else if(oriData.transType == transType_ConsumeCancel){
+            ConsumptionData.dataForCancellingOrder.rrn = oriData.params.rrn;
+            ConsumptionData.dataForCancellingOrder.transTime = oriData.params.transTime;
+            ConsumptionData.dataForCancellingOrder.transDate = oriData.params.transTime.substring(4, 8);
+            ConsumptionData.dataForCancellingOrder.transData8583 = oriData.params.transData8583;
+            ConsumptionData.dataForCancellingOrder.transAmount = oriData.params.transAmount;
+            ConsumptionData.dataForCancellingOrder.paymentId = oriData.params.paymentId;
+            ConsumptionData.dataForCancellingOrder.transType = oriData.params.transType;
+            ConsumptionData.dataForCancellingOrder.typeOf8583 = "cheXiao";
+            ConsumptionData.dataForCancellingOrder.flowList = flowList;
+            ConsumptionData.dataForCancellingOrder.step = 0;
+            Pay.gotoCancelFlow();
+        }else if(oriData.transType == transType_preAuthComplete){
 			ConsumptionData.dataForPayment.typeOf8583 = "preAuthComplete";
 			ConsumptionData.dataForPayment.rrn = oriData.params.rrn;
 			ConsumptionData.dataForPayment.transDate = oriData.params.transTime.substring(4, 8);
@@ -304,7 +319,11 @@ Pay.getProductInfo = function(data){
 
 Pay.cancelOrderConvertReq = function(params) {
 	//window.data8583.get8583(ConsumptionData.dataForCancellingOrder, Pay.cancelOrderExe);
-	Pay.checkTransReverse("msc/pay/consume/cance",function(){
+	var action = "msc/pay/consume/cancel";
+	if (ConsumptionData.dataForCancellingOrder.typeOf8583 == "refund") {
+		action = "msc/pay/refund";
+	}
+	Pay.checkTransReverse(action,function(){
 		window.data8583.get8583(ConsumptionData.dataForCancellingOrder, Pay.cancelOrderExe);
 	});	
 };
@@ -327,7 +346,6 @@ Pay.cancelOrderExe = function(params) {
 
 	if(params.cardNo != "9999999999999999" && params.cardNo != ConsumptionData.dataForCancellingOrder.F02){
 		Scene.alert("刷卡错误，请刷原卡!",function(){
-//			Scene.goBack("OrderDetail");
 			if (ConsumptionData.dataForPayment.isExternalOrder) {
 				Pay.errRestart();
 			} else {
@@ -336,19 +354,7 @@ Pay.cancelOrderExe = function(params) {
 		});
 		return;
 	}
-	
-	if (!isTodayOrder(ConsumptionData.dataForCancellingOrder)) {
-		Scene.alert("交易已经过期", function() {
-//			Scene.goBack("OrderDetail");
-			if (ConsumptionData.dataForPayment.isExternalOrder) {
-				Pay.errRestart();
-			} else {
-				Scene.goBack("OrderDetail");
-			}
-		});
-		return;
-	}
-	
+
 	ConsumptionData.dataForCancellingOrder.req8583 = req.data;
 
 	var action = "msc/pay/consume/cancel";
@@ -367,7 +373,17 @@ Pay.cancelOrderExe = function(params) {
 			ConsumptionData.dataForCancellingOrder.txnId = data.txnId;
 			window.data8583.convert8583(params, afterConvert8583);
 		} else {
-			Pay.reverseOrder(Pay.cancelEnd);
+		    if(ConsumptionData.dataForCancellingOrder.typeOf8583 == "refund"){
+                Scene.alert("退货失败",function(){
+                    if(ConsumptionData.dataForPayment.isExternalOrder){
+                		Pay.restart();
+                	}else{
+                		Scene.goBack("OrderDetail");
+                	}
+                });
+		    }else{
+			    Pay.reverseOrder(Pay.cancelEnd);
+			}
 		}
 	}
 
@@ -451,7 +467,6 @@ Pay.cancelOrderResult = function(params) {
 			window.posPrint.printTrans(ConsumptionData.dataForCancellingOrder.txnId);
 			ConsumptionData.resetDataForCancellingOrder();
 		}, 300);
-		
 		if (Pay.cancelCallBack) {
 			Pay.cancelCallBack();
 			Pay.cancelCallBack = null;
@@ -503,54 +518,21 @@ Pay.cancelEnd = function() {
 };
 
 Pay.refundOrder = function(params, callBack) {
+    oriData.params = params;
+	oriData.transType = transType_Refund;
 	if (params.transData8583 == null || params.transData8583 == "") {
 		Scene.alert("交易已经过期");
 		return;
 	};
 	Pay.cancelCallBack = callBack;
 
-	ConsumptionData.resetDataForCancellingOrder();
-
-	var open_brh = params.openBrh;
-	var payment_id = params.paymentId;
-
-	if (window.merchSettings == null) {
-		window.RMS.read("merchSettings", getProductInfo);
-	} else {
-		getProductInfo(window.merchSettings);
-	}
-
-	function getProductInfo(data) {
-		var product = window.util.getProductInfo(data, open_brh, payment_id);
-		if (product == null || product.refundTemplate == null || product.refundTemplate.length == 0) {
-			Scene.alert("该交易不支持退货" + JSON.stringify(product));
-			return;
-		}
-		if (window.refundTemplates == null) {
-			window.RMS.read("refundTemplates", function(data) {
-				window.refundTemplates = data;
-				confirmMethod(product, window.refundTemplates[product.refundTemplate]);
-			});
-		} else {
-			confirmMethod(product, window.refundTemplates[product.refundTemplate]);
-		}
-	}
-
-	function confirmMethod(product, flowList) {
-		if (flowList != null && typeof (flowList) == "string") {
-			flowList = JSON.parse(flowList);
-		}
-		ConsumptionData.dataForCancellingOrder.rrn = params.rrn;
-		ConsumptionData.dataForCancellingOrder.transDate = params.transTime.substring(4, 8);
-		ConsumptionData.dataForCancellingOrder.transData8583 = params.transData8583;
-		ConsumptionData.dataForCancellingOrder.transAmount = params.transAmount;
-		ConsumptionData.dataForCancellingOrder.paymentId = params.paymentId;
-
-		ConsumptionData.dataForCancellingOrder.typeOf8583 = "refund";
-		ConsumptionData.dataForCancellingOrder.flowList = flowList;
-
-		Pay.gotoCancelFlow();
-	}
-
+    ConsumptionData.resetDataForCancellingOrder();
+    ConsumptionData.dataForCancellingOrder.txnId = params.txnId
+    ConsumptionData.dataForPayment.txnId = params.txnId;
+    if (window.merchSettings == null) {
+        window.RMS.read("merchSettings", Pay.getProductInfo);
+    } else {
+        Pay.getProductInfo(window.merchSettings);
+    }
 };
 

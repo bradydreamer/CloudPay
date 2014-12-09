@@ -66,7 +66,7 @@
 		var prdtList = params.prdtList;
 		 
 		if (prdtList == null || prdtList.length == 0) {
-			Scene.alert("参数列表为空");
+			Scene.alert("144");
 			return;
 		};
 
@@ -192,6 +192,7 @@
 				merchId : data.mer_id,
 				machineId : window.user.machineId,
 				merchName : data.mer_name,
+				currency : data.stl_cur
 			};
 			RMS.save("merchant", params);
 			ServiceMerchInfo.setMerchInfo(params);

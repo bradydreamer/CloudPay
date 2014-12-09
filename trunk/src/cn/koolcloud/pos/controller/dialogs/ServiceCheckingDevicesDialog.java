@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.http.Header;
 import org.json.JSONObject;
+
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -32,6 +35,7 @@ import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.pos.util.HttpUtil;
 import cn.koolcloud.pos.util.Logger;
 import cn.koolcloud.pos.util.MisposCheckingThread;
 import cn.koolcloud.pos.util.NetUtil;
@@ -138,7 +142,7 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 		if (!(misposStatusTag || pinpadStatusTag)) {
 			//init mispos view
 			pinpadTextView.setText(Env.getResourceString(ServiceCheckingDevicesDialog.this,
-					R.string.dialog_device_check_mispos_unusual));
+					R.string.dialog_device_check_pinpad_unusual));
 			pinpadTextView.setCompoundDrawables(checkFailDrawable, null, null, null);
 		} else {
 			pinpadTextView.setText(Env.getResourceString(ServiceCheckingDevicesDialog.this,
@@ -190,9 +194,11 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 			//check and set title status
 			if (null != msg.obj) {
 				status = (Boolean) msg.obj;
-				if (msg.what != HANDLE_PINPAD_STATUS && msg.what != HANDLE_MISPOS_STATUS) {
-					devicesStatusTag = false;
-				}
+                if (!status) {
+                    if (msg.what != HANDLE_PINPAD_STATUS && msg.what != HANDLE_MISPOS_STATUS) {
+                        devicesStatusTag = false;
+                    }
+                }
 			}
 			
 			//check devices whether are all ready or not
@@ -256,7 +262,7 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 					devicesStatusTag = false;
 					//init mispos view
 					pinpadTextView.setText(Env.getResourceString(ServiceCheckingDevicesDialog.this,
-							R.string.dialog_device_check_mispos_unusual));
+							R.string.dialog_device_check_pinpad_unusual));
 					pinpadTextView.setCompoundDrawables(checkFailDrawable, null, null, null);
 				} else {
 					pinpadTextView.setText(Env.getResourceString(ServiceCheckingDevicesDialog.this,
@@ -348,8 +354,10 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 		
 		threadStack.removeAllElements();
 		pushCheckingThreadToStack();
+		
+		startCheckNetwork(Env.getResourceString(this, R.string.ping_host_url));
 		//thread checking devices
-		threadStack.pop().start();
+//		threadStack.pop().start();
 		//checking is locking
 		deviceCheckingLock = true;
 	}
@@ -369,7 +377,7 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 		threadStack.push(misposCheckingThread);
 		threadStack.push(new CheckPinPadThread());
 		threadStack.push(new CheckPrinterThread());
-		threadStack.push(new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)));
+//		threadStack.push(new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)));
 	}
 	
 	/**
@@ -401,7 +409,7 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 		}		
 	}
 	
-	class CheckNetworkThread extends Thread {
+	/*class CheckNetworkThread extends Thread {
 		
 		String str;
 		
@@ -418,6 +426,43 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 			devicesSet.add("network");
 			mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
 		}		
+	}*/
+	
+	private void startCheckNetwork(String url) {
+		devicesSet.add("network");
+		
+		HttpUtil.get(url, new AsyncHttpResponseHandler() {
+	           
+            public void onFinish() {
+            	
+            }
+            
+			@Override
+			public void onFailure(int status, Header[] header, byte[] arg2,
+					Throwable arg3) {
+				// TODO Auto-generated method stub
+				// called when response HTTP status is "4XX" (eg. 401, 403, 404)
+				
+				Message msg = mHandler.obtainMessage();
+				msg.what = HANDLE_NETWORK_STATUS;
+				msg.obj = false;
+				
+				mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+			}
+			
+			@Override
+			public void onSuccess(int status, Header[] header, byte[] arg2) {
+				// TODO Auto-generated method stub
+				// called when response HTTP status is "200 OK"
+				
+				if (status == 200) {
+					Message msg = mHandler.obtainMessage();
+					msg.what = HANDLE_NETWORK_STATUS;
+					msg.obj = true;
+					mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+				}
+			};
+        });
 	}
 	
 	class CheckPrinterThread extends Thread {
