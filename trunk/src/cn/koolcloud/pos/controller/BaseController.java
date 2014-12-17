@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
@@ -435,7 +436,7 @@ public abstract class BaseController extends Activity {
 		}
 		if (key.equals("text")) {
 			if (view instanceof TextView) {
-				((TextView) view).setText((String) value);
+				((TextView) view).setText(HostMessage.getJsMsg((String) value));
 			} else if (view instanceof EditText) {
 				((EditText) view).setText((String) value);
 			}

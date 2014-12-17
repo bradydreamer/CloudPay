@@ -8,6 +8,7 @@
   var _keyExchange = false;
   var _callbackQueue = {};
   var _customAction = "";
+  var oriAction = "";
   
   function isActionEqual(specAction, action, params) {
     if ((null != action && -1 != action.search(specAction))
@@ -136,6 +137,7 @@
   			action == "msc/pay/prepaid/over/offline" ||
   			action == "msc/pay/prepaid/cancel" ||
   			action == "msc/pay/prepaid/over/cancel"){
+  		oriAction = action;
   		action = "txn/"+ConsumptionData.dataForPayment.brhKeyIndex;
   	}
     var reqData = _request(action, params, callbackfunc);
@@ -162,9 +164,9 @@
         _keyExchange = true;
       }
       /*
-      * 如果联网错误的话，可以直接显示错误信息，并返回主界面。
+      * 没有网络时。
       */
-      {
+      if(response.errCode == "0" && oriAction != "msc/pay/reverse"){
         if(window.downloadParams){
             window.COMM.deleteParamsFiles();
         }

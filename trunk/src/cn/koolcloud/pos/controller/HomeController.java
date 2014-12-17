@@ -399,6 +399,10 @@ public class HomeController extends BaseHomeController implements
 		onCall("TransactionManageIndex.onDelVoucherRecordSearch", null);
 	}
 
+	public void gotoSingleRecordSearchByTxnId(View view){
+		onCall("TransactionManageIndex.onSingleRecordSearchByTxnId",null);
+	}
+
 	public void gotoConsumptionSummary(View view) {
 		Date today = new Date();
 		String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import cn.koolcloud.pos.ClientEngine;
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.JavaScriptEngine;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
@@ -38,10 +39,9 @@ public class LoginVerifyController extends BaseController {
 		// initETWithKBHiddenListener(et_userName);
 		// initETWithKBHiddenListener(et_pwd);
 		if (formData != null) {
-			String titleName = formData
-					.optString(getString(R.string.formData_key_title));
+			String titleName = formData.optString(getString(R.string.formData_key_title));
 			if (!titleName.equals("")) {
-				setTitle(titleName);
+				setTitle(HostMessage.getJsMsg(titleName));
 			}
 		}
 

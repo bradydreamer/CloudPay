@@ -589,7 +589,7 @@ public abstract class BaseHomeController extends BaseController {
 				iv.setImageResource(R.drawable.wal_mart);
 			} else if (imageName.startsWith("Wing-On")) {
 				iv.setImageResource(R.drawable.wing_on);
-			} else if (imageName.startsWith("logo_fufeitong_transfer")) {
+			} else if (imageName.startsWith("logo_transfer_fufeitong")) {
                 iv.setImageResource(R.drawable.logo_fufeitong_transfer);
             }
 		}
@@ -639,17 +639,19 @@ public abstract class BaseHomeController extends BaseController {
 
 				try {
 					JSONObject paramObj = new JSONObject();
-					paramObj.put("typeId", tranType);
+
 					paramObj.put("payKeyIndex", indexNo);
 					paramObj.put("paymentId", paymentId);
-					if (!TextUtils.isEmpty(misc)) {
+					if (!TextUtils.isEmpty(misc) && misc.equals(ConstantUtils.MISPOS_MISC)) {
 						paramObj.put("misc", misc);
-					}
+                        paramObj.put("typeId", ConstantUtils.MISPOS_TRAN_TYPE);
+                    } else {
+                        paramObj.put("typeId", tranType);
+                    }
 
 					if (!isPaymentClicked) {
 
-						onCall("window.util.showMisposWithLoginChecked",
-								paramObj);
+						onCall("window.util.showMisposWithLoginChecked", paramObj);
 						isPaymentClicked = true;
 					}
 				} catch (JSONException e) {
@@ -671,7 +673,22 @@ public abstract class BaseHomeController extends BaseController {
 				}
 
 				onCall("window.util.showCouponWithLoginChecked", paramObj);
-			} else {
+			}  else if (!TextUtils.isEmpty(misc)
+                    && misc.equalsIgnoreCase("rm_coupon_wan")) {
+                JSONObject paramObj = null;
+                try {
+                    paramObj = new JSONObject();
+                    paramObj.put("typeId", tranType);
+                    paramObj.put("payKeyIndex", indexNo);
+                    paramObj.put("paymentId", paymentId);
+                    paramObj.put("coupon_type", "rm_coupon_wan");
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                onCall("window.util.showWanCouponWithLoginChecked", paramObj);
+            } else {
 				if (!isPaymentClicked) {
 					onCall("PayMethod.onConfirmMethod", msg);
 					isPaymentClicked = true;

@@ -3,15 +3,19 @@ package cn.koolcloud.pos.adapter;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.controller.others.settings.PaymentMechanismController;
+import cn.koolcloud.pos.database.CacheDB;
 
 public class MultiPayRecordAdapter extends LoadMoreAdapter {
-
+    private Context ctx;
 	public MultiPayRecordAdapter(Context context) {
 		super(context);
+        ctx = context;
 	}
 
 	@Override
@@ -50,8 +54,14 @@ public class MultiPayRecordAdapter extends LoadMoreAdapter {
 
 		JSONObject recordData = this.list.get(position);
 		recordViewHolder.tv_no.setText("" + (position + 1));
-		recordViewHolder.tv_transType.setText(recordData
-				.optString("paymentIdDesc"));
+        String paymentId = recordData.optString("paymentId");
+        String paymentName = recordData.optString("paymentIdDesc");
+        if (!TextUtils.isEmpty(paymentName) && !paymentName.equals("undefined")) {
+            recordViewHolder.tv_transType.setText(recordData.optString("paymentIdDesc"));
+        } else {
+            String paymentDesc = CacheDB.getInstance(ctx).getPaymentByPaymentId(paymentId).getPaymentName();
+            recordViewHolder.tv_transType.setText(paymentDesc);
+        }
 		recordViewHolder.tv_rrn.setText(recordData.optString("refNo"));
 		recordViewHolder.tv_transAmount.setText(formatAmountStr(recordData
 				.optString("transAmount")));

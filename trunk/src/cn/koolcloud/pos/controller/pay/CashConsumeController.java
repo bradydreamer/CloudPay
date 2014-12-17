@@ -31,6 +31,8 @@ import cn.koolcloud.util.NumberUtil;
 
 public class CashConsumeController extends BaseController {
 
+	private static final int EDITTYPE_SUMPAYABLE = 1;
+	private static final int EDITTYPE_PAIDAMOUNT = 2;
 	private boolean removeJSTag = true;
 
 	private JSONObject data;
@@ -40,6 +42,7 @@ public class CashConsumeController extends BaseController {
 	private String paidHint = null;
 	private String sumPayableHint = null;
 	private String cashAmount = null;
+	private Boolean cashChangeEnable = true;
 	private String changeAmountStr = "0.00";
 
 	@Override
@@ -60,11 +63,15 @@ public class CashConsumeController extends BaseController {
 		sumPayableHint = sumPayable.getHint().toString();
 
 		if (data != null) {
-			cashAmount = data.optString("maxAmount");
+			cashChangeEnable = data.optBoolean("cashChangeEnable",true);
+			cashAmount = data.optString("maxAmount","0");
 			if (!cashAmount.equals("0") && cashAmount != null) {
 				sumPayable.setText(UtilForMoney.fen2yuan(cashAmount));
 				sumPayable.setSelection(UtilForMoney.fen2yuan(cashAmount)
 						.length());
+			}
+			if(!cashChangeEnable){
+				sumPayable.setEnabled(cashChangeEnable);
 			}
 		}
 
@@ -125,12 +132,13 @@ public class CashConsumeController extends BaseController {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				String change = "0.00";
+				String subStr = "0";
 
 				String paidAmountStr = paidAmount.getText().toString();
 				String sumPayableStr = sumPayable.getText().toString();
 
 				sumPayable.setSelection(sumPayableStr.length());
-				Boolean needGoOn = checkAmount(sumPayableStr, sumPayable);
+				Boolean needGoOn = checkAmount(sumPayableStr, sumPayable,EDITTYPE_SUMPAYABLE);
 				if (!needGoOn) {
 					return;
 				}
@@ -165,7 +173,7 @@ public class CashConsumeController extends BaseController {
 				String sumPayableStr = sumPayable.getText().toString();
 
 				paidAmount.setSelection(paidAmountStr.length());
-				Boolean needGoOn = checkAmount(paidAmountStr, paidAmount);
+				Boolean needGoOn = checkAmount(paidAmountStr, paidAmount,EDITTYPE_PAIDAMOUNT);
 				if (!needGoOn) {
 					return;
 				}
@@ -215,8 +223,16 @@ public class CashConsumeController extends BaseController {
 
 	}
 
-	private Boolean checkAmount(String amount, EditText edit) {
+	/**
+	 *
+	 * @param amount
+	 * @param edit
+	 * @param type 1：表示应付金额，2：表示实付金额
+	 * @return
+	 */
+	private Boolean checkAmount(String amount, EditText edit,int type) {
 		String amountStr;
+		String subStr = "0";
 		String[] amStr = amount.split("\\.");
 		if (amount.length() == 1 && (amount.equals("0") || amount.equals("."))) {
 			edit.setText("0.00");
@@ -227,20 +243,58 @@ public class CashConsumeController extends BaseController {
 				BigDecimal b1 = new BigDecimal(amount);
 				BigDecimal b2 = new BigDecimal("1000");
 				amountStr = String.valueOf(b1.multiply(b2).intValue());
-				edit.setText(NumberUtil.mul(amountStr, "0.01"));
+				amountStr = NumberUtil.mul(amountStr, "0.01");
+				if(type == 1) {
+					if (!cashAmount.equals("0") && !cashAmount.equals("0.00") && cashAmount != null) {
+						subStr = NumberUtil.sub(UtilForMoney.fen2yuan(cashAmount), amountStr);
+						if (subStr.startsWith("-")) {
+							edit.setText(UtilForMoney.fen2yuan(cashAmount));
+							amountStr = UtilForMoney.fen2yuan(cashAmount);
+						}
+					}
+				}
+				edit.setText(amountStr);
 				return false;
 			} else if (amStr[1].length() == 1) {
 				BigDecimal b1 = new BigDecimal(amount);
 				BigDecimal b2 = new BigDecimal("10");
 				amountStr = String.valueOf(b1.multiply(b2).intValue());
-				edit.setText(NumberUtil.mul(amountStr, "0.01"));
+				amountStr = NumberUtil.mul(amountStr, "0.01");
+				if(type == 1) {
+					if (!cashAmount.equals("0") && !cashAmount.equals("0.00") && cashAmount != null) {
+						subStr = NumberUtil.sub(UtilForMoney.fen2yuan(cashAmount), amountStr);
+						if (subStr.startsWith("-")) {
+							edit.setText(UtilForMoney.fen2yuan(cashAmount));
+							amountStr = UtilForMoney.fen2yuan(cashAmount);
+						}
+					}
+				}
+				edit.setText(amountStr);
 				return false;
 			} else {
 				amountStr = amount;
+				if(type == 1) {
+					if (!cashAmount.equals("0") && !cashAmount.equals("0.00") && cashAmount != null) {
+						subStr = NumberUtil.sub(UtilForMoney.fen2yuan(cashAmount), amountStr);
+						if (subStr.startsWith("-")) {
+							edit.setText(UtilForMoney.fen2yuan(cashAmount));
+							amountStr = UtilForMoney.fen2yuan(cashAmount);
+						}
+					}
+				}
 				return true;
 			}
 		} else {
 			amountStr = NumberUtil.add("0.0" + amount, "0.00");
+			if(type == 1) {
+				if (!cashAmount.equals("0") && !cashAmount.equals("0.00") && cashAmount != null) {
+					subStr = NumberUtil.sub(UtilForMoney.fen2yuan(cashAmount), amountStr);
+					if (subStr.startsWith("-")) {
+						edit.setText(UtilForMoney.fen2yuan(cashAmount));
+						amountStr = UtilForMoney.fen2yuan(cashAmount);
+					}
+				}
+			}
 			edit.setText(amountStr);
 			return false;
 		}
@@ -307,7 +361,9 @@ public class CashConsumeController extends BaseController {
 		if (paidAmountStr.equals("")) {
 			paidAmountStr = "0.00";
 		}
-		openCashBox();
+		if(!changeAmountStr.startsWith("-")) {
+			openCashBox();
+		}
 		try {
 			msg.put("transAmount", UtilForMoney.yuan2fen(sumPayableStr));
 			msg.put("cashPaidAmount", UtilForMoney.yuan2fen(paidAmountStr));

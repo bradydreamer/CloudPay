@@ -26,7 +26,6 @@ import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CodeScanner;
 import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
-import cn.koolcloud.pos.external.scanner.ZBarScanner;
 
 public class PrepaidCardQRCodeController extends BaseController implements
 		SoundWaveListener, CodeScannerListener, Camera.PreviewCallback {
@@ -39,7 +38,6 @@ public class PrepaidCardQRCodeController extends BaseController implements
 
 	private JSONObject data;
 
-	private ZBarScanner scanner;
 	private ImageScanner imageScanner;
 	private FrameLayout preview;
 	private MediaPlayer mediaPlayer;
@@ -138,7 +136,6 @@ public class PrepaidCardQRCodeController extends BaseController implements
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					scanner.stopScanner();
 					Log.d(TAG, "processReceivedData : " + transData.toString());
 					onCall(func_nearfieldAccount, transData);
 					break;

@@ -212,7 +212,7 @@
 
 	function gotoLogin() {
 		if("0" == window.user.userStatus){
-			Scene.alert("134",reLoginAction,"确定","取消");
+			Scene.alert("134",reLoginAction,"确定","136");
 			return;
 		}else{
 			window.util.exeActionWithLoginChecked(function() {

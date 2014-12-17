@@ -27,6 +27,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -48,14 +49,15 @@ import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
 import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.external.SoundWave;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
-import cn.koolcloud.pos.external.scanner.ZBarScanner;
 import cn.koolcloud.pos.util.Env;
+import cn.koolcloud.zbar.client.android.InterfaceBarCode;
+import cn.koolcloud.zbar.client.android.ZbarScannerRelativeLayout;
+import cn.koolcloud.zbar.client.android.camera.CameraSettings;
 
 import com.google.zxing.client.android.ScannerRelativeLayout;
 
 public class PayAccountController extends BaseController implements
-		CardSwiperListener, SoundWaveListener, CodeScannerListener,
-		Camera.PreviewCallback, View.OnClickListener {
+		CardSwiperListener, SoundWaveListener, CodeScannerListener, View.OnClickListener, InterfaceBarCode {
 
 	private final int PAY_ACOUNT_MAX_LENGTH = 20;
 	private final int HANDLE_INIT_QRSCANNER = 1;
@@ -86,9 +88,8 @@ public class PayAccountController extends BaseController implements
 	private boolean removeJSTag = true;
 
 	private String misc;
-	private ZBarScanner scanner;
 	private ImageScanner imageScanner;
-	private FrameLayout preview;
+	private FrameLayout previewFrameLayout;
 	private MediaPlayer mediaPlayer;
 	private boolean playBeep = true;
 	private static final float BEEP_VOLUME = 0.10f;
@@ -118,6 +119,7 @@ public class PayAccountController extends BaseController implements
 	private TextView ic_swiper_guide_text;
 	private ImageView icswiper_img;
 	private ScannerRelativeLayout zscanner;
+	private ZbarScannerRelativeLayout zBarScannerLayout;
 
 	private final String APMP_TRAN_PREAUTH = "1011";
 	private final String APMP_TRAN_CONSUME = "1021";
@@ -187,26 +189,18 @@ public class PayAccountController extends BaseController implements
 		func_nearfieldAccount = data.optString("nearfieldAccount");
 		func_icSwipeCard = data.optString("icSwipeCard");
 
-		preview = (FrameLayout) findViewById(R.id.scanner_zb);
+        previewFrameLayout = (FrameLayout) findViewById(R.id.scanner_zb);
 		zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
 
 		if (misc != null && !misc.equals("")) {
 			if(misc.equals(ZBTAG))
 			{
-			/*
-			 * preview = (FrameLayout) findViewById(R.id.scanner_zb);
-			 * preview.setVisibility(View.VISIBLE); ScannerRelativeLayout
-			 * zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-			 * zscanner.setVisibility(View.GONE); scanner = new
-			 * ZBarScanner(this); preview.addView(scanner.getMpreview());
-			 * imageScanner = scanner.getMscanner(); initBeepSound();
-			 */
 
-				preview.setVisibility(View.VISIBLE);
+                previewFrameLayout.setVisibility(View.VISIBLE);
 
 				zscanner.setVisibility(View.GONE);
 			}else{
-				preview.setVisibility(View.GONE);
+                previewFrameLayout.setVisibility(View.GONE);
 
 				zscanner.setVisibility(View.VISIBLE);
 				if (findViewById(R.id.pay_account_btn_qrcode).isEnabled()) {
@@ -226,12 +220,28 @@ public class PayAccountController extends BaseController implements
 		// faceTypeLanTing = Typeface.createFromAsset(getAssets(),
 		// "font/fzltxhk.ttf");
 		findViews();
+        initCameraSettings();
+        initZbarLib();
 		setTitle(formData.optString(getString(R.string.formData_key_title)));
 	}
 
+    private void initCameraSettings() {
+        CameraSettings.setCAMERA_FACING(CameraSettings.FACING_FRONT);
+        CameraSettings.setAUTO_FOCUS(false);
+        CameraSettings.setBEEP(true);
+        //true： can distinguish continuously ，false：distinguish one time,then you should call startScan
+        CameraSettings.setBULKMODE(true);
+    }
+
+    private void initZbarLib() {
+        zBarScannerLayout = new ZbarScannerRelativeLayout(PayAccountController.this);
+        zBarScannerLayout.setBarCodeCallBack(PayAccountController.this);
+        previewFrameLayout.addView(zBarScannerLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
 	private void findViews() {
-		// hidden bar title on clicking searching result item
 		barTitleLayout = (RelativeLayout) findViewById(R.id.barTitleLayout);
+        // hidden bar title on clicking searching result item
 		amountMarkTextView = (TextView) findViewById(R.id.amountMarkTextView);
 		String merchId = data.optString("merchId");
 		String operationType = data.optString("operationType");
@@ -409,8 +419,9 @@ public class PayAccountController extends BaseController implements
 			}
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			if (misc != null && misc.equals(ZBTAG)) {
-				scanner.destroyedScanner();
-				scanner = null;
+                if (zBarScannerLayout != null) {
+                    zBarScannerLayout.stopScan();
+                }
 				scanerStarted = false;
 			} else {
 				onStopQRScanner();
@@ -452,15 +463,11 @@ public class PayAccountController extends BaseController implements
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case HANDLE_INIT_QRSCANNER:
-				preview = (FrameLayout) findViewById(R.id.scanner_zb);
-				preview.setVisibility(View.VISIBLE);
+                previewFrameLayout.setVisibility(View.VISIBLE);
 				ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
 				zscanner.setVisibility(View.GONE);
-				scanner = new ZBarScanner(PayAccountController.this);
-				preview.addView(scanner.getMpreview());
-				imageScanner = scanner.getMscanner();
-				initBeepSound();
-				scanner.startScanner();
+
+                zBarScannerLayout.startScan();
 				scanerStarted = false;
 				break;
 			case EMVICManager.STATUS_VALUE_0: {
@@ -771,8 +778,8 @@ public class PayAccountController extends BaseController implements
 		onStopSound();
 		if (misc != null && !misc.equals("")) {
 			if (misc.equals(ZBTAG)) {
-				if (scanner != null) {
-					scanner.destroyedScanner();
+				if (previewFrameLayout != null) {
+					//scanner.destroyedScanner();
 				}
 			} else {
 				if (ex_codeScanner != null) {
@@ -802,8 +809,8 @@ public class PayAccountController extends BaseController implements
 		}
 		if (misc != null && !misc.equals("")){
 			if(misc.equals(ZBTAG)) {
-				if (scanner != null) {
-					scanner.startScanner();
+				if (zBarScannerLayout != null) {
+                    zBarScannerLayout.startScan();
 				}
 			} else {
 				if (ex_codeScanner != null) {
@@ -823,8 +830,8 @@ public class PayAccountController extends BaseController implements
 		onDestroySound();
 		if (misc != null && !misc.equals("")) {
 			if (misc.equals(ZBTAG)) {
-				if (scanner != null) {
-					scanner.destroyedScanner();
+				if (zBarScannerLayout != null) {
+                    zBarScannerLayout.stopScan();
 				}
 			} else {
 				if (ex_codeScanner != null) {
@@ -881,41 +888,6 @@ public class PayAccountController extends BaseController implements
 		return getString(R.string.controllerJSName_PayAccount);
 	}
 
-	@Override
-	public void onPreviewFrame(byte[] data, Camera camera) {
-		// TODO Auto-generated method stub
-		Camera.Parameters parameters = camera.getParameters();
-		Camera.Size size = parameters.getPreviewSize();
-
-		Image barcode = new Image(size.width, size.height, "Y800");
-		barcode.setData(data);
-
-		int result = imageScanner.scanImage(barcode);
-
-		if (result != 0) {
-			playBeepSoundAndVibrate();// 播放声音代表成功获取二维码
-			SymbolSet syms = imageScanner.getResults();
-			for (Symbol sym : syms) {
-				String symData = sym.getData();
-				if (!TextUtils.isEmpty(symData)) {
-					JSONObject transData = new JSONObject();
-					try {
-						transData
-								.put(getString(R.string.formData_key_payData_field0),
-										symData);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					scanner.stopScanner();
-					Log.d(TAG, "processReceivedData : " + transData.toString());
-					onCall(func_nearfieldAccount, transData);
-					break;
-				}
-			}
-		}
-		// textView.setText("" + data.toString());
-	}
 
 	@Override
 	public void onRecvTrackData(Hashtable<String, String> trackData) {
@@ -1006,5 +978,19 @@ public class PayAccountController extends BaseController implements
         LedInterface.set(LedInterface.LED_OFF, LedInterface.CAMERA_LED);
         LedInterface.close();
         ledTag = false;
+    }
+
+    @Override
+    public void getBarCodeData(String data) {
+        JSONObject transData = new JSONObject();
+        try {
+            transData.put(getString(R.string.formData_key_payData_field0), data);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        zBarScannerLayout.stopScan();
+        Log.d(TAG, "processReceivedData : " + transData.toString());
+        onCall(func_nearfieldAccount, transData);
     }
 }

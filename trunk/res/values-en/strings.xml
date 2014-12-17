@@ -22,7 +22,7 @@
     <string name="formData_key_payData_field2">field2</string>
     <string name="formData_key_payData_field3">field3</string>
     <string name="formData_key_payData_field4">field4</string>
-    <string name="transCurrency_text">USD</string>
+    <string name="transCurrency_text">CNY</string>
 
     <!-- for intent -->
     <string name="intent_extra_name_formData">formData</string>
@@ -56,7 +56,8 @@
     <string name="transaction_manage_module_title_consumption_record_old">CONSUMPTION HISTORY</string>
     <string name="transaction_manage_module_title_delivery_voucher_record">DELIVERY VOUCHER RECORD</string>
     <string name="transaction_manage_module_title_consumption_summary">TODAY TOTAL CONSUMPTION</string>
-    <string name="transaction_manage_module_title_single_record_search">QUICK QUERY</string>
+    <string name="transaction_manage_module_title_single_record_search">REF.NO. QUERY</string>
+    <string name="transaction_manage_module_title_trans_id_search">TRANS NO. QUERY</string>
 
     <!-- activity_settings_index_controller.xml -->
     <string name="settins_index_module_title_login">LOGIN</string>
@@ -149,7 +150,7 @@
     <string name="msg_mod_pwd_hint_pwd_input_confirm">CONFIRM PASSWORD</string>
     <string name="msg_mod_pwd_hint_error_dialog">INCONFORMITY PASSWORD, PLEASE INPUT AGAIN</string>
     <string name="msg_mod_pwd_hint_diffent_pwd_dialog">PLEASE INPUT A DIFFERENT PASSWORD</string>
-    <string name="msg_account_hint">INPUT ACCOUNT ID</string>
+    <string name="msg_account_hint">INPUT SUPERVISOR</string>
     <string name="msg_pwd_hint">INPUT PASSWORD</string>
     
     <string name="msg_printer_issues">PLEASE CHECK PRINTER STATUS AND PAPER</string>
@@ -157,7 +158,7 @@
     <!-- activity_login_controller.xml -->
     <string name="create_userName">USER NAME</string>
     <string name="create_userName_pwd_1st">PASSWORD</string>
-    <string name="create_userName_pwd_2nd">CONFIRM PASSWARD</string>
+    <string name="create_userName_pwd_2nd">CONFIRM PASSWORD</string>
     <string name="createOK">CREATE</string>
 
     <!-- activity_consumption_record_search_controller.xml -->
@@ -272,7 +273,7 @@
     <string name="title_activity_input_money_controller">PLEASE INPUT AMOUNT</string>
     <string name="title_activity_login_controller">CHECK IN</string>
     <string name="title_activity_configure_controller">LOGIN</string>
-    <string name="title_activity_consumption_record">CONSUMPTION DETAILS TODAY</string>
+    <string name="title_activity_consumption_record">CONSUMPTION LIST</string>
     <string name="title_activity_order_detail">CONSUMPTION DETAILS</string>
     <string name="title_activity_consumption_summary">TOTAL CONSUMPTION TODAY</string>
     <string name="title_activity_consumption_record_search_controller">CONSUMPTION HISTORY</string>
@@ -302,7 +303,7 @@
     <string name="title_activity_input_ap_account_controller">INPUT ALLINFNT ACCOUNT ID</string>
     <string name="title_activity_balance_result_controller">BALANCE OUTSTANDING</string>
     <string name="title_activity_external_order_info_controller">ORDER INFO</string>
-    <string name="title_activity_single_record_search_controller">PLEASE INPUT REFERENCE ID</string>
+    <string name="title_activity_single_record_search_controller">PLEASE INPUT REF NO.</string>
     <string name="title_activity_set_trans_id_controller">SET TRANSACTION ID</string>
     <string name="title_activity_set_trans_batch_controller">BATCH SETTLEMENT</string>
     <string name="title_activity_sign_in_controller">SIGN IN</string>
@@ -380,10 +381,10 @@
     <string name="bar_acquire_terminal_msg">TID/SELLER:</string>
     <string name="bar_acquire_terminal_msg_beneficiary_account_no">SELLER ACCOUNT：</string>
     <!-- for sign in -->
-    <string name="sign_in_alert_content">SIGNIN,PLEASE WAITING</string>
+    <string name="sign_in_alert_content">SIGN IN, PLEASE WAIT...</string>
     
     <!-- for login -->
-    <string name="customer_id_content">INPUT CSG ID</string>
+    <string name="customer_id_content">INPUT CSG MID</string>
     <string name="operator_id_content">INPUT ACCOUNT</string>
     <string name="pass_word_content">INPUT PASSWORD</string>
     <string name="remember_pass_word_content">REMEMBER PASSWORD</string>
@@ -455,7 +456,7 @@
     <string name="printer_tag_kool_cloud_mid">MERCHANT NO.(酷云客户号):</string>
     <string name="printer_tag_kool_cloud_tid">TERMINAL NO.(酷云设备号):</string>
     <string name="printer_tag_ref">REF NO.(参考号):</string>
-    <string name="printer_tag_trans_no">TRANS NO.(交易号):</string>
+    <string name="printer_tag_trans_no">TRANS ID.(酷云交易号):</string>
     <string name="printer_tag_date_time">DATE/TIME(日期/时间):</string>
     <string name="printer_tag_pay_type">TRANS TYPE(交易类型):</string>
     <string name="printer_tag_trace">MBFE NO.(流水号):</string>
@@ -463,8 +464,8 @@
     <string name="printer_tag_channel">CHANNEL(支付渠道):</string>
     <string name="printer_tag_account">PAY ACCOUNT(支付账户):</string>
     <string name="printer_transaction_id">ALIPAY TRACE NO.(支付宝流水号):</string>
-    <string name="printer_partner_id">ALIPAY PARTNER NO.(支付宝合作身份):</string>
-    <string name="printer_merchant_receipt_id">MERCHANT ORDER NO.(商户订单号):</string>
+    <string name="printer_partner_id">ALIPAY PID(支付宝合作者身份):</string>
+    <string name="printer_merchant_receipt_id">MERCHANT ORDER NO./REF NO.(商户订单号/参考号):</string>
     <string name="printer_tag_signature">SIGNATURE(用户签名)：</string>
     <string name="printer_tag_amount">AMOUNT(支付金额):</string>
     <string name="printer_msg_acknowledge">I ACKNOWLEDGE SATISFACTORY RECEIPT OF RELATIVE GOODS/SERVICES.</string>
@@ -577,7 +578,7 @@
     <string name="alert_msg_131">ALREADY QUIT</string>
     <string name="alert_msg_132">BATCH SETTLEMENT COMPLETED</string>
     <string name="alert_msg_133">CLEAR FLUSHES DONE</string>
-    <string name="alert_msg_134">AREADY LOGIN,LOGIN AGAIN?</string>
+    <string name="alert_msg_134">ALREADY LOGIN,LOGIN AGAIN?</string>
     <string name="alert_msg_135">OK</string>
     <string name="alert_msg_136">CANCEL</string>
     <string name="alert_msg_137">PERMISSION DENIED!</string>
@@ -590,8 +591,8 @@
     <string name="alert_msg_144">PARAMETERS IS NULL.</string>
     <string name="alert_msg_145">PARAMETERS DOWNLOAD</string>
     <string name="alert_msg_146">PARAMETERS QUERING,PLEASE WAIT!</string>
-    <string name="alert_msg_147">DOWNLOADING THE XXX PARAMETERS!</string>
-    <string name="alert_msg_148">DOWNLOADING THE XXX PUBLIC KEY!</string>
+    <string name="alert_msg_147">DOWNLOADING THE %1$s PARAMETERS!</string>
+    <string name="alert_msg_148">DOWNLOADING THE %1$s PUBLIC KEY!</string>
     <string name="alert_msg_149">NOT ENOUGH,PLEASE INPUT AGAIN!</string>
     <string name="alert_msg_150">COMPLETED</string>
     <string name="alert_msg_151">CARD MISMATCH,PLEASE USE ORIGINAL CARD!</string>
@@ -613,6 +614,9 @@
     <string name="alert_msg_167">NO MASTER KEY INDEX,PLEASE CONTACT SERVICE!</string>
     <string name="alert_msg_168">UNKNOWN MESSAGE</string>
     <string name="alert_msg_169">PLEASE LOGIN FIRST</string>
-    <string name="alert_msg_170">SIGN OUT SUCCESSFULL</string>
-    <string name="transfer_msg_amount_hint" translatable="false"></string>
+    <string name="alert_msg_170">SUCCESSFULLY LOGOUT</string>
+    <string name="alert_msg_171">GET MESSAGE ERROR, CONFIRM PINPAD CONNECTED OR CONTACT WITH CUSTOMER SERVICE</string>
+    <string name="printer_tran_type_transfer">TRANSFER</string>
+    <string name="controllerJSName_SuperTransfer">pay/SuperTransfer</string>
+    <string name="alert_msg_172">CANCELING</string>
 </resources>

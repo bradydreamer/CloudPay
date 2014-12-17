@@ -176,6 +176,11 @@ Pay.gotoFlow = function() {
 	} else if (method == "15") {
 		sceneName = "CashConsume";
 		initAmountData();
+		if(ConsumptionData.dataForPayment.isExternalOrder && ConsumptionData.isMultiPay != true){
+            formData.cashChangeEnable = false;
+        }else{
+            formData.cashChangeEnable = true;
+        }
 	} else if (method == "30") {
 		sceneName = "PinPad";
 		initPinData();

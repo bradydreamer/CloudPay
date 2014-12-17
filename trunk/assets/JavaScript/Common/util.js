@@ -153,8 +153,47 @@ Util.prototype.showCouponWithLoginChecked = function(params) {
 				data.shouldRemoveCurCtrl = shouldRmvLogin;
 			}
 			
-			if (ConsumptionData.dataForPayment.isExternalOrder != true) {			
-				ConsumptionData.resetConsumptionData();
+			if (ConsumptionData.dataForPayment.isExternalOrder != true) {
+				if (ConsumptionData.isMultiPay == true) {
+                    var totalAmount = parseInt(ConsumptionData.dataForMultiPay.totalAmount);
+                    var paidAmount = parseInt(ConsumptionData.dataForMultiPay.paidAmount);
+                    var balance = totalAmount - paidAmount;
+                    data.transAmount = window.util.formatAmountStr(balance);
+				} else {
+				    ConsumptionData.resetConsumptionData();
+				}
+			} else {
+				var transAmount = ConsumptionData.dataForPayment.transAmount;
+				data.transAmount = window.util.formatAmountStr(transAmount);
+				// ConsumptionData.resetConsumptionData();
+				ConsumptionData.dataForPayment.isExternalOrder = true;
+				data.isExternalOrder = true;
+			}
+			ConsumptionData.dataForPayment.keyIndex = data.payKeyIndex;
+			ConsumptionData.dataForPayment.paymentId = data.paymentId;
+			Scene.showScene(sceneName, "", data);
+		}, false);
+
+};
+
+Util.prototype.showWanCouponWithLoginChecked = function(params) {
+	var data = JSON.parse(params);
+	var sceneName = "Coupon_Wan";
+	window.util.exeActionWithLoginChecked(
+		function(shouldRmvLogin) {
+			if (shouldRmvLogin) {
+				data.shouldRemoveCurCtrl = shouldRmvLogin;
+			}
+
+			if (ConsumptionData.dataForPayment.isExternalOrder != true) {
+				if (ConsumptionData.isMultiPay == true) {
+                    var totalAmount = parseInt(ConsumptionData.dataForMultiPay.totalAmount);
+                    var paidAmount = parseInt(ConsumptionData.dataForMultiPay.paidAmount);
+                    var balance = totalAmount - paidAmount;
+                    data.transAmount = window.util.formatAmountStr(balance);
+                } else {
+                    ConsumptionData.resetConsumptionData();
+                }
 			} else {
 				var transAmount = ConsumptionData.dataForPayment.transAmount;
 				data.transAmount = window.util.formatAmountStr(transAmount);

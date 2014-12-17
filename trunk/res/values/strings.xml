@@ -22,7 +22,7 @@
     <string name="formData_key_payData_field2">field2</string>
     <string name="formData_key_payData_field3">field3</string>
     <string name="formData_key_payData_field4">field4</string>
-    <string name="transCurrency_text">元</string>
+    <string name="transCurrency_text">人民币</string>
 
     <!-- for intent -->
     <string name="intent_extra_name_formData">formData</string>
@@ -56,7 +56,8 @@
     <string name="transaction_manage_module_title_consumption_record_old">历史消费明细</string>
     <string name="transaction_manage_module_title_delivery_voucher_record">提货记录</string>
     <string name="transaction_manage_module_title_consumption_summary">今日消费汇总</string>
-    <string name="transaction_manage_module_title_single_record_search">快速查询</string>
+    <string name="transaction_manage_module_title_single_record_search">机构参考号查询</string>
+    <string name="transaction_manage_module_title_trans_id_search">交易号查询</string>
 
     <!-- activity_settings_index_controller.xml -->
     <string name="settins_index_module_title_login">登录</string>
@@ -270,7 +271,7 @@
     <string name="controllerJSName_DelVoucherRecord">TransactionManage/DelVoucherRecord</string>
     <string name="controllerJSName_OrderDetail">TransactionManage/OrderDetail</string>
     <string name="controllerJSName_TransAmount">pay/inputAmount</string>
-    <string name="controllerJSName_SuperTransfer" translatable="false">pay/SuperTransfer</string>
+    <string name="controllerJSName_SuperTransfer">pay/SuperTransfer</string>
     <string name="controllerJSName_PayAccount">pay/payAccount</string>
     <string name="controllerJSName_CashConsume" translatable="false">pay/cashConsume</string>
     <string name="controllerJSName_PayMethod">pay/payMethod</string>
@@ -313,6 +314,7 @@
     <string name="title_activity_balance_result_controller">余额</string>
     <string name="title_activity_external_order_info_controller">订单数据</string>
     <string name="title_activity_single_record_search_controller">请输入参考号</string>
+    <string name="title_activity_single_record_search_txnid_controller">请输入交易号</string>
     <string name="title_activity_set_trans_id_controller">设置流水号</string>
     <string name="title_activity_set_trans_batch_controller">批结算</string>
     <string name="title_activity_sign_in_controller">签到</string>
@@ -478,7 +480,7 @@
    	<string name="printer_tag_kool_cloud_mid">酷云客户号：</string>
    	<string name="printer_tag_kool_cloud_tid">酷云设备号：</string>
    	<string name="printer_tag_ref">参考号  ：</string>
-   	<string name="printer_tag_trans_no">交易号  ：</string>
+   	<string name="printer_tag_trans_no">酷云交易号：</string>
    	<string name="printer_tag_date_time">日期/时间：</string>
    	<string name="printer_tag_pay_type">交易类型：</string>
    	<string name="printer_tag_trace">流水号  ：</string>
@@ -491,6 +493,7 @@
    	<string name="printer_tag_signature">用户签名：</string>
    	<string name="printer_tag_amount">支付金额：</string>
    	<string name="printer_tag_trans_amount" translatable="false">交易金额：</string>
+   	<string name="printer_tag_trans_fee" translatable="false">手续费：</string>
    	<string name="printer_tag_exchange_rate">汇率：</string>
    	<string name="printer_tag_real_amount">人民币：</string>
    	<string name="printer_msg_acknowledge">本人确认以上交易，同意将其记入支付宝账户</string>
@@ -621,8 +624,8 @@
     <string name="alert_msg_144">参数列表为空</string>
     <string name="alert_msg_145">参数下载</string>
     <string name="alert_msg_146">正在查询参数，请稍后</string>
-    <string name="alert_msg_147">正在下载第xxx组参数</string>
-    <string name="alert_msg_148">正在下载第xxx组公钥！</string>
+    <string name="alert_msg_147">正在下载第%1$s组参数</string>
+    <string name="alert_msg_148">正在下载第%1$s组公钥！</string>
     <string name="alert_msg_149">您输入的金额不足，请重新输入</string>
     <string name="alert_msg_150">完成</string>
     <string name="alert_msg_151">刷卡错误，请刷原卡</string>
@@ -645,4 +648,6 @@
     <string name="alert_msg_168">未知信息</string>
     <string name="alert_msg_169">您还未登录，请先登录</string>
     <string name="alert_msg_170">退出成功</string>
+    <string name="alert_msg_171">获取报文失败，确认密码键盘插好后重新操作，或联系客服人员</string>
+    <string name="alert_msg_172">撤销中</string>
     </resources>

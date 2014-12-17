@@ -1,5 +1,6 @@
 package cn.koolcloud.pos.service.local;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +10,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -52,7 +59,8 @@ public class LocalService extends Service implements MisposEventInterface {
 	private static final int HANDLE_MISPOS_STATUS = 4;
 	
 	private final static int SEND_MESSAGE_DELAYED_TIME = 50;
-	
+	private final static int NETWORK_CHECKING_WAITING_TIME = 5000;
+
 	private final static int START_CHECKING_THREAD_TIME = 14400000; //start checking every four hour (4h*60m*60s*1000ms=14400000ms)
 	
 	private Context context;
@@ -71,6 +79,8 @@ public class LocalService extends Service implements MisposEventInterface {
 	//Time for checking app version
 	private final Timer timer = new Timer();
 	private TimerTask task;
+
+    private boolean networkCheckingMsgSendTag = false; //use to control send message to message queue or not
 	
 	//AppStore components
 	protected ParcelableApp localParcelableApp;
@@ -287,13 +297,20 @@ public class LocalService extends Service implements MisposEventInterface {
 	 * @return: void
 	 */
 	private void startCheckingDevices() {
+        networkCheckingMsgSendTag = false;
 		devicesStatusTag = true;
 		devicesSet.clear();
 		
 		threadStack.removeAllElements();
 		pushCheckingThreadToStack();
-		
-		startCheckNetwork(Env.getResourceString(this, R.string.ping_host_url));
+
+        //start network checking time
+        new NetWorkTimerThread().start();
+
+//        new CheckNetworkThread(Env.getResourceString(this, R.string.ping_host_url)).start();
+        startCheckNetwork(Env.getResourceString(this, R.string.ping_host_url));
+
+
 		//thread checking devices
 //		threadStack.pop().start();
 		//checking is locking
@@ -388,21 +405,46 @@ public class LocalService extends Service implements MisposEventInterface {
 	/*class CheckNetworkThread extends Thread {
 		
 		String str;
-		
+
 		public CheckNetworkThread(String str) {
 			this.str = str;
 		}
 
 		@Override
 		public void run() {
-			boolean networkStatus = NetUtil.pingHost(str);
-			Message msg = mDeviceHandler.obtainMessage();
-			msg.what = HANDLE_NETWORK_STATUS;
-			msg.obj = networkStatus;
-			devicesSet.add("network");
-			mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
-		}		
+//            httpClientGet(str);
+		}
 	}*/
+
+    private void httpClientGet(String url) {
+        HttpGet httpRequest = new HttpGet(url);
+        Message msg = mDeviceHandler.obtainMessage();
+        msg.what = HANDLE_NETWORK_STATUS;
+        devicesSet.add("network");
+
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpResponse httpResponse = httpClient.execute(httpRequest);
+
+            // success
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                msg.obj = true;
+            } else {
+                msg.obj = false;
+            }
+        } catch (ClientProtocolException e) {
+            msg.obj = false;
+        } catch (IOException e) {
+            msg.obj = false;
+        } catch (Exception e) {
+            msg.obj = false;
+        } finally {
+            if (!networkCheckingMsgSendTag) {
+                networkCheckingMsgSendTag = true;
+                mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+            }
+        }
+    }
 	
 	private void startCheckNetwork(String url) {
 		devicesSet.add("network");
@@ -418,12 +460,15 @@ public class LocalService extends Service implements MisposEventInterface {
 					Throwable arg3) {
 				// TODO Auto-generated method stub
 				// called when response HTTP status is "4XX" (eg. 401, 403, 404)
-				
+
 				Message msg = mDeviceHandler.obtainMessage();
-				msg.what = HANDLE_NETWORK_STATUS;
-				msg.obj = false;
-				
-				mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                msg.what = HANDLE_NETWORK_STATUS;
+                msg.obj = false;
+
+                if (!networkCheckingMsgSendTag) {
+                    networkCheckingMsgSendTag = true;
+                    mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                }
 			}
 			
 			@Override
@@ -435,7 +480,10 @@ public class LocalService extends Service implements MisposEventInterface {
 					Message msg = mDeviceHandler.obtainMessage();
 					msg.what = HANDLE_NETWORK_STATUS;
 					msg.obj = true;
-					mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                    if (!networkCheckingMsgSendTag) {
+                        networkCheckingMsgSendTag = true;
+                        mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                    }
 				}
 			};
         });
@@ -458,6 +506,27 @@ public class LocalService extends Service implements MisposEventInterface {
 			mDeviceHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
 		}		
 	}
+
+    class NetWorkTimerThread extends Thread {
+
+        @Override
+        public void run() {
+            long startedTime = System.currentTimeMillis();
+            while (true) {
+                if ((System.currentTimeMillis() - startedTime) == NETWORK_CHECKING_WAITING_TIME ) {
+                    if (!networkCheckingMsgSendTag) {
+                        Message msg = mDeviceHandler.obtainMessage();
+                        msg.what = HANDLE_NETWORK_STATUS;
+                        msg.obj = false;
+
+                        networkCheckingMsgSendTag = true;
+                        mDeviceHandler.sendMessage(msg);
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
 	@Override
 	public void misposConnectStatus(boolean isConnected) {

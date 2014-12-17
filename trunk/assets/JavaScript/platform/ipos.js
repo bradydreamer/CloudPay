@@ -39,7 +39,7 @@
 			});
 			return;
 		}else if(data.error == ERROR_TYPE_1){
-		    Scene.alert("获取报文失败，确认密码键盘插好后重新操作，或联系客服人员！",function(){
+		    Scene.alert("171",function(){
                 if(ConsumptionData.dataForPayment.isExternalOrder){
                     Pay.restart();
                 }else{

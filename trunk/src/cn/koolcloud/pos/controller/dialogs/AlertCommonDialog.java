@@ -59,15 +59,15 @@ public class AlertCommonDialog extends Activity implements View.OnClickListener 
 		msgBodyTextView = (TextView) findViewById(R.id.dialog_common_text);
 		
 		msgBodyTextView.setText(HostMessage.getJsMsg(msg));
-		
-		
-		if (TextUtils.isEmpty(negativeText)) {
-			negativeText = getResources().getString(R.string.alert_btn_negative);
-			cancelButton.setVisibility(View.GONE);
-		} else {
-			cancelButton.setVisibility(View.VISIBLE);
-		}
-		cancelButton.setText(negativeText);
+
+
+        if (TextUtils.isEmpty(negativeText)) {
+            cancelButton.setVisibility(View.GONE);
+        } else {
+            cancelButton.setVisibility(View.VISIBLE);
+        }
+        negativeText = getResources().getString(R.string.alert_btn_negative);
+        cancelButton.setText(negativeText);
 	}
 	
 	@Override

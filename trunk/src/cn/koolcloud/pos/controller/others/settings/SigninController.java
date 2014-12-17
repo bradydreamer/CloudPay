@@ -5,9 +5,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.TextView;
+
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
+import cn.koolcloud.pos.util.Env;
 
 public class SigninController extends BaseController {
 
@@ -34,8 +38,16 @@ public class SigninController extends BaseController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		setTitle(title);
-		sign_text.setText(json.optString("content"));
+		setTitle(HostMessage.getJsMsg(title));
+        String formatingStr = "";
+        String type = json.optString("type");
+        if (!TextUtils.isEmpty(type) && type.equals("0")) {
+            formatingStr = Env.getResourceString(this, R.string.alert_msg_147);
+        } else {
+            formatingStr = Env.getResourceString(this, R.string.alert_msg_148);
+        }
+
+        sign_text.setText(String.format(formatingStr, json.optString("content")));
 		super.setProperty(data);
 	}
 

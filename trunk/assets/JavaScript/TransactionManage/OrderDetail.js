@@ -155,7 +155,7 @@
     var propertyList = [{
       name: "orderStatus",
       key: "text",
-      value: "已撤销",
+      value: "113",
     }];
     Scene.setProperty("OrderDetail", propertyList);
     setTimeout(function() {
@@ -167,7 +167,7 @@
     var propertyList = [{
       name: "orderStatus",
       key: "text",
-      value: "已退货",
+      value: "114",
     }];
     Scene.setProperty("OrderDetail", propertyList);
     setTimeout(function() {

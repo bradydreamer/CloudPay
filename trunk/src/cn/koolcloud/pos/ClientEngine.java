@@ -74,6 +74,7 @@ import cn.koolcloud.pos.controller.transaction_manage.consumption_record.Consump
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionSummaryController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
+import cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchByTxnIdController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController;
@@ -913,7 +914,65 @@ public class ClientEngine implements MisposEventInterface {
 							e.printStackTrace();
 						}
 					}
-				} else if ("MisposController".equals(name)
+				} else if ("Coupon_Wan".equals(name)) {
+                    if (Env.checkApkExist(context,
+                            ConstantUtils.COUPON_WAN_APP_PACKAGE_NAME)) {
+                        JSONObject couponData = data.optJSONObject("data");
+                        String couponDataType = couponData
+                                .optString("coupon_type");
+                        String transAmount = couponData
+                                .optString("transAmount");
+                        String couponType = "";
+                        int requestCode;
+                        if (!TextUtils.isEmpty(couponDataType)
+                                && couponDataType.equals("rm_coupon_wan")) {
+                            couponType = "1";
+                            requestCode = HomeController.REQUEST_CODE;
+                        } else {
+                            couponType = "0";
+                            requestCode = OrderDetailController.REQUEST_CODE;
+                        }
+
+                        if (!TextUtils.isEmpty(transAmount)) {
+                            Intent mIntent = new Intent(Intent.ACTION_MAIN);
+                            mIntent.setComponent(new ComponentName(
+                                    "com.wjl.whrxh",
+                                    "com.wjl.whrxh.activities.AppStartActivity"));
+                            mIntent.putExtra("transAmount", transAmount);
+                            mIntent.putExtra("packagename",
+                                    Env.getPackageName(context));
+                            mIntent.putExtra("orderNo", "");
+                            mIntent.putExtra("txnId",
+                                    couponData.optString("txnId"));
+                            mIntent.putExtra("orderDesc", "");
+                            mIntent.putExtra("actionType", couponType);
+                            // startActivity(intent);
+                            getCurrentController().startActivityForResult(
+                                    mIntent, requestCode);
+
+                        } else {
+                            Toast.makeText(
+                                    context,
+                                    context.getResources().getString(
+                                            R.string.str_coupon_amount_null),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        try {
+                            JSONObject jsObj = new JSONObject();
+                            jsObj.put(
+                                    "msg",
+                                    context.getResources()
+                                            .getString(
+                                                    R.string.str_coupon_app_not_installed));
+                            showAlert(jsObj, "");
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else if ("MisposController".equals(name)
 						&& formData.optString("actionType").equals("mispos")) {
 					misposJsonObj = data;
 					misposCheckingThread = new MisposCheckingThread(
@@ -1039,7 +1098,9 @@ public class ClientEngine implements MisposEventInterface {
 			controllerClass = DelVoucherIdController.class;
 		} else if (className.equals("SingleRecordSearch")) {
 			controllerClass = SingleRecordSearchController.class;
-		} else if (className.equals("MultiPayIndex")) {
+		} else if (className.equals("SingleRecordSearchByTxnId")) {
+			controllerClass = SingleRecordSearchByTxnIdController.class;
+		}else if (className.equals("MultiPayIndex")) {
 			controllerClass = MultiPayIndex.class;
 		} else if (className.equals("MultiPayRecord")) {
 			controllerClass = MultiPayRecord.class;
@@ -1473,10 +1534,10 @@ public class ClientEngine implements MisposEventInterface {
 					Log.d(TAG, "print res8583 : " + res8583);
 
 					if (res8583 != null && !"".equals(res8583)) {
-						if(req8583.equals("") || req8583 == null){
+						if(req8583.equals("") || req8583.equals("null") || req8583 == null){
 							iso8583Controller.printer(null,
 									Utility.hex2byte(res8583), jsonObjData, context);
-						}else {
+						} else {
 							iso8583Controller.printer(Utility.hex2byte(req8583),
 									Utility.hex2byte(res8583), jsonObjData, context);
 						}

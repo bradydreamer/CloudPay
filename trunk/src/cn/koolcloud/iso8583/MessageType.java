@@ -142,7 +142,8 @@ public class MessageType implements Constant {
 			new MessageTypeTable(TRAN_AUTH_COMPLETE_CANCEL_REVERSAL, "0400",
 					"200000", "06", "21"), // 75
 			
-			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0200", "383003", "82", "00") // 76
+			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0200", "383003", "82", "00"), // 76 request message
+			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0210", "383003", "82", "00") // 76 response message
 	};
 
 	private static int i;

@@ -150,6 +150,8 @@ public class HostMessage {
 			jsMsgMap.put("167", R.string.alert_msg_167);
 			jsMsgMap.put("169", R.string.alert_msg_169);
 			jsMsgMap.put("170", R.string.alert_msg_170);
+			jsMsgMap.put("171", R.string.alert_msg_171);
+			jsMsgMap.put("172", R.string.alert_msg_172);
 		}
 	}
 

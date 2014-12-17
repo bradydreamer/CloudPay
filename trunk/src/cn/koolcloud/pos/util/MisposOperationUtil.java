@@ -13,7 +13,8 @@ public class MisposOperationUtil {
 	public static final String TRAN_TYPE_SIGN_IN = "8011";								//sign in
 	public static final String TRAN_TYPE_SIGN_OUT = "8081";								//sign out
 	public static final String TRAN_TYPE_CONSUMPTION = "1021";							//consumption
-	public static final String TRAN_TYPE_CONSUMPTION_REVERSE = "3021";					//consumption reverse	
+	public static final String TRAN_TYPE_CONSUMPTION_TRANSFER = "8872";					//consumption transfer
+	public static final String TRAN_TYPE_CONSUMPTION_REVERSE = "3021";					//consumption reverse
 	public static final String TRAN_TYPE_PRE_AUTHORIZATION = "1011";					//pre authorization	
 	public static final String TRAN_TYPE_PRE_AUTHORIZATION_REVERSE = "1011";			//pre authorization	reverse
 	public static final String TRAN_TYPE_BALANCE = "9009";								//balance
@@ -60,6 +61,24 @@ public class MisposOperationUtil {
 		Log.i("AAAAAAAAAAAA", amount);
 		MisPosInterface.consume(0x02, amount);
 	}
+
+    /**
+     * consumption transfer
+     */
+    public static void consumeTransfer(String amountStr) {
+        String temp_amount = amountStr;
+        String amount = "";
+        if (!TextUtils.isEmpty(amountStr) && amountStr.length() > 0) {
+            for (int i = 0; i < 12 - temp_amount.length(); i++) {
+                amount += "0";
+            }
+            amount += temp_amount;
+        } else {
+            return;
+        }
+        Log.i("AAAAAAAAAAAA", amount);
+        MisPosInterface.consume(0x72, amount);
+    }
 
 	/**
 	 * consumption reverse
@@ -281,6 +300,9 @@ public class MisposOperationUtil {
 		case 0x12:
 			tranType = TRAN_TYPE_BALANCE;
 			break;
+        case 0x72:
+            tranType = TRAN_TYPE_CONSUMPTION_TRANSFER;
+            break;
 
 		default:
 			break;

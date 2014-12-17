@@ -345,7 +345,7 @@ Pay.cancelOrderExe = function(params) {
 	};
 
 	if(params.cardNo != "9999999999999999" && params.cardNo != ConsumptionData.dataForCancellingOrder.F02){
-		Scene.alert("刷卡错误，请刷原卡!",function(){
+		Scene.alert("151",function(){
 			if (ConsumptionData.dataForPayment.isExternalOrder) {
 				Pay.errRestart();
 			} else {
@@ -435,10 +435,37 @@ Pay.cashCancelOrder = function(params,cashCancelCallback){
 			"resCode": params.resCode,
 			"resMsg": params.resMsg
 		}
+    ConsumptionData.dataForPayment.cashPay = true;
+    ConsumptionData.dataForPayment.result = "success";
+    ConsumptionData.dataForPayment.transAmount = transAmount;
+    ConsumptionData.dataForPayment.paymentId = params.paymentId;
+    ConsumptionData.dataForPayment.transType = params.transType;
+
 	Net.asynConnect("txn/"+params.payKeyIndex,req,afterCashCancelOrder);
 	
 	function afterCashCancelOrder(params){
+	    Scene.alert("JSLOG,*******params:" + JSON.stringify(params));
 		if(params.responseCode == "0"){
+		    ConsumptionData.dataForPayment.txnId = params.txnId;
+		    ConsumptionData.dataForPayment.rrn = params.refNo;
+		    ConsumptionData.dataForPayment.paidAmount = ConsumptionData.dataForPayment.transAmount;
+		    var time = new Date();
+		    var year = "" + time.getFullYear();
+		    if(time.getMonth()< 9){
+		        var month = "0" + (time.getMonth() + 1);
+		    }else{
+		        var month = "" + (time.getMonth() + 1);
+		    }
+		    if(time.getDate() < 10){
+		        var date = "0" + time.getDate();
+		    }else{
+		        var date = "" + time.getDate();
+		    }
+		    var hour = "" + time.getHours();
+		    var min = "" + time.getMinutes();
+		    var sec = "" + time.getSeconds();
+		    var transTime = year + month + date + hour + min + sec;
+		    ConsumptionData.dataForPayment.transTime = transTime;
 			if(cashCancelCallback){
 				cashCancelCallback();
 			}		

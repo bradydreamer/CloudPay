@@ -102,6 +102,7 @@ External.startReverseAfterLogin = function(data) {
 		// 3	已撤销
 		// 4	预授权已完成
 		// 5 	未知
+		// 6    撤销中
 		// 9	超时
 
 		var orderStateDesc = "";
@@ -117,6 +118,8 @@ External.startReverseAfterLogin = function(data) {
 			orderStateDesc = "115";
 		} else if (orderState == "5") {
 			orderStateDesc = "116";
+		} else if (orderState == "6") {
+		    orderStateDesc = "172";
 		} else if (orderState == "9") {
 			orderStateDesc = "117";
 		}

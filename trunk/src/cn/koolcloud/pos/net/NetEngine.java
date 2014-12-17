@@ -83,7 +83,7 @@ public class NetEngine {
         //add language in header mod by Teddy --start on 4th December
         String language = Locale.getDefault().getLanguage();
         if (!TextUtils.isEmpty(language) && language.equals(ConstantUtils.LANGUAGE_CHINESE)) {
-            requestHeaders.put(HEADER_KEY_LANGUAGE, "zh_CN");
+            requestHeaders.put(HEADER_KEY_LANGUAGE, "zh-CN");
         } else {
             requestHeaders.put(HEADER_KEY_LANGUAGE, "en");
         }

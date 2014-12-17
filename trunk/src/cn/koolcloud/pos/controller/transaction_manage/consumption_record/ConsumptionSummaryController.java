@@ -113,7 +113,9 @@ public class ConsumptionSummaryController extends BaseController {
 			JSONObject summaryData = summaryListArray.optJSONObject(i);
 			int index = getJsonObjectIndex(summaryData.optString("transType"),summaryOriArray);
 			try {
-				summaryOriArray.put(index,summaryData);
+                if (index >= 0) {
+                    summaryOriArray.put(index,summaryData);
+                }
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

@@ -25,7 +25,7 @@
 						position : position
 			  		};	  
 	  
-	  Scene.alert("是否删除账户:"+userInfoList[position].operator+"?",afterVertifyAction,"确定","取消");
+	  Scene.alert("是否删除账户:"+userInfoList[position].operator+"?",afterVertifyAction,"确定","136");
 	  
 	  function afterVertifyAction(backParams){		  
 		  if(backParams.isPositiveClicked == true){

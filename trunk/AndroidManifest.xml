@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="40"
-    android:versionName="3.0.3" >
+    android:versionCode="42"
+    android:versionName="3.1.1" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -84,7 +84,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.HomeController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.LoginVerifyController"
@@ -93,7 +93,7 @@
             android:windowSoftInputMode="stateHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.LoginVerifyController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordController"
@@ -101,7 +101,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.consumption_record.ConsumptionRecordController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController"
@@ -109,7 +109,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.consumption_record.OrderDetailController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionRecordSearchController"
@@ -117,23 +117,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
-        </activity>
-        <activity
-            android:name="cn.koolcloud.pos.controller.transaction_manage.TransactionManageIndexController"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
-        </activity>
-        <activity
-            android:name="cn.koolcloud.pos.controller.others.settings.SettingsIndexController"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.consumption_record.ConsumptionRecordSearchController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.OthersIndexController"
@@ -141,7 +125,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.OthersIndexController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SettingsDownloadController"
@@ -149,7 +133,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.SettingsDownloadController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SetMerchIdController"
@@ -157,7 +141,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.SetMerchIdController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.MerchantInfoController"
@@ -165,7 +149,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.MerchantInfoController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.PaymentMechanismController"
@@ -173,7 +157,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.PaymentMechanismController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SetMachineIdController"
@@ -181,7 +165,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.SetMachineIdController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SigninController"
@@ -189,7 +173,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.SigninController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.SetTransIdController"
@@ -197,7 +181,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.SetTransIdController" />
         </activity>
 		<activity
             android:name="cn.koolcloud.pos.controller.others.settings.ModifyPWDController"
@@ -205,7 +189,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.ModifyPWDController" />
         </activity>
 		<activity
             android:name="cn.koolcloud.pos.controller.others.settings.CreateUserController"
@@ -213,7 +197,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.CreateUserController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.TransBatchController"
@@ -221,7 +205,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.TransBatchController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController"
@@ -229,7 +213,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.del_voucher.DelVoucherRecordSearchController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController"
@@ -237,7 +221,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.del_voucher.DelVoucherRecordController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.delivery_voucher.DelVoucherInfoController"
@@ -245,7 +229,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.delivery_voucher.DelVoucherInfoController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.BalanceResultController"
@@ -253,7 +237,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.BalanceResultController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.delivery_voucher.InputDelVoucherNumController"
@@ -261,7 +245,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.delivery_voucher.InputDelVoucherNumController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.pay.TransAmountController"
@@ -269,7 +253,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.pay.TransAmountController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.pay.PayAccountController"
@@ -277,7 +261,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.pay.PayAccountController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.pay.PayMethodController"
@@ -285,7 +269,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.pay.PayMethodController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.pay.CashConsumeController"
@@ -293,7 +277,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.pay.CashConsumeController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.PinPadController"
@@ -301,7 +285,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.PinPadController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.delivery_voucher.DelVoucherIdController"
@@ -309,7 +293,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.delivery_voucher.DelVoucherIdController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchController"
@@ -317,7 +301,15 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.consumption_record.SingleRecordSearchController" />
+        </activity>
+        <activity
+            android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleRecordSearchByTxnIdController"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.transaction_manage.consumption_record.SingleRecordSearchByTxnIdController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.multipay.MultiPayIndex"
@@ -325,7 +317,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.multipay.MultiPayIndex" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.multipay.MultiPayRecord"
@@ -333,7 +325,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.multipay.MultiPayRecord" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.LoginController"
@@ -341,7 +333,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.LoginController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.mispos.MisposController"
@@ -349,7 +341,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseHomeController" />
+                android:value=".controller.mispos.MisposController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.others.settings.ListUserInfoController"
@@ -357,7 +349,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.others.settings.ListUserInfoController" />
         </activity>
 	<activity
             android:name="cn.koolcloud.pos.controller.prepaid_card.PrepaidCardQRCodeController"
@@ -365,7 +357,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.prepaid_card.PrepaidCardQRCodeController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.prepaid_card.PrepaidCardSearchResultController"
@@ -373,7 +365,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.prepaid_card.PrepaidCardSearchResultController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transaction_manage.consumption_record.ConsumptionSummaryController"
@@ -381,7 +373,7 @@
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transaction_manage.consumption_record.ConsumptionSummaryController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.transfer.SuperTransferController"
@@ -390,7 +382,7 @@
             android:windowSoftInputMode="stateVisible|stateAlwaysHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.BaseController" />
+                android:value=".controller.transfer.SuperTransferController" />
         </activity>
         <activity
             android:name="cn.koolcloud.pos.controller.dialogs.PushMessageController"

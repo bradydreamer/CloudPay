@@ -11,7 +11,7 @@ import cn.koolcloud.pos.controller.BaseController;
 
 public class SingleRecordSearchController extends BaseController {
 
-	private EditText et_id;
+	public EditText et_id;
 	private String paymentId;
 	private boolean removeJSTag = true;
 

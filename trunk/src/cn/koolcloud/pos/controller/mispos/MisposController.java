@@ -68,6 +68,7 @@ public class MisposController extends BaseHomeController implements
 	private Button order_detail_btn_confirm;
 
 	public static final String SALE_TRAN_CONSTANT = "SALE";
+	public static final String SALE_TRANSFER_TRAN_CONSTANT = "SALE_TRANSFER";
 	public static final String SALE_REVERSE_TRAN_CONSTANT = "REVERSE";
 	public static final String PRE_AUTHORIZATION_TRAN_CONSTANT = "PREPAID";
 	public static final String BALANCE_TRAN_CONSTANT = "BALANCE";
@@ -156,7 +157,7 @@ public class MisposController extends BaseHomeController implements
 				if (!savedDateStr.equals(Env.getNowDate())) {
 					mHandler.sendEmptyMessageDelayed(SEND_DELAYED_COMMAND_HANDLER, SEND_COMMAND_DELAY_TIME);
 				} else {
-					if (!isExternalOrder && deliveryTranType.equals(SALE_TRAN_CONSTANT)) {
+					if (!isExternalOrder && (deliveryTranType.equals(SALE_TRAN_CONSTANT) || deliveryTranType.equals(SALE_TRANSFER_TRAN_CONSTANT))) {
 						startAmountActivity();
 					}
 					mHandler.sendEmptyMessageDelayed(SEND_COMMAND_HANDLER, SEND_COMMAND_DELAY_TIME);
@@ -193,12 +194,17 @@ public class MisposController extends BaseHomeController implements
 		} else if (deliveryTranType.equals(LOGOUT_TRAN_CONSTANT)) {
 			Log.i(TAG, "MisPosInterface.unregistration()");
 			MisposOperationUtil.unregistration();
-		}
+		} else if (deliveryTranType.equals(SALE_TRANSFER_TRAN_CONSTANT)) {
+            Log.i(TAG, "MisPosInterface.consumeTransfer");
+            if (!TextUtils.isEmpty(amount) && Integer.parseInt(amount) > 0) {
+                MisposOperationUtil.consumeTransfer(amount);
+            }
+        }
 	}
 
 	@Override
 	public void onClickLeftButton(View view) {
-		handleExtenalOrder(currentBean);
+		handleExternalOrder(currentBean);
 		MisPosInterface.communicationClose();
 		finish();
 	}
@@ -331,7 +337,7 @@ public class MisposController extends BaseHomeController implements
 									beanData.getTerminalId())) {
 								UtilForDataStorage.saveDate(MisposController.this, Env.getNowDate());
 //								checkTranTypeFlow();
-								if (!isExternalOrder && deliveryTranType.equals(SALE_TRAN_CONSTANT)) {
+								if (!isExternalOrder && (deliveryTranType.equals(SALE_TRAN_CONSTANT) || deliveryTranType.equals(SALE_TRANSFER_TRAN_CONSTANT))) {
 									mHandler.sendEmptyMessage(GET_AMMOUNT_HANDLER);
 								} else {
 									checkTranTypeFlow();
@@ -361,7 +367,7 @@ public class MisposController extends BaseHomeController implements
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
-//							handleExtenalOrder(beanData);
+//							handleExternalOrder(beanData);
 						}
 
 						if (beanData
@@ -372,7 +378,7 @@ public class MisposController extends BaseHomeController implements
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
-							// handleExtenalOrder(beanData);
+							// handleExternalOrder(beanData);
 						}
 
 						if (beanData
@@ -383,7 +389,7 @@ public class MisposController extends BaseHomeController implements
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
-//							handleExtenalOrder(beanData);
+//							handleExternalOrder(beanData);
 						}
 
 						if (beanData
@@ -394,7 +400,7 @@ public class MisposController extends BaseHomeController implements
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
-//							handleExtenalOrder(beanData);
+//							handleExternalOrder(beanData);
 						}
 
 						if (beanData
@@ -405,7 +411,7 @@ public class MisposController extends BaseHomeController implements
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
-//							handleExtenalOrder(beanData);
+//							handleExternalOrder(beanData);
 						}
 
 						if (beanData
@@ -416,7 +422,7 @@ public class MisposController extends BaseHomeController implements
 							new PrinterThread(beanData).start();
 							new WriteBackThread(beanData).start();
 							showOrderDetails(beanData);
-//							handleExtenalOrder(beanData);
+//							handleExternalOrder(beanData);
 						}
 
 						if (beanData.getTransType().equals(
@@ -436,8 +442,7 @@ public class MisposController extends BaseHomeController implements
 						}
 						onCall("Pay.misposErrRestart", jsObj);
 					}
-					commonTextView.setTextColor(getResources().getColor(
-							R.color.black));
+					commonTextView.setTextColor(getResources().getColor(R.color.black));
 					showCommonMessage(beanData);
 
 					if (!TextUtils.isEmpty(deliveryTranType)
@@ -571,7 +576,7 @@ public class MisposController extends BaseHomeController implements
 		orderDetailslayout.setVisibility(View.GONE);
 	}
 
-	private void handleExtenalOrder(MisposData beanData) {
+	private void handleExternalOrder(MisposData beanData) {
 		if (isExternalOrder) {
 			JSONObject jsObj = new JSONObject();
 			try {
@@ -623,7 +628,7 @@ public class MisposController extends BaseHomeController implements
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.order_detail_btn_confirm:
-			handleExtenalOrder(currentBean);
+			handleExternalOrder(currentBean);
 			if (!isExternalOrder) {
 				onCall("window.util.goBackHome", null);
 				finish();
@@ -668,7 +673,10 @@ public class MisposController extends BaseHomeController implements
 			if (deliveryTranType.equals(SALE_TRAN_CONSTANT)) {
 				Log.i(TAG, "MisposOperationUtil.consume(amount) amount:" + amount);
 				MisposOperationUtil.consume(amount);
-			}
+			} else if (deliveryTranType.equals(SALE_TRANSFER_TRAN_CONSTANT)) {
+                Log.i(TAG, "MisposOperationUtil.consumeTransfer amount:" + amount);
+                MisposOperationUtil.consumeTransfer(amount);
+            }
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
@@ -765,8 +773,7 @@ public class MisposController extends BaseHomeController implements
 		@Override
 		public void run() {
 			try {
-				PrinterHelper.getInstance(MisposController.this)
-						.printMisposReceipt(beanData);
+				PrinterHelper.getInstance(MisposController.this).printMisposReceipt(beanData);
 			} catch (PrinterException e) {
 				e.printStackTrace();
 			}

@@ -66,7 +66,7 @@
 			Scene.setProperty("ConsumptionRecord", propertyList);
 			//refresh consumption data ListView with new data --end mod by Teddy on 29th September
 		} else {
-			
+
 			if (1 == pageNo) {
 				/*if (recordDisplayedList.length == 1) {
 					recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
@@ -153,6 +153,7 @@
 		// 3	已撤销
 		// 4	预授权已完成
 		// 5 	未知
+		// 6    撤销中
 		// 9	超时
 
 		var orderStateDesc = "";
@@ -168,6 +169,8 @@
 			orderStateDesc = "115";
 		} else if (orderState == "5") {
 			orderStateDesc = "116";
+		} else if (orderState == "6") {
+		    orderStateDesc = "172";
 		} else if (orderState == "9") {
 			orderStateDesc = "117";
 		}
@@ -179,15 +182,19 @@
 		var params = JSON.parse(data);
 		var refNo = params.id;
 		var paymentId = params.paymentId;
+		var txnId = params.txnId;
 		var req = {
 			"pageNo" : 1,
 			"pageSize" : 20,
 			"refNo" : refNo,
-			"paymentId": paymentId
+			"paymentId": paymentId,
+			"txnId":txnId
 		};
 		req_loadMore = req;
 		singleResearchTag = true;
 		ConsumptionData.dataForPayment.rrn = refNo;
+		window.TransactionManageIndex.refresh = undefined;
+   		window.TransactionManageIndex.params = undefined;
 		Net.connect("msc/txn/detail/query", req, handleResFromReqRecord);
 	}
 
@@ -264,6 +271,10 @@
 		window.util.showSceneWithLoginChecked("PaymentMechanism");
 	}
 
+	function onSingleRecordSearchByTxnId(){
+	    window.util.showSceneWithLoginChecked("SingleRecordSearchByTxnId");
+	}
+
 	function onConsumptionRecordSearch() {
 		window.util.showSceneWithLoginChecked("ConsumptionRecordSearch");
 	}
@@ -323,6 +334,7 @@
 		"onConsumptionRecordSearch" : onConsumptionRecordSearch,
 		"onDelVoucherRecordSearch" : onDelVoucherRecordSearch,
 		"onSingleRecordSearch" : onSingleRecordSearch,
+		"onSingleRecordSearchByTxnId": onSingleRecordSearchByTxnId,
 		"gotoConsumptionRecord" : gotoConsumptionRecord,
 		"gotoConsumptionSummary" : gotoConsumptionSummary,
 		"gotoSingleRecord" : gotoSingleRecord,

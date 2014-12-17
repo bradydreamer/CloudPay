@@ -258,7 +258,7 @@ Pay.payResult = function(params) {
 
 		var msg = {
 			"refNo": ConsumptionData.dataForPayment.rrn,
-			"orderStateDesc": "成功",
+			"orderStateDesc": "110",
 			"payTypeDesc": payTypeDesc,
 			"transAmount": transAmount,
 			"transTime": transTime,
@@ -342,12 +342,19 @@ Pay.writeBackAPMPCouponData = function(params) {
 		ConsumptionData.dataForPayment.totalAmount = parseInt(couponData.transAmount);
 		ConsumptionData.dataForPayment.couponAmount = parseInt(couponData.couponPaidAmount);
 		var balance = parseInt(couponData.transAmount - couponData.couponPaidAmount);
-		if (balance > 0) {
-			ConsumptionData.dataForPayment.transAmount = balance;
+		if (ConsumptionData.isMultiPay == true) {
+            ConsumptionData.dataForPayment.transAmount = parseInt(couponData.couponPaidAmount);
+            ConsumptionData.dataForPayment.result = "success";
+            Pay.restart();
 		} else {
-			ConsumptionData.dataForPayment.result = "success";
-			ConsumptionData.dataForPayment.transAmount = parseInt(couponData.transAmount);
-			Pay.restart();
+
+            if (balance > 0) {
+                ConsumptionData.dataForPayment.transAmount = balance;
+            } else {
+                ConsumptionData.dataForPayment.result = "success";
+                ConsumptionData.dataForPayment.transAmount = parseInt(couponData.transAmount);
+                Pay.restart();
+            }
 		}
 	}
 };	
@@ -392,7 +399,7 @@ Pay.cashSuccRestart = function(params){
 			ConsumptionData.dataForPayment.txnId = data.txnId;
 			var msg = {
 				"refNo": ConsumptionData.dataForPayment.rrn,
-				"orderStateDesc": "成功",
+				"orderStateDesc": "110",
 				"payTypeDesc": ConsumptionData.dataForPayment.paymentName,
 				"transAmount": util.formatAmountStr(cashData.transAmount),
 				"transTime": transTime,

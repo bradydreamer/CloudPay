@@ -25,6 +25,7 @@ public class ConstantUtils {
 	// appstore package name
 	public static final String APP_STORE_PACKAGE_NAME = "cn.koolcloud.ipos.appstore";
 	public static final String COUPON_APP_PACKAGE_NAME = "com.koolyun.coupon";
+    public static final String COUPON_WAN_APP_PACKAGE_NAME = "com.wjl.whrxh";
 	// public static final String COUPON_APP_PACKAGE_NAME =
 	// "cn.koolcloud.ipos.appstore";
 
@@ -50,6 +51,8 @@ public class ConstantUtils {
 	public static final String IP = "116.228.223.216";
 	public static final int PORT = 10021;
 	public static final String MISPOS_INDEX = "90";
+	public static final String MISPOS_MISC = "MIS_TRANSFER";
+	public static final String MISPOS_TRAN_TYPE = "SALE_TRANSFER";
 	// Mispos All in Pay test
 	// public static final String IP = "116.236.252.102";
 	// public static final int PORT = 8880;

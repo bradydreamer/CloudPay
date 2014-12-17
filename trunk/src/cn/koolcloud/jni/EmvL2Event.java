@@ -2,18 +2,26 @@ package cn.koolcloud.jni;
 
 import android.util.Log;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 
 public class EmvL2Event {
+	public static Queue<Integer> queue = new LinkedList<Integer>();
 	public static int iCardEvent = -1;
 	
 	public static void setCardEvent(int cardEvent) {
-		//Log.i(LOG_TAG, "card_event : " + cardEvent);
-		iCardEvent = cardEvent;
+		queue.offer(cardEvent);
 	}
 	
 	public static int getCardEvent() {
-		//Log.i("MMMMMMM", "event : " + iCardEvent);
-		return iCardEvent;
+		if(queue.size() == 0){
+			return -1;
+		}else {
+			iCardEvent = queue.poll();
+			return iCardEvent;
+		}
+
 	}
 	
 }

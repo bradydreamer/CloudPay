@@ -163,8 +163,8 @@
                     android:orientation="vertical" >
                     <FrameLayout
                         android:id="@+id/scanner_zb"
-                        android:layout_width="400dp"
-                        android:layout_height="300dp"
+                        android:layout_width="380dp"
+                        android:layout_height="380dp"
                         android:visibility="gone"/>
 
                     <com.google.zxing.client.android.ScannerRelativeLayout

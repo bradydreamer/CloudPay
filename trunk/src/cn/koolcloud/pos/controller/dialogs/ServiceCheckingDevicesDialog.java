@@ -51,6 +51,7 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 	public static final int HANDLE_MISPOS_STATUS = 4;
 	
 	private static final int SEND_MESSAGE_DELAYED_TIME = 300;
+    private final static int NETWORK_CHECKING_WAITING_TIME = 5000;
 	
 	private TextView titleTextView;
 	private TextView pinpadTextView;
@@ -78,6 +79,8 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 	
 	private MisposCheckingThread misposCheckingThread;
 	private Map<String, Boolean> deviceStatusMap = new HashMap<String, Boolean>();
+
+    private boolean networkCheckingMsgSendTag = false; //use to control send message to message queue or not
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -346,6 +349,7 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 	 * @return: void
 	 */
 	private void checkDevices() {
+        networkCheckingMsgSendTag = false;
 		devicesStatusTag = true;
 		devicesSet.clear();
 		setDevicesCheckingStatus();
@@ -354,8 +358,12 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 		
 		threadStack.removeAllElements();
 		pushCheckingThreadToStack();
-		
+
+        //start network checking time
+        new NetWorkTimerThread().start();
+
 		startCheckNetwork(Env.getResourceString(this, R.string.ping_host_url));
+
 		//thread checking devices
 //		threadStack.pop().start();
 		//checking is locking
@@ -446,8 +454,11 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 				Message msg = mHandler.obtainMessage();
 				msg.what = HANDLE_NETWORK_STATUS;
 				msg.obj = false;
-				
-				mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+
+                if (!networkCheckingMsgSendTag) {
+                    networkCheckingMsgSendTag = true;
+                    mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                }
 			}
 			
 			@Override
@@ -459,7 +470,10 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 					Message msg = mHandler.obtainMessage();
 					msg.what = HANDLE_NETWORK_STATUS;
 					msg.obj = true;
-					mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                    if (!networkCheckingMsgSendTag) {
+                        networkCheckingMsgSendTag = true;
+                        mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
+                    }
 				}
 			};
         });
@@ -482,6 +496,27 @@ public class ServiceCheckingDevicesDialog extends Activity implements View.OnCli
 			mHandler.sendMessageDelayed(msg, SEND_MESSAGE_DELAYED_TIME);
 		}		
 	}
+
+    class NetWorkTimerThread extends Thread {
+
+        @Override
+        public void run() {
+            long startedTime = System.currentTimeMillis();
+            while (true) {
+                if ((System.currentTimeMillis() - startedTime) == NETWORK_CHECKING_WAITING_TIME ) {
+                    if (!networkCheckingMsgSendTag) {
+                        Message msg = mHandler.obtainMessage();
+                        msg.what = HANDLE_NETWORK_STATUS;
+                        msg.obj = false;
+
+                        networkCheckingMsgSendTag = true;
+                        mHandler.sendMessage(msg);
+                    }
+                    break;
+                }
+            }
+        }
+    }
 	
 	private void onCall(String jsHandler, JSONObject msg) {
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();

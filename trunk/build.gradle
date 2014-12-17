@@ -1,10 +1,12 @@
 buildscript {
     repositories {
-        mavenLocal()
-        mavenCentral()
+//        mavenLocal()
+//        mavenCentral()
+//        maven { url 'http://repo1.maven.org/maven2' }
+        maven { url 'http://maven.oschina.net/content/groups/public/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
 
@@ -12,7 +14,7 @@ apply plugin: 'android'
 apply plugin: 'maven'
 
 repositories {
-    mavenLocal()
+//    mavenLocal()
     mavenCentral()
 }
 
@@ -39,19 +41,29 @@ android {
     buildToolsVersion "20.0.0"
 
     /*defaultConfig {
-        versionCode 40
-        versionName "3.0.3"
+        versionCode 99
+        versionName "9.9.9"
 //        packageName "cn.koolcloud.pos.wanwan"
     }*/
+    signingConfigs {
+        flavor1 {
+            storeFile file("app.ks")
+            storePassword "secret"
+            keyAlias "aliasForFlavor1"
+            keyPassword "secretFlavor1"
+        }
+
+    }
 
     productFlavors {
         /*wanda {
             packageName = 'cn.koolcloud.pos.wanwan'
         }*/
-        trunk {
+
+        /*trunk {
             packageName = 'cn.koolcloud.pos'
-        }
-        /*golo {
+        }*/
+       /* golo {
             packageName = 'cn.koolcloud.pos.golo'
         }*/
     }

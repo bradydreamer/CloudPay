@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.renderscript.Font;
 
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.constant.ConstantUtils;
@@ -64,11 +63,6 @@ public class PrinterHelper implements Constant {
 		try {
 			PrinterInterface.open();
 			PrinterInterface.set(1);
-			// PrinterInterface.begin();
-			// PrinterInterface.end();
-			// printerWrite(PrinterCommand.init());
-			// printerWrite(PrinterCommand.setHeatTime(180));
-
 			int printerStatus = PrinterInterface.begin();
 			if (printerStatus == -1) {
 				// close printer
@@ -112,40 +106,16 @@ public class PrinterHelper implements Constant {
 					printerWrite(PrinterCommand.linefeed());
 				}
 
-				printerWrite("--------------------------------"
-						.getBytes("GB2312"));
+				printerWrite("--------------------------------".getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				/*
-				 * printerWrite(trans.getOldMID().getBytes("GB2312"));
-				 * printerWrite(PrinterCommand.linefeed());
-				 * 
-				 * if (i == 0) {
-				 * printerWrite(("商户存根           MERCHANT COPY").getBytes
-				 * ("GB2312")); printerWrite(PrinterCommand.linefeed()); } else
-				 * if (i == 1) {
-				 * printerWrite(("持卡人存根       CARDHOLDER COPY").getBytes
-				 * ("GB2312"));
-				 * 
-				 * printerWrite(PrinterCommand.linefeed()); } else if (i == 2) {
-				 * printerWrite
-				 * (("银行存根               BANK COPY").getBytes("GB2312"));
-				 * printerWrite(PrinterCommand.linefeed()); }
-				 * printerWrite("--------------------------------"
-				 * .getBytes("GB2312"));
-				 * printerWrite(PrinterCommand.linefeed());
-				 */
-
-				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_merchant) + trans.getOldMertName())
-						.getBytes("GB2312"));
+				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_merchant) + trans.getOldMertName()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + trans.getKoolCloudMID())
-						.getBytes("GB2312"));
+				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + trans.getKoolCloudMID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + trans.getKoolCloudTID())
-						.getBytes("GB2312"));
+				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + trans.getKoolCloudTID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite((Env.getResourceString(ctx, R.string.printer_acquirer_merchant_no) + trans.getOldMID()).getBytes("GB2312"));
@@ -154,8 +124,7 @@ public class PrinterHelper implements Constant {
 				printerWrite((Env.getResourceString(ctx, R.string.printer_acquirer_terminal_no) + trans.getOldTID()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId())
-						.getBytes("GB2312"));
+				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_trans_no) + trans.getTxnId()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				String localTime = convertTimeToLocal(trans);
@@ -164,11 +133,9 @@ public class PrinterHelper implements Constant {
 						+ "/" + localTime.substring(6, 8)
 						+ " " + localTime.substring(8, 10)
 						+ ":" + localTime.substring(10, 12)
-						+ ":" + localTime.substring(12, 14))
-						.getBytes("GB2312"));
+						+ ":" + localTime.substring(12, 14)).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				// printerWrite("交易类型(TRANS TYPE):".getBytes("GB2312"));
 				printerWrite(Env.getResourceString(ctx, R.string.printer_tag_pay_type).getBytes("GB2312"));
 				// printerWrite(PrinterCommand.linefeed());
 
@@ -206,8 +173,7 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.setFontBold(0));
 
 				printerWrite((Env.getResourceString(ctx, R.string.printer_batch_no) + StringUtil.fillZero(
-						Integer.toString(trans.getOldBatch()), 6))
-						.getBytes("GB2312"));
+						Integer.toString(trans.getOldBatch()), 6)).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite((Env.getResourceString(ctx, R.string.printer_voucher_no)
@@ -224,20 +190,10 @@ public class PrinterHelper implements Constant {
 				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_channel) + trans.getPaymentName()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				// printerWrite(("发卡行: " +
-				// trans.getIssuerName(trans.getOldIssuerID())).getBytes("GB2312"));
-				// printerWrite(PrinterCommand.linefeed());
-
-				// printerWrite(("收单行: " +
-				// trans.getAcquirerName(trans.getOldAcquirerID())).getBytes("GB2312"));
-				// printerWrite(PrinterCommand.linefeed());
-
 				// 增大字体：高度增加1倍，宽度不变
 				printerWrite(PrinterCommand.setFontEnlarge(0x01));
 
-				// printerWrite("卡号(CARD NO):".getBytes("GB2312"));
 				printerWrite(Env.getResourceString(ctx, R.string.printer_bank_card).getBytes("GB2312"));
-				// printerWrite(PrinterCommand.linefeed());
 
 				String pan = "";
 				pan = trans.getOldPan();
@@ -249,10 +205,6 @@ public class PrinterHelper implements Constant {
 
 				// 结束字体放大
 				printerWrite(PrinterCommand.setFontEnlarge(0));
-
-				// printerWrite(("国际卡组织: " +
-				// trans.getOldCardOrganization()).getBytes("GB2312"));
-				// printerWrite(PrinterCommand.linefeed());
 
 				// 增大字体：高度增加1倍，宽度不变
 				printerWrite(PrinterCommand.setFontEnlarge(0x01));
@@ -271,6 +223,9 @@ public class PrinterHelper implements Constant {
 
 				// 结束增大字体
 				printerWrite(PrinterCommand.setFontEnlarge(0));
+
+                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId()).getBytes("GB2312"));
+                printerWrite(PrinterCommand.linefeed());
 
 				// String ref = "备注/REFERENCE";
 				String ref = Env.getResourceString(ctx, R.string.printer_reference);
@@ -292,8 +247,7 @@ public class PrinterHelper implements Constant {
 
 				}
 
-				printerWrite("--------------------------------"
-						.getBytes("GB2312"));
+				printerWrite("--------------------------------".getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				if (i == 0) {
@@ -392,7 +346,7 @@ public class PrinterHelper implements Constant {
                 printerWrite((Env.getResourceString(ctx, R.string.printer_acquirer_terminal_no) + trans.getOldTID()).getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
 
-                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_trans_no) + trans.getTxnId()).getBytes("GB2312"));
+                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId()).getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
 	            String localTime = convertTimeToLocal(trans);
                 printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
@@ -467,7 +421,7 @@ public class PrinterHelper implements Constant {
                 // 增大字体：高度增加1倍，宽度不变
                 printerWrite(PrinterCommand.setFontEnlarge(0x01));
 
-                String amt = AppUtil.formatAmount(trans.getOldTransAmount()) + " RMB";
+                String amt = AppUtil.formatAmount(trans.getOldTransAmount() - 1000) + " RMB";
                 if (trans.getTransType() == TRAN_VOID
                         || trans.getTransType() == TRAN_REFUND) {
                     amt = " - " + amt;
@@ -477,6 +431,9 @@ public class PrinterHelper implements Constant {
                 printerWrite(PrinterCommand.setFontBold(1));
                 printerWrite((amt).getBytes("GB2312"));
                 printerWrite(PrinterCommand.setFontBold(0));
+                printerWrite(PrinterCommand.linefeed());
+
+                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_trans_fee) + 10.00 + " RMB").getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
 
                 // 结束增大字体
@@ -621,7 +578,11 @@ public class PrinterHelper implements Constant {
 						MisposOperationUtil.TRAN_TYPE_PRE_AUTHORIZATION)) {
 					printerWrite("预授权".getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
-				} else {
+				} else if (misposBean.getTransType().equals(
+                        MisposOperationUtil.TRAN_TYPE_CONSUMPTION_TRANSFER)) {
+                    printerWrite("助农取款".getBytes("GB2312"));
+                    printerWrite(PrinterCommand.linefeed());
+                } else {
 					String str = "type =" + misposBean.getTransType();
 					printerWrite(str.getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
@@ -1016,8 +977,7 @@ public class PrinterHelper implements Constant {
                                 + "\n", FontType.NORMAL, Align.LEFT);
                 control.printText(Env.getResourceString(ctx, R.string.printer_partner_id) + "\n", FontType.NORMAL,
                         Align.LEFT);
-                control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL,
-                        Align.LEFT, Depth.DEEP);
+                control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT);
 
                 String number = trans.getOldApOrderId();
 
@@ -1079,8 +1039,13 @@ public class PrinterHelper implements Constant {
 				// control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
 				control.sendESC(PrinterCommand.setAlignMode(1));
 
-				Drawable mDrawable = ctx.getResources().getDrawable(
-						R.drawable.alipay);
+                Drawable mKingPowerDrawable = ctx.getResources().getDrawable(R.drawable.kingpower);
+                Bitmap mKingPowerBitMap = ((BitmapDrawable) mKingPowerDrawable).getBitmap();
+                control.printImage(Bitmap.createScaledBitmap(mKingPowerBitMap, 250, 80, false));
+
+                printerWrite(PrinterCommand.linefeed());
+
+				Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.alipay);
 				Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
 				control.printImage(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
 
@@ -1184,7 +1149,7 @@ public class PrinterHelper implements Constant {
 
                 control.sendESC(PrinterCommand.setFontEnlarge(0x01));
                 control.sendESC(PrinterCommand.setFontBold(1));
-                control.printText(amt + "(" + currency + ")", FontType.DOUBLE_WH, Align.CENTER);
+                control.printText(amt + "(" + currency + ")", FontType.DOUBLE_WH, Align.LEFT);
                 control.sendESC(PrinterCommand.setFontBold(0));
                 control.sendESC(PrinterCommand.setFontEnlarge(0));
                 control.printText("\n", FontType.NORMAL, Align.LEFT);
@@ -1192,13 +1157,13 @@ public class PrinterHelper implements Constant {
                 if (trans.getTransType() == TRAN_SALE) {
 
                     //print exchange rate
-                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_exchange_rate), FontType.NORMAL);
+                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_exchange_rate), FontType.NORMAL, Align.LEFT);
                     printerWrite(PrinterCommand.linefeed());
                     control.printText(trans.getExchangeRate());
                     printerWrite(PrinterCommand.linefeed());
 
                     //print real amount
-                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_real_amount), FontType.NORMAL);
+                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_real_amount), FontType.NORMAL, Align.LEFT);
                     printerWrite(PrinterCommand.linefeed());
                     control.printText(trans.getRealAmount());
                     printerWrite(PrinterCommand.linefeed());
@@ -1206,9 +1171,9 @@ public class PrinterHelper implements Constant {
 
                 //print alipay params
 				control.printText(Env.getResourceString(ctx, R.string.printer_transaction_id) + "\n", FontType.NORMAL, Align.LEFT);
-                control.printText(trans.getAlipayTransactionID() + "\n\n", FontType.NORMAL);
+                control.printText(trans.getAlipayTransactionID() + "\n", FontType.NORMAL);
 				control.printText(Env.getResourceString(ctx, R.string.printer_partner_id) + "\n", FontType.NORMAL, Align.LEFT);
-				control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
+				control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT);
 
 				String number = trans.getOldApOrderId();
 
@@ -1231,9 +1196,9 @@ public class PrinterHelper implements Constant {
 
                 printerWrite(PrinterCommand.linefeed());
                 control.sendESC(PrinterCommand.setAlignMode(1));
-                Drawable mKingPowerDrawable = ctx.getResources().getDrawable(R.drawable.kingpower);
-                Bitmap mKingPowerBitMap = ((BitmapDrawable) mKingPowerDrawable).getBitmap();
-                control.printImage(Bitmap.createScaledBitmap(mKingPowerBitMap, 250, 80, false));
+                Drawable mOcgDrawable = ctx.getResources().getDrawable(R.drawable.logo_ocg);
+                Bitmap mOcgBitMap = ((BitmapDrawable) mOcgDrawable).getBitmap();
+                control.printImage(Bitmap.createScaledBitmap(mOcgBitMap, 250, 80, false));
                 control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
                 control.printText("\n\n\n");
                 if (i == 0) {

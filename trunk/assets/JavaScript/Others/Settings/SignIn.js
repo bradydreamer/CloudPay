@@ -158,9 +158,10 @@
   }
   
   function downloadICParams(){
-	  var content = "正在下载第" + ICCapkParamsCount + "组参数！";
+	  var content = "" + ICCapkParamsCount;      //"正在下载第" + ICCapkParamsCount + "组参数！";
 	  var datalist = [{
 		  title: "145",
+		  type: "0", //0:参数
 		  content: content 
 	  }];
 	  Scene.setProperty("SignIn",datalist);
@@ -230,9 +231,10 @@
   }
   
   function downloadCAPK(){
-	  var content = "正在下载第" + ICCapkParamsCount + "组公钥！";
+	  var content = "" + ICCapkParamsCount;     //"正在下载第" + ICCapkParamsCount + "组公钥！";
 	  var datalist = [{
 		  title: "145",
+		  type: "1", //1:表示公钥
 		  content: content 
 	  }];
 	  Scene.setProperty("SignIn",datalist);

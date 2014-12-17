@@ -53,6 +53,7 @@ public class OrderDetailController extends BaseController {
 	private final static int TRAN_TYPE_AUTH_CANCEL = 3011;
 	private final static int TRAN_TYPE_AUTH_COMPLETE_CANCEL = 3031;
 	private final static int TRAN_TYPE_AUTH_SETTLEMENT = 1091;
+	private final static int TRAN_TYPE_TRANSFER = 1721;
 
 	private final static String MISC_CASH = "CASH";
 	private final static String MISC_ALIPAY = "alipay";
@@ -377,7 +378,8 @@ public class OrderDetailController extends BaseController {
 				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_REFUND)
 				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_CANCEL)
 				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_COMPLETE_CANCEL)
-				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_SETTLEMENT)) {
+				|| (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_AUTH_SETTLEMENT)
+                || (orderState == ORDER_STATUS_SUCCESS && transType == TRAN_TYPE_TRANSFER)) {
 			if (transType == TRAN_TYPE_AUTH) {
 				layout_auth_complete.setVisibility(View.VISIBLE);
 				layout_auth_settlement.setVisibility(View.VISIBLE);
