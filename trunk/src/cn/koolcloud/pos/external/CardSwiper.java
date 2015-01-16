@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import cn.koolcloud.jni.MsrInterface;
 
@@ -30,6 +31,17 @@ public class CardSwiper {
 			waitDataLooper = waitDataThread.getLooper();
 		}
 	}
+
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            int ret = msg.arg1;
+            int trackIndex = msg.arg2;
+            if (trackIndex == 1) {
+                listener.onRecvTrackDataError(ret, trackIndex);
+            }
+        }
+    };
 
 	public void onStart() {
 		if (MsrInterface.open() < 0) {
@@ -146,6 +158,10 @@ public class CardSwiper {
 		int ret = MsrInterface.getTrackError(trackIndex);
 		if (ret < 0) {
 			Log.i(TAG, "msr track" + trackIndex + " error is = " + ret);
+            Message msg = mHandler.obtainMessage();
+            msg.arg1 = ret;
+            msg.arg2 = trackIndex;
+            mHandler.sendMessage(msg);
 			return null;
 		}
 
@@ -161,5 +177,6 @@ public class CardSwiper {
 
 	public interface CardSwiperListener {
 		public void onRecvTrackData(Hashtable<String, String> trackData);
+        public void onRecvTrackDataError(int resCode, int trackIndex);
 	}
 }

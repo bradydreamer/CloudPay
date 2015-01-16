@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="42"
-    android:versionName="3.1.1" >
+    android:versionCode="48"
+    android:versionName="3.1.7" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -479,6 +479,8 @@
         
 		<!-- Baidu Push API Key -->
         <meta-data android:name="api_key" android:value="sKzujsGvU6zmXS9fHGsE4ymO" />
+
+        <meta-data android:name="UMENG_CHANNEL" android:value="${UMENG_CHANNEL_VALUE}" />
     </application>
 
 </manifest>

@@ -1,21 +1,30 @@
 package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import cn.koolcloud.interfaces.OrderHeaderInterface;
+import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.ConsumptionRecordAdapter;
 import cn.koolcloud.pos.controller.BaseController;
@@ -24,10 +33,12 @@ import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForJSON;
 import cn.koolcloud.pos.widget.ContentHeader;
+import cn.koolcloud.util.DateUtil;
 
 public class ConsumptionRecordController extends BaseController implements OrderHeaderInterface {
 
 	private ListView lv_record;
+	private Spinner operatorSpinner;
 	private ContentHeader orderContentHeader;
 	private ConsumptionRecordAdapter adapter;
 	private List<JSONObject> recordDataList;
@@ -38,6 +49,11 @@ public class ConsumptionRecordController extends BaseController implements Order
 	private boolean hasMore;
 	
 	private ConsumptionRecordDB consumptionDB;
+
+    private List<String> spinnerData = new ArrayList<String>();
+    private ArrayAdapter<String> spinnerAdapter;
+    private String operator = "";
+    private int spinnerSelectCount = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +68,9 @@ public class ConsumptionRecordController extends BaseController implements Order
 		recordDataList = UtilForJSON
 				.JSONArrayOfJSONObjects2ListOfJSONObjects(recordList);
 		lv_record = (ListView) findViewById(R.id.consumption_record_lv_record);
+        operatorSpinner = (Spinner) findViewById(R.id.operatorSpinner);
+//        initSpinner();
+
 		adapter = new ConsumptionRecordAdapter(this);
 		adapter.setList(recordDataList);
 		hasMore = data.optBoolean("hasMore");
@@ -73,14 +92,19 @@ public class ConsumptionRecordController extends BaseController implements Order
 					onCall("ConsumptionRecord.reqMore", null);
 				} else {
 					JSONObject recordData = recordDataList.get(position);
-					onCall("ConsumptionRecord.getRecordDetail", recordData);
+                    try {
+                        recordData.put("from", "recordList");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    onCall("ConsumptionRecord.getRecordDetail", recordData);
 				}
 			}
 		});
 		
 		//cache record to sqlite --start by Teddy 17th July
 		if (recordDataList != null && recordDataList.size() > 0) {
-			new CacheRecordThread().start();
+			new CacheRecordThread(true).start();
 		}
 		//cache record to sqlite --end by Teddy 17th July
 		
@@ -92,6 +116,15 @@ public class ConsumptionRecordController extends BaseController implements Order
         String formattingCurrency = getResources().getString(R.string.consumption_record_tv_transAmount);
         String currencyResource = Env.getCurrencyResource(this);
         currencyTextView.setText(String.format(formattingCurrency, currencyResource));
+
+        LinearLayout printerLayout = (LinearLayout) findViewById(R.id.printerLayout);
+        Boolean fromTodayTag = data.optBoolean("fromTodayTag");
+        if (fromTodayTag) {
+            printerLayout.setVisibility(View.VISIBLE);
+        } else {
+            printerLayout.setVisibility(View.GONE);
+        }
+
 	}
 
 	@Override
@@ -101,6 +134,27 @@ public class ConsumptionRecordController extends BaseController implements Order
 		}
 		return super.viewForIdentifier(name);
 	}
+
+    @Override
+    protected void updateViews(JSONObject item) {
+        JSONObject jsonObject = item.optJSONObject("value");
+        if (jsonObject != null) {
+            JSONArray recordList = jsonObject.optJSONArray("recordList");
+            if (recordList != null) {
+                adapter = new ConsumptionRecordAdapter(this);
+                recordDataList = UtilForJSON.JSONArrayOfJSONObjects2ListOfJSONObjects(recordList);
+                adapter.setList(recordDataList);
+                hasMore = jsonObject.optBoolean("hasMore");
+                adapter.setHasMore(hasMore);
+                lv_record.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                if (recordDataList != null && recordDataList.size() > 0) {
+                    new CacheRecordThread(true).start();
+                }
+            }
+        }
+    }
 
 	@Override
 	protected void setView(View view, String key, Object value) {
@@ -125,7 +179,7 @@ public class ConsumptionRecordController extends BaseController implements Order
 			
 			//cache record to sqlite --start by Teddy 17th July
 			if (tmpList != null && tmpList.size() > 0) {
-				new CacheRecordThread().start();
+				new CacheRecordThread(false).start();
 			}
 			//cache record to sqlite --end by Teddy 17th July
 		} else if (key.equals("updateList")) {
@@ -136,20 +190,97 @@ public class ConsumptionRecordController extends BaseController implements Order
 			
 			adapter.notifyDataSetChanged();	
 			//clear ListView data first after finish revoke order --end mod by Teddy on 29th September
+
+//            new ClearRecordThread().start();
 		}
 		super.setView(view, key, value);
 	}
+
+    private void initSpinner() {
+        Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(this, "userList");
+        if(map.size() > 0) {
+            JSONObject operatorObj = new JSONObject(map);
+            Iterator<String> keys = operatorObj.keys();
+            spinnerData.add("All");
+            while (keys.hasNext()) {
+                String str = keys.next();
+                if (!str.equals("curMonth") && !str.equals("curDate")) {
+                    spinnerData.add(operatorObj.optString(str));
+//                    UtilForDataStorage.clearPropertyBySharedPreferences(this, operatorObj.optString(str));
+                }
+            }
+
+            spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerData);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            operatorSpinner.setAdapter(spinnerAdapter);
+
+            if (spinnerData != null && spinnerData.size() > 0) {
+                operator = spinnerData.get(0);
+            }
+            operatorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                    // TODO Auto-generated method stub
+                    operator = arg0.getSelectedItem().toString();
+                    spinnerSelectCount++;
+                    if (spinnerSelectCount > 1) {
+
+                        JSONObject msg = new JSONObject();
+                        try {
+                            Date today = new Date();
+                            String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
+                            String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
+                            startDate = DateUtil.formatDate(DateUtil.parseDate(startDate),"yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的起始时间
+                            String endDate = todayStr + " 23:59:59"; //获取当的日期+最终时间
+                            endDate = DateUtil.formatDate(DateUtil.parseDate(endDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的最终时间
+
+                            msg.put("startDate", startDate);
+                            msg.put("endDate", endDate);
+                            msg.put("ioperator", operator);
+                            onCall("TransactionManageIndex.onTodayConsumptionRecord", msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+        }
+    }
 
 	@Override
 	protected void onStart() {
 		adapter.notifyDataSetChanged();
 		super.onStart();
+        spinnerData.clear();
+        initSpinner();
 	}
 
 	@Override
 	protected void setControllerContentView() {
 		setContentView(R.layout.activity_consumption_record_controller);
 	}
+
+    public void onPrintRecord(View view) {
+        JSONObject msg = new JSONObject();
+        try {
+//            Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchant");
+//            String operator = (String) map.get("operator");
+            if (!TextUtils.isEmpty(operator) && !operator.equals("All")) {
+                msg.put("ioperator", operator);
+            }
+            onCall("ConsumptionRecord.printOperatorTodayRecord", msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 	@Override
 	protected String getTitlebarTitle() {
@@ -179,10 +310,16 @@ public class ConsumptionRecordController extends BaseController implements Order
 	}
 	
 	class CacheRecordThread extends Thread {
-
+        boolean clearData = false;
+        CacheRecordThread(boolean needClearData) {
+            this.clearData = needClearData;
+        }
 		@Override
 		public void run() {
 			ConsumptionRecordDB cacheDB = ConsumptionRecordDB.getInstance(ConsumptionRecordController.this);
+            if (clearData) {
+                cacheDB.clearRecordTableData();
+            }
 			cacheDB.insertConsumptionRecord(recordDataList);
 		}
 	}

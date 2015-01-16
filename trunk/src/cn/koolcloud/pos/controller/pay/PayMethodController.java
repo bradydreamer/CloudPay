@@ -108,7 +108,7 @@ public class PayMethodController extends BaseController {
 				Button btn = (Button) v;
 				btn.setTag(tag);
 				btn.setOnClickListener(btnClickListener);
-				if (type.equalsIgnoreCase("3")) {
+				/*if (type.equalsIgnoreCase("3")) {
 					btn.setBackgroundResource(R.drawable.logo_ec);
 				} else if (type.equalsIgnoreCase("4")) {
 					btn.setBackgroundResource(R.drawable.logo_cp);
@@ -118,7 +118,7 @@ public class PayMethodController extends BaseController {
 					btn.setBackgroundResource(R.drawable.logo_allinpay);
 				} else if (type.equalsIgnoreCase("swipeCard")) {
 					btn.setBackgroundResource(R.drawable.logo_card);
-				}
+				}*/
 			} else if (v instanceof TextView) {
 				TextView tv = (TextView) v;
 				tv.setText(title);

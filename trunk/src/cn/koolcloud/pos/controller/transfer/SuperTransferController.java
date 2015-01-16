@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.UtilFor8583;
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
@@ -478,4 +479,10 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		msg.what = HANDLE_TRACK_DATA;
 		msg.sendToTarget();
 	}
+
+    @Override
+    public void onRecvTrackDataError(int resCode, int trackIndex) {
+        String reSwiptCardStr = getResources().getString(R.string.msg_swipe_card_error);
+        Toast.makeText(this, reSwiptCardStr, Toast.LENGTH_SHORT).show();
+    }
 }

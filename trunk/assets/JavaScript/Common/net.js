@@ -124,6 +124,7 @@
   }
 
   function gotoConnect(action, params, callbackfunc, isCustom, isAsyn) {
+    oriAction = action;
   	if( action == "msc/pay/signin" ||
 			action == "msc/balance" ||
   			action == "msc/pay/consume" ||
@@ -136,11 +137,15 @@
   			action == "msc/pay/prepaid/over" ||
   			action == "msc/pay/prepaid/over/offline" ||
   			action == "msc/pay/prepaid/cancel" ||
+  			action == "msc/pay/status/query" ||
   			action == "msc/pay/prepaid/over/cancel"){
-  		oriAction = action;
   		action = "txn/"+ConsumptionData.dataForPayment.brhKeyIndex;
   	}
     var reqData = _request(action, params, callbackfunc);
+    if(oriAction == "mscbank/discount/calculate" ||
+        oriAction == "mscbank/discount/update"){
+        reqData.header.mscbank = "1";
+    }
     _customAction = isCustom ? action : "";
     if (isAsyn) {
       Global.callObjcHandler("netAsynConnect", reqData, _callBackConnect)
@@ -166,7 +171,7 @@
       /*
       * 没有网络时。
       */
-      if(response.errCode == "0" && oriAction != "msc/pay/reverse"){
+      /*if(response.errCode == "0" && oriAction != "msc/pay/reverse"){
         if(window.downloadParams){
             window.COMM.deleteParamsFiles();
         }
@@ -175,7 +180,7 @@
             actionAfterError();
         });
         return;
-      }
+      }*/
       if (_customAction == "") {
 	  	if(window.downloadParams){
 	  		window.COMM.deleteParamsFiles();
@@ -270,7 +275,8 @@
       if(window.downloadParams){
 	  	window.COMM.deleteParamsFiles();
 	  }
-      Scene.alert(data.errorMsg,actionAfterError);
+	  return func(data);
+      //Scene.alert(data.errorMsg,actionAfterError);
     }
   }
 
@@ -328,7 +334,7 @@
 	  	window.COMM.deleteParamsFiles();
 	  }
       Scene.alert(data.errorMsg,function(){
-	  	window.RMS.clear("savedTransData");
+	  	//window.RMS.clear("savedTransData");
       	window.user.init({});
 		//Scene.goBack("Home");
 		setTimeout(window.util.exeActionWithLoginChecked,500); 

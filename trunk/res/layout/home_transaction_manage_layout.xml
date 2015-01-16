@@ -14,7 +14,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:onClick="gotoConsumptionRecord"
+                android:onClick="gotoTodayConsumptionRecord"
                 android:background="@drawable/logo_consumption_record_today" />
 
             <TextView
@@ -38,7 +38,7 @@
 
             <ImageButton
                 style="@style/module_logo"
-                android:onClick="gotoConsumptionRecordSearch"
+                android:onClick="gotoHistoryConsumptionRecordSearch"
                 android:background="@drawable/logo_consumption_record_old" />
 
             <TextView

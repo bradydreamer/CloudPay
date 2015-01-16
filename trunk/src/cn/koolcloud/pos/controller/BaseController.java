@@ -13,11 +13,20 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +35,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.HostMessage;
@@ -55,6 +65,8 @@ public abstract class BaseController extends Activity {
 	private TextView titlebar_btn_right;
 	private TextView titlebar_btn_title;
 	protected Button titlebar_btn_left;
+	protected LinearLayout titlebar_left;
+	protected Button titlebar_left_version;
 	protected final String TAG = "BaseController";
 	public boolean willRestart;
 
@@ -260,8 +272,14 @@ public abstract class BaseController extends Activity {
 		onBackPressed();
 	}
 
+	public void onAbout(View view){
+
+	}
+
 	private void initTitlebar() {
 		titlebar_btn_left = (Button) findViewById(R.id.titlebar_btn_left);
+		titlebar_left = (LinearLayout) findViewById(R.id.titlebar_left);
+		titlebar_left_version = (Button) findViewById(R.id.title_left_version);
 		titlebar_btn_right = (Button) findViewById(R.id.titlebar_btn_right);
 		titlebar_btn_title = (Button) findViewById(R.id.titlebar_btn_title);
 		String title = getTitlebarTitle();
@@ -299,7 +317,7 @@ public abstract class BaseController extends Activity {
 	}
 
 	protected void setRightButtonVisible() {
-		titlebar_btn_right.setVisibility(View.VISIBLE);
+        titlebar_btn_right.setVisibility(View.VISIBLE);
 	}
 
 	protected void setRightButtonEnabled(boolean enabled) {
@@ -325,7 +343,39 @@ public abstract class BaseController extends Activity {
 	}
 
 	public void setRightButtonTitle(CharSequence title) {
-		titlebar_btn_right.setText(title);
+        if (!TextUtils.isEmpty(title)) {
+
+            titlebar_btn_right.setText(title);
+        } else {
+            String text = getResources().getString(R.string.msg_login);
+            SpannableString spannableString = new SpannableString(text);
+
+            //underline
+            UnderlineSpan underlineSpan = new UnderlineSpan();
+            spannableString.setSpan(underlineSpan, 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            //clickable event
+            spannableString.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+//                    Intent intent = new Intent(BaseController.this, LoginController.class);
+//                    startActivity(intent);
+                    onCall("SettingsIndex.gotoLogin", null);
+                }
+            }, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            //foreground color
+            ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(getResources().getColor(R.color.orange));
+            spannableString.setSpan(foregroundColorSpan, 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            StyleSpan styleSpan = new StyleSpan(Typeface.BOLD_ITALIC);
+            spannableString.setSpan(styleSpan, 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            titlebar_btn_right.setText(spannableString);
+            titlebar_btn_right.setClickable(true);
+            titlebar_btn_right.setEnabled(true);
+            titlebar_btn_right.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 	}
 
 	@Override

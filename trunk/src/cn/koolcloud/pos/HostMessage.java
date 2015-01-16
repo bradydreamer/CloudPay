@@ -80,6 +80,13 @@ public class HostMessage {
 
 	private static void jsMsgInit() {
 		if (jsMsgMap.size() <= 0) {
+			jsMsgMap.put("-1", R.string.alert_msg_negative1);
+			jsMsgMap.put("-2", R.string.alert_msg_negative2);
+			jsMsgMap.put("-3", R.string.alert_msg_negative3);
+			jsMsgMap.put("-4", R.string.alert_msg_negative4);
+			jsMsgMap.put("-5", R.string.alert_msg_negative5);
+			jsMsgMap.put("-6", R.string.alert_msg_negative6);
+			jsMsgMap.put("-7", R.string.alert_msg_negative7);
 			jsMsgMap.put("100", R.string.alert_msg_100);
 			jsMsgMap.put("101", R.string.alert_msg_101);
 			jsMsgMap.put("102", R.string.alert_msg_102);
@@ -152,6 +159,32 @@ public class HostMessage {
 			jsMsgMap.put("170", R.string.alert_msg_170);
 			jsMsgMap.put("171", R.string.alert_msg_171);
 			jsMsgMap.put("172", R.string.alert_msg_172);
+			jsMsgMap.put("173", R.string.alert_msg_173);
+			jsMsgMap.put("174", R.string.alert_msg_174);
+			jsMsgMap.put("175", R.string.alert_msg_175);
+			jsMsgMap.put("176", R.string.alert_msg_176);
+			jsMsgMap.put("177", R.string.alert_msg_177);
+			jsMsgMap.put("178", R.string.alert_msg_178);
+			jsMsgMap.put("179", R.string.alert_msg_179);
+			jsMsgMap.put("180", R.string.alert_msg_180);
+			jsMsgMap.put("181", R.string.alert_msg_181);
+			jsMsgMap.put("182", R.string.alert_msg_182);
+			jsMsgMap.put("183", R.string.alert_msg_183);
+			jsMsgMap.put("184", R.string.alert_msg_184);
+			jsMsgMap.put("185", R.string.alert_msg_185);
+			jsMsgMap.put("186", R.string.alert_msg_186);
+			jsMsgMap.put("187", R.string.alert_msg_187);
+			jsMsgMap.put("188", R.string.alert_msg_188);
+			jsMsgMap.put("189", R.string.alert_msg_189);
+			jsMsgMap.put("190", R.string.alert_msg_190);
+			jsMsgMap.put("191", R.string.alert_msg_191);
+			jsMsgMap.put("192", R.string.alert_msg_192);
+			jsMsgMap.put("201", R.string.alert_msg_201);
+			jsMsgMap.put("202", R.string.alert_msg_202);
+			jsMsgMap.put("203", R.string.alert_msg_203);
+			jsMsgMap.put("204", R.string.alert_msg_204);
+			jsMsgMap.put("205", R.string.alert_msg_205);
+			jsMsgMap.put("206", R.string.alert_msg_206);
 		}
 	}
 

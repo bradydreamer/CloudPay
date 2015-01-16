@@ -3,5 +3,6 @@
     <string-array name="user_grade">
         <item>CASHIER</item>
         <item>SUPERVISOR</item>
+        <item>SPECIALIST</item>
     </string-array>
 </resources>

@@ -204,9 +204,19 @@ Pay.gotoFlow = function() {
 	formData.transType = cacheData.transType;
 	formData.brhKeyIndex = cacheData.brhKeyIndex;
 	formData.misc = cacheData.misc;
+	if(ConsumptionData.dataForPayment.isExternalOrder == true){
+        if(ConsumptionData.dataForExternal.preferential == true){
+            formData.isPreferential = true;
+        }
+	}
 	//window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
-	window.util.showSceneWithSigninChecked(sceneName, formData, flow.desc);
-	cacheData.preScene = sceneName;
+	if(sceneName == "PinPad"){
+        var datalist = [{"pinpad_data": formData}];
+        Scene.setProperty("PayAccount",datalist);
+	}else{
+        window.util.showSceneWithSigninChecked(sceneName, formData, flow.desc);
+        cacheData.preScene = sceneName;
+	}
 
 	function checkExistField(packTag) {
 		if (cacheData[packTag] != null) {

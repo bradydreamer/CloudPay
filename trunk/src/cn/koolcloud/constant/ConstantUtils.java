@@ -4,15 +4,17 @@ public class ConstantUtils {
 
 	public static final String PRINT_TYPE_DEFAULT = "1"; // default print type
 	public static final String PRINT_TYPE_ALIPAY = "02"; // Alipay print type
-	public static final String PRINT_TYPE_ALIPAY_OVER_SEA = "12"; // Alipay over sea print type
-	public static final String PRINT_TYPE_TRANSFER = "11"; // transfer print type
-	public static final String PRINT_TYPE_MISPOS = "03"; // mispos print type
-	public static final String STR_NULL_PIN = "0000000000000000"; // null pin
-																	// block
+    public static final String PRINT_TYPE_MISPOS = "03"; // mispos print type
+    public static final String PRINT_TYPE_WECHAT = "04"; // wechat print type
+    public static final String PRINT_TYPE_ALIPAY_OVER_SEA = "12"; // Alipay over sea print type
+    public static final String PRINT_TYPE_TRANSFER = "11"; // transfer print type
+    public static final String STR_NULL_PIN = "0000000000000000"; // null pin
+    public static final String MISC_ALIPAY = "alipay"; // alipay misc type
+    // block
 																	// string
 	// PIN Mode
 	public static final byte HAVE_PIN = 0x10; // have pin
-	public static final byte NO_PIN = 0x20; // no pin
+    public static final byte NO_PIN = 0x20; // no pin
 
 	public static final byte ENTRY_PREPAID_CARD_QRCODE_MODE = (byte) 0x81;
 	public static final byte ENTRY_PREPAID_COUPON_QRCODE_MODE = (byte) 0x82;
@@ -50,6 +52,7 @@ public class ConstantUtils {
 	// mispos index
 	public static final String IP = "116.228.223.216";
 	public static final int PORT = 10021;
+	public static final String ALLINPAY_INDEX = "92";
 	public static final String MISPOS_INDEX = "90";
 	public static final String MISPOS_MISC = "MIS_TRANSFER";
 	public static final String MISPOS_TRAN_TYPE = "SALE_TRANSFER";
@@ -75,6 +78,8 @@ public class ConstantUtils {
 	public static final String FOR_PRINT_MERCHANT_NAME = "merchantName";
 	public static final String FOR_PRINT_MERCHANT_ID = "merchantID";
 	public static final String FOR_PRINT_MECHINE_ID = "mechineID";
+	public static final String FOR_PRINT_OPERATOR = "operator";
+	public static final String FOR_TYPE_TOTALAMOUNT = "totalAmount";
 	public static final String TAB_TYPE_COUPON = "coupon";
 
 	public static final String ORDER_STATE_SUCCESS = "0";

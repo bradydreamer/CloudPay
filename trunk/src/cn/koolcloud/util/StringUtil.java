@@ -1,5 +1,7 @@
 package cn.koolcloud.util;
 
+import java.io.UnsupportedEncodingException;
+
 public class StringUtil
 {
 	private static final String HexChars = "1234567890abcdefABCDEF";
@@ -229,10 +231,16 @@ public class StringUtil
   */
   public static String toString(byte abyte0[])
   {
-    if(null == abyte0)
-      return null;
-    else
-      return new String(abyte0);
+    if(null == abyte0) {
+        return null;
+    } else {
+        try {
+            return new String(abyte0, "GBK");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return new String(abyte0);
+        }
+    }
   }
 
   public static String[] buffer2Message(String bufferString, int width, int height) 

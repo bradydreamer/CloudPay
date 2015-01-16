@@ -43,7 +43,7 @@ public class PayExScreen extends WelcomeScreen {
 		orderNo = intent.getStringExtra("orderNo");
 
 		if (ACTION_PAY.equalsIgnoreCase(action)) {
-			String pMethod = intent.getStringExtra("pMethod");
+			String actiId = intent.getStringExtra("actiId");
 			String transAmount = intent.getStringExtra("transAmount");
 			String openBrh = intent.getStringExtra("acquId");
 			String paymentId = intent.getStringExtra("paymentId");
@@ -51,12 +51,14 @@ public class PayExScreen extends WelcomeScreen {
 			String orderDesc = intent.getStringExtra("orderDesc");
 			String userName = intent.getStringExtra("userName");
 			String pwd = intent.getStringExtra("pwd");
+			Boolean preferential = intent.getBooleanExtra("preferential",false);
+
 			if (userName == null || pwd == null) {
-				initPay(pMethod, transAmount, openBrh, paymentId, packageName,
-						orderNo, orderDesc);
+				initPay(actiId, transAmount, openBrh, paymentId, packageName,
+						orderNo, orderDesc,preferential);
 			} else {
-				initPay(pMethod, transAmount, openBrh, paymentId, packageName,
-						orderNo, orderDesc, userName, pwd);
+				initPay(actiId, transAmount, openBrh, paymentId, packageName,
+						orderNo, orderDesc,preferential, userName, pwd);
 			}
 			((MyApplication) getApplication()).setPkgName(packageName);
 		} else if (ACTION_REVERSE.equalsIgnoreCase(action)) {
@@ -173,7 +175,9 @@ public class PayExScreen extends WelcomeScreen {
 						endLogin(result);
 					} else if (ACTION_LOGOUT.equalsIgnoreCase(action)) {
 						endLogout(result);
-					}
+					} else if (ACTION_BALANCE.equalsIgnoreCase(action)) {
+                        endBalance(result);
+                    }
 					ClientEngine.engineInstance().getMerchService()
 							.endCallPayEx();
 
@@ -200,30 +204,32 @@ public class PayExScreen extends WelcomeScreen {
 		Log.i(TAG, "onDestroy()");
 	}
 
-	public void initPay(String pMethod, String transAmount, String openBrh,
+	public void initPay(String actiId, String transAmount, String openBrh,
 			String paymentId, String packageName, String orderNo,
-			String orderDesc) {
+			String orderDesc,Boolean preferential) {
 		payInfo = new PayInfo();
-		payInfo.pMethod = pMethod;
+		payInfo.actiId = actiId;
 		payInfo.transAmount = transAmount;
 		payInfo.openBrh = openBrh;
 		payInfo.paymentId = paymentId;
 		payInfo.packageName = packageName;
 		payInfo.orderNo = orderNo;
 		payInfo.orderDesc = orderDesc;
+		payInfo.preferential = preferential;
 	}
 
-	public void initPay(String pMethod, String transAmount, String openBrh,
+	public void initPay(String actiId, String transAmount, String openBrh,
 			String paymentId, String packageName, String orderNo,
-			String orderDesc, String userName, String pwd) {
+			String orderDesc, Boolean preferential,String userName, String pwd) {
 		payInfo = new PayInfo();
-		payInfo.pMethod = pMethod;
+		payInfo.actiId = actiId;
 		payInfo.transAmount = transAmount;
 		payInfo.openBrh = openBrh;
 		payInfo.paymentId = paymentId;
 		payInfo.packageName = packageName;
 		payInfo.orderNo = orderNo;
 		payInfo.orderDesc = orderDesc;
+		payInfo.preferential = preferential;
 		payInfo.userName = userName;
 		payInfo.pwd = pwd;
 
@@ -233,7 +239,8 @@ public class PayExScreen extends WelcomeScreen {
 		Log.d(TAG, "startPay");
 		JSONObject msg = new JSONObject();
 		try {
-			msg.put("payType", payInfo.pMethod);
+			msg.put("actiId", payInfo.actiId);
+			msg.put("preferential",payInfo.preferential);
 			msg.put("transAmount", payInfo.transAmount);
 			if (payInfo.openBrh != null) {
 				msg.put("openBrh", payInfo.openBrh);
@@ -420,6 +427,27 @@ public class PayExScreen extends WelcomeScreen {
 		setResult(RESULT_OK, intent);
 	}
 
+    private void endBalance(JSONObject result) {
+        Log.d(TAG, "endBalance");
+        Intent intent = new Intent();
+
+        intent.putExtra(ACTION, ACTION_BALANCE);
+        String resCode = result.optString("result");
+        String amount = "";
+        if (!TextUtils.isEmpty(resCode) && resCode.equals("2")) {
+            amount = result.optString("totalAmount");
+        }
+
+        Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchant");
+        String operatorName = String.valueOf(map.get("operator"));
+
+        intent.putExtra("result", resCode);
+        intent.putExtra("totalAmount", amount);
+        intent.putExtra("operatorName", operatorName);
+
+        setResult(RESULT_OK, intent);
+    }
+
 	private void startLogin() {
 		JavaScriptEngine js = ClientEngine.engineInstance().javaScriptEngine();
 		js.callJsHandler("External.onLogin", null);
@@ -452,7 +480,7 @@ public class PayExScreen extends WelcomeScreen {
 	}
 
 	private class PayInfo {
-		public String pMethod;
+		public String actiId;
 		public String transAmount;
 		public String openBrh;
 		public String paymentId;
@@ -462,5 +490,6 @@ public class PayExScreen extends WelcomeScreen {
 		public String userName;
 		public String pwd;
 		public String txnId;
+		public Boolean preferential;
 	}
 }

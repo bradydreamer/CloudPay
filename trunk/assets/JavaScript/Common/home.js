@@ -210,6 +210,24 @@
 	      });
 	}
 
+	function startWriteBackAPMP() {
+        //start batch task to write back --start add by Teddy on December 26th.
+        ConsumptionData.startProcessBatchTasks();
+		//start batch task to write back --end add by Teddy on December 26th.
+	}
+
+
+    //download bank data from APMP
+    function downloadBankData() {
+        var req = {
+            "action": "dict/issuer/list"
+        };
+        Net.asynConnect("dict/issuer/list", req, getBankDataCallBack);
+
+        function getBankDataCallBack(data) {
+            window.Database.saveBankData(data);
+        }
+    }
 
 	window.Home = {
 		"onShow": onShow,
@@ -218,7 +236,9 @@
 		"onClickBtnTransManage": onClickBtnTransManage,
 		"onClickMultiPay": onClickMultiPay,
 		"checkSessionByEchoTest": checkSessionByEchoTest,
-		"sessionTimeOut": sessionTimeOut
+		"sessionTimeOut": sessionTimeOut,
+		"startWriteBackAPMP": startWriteBackAPMP,
+		"downloadBankData" : downloadBankData
 	};
 	Home.needVerifyVersion = true;
 	Home.needUpdateUI = true;

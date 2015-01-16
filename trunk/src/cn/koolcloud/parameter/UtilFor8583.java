@@ -34,6 +34,8 @@ public class UtilFor8583 implements Constant {
 	public String alipayPID = ""; // 支付宝 PID F40 6F22
 	public String alipayAccount = ""; // 支付宝账户 F40 6F26
 	public String alipayTransactionID = "";// 支付宝交易号 F40 6F27
+	public String alipayResMsg = "";// 支付宝交易错误信息 F40 6F31
+	public String statusQueryRes = ""; //交易状态查询 F40,6F32
 
 	public TransDetailInfo trans = new TransDetailInfo();
 
@@ -86,13 +88,22 @@ public class UtilFor8583 implements Constant {
 		currentSecond = mCalendar.get(Calendar.SECOND);
 	}
 
-	public void setYear(int year) {
+    public String getAlipayResMsg() {
+        return alipayResMsg;
+    }
+
+    public void setAlipayResMsg(String alipayResMsg) {
+        this.alipayResMsg = alipayResMsg;
+    }
+
+    public void setYear(int year) {
 		mCalendar.set(Calendar.YEAR, year);
 		long when = mCalendar.getTimeInMillis();
 		if (when / 1000 < Integer.MAX_VALUE) {
 			// SystemClock.setCurrentTimeMillis(when);TODO
 		}
 		getCurrentDateTime();
+
 	}
 
 	public void setDateTime(int month, int day, int hour, int minute, int second) {

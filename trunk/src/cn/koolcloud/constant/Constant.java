@@ -13,6 +13,8 @@ public interface Constant {
 			(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05,
 			(byte) 0x06, (byte) 0x07, (byte) 0x08 };
 
+    final byte TAB_CMDS[] = new byte[] { 0x1B, (byte) 0x44, 0x0D, ((byte) (0x13/* 09*3 */)), 0x00 };
+
 	/*-------APMP TRANS TYPES------------------------------------*/
 	final String APMP_TRAN_PREAUTH = "1011";
 	final String APMP_TRAN_CONSUME = "1021";
@@ -28,6 +30,7 @@ public interface Constant {
 	final String APMP_TRAN_BATCHSETTLE = "8031";
 	final String APMP_TRAN_BALANCE = "1041";
 	final String APMP_TRAN_SUPER_TRANSFER = "1721";
+	final String APMP_TRANS_STATUS_QUERY = "4651";
 
 	/*-----  TRANSACTION TYPES  ---------------------------------*/
 	final byte TRAN_BALANCE = 0; // 余额查询
@@ -132,6 +135,8 @@ public interface Constant {
 	final byte TRAN_AUTH_COMPLETE_CANCEL_REVERSAL = 75;
 	
 	final byte TRAN_SUPER_TRANSFER = 76;
+
+	final byte TRAN_STATUS_QUERY = 77;
 
 	// 自定义交易
 

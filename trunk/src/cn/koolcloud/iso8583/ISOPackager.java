@@ -639,7 +639,8 @@ public class ISOPackager implements Constant {
 					|| appState.trans.getTransType() == TRAN_AUTH_REVERSAL
 					|| appState.trans.getTransType() == TRAN_AUTH_CANCEL_REVERSAL
 					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_REVERSAL
-					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL) {
+					|| appState.trans.getTransType() == TRAN_AUTH_COMPLETE_CANCEL_REVERSAL
+					|| appState.trans.getTransType() == TRAN_STATUS_QUERY) {
 
 				F60_last += "0"; // 60.5
 
@@ -660,7 +661,8 @@ public class ISOPackager implements Constant {
 					|| appState.trans.getTransType() == TRAN_REVOCATION_REVERSAL
 					|| appState.trans.getTransType() == TRAN_VOID
 					|| appState.trans.getTransType() == TRAN_REFUND
-					|| appState.trans.getTransType() == TRAN_BALANCE) {
+					|| appState.trans.getTransType() == TRAN_BALANCE
+					|| appState.trans.getTransType() == TRAN_STATUS_QUERY) {
 
 				F60_last += "99";
 				F60_Length += 2;
@@ -2667,6 +2669,8 @@ public class ISOPackager implements Constant {
 		String alipayPId = "";
 		String alipayAccount = "";
 		String alipayTransactionID = "";
+		String alipayResMsg = "";
+		String statusQueryRes = "";
 
 		for (String s : strs) {
 			if (s.length() < 2) {
@@ -2697,6 +2701,12 @@ public class ISOPackager implements Constant {
 			} else if (flag.equals("27")) {
 				alipayTransactionID = s.substring(8);
 				continue;
+			} else if (flag.equals("31")) {
+                alipayResMsg = s.substring(8);
+                continue;
+            } else if(flag.equals("32")){
+				statusQueryRes = s.substring(8);
+				continue;
 			}
 		}
 		appState.payOrderBatch = payOrderBatch;
@@ -2707,5 +2717,7 @@ public class ISOPackager implements Constant {
 		appState.alipayPID = alipayPId;
 		appState.alipayAccount = alipayAccount;
 		appState.alipayTransactionID = alipayTransactionID;
+        appState.alipayResMsg = alipayResMsg;
+		appState.statusQueryRes = statusQueryRes;
 	}
 }

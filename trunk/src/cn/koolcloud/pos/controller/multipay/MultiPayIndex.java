@@ -13,6 +13,8 @@ public class MultiPayIndex extends BaseHomeController {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setLeftButtonHidden();
+		setTitle(getTitlebarTitle());
 		onCall("Home.updateTransInfo", null);
 	}
 	//restart update trans info on 23th May -- end
@@ -25,6 +27,12 @@ public class MultiPayIndex extends BaseHomeController {
 		onCall("MultiPay.onClickRecord", null);
 	}
 
+	@Override
+	protected  void setLeftButton(int resourceId) {
+	}
+	@Override
+	protected void setTitleHidden() {
+	}
 	@Override
 	protected void onResume() {
 		onCall("MultiPay.resumeMultiPayTag", null);

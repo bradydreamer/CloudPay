@@ -35,10 +35,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.jni.LedInterface;
 import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.UtilFor8583;
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
 import cn.koolcloud.pos.controller.BaseController;
@@ -47,6 +50,7 @@ import cn.koolcloud.pos.external.CardSwiper.CardSwiperListener;
 import cn.koolcloud.pos.external.CodeScanner;
 import cn.koolcloud.pos.external.CodeScanner.CodeScannerListener;
 import cn.koolcloud.pos.external.EMVICManager;
+import cn.koolcloud.pos.external.PinPadManager;
 import cn.koolcloud.pos.external.SoundWave;
 import cn.koolcloud.pos.external.SoundWave.SoundWaveListener;
 import cn.koolcloud.pos.util.Env;
@@ -85,6 +89,7 @@ public class PayAccountController extends BaseController implements
 	protected String func_nearfieldAccount;
 	protected String func_icSwipeCard;
 	private String transType;
+	protected String keyIndex;
 	private boolean removeJSTag = true;
 
 	private String misc;
@@ -101,6 +106,7 @@ public class PayAccountController extends BaseController implements
 	private Boolean needPwd = false;
 	private Boolean backEnable = true;
 	private Boolean scanerStarted = false;
+	private Boolean isPreferential = false;
 
 	// muilti info bar components
 	private RelativeLayout barTitleLayout;
@@ -135,9 +141,12 @@ public class PayAccountController extends BaseController implements
 	private final String APMP_TRAN_BATCHSETTLE = "8031";
 
 	private String transAmount;
+	private String transAmountIC;
 	// private Typeface faceTypeLanTing;
 
 	private JSONObject data;
+	private JSONObject pinpad_transData;
+	private UtilFor8583 util8583 = UtilFor8583.getInstance();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +179,8 @@ public class PayAccountController extends BaseController implements
 
 		setCurrentNumberEditText(et_id);
 		ic_swiper_guide_text = (TextView) findViewById(R.id.pay_account_swiper_ic_text_guide);
+		keyIndex = data.optString("brhKeyIndex","00");
+		util8583.terminalConfig.setKeyIndex(keyIndex);
 		transType = data.optString("transType");
 		misc = data.optString("misc");
 		icswiper_img = (ImageView) findViewById(R.id.icswiper_img);
@@ -182,12 +193,14 @@ public class PayAccountController extends BaseController implements
 		} else {
 			transAmount = data.optString("transAmount");
 		}
+		transAmountIC = data.optString("transAmount");
 		amountTextView.setText(transAmount + "("+ Env.getCurrencyResource(this)+")");
 
 		func_swipeCard = data.optString("swipeCard");
 		func_inputAccount = data.optString("inputAccount");
 		func_nearfieldAccount = data.optString("nearfieldAccount");
 		func_icSwipeCard = data.optString("icSwipeCard");
+		isPreferential = data.optBoolean("isPreferential",false);
 
         previewFrameLayout = (FrameLayout) findViewById(R.id.scanner_zb);
 		zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
@@ -222,7 +235,7 @@ public class PayAccountController extends BaseController implements
 		findViews();
         initCameraSettings();
         initZbarLib();
-		setTitle(formData.optString(getString(R.string.formData_key_title)));
+		setTitle(HostMessage.getJsMsg(formData.optString(getString(R.string.formData_key_title))));
 	}
 
     private void initCameraSettings() {
@@ -275,8 +288,8 @@ public class PayAccountController extends BaseController implements
 		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
 		// acquireMerchNameTextView.setTypeface(faceTypeLaTing);
 		// check print type
-		String printType = data.optString("printType");
-		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+		String misc = data.optString("misc");
+		if (misc.equals(ConstantUtils.MISC_ALIPAY)) {
 			acquireMerchNameTextView.setText(getResources().getString(
 					R.string.bar_acquire_merch_msg_pid));
 		}
@@ -284,7 +297,7 @@ public class PayAccountController extends BaseController implements
 		// acquireMerchNumTextView.setTypeface(faceTypeLanTing);
 		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
 		acquireTerminalTextView = (TextView) findViewById(R.id.acquireTerminalTextView);
-		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+		if (misc.equals(ConstantUtils.MISC_ALIPAY)) {
 			acquireTerminalTextView.setText(getResources().getString(
 					R.string.bar_acquire_terminal_msg_beneficiary_account_no));
 		}
@@ -361,14 +374,41 @@ public class PayAccountController extends BaseController implements
 	@Override
 	public void setProperty(JSONArray data) {
 		JSONObject jsonObj = data.optJSONObject(0);
-		Boolean closeTag = jsonObj.optBoolean("close");
+		Boolean closeTag = jsonObj.optBoolean("close",false);
+		Boolean isICPreferential = jsonObj.optBoolean("isICPreferential",false);
+		String changedAmount = jsonObj.optString("changedAmount","0");
+		pinpad_transData = jsonObj.optJSONObject("pinpad_data");
 		if (closeTag) {
-			onStopReadICData();// 停止IC卡读取功能
+			// 停止IC卡读取功能
+			if(isPreferential) {
+				onStopReadICCardId();
+			}else {
+				onStopReadICData();
+			}
 		} else {
-			ic_swiper_guide_text.setText("请插入IC卡！");
-			Drawable icDrawable = getResources().getDrawable(
-					R.drawable.start_ic);
-			icswiper_img.setImageDrawable(icDrawable);
+			if(isICPreferential){
+				//之所以在这个地方进行finish,是为了防止在弹出dialog时，拔出卡时，没有状态显示。
+				onStopReadICCardId();
+				transAmountIC = changedAmount;
+				onStartReadICData();
+			}else if(pinpad_transData != null) {
+				needPwd = true;
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText(getResources().getString(R.string.pay_account_tag_input_password));
+				//needPwd = true;
+				Drawable icDrawable = getResources().getDrawable(
+						R.drawable.pin_pad_tv_input_pwd_bg);
+				icswiper_img.setImageDrawable(icDrawable);
+				PinPadManager ppm = PinPadManager.getInstance();
+				ppm.setParams(this,pinpad_transData,mHandler);
+				ppm.start();
+			}else{
+				ic_swiper_guide_text.setText(getResources().getString(R.string.pay_account_input_ic_guide));
+				Drawable icDrawable = getResources().getDrawable(
+						R.drawable.start_ic);
+				icswiper_img.setImageDrawable(icDrawable);
+			}
 		}
 
 	}
@@ -440,7 +480,11 @@ public class PayAccountController extends BaseController implements
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_swiper.setVisibility(View.VISIBLE);
 			onStartSwiper();
-			onStartReadICData();
+			if(isPreferential) {
+				onStartReadICCardId();
+			}else {
+				onStartReadICData();
+			}
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
 			onStopReadICData();
 			onStopSwiper();
@@ -473,7 +517,7 @@ public class PayAccountController extends BaseController implements
 			case EMVICManager.STATUS_VALUE_0: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("IC卡已插入，正在处理，请勿拔卡！");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_1));
 				Drawable icDrawable = getResources().getDrawable(
 						R.drawable.start_ic);
 				icswiper_img.setImageDrawable(icDrawable);
@@ -485,11 +529,11 @@ public class PayAccountController extends BaseController implements
 				if (needPwd) {
 					ic_swiper_guide_text.setTextColor(getResources().getColor(
 							R.color.red));
-					ic_swiper_guide_text.setText("IC卡已拔出！请点击密码键盘上的取消键！");
+					ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_2));
 				} else {
 					ic_swiper_guide_text.setTextColor(getResources().getColor(
 							R.color.blue));
-					ic_swiper_guide_text.setText("IC卡已拔出！");
+					ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_3));
 				}
 				Drawable icDrawable = getResources().getDrawable(
 						R.drawable.start_icswiper);
@@ -505,7 +549,7 @@ public class PayAccountController extends BaseController implements
 			case EMVICManager.STATUS_VALUE_4: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("密码获取中，请勿拔卡");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_4));
 				needPwd = true;
 				Drawable icDrawable = getResources().getDrawable(
 						R.drawable.pin_pad_tv_input_pwd_bg);
@@ -515,44 +559,47 @@ public class PayAccountController extends BaseController implements
 			case EMVICManager.TRADE_STATUS_0:
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_5));
 				break;
 			case EMVICManager.TRADE_STATUS_1:
 				onStopSwiper();// 停止刷卡功能
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_6));
 				break;
 			case EMVICManager.TRADE_STATUS_2:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡...");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_7));
 				break;
 			case EMVICManager.TRADE_STATUS_3:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_5));
 				break;
 			case EMVICManager.TRADE_STATUS_4:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_6));
 				break;
 			case EMVICManager.TRADE_STATUS_5:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡...");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_7));
 				break;
 			case EMVICManager.TRADE_STATUS_6:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.  ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_5));
 				break;
 			case EMVICManager.TRADE_STATUS_7:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡.. ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_6));
 				break;
 			case EMVICManager.TRADE_STATUS_8:
-				ic_swiper_guide_text.setText("交易处理中，请勿拔卡...");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_7));
 				break;
 			case EMVICManager.TRADE_STATUS_9:
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.red));
-				ic_swiper_guide_text.setText("请先点击密码键盘上的“取消”按键！  ");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_8));
+				break;
+			case EMVICManager.TRADE_STATUS_10:
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_14));
 				break;
 			case EMVICManager.TRADE_STATUS_BAN: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("交易拒绝!");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_9));
 				needPwd = false;
 				JSONObject transData = new JSONObject();
 				try {
@@ -568,7 +615,7 @@ public class PayAccountController extends BaseController implements
 			case EMVICManager.TRADE_STATUS_ABORT: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("交易中止,请拔卡");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_10));
 				needPwd = false;
 				JSONObject transData = new JSONObject();
 				try {
@@ -584,14 +631,14 @@ public class PayAccountController extends BaseController implements
 			case EMVICManager.TRADE_STATUS_APPROVED:
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("交易批准!");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_11));
 				needPwd = false;
 				break;
 			case EMVICManager.TRADE_STATUS_DISABLESERVICE: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
 				needPwd = false;
-				ic_swiper_guide_text.setText("不允许服务，交易中止，请取卡!");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_12));
 				JSONObject transData = new JSONObject();
 				try {
 					transData.put("isCancelled", true);
@@ -606,7 +653,7 @@ public class PayAccountController extends BaseController implements
 			case EMVICManager.TRADE_STATUS_ONLINE:
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
 						R.color.blue));
-				ic_swiper_guide_text.setText("正在联机，请勿拔卡...");
+				ic_swiper_guide_text.setText(getResources().getString(R.string.ic_status_insert_warning_13));
 				needPwd = false;
 				break;
 			case EMVICManager.TRADE_STATUS_AFGETICDATA: {
@@ -627,6 +674,42 @@ public class PayAccountController extends BaseController implements
 				onCall(func_icSwipeCard, transData);
 				break;
 			}
+			case EMVICManager.TRADE_STATUS_READICCARDID:{
+				EMVICData mEMVICData = EMVICData.getEMVICInstance();
+				emvManager.getPAN();
+				String pan = mEMVICData.getICPan();
+				JSONObject sendMsg = new JSONObject();
+				try {
+					sendMsg.put("ICCardID",pan);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				onCall("PayAccount.isPreferential",sendMsg);
+				break;
+			}
+			case PinPadManager.MODE_INPUT_AUTH_CODE:
+				ic_swiper_guide_text.setTextColor(getResources().getColor(
+						R.color.blue));
+				ic_swiper_guide_text.setText(getResources().getString(R.string.pin_pad_tv_java_input_authCode));
+				//needPwd = true;
+				Drawable icDrawable = getResources().getDrawable(
+						R.drawable.pin_pad_tv_input_pwd_bg);
+				icswiper_img.setImageDrawable(icDrawable);
+				break;
+			case PinPadManager.MODE_PAY_NEXT:
+				Bundle bd = msg.getData();
+				String pwd = bd.getString("pwd", null);
+				Boolean isCancelled = bd.getBoolean("isCancelled",false);
+				String authCode = bd.getString("authCode",null);
+				try {
+					pinpad_transData.put("pwd",pwd);
+					pinpad_transData.put("isCancelled",isCancelled);
+					pinpad_transData.put("authCode",authCode);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				onCall("PayAccount.CompleteInput",pinpad_transData);
+				break;
 			default:
 				break;
 			}
@@ -707,10 +790,27 @@ public class PayAccountController extends BaseController implements
 	private void onStartReadICData() {
 		if (emvManager == null) {
 			emvManager = EMVICManager.getEMVICManagerInstance();
-			emvManager.setTransAmount(data.optString("transAmount"));
+			emvManager.setTransAmount(transAmountIC);
 			emvManager.onCreate(this, mHandler);
 		}
 		emvManager.onStart();
+	}
+
+	private void onStartReadICCardId(){
+		if (emvManager == null) {
+			emvManager = EMVICManager.getEMVICManagerInstance();
+			emvManager.onCreate(this, mHandler);
+			emvManager.initForRead();
+		}
+		emvManager.onStart();
+
+	}
+
+	private void onStopReadICCardId(){
+		if (emvManager != null) {
+			emvManager.finishRead();
+			emvManager = null;
+		}
 	}
 
 	/**
@@ -906,7 +1006,13 @@ public class PayAccountController extends BaseController implements
 		onCall(func_swipeCard, msg);
 	}
 
-	@Override
+    @Override
+    public void onRecvTrackDataError(int resCode, int trackIndex) {
+        String reSwiptCardStr = getResources().getString(R.string.msg_swipe_card_error);
+        Toast.makeText(this, reSwiptCardStr, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
 	public void onRecvData(byte[] receivedBytes) {
 		Log.d(TAG, "receivedBytes length : " + receivedBytes.length);
 		int analyzingIndex = 0;

@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import cn.koolcloud.pos.ClientEngine;
@@ -11,7 +12,7 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
 
-public class ModifyPWDController extends BaseController {
+public class ModifyPWDController extends BaseController implements View.OnKeyListener {
 
 	private boolean removeJSTag = true;
 	private EditText origPwd = null;
@@ -24,6 +25,7 @@ public class ModifyPWDController extends BaseController {
 		origPwd = (EditText) findViewById(R.id.orignalPwdTextView);
 		firstNewPwd = (EditText) findViewById(R.id.firstPwdTextView);
 		secondNewPwd = (EditText) findViewById(R.id.secondPwdTextView);
+        secondNewPwd.setOnKeyListener(this);
 	}
 
 	@Override
@@ -62,6 +64,14 @@ public class ModifyPWDController extends BaseController {
 		}
 		onCall("ModifyPwd.gotoModifyPwd", msg);
 	}
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            onClickBtnOK(view);
+        }
+        return false;
+    }
 
 	@Override
 	protected void setControllerContentView() {

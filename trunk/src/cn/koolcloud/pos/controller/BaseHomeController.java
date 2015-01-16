@@ -9,13 +9,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -34,12 +39,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import cn.koolcloud.APDefine;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
+import cn.koolcloud.pos.controller.dialogs.AboutDialog;
 import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForMoney;
@@ -49,6 +57,10 @@ import cn.koolcloud.util.NumberUtil;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
 public abstract class BaseHomeController extends BaseController {
 
@@ -84,9 +96,24 @@ public abstract class BaseHomeController extends BaseController {
 	private boolean isPaymentClicked = false;
 	private String typeId = null;
 
-	DisplayImageOptions options = new DisplayImageOptions.Builder()
-			.cacheInMemory(true).cacheOnDisc(true)
-			.bitmapConfig(Bitmap.Config.RGB_565).build();
+    private final Random random = new Random(System.nanoTime());
+    private String[] imageUrl = new String[] {
+        "http://g.hiphotos.baidu.com/image/pic/item/caef76094b36acaf38f6feee7fd98d1001e99c89.jpg",
+        "http://f.hiphotos.baidu.com/image/pic/item/2fdda3cc7cd98d109c8ae32c223fb80e7bec9055.jpg",
+        "http://e.hiphotos.baidu.com/image/w%3D1366%3Bcrop%3D0%2C0%2C1366%2C768/sign=a5f8b2cdc1cec3fd8b3ea376e0beef5c/f11f3a292df5e0fe85cfc6005e6034a85fdf72df.jpg",
+        "http://h.hiphotos.baidu.com/image/pic/item/fd039245d688d43fb0c332ff7f1ed21b0ef43b50.jpg",
+        "http://a.hiphotos.baidu.com/image/w%3D1366%3Bcrop%3D0%2C0%2C1366%2C768/sign=22083df9d63f8794d3ff4c2de42d3597/bd315c6034a85edf3dfc20624b540923dd54757b.jpg",
+        "http://a.hiphotos.baidu.com/image/w%3D1366%3Bcrop%3D0%2C0%2C1366%2C768/sign=9b7e72198f1001e94e3c100c8e38408f/bf096b63f6246b6034818984e9f81a4c500fa2b6.jpg",
+        "http://c.hiphotos.baidu.com/image/w%3D1366%3Bcrop%3D0%2C0%2C1366%2C768/sign=6cb994055143fbf2c52ca2208648f1e3/f603918fa0ec08fafbd8a2aa5bee3d6d54fbdae7.jpg",
+        "http://c.hiphotos.baidu.com/image/w%3D1366%3Bcrop%3D0%2C0%2C1366%2C768/sign=6525fcf1452309f7e76fa91144383790/728da9773912b31b9a3e244c8518367adab4e101.jpg",
+        "http://pic21.nipic.com/20120521/9557683_220151609163_2.jpg",
+        "http://news.xinhuanet.com/photo/2006-04/12/xinsrc_012040312110587525257163.jpg",
+        "http://c.hiphotos.baidu.com/image/pic/item/8694a4c27d1ed21b44759cf6af6eddc451da3f60.jpg"
+    };
+
+    BitmapFactory.Options resizeOptions = new BitmapFactory.Options();
+
+	DisplayImageOptions options = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +131,29 @@ public abstract class BaseHomeController extends BaseController {
 		// start update trans info after devices checking on 23th May -- start
 		// onCall("Home.updateTransInfo", null);
 		// start update trans info after devices checking on 23th May -- end
+
+        resizeOptions.inSampleSize = 3; // decrease size 3 times
+        resizeOptions.inScaled = true;
+
+        options = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .showImageOnLoading(R.drawable.logo_default)
+                .showImageForEmptyUri(R.drawable.logo_default)
+                .showImageOnFail(R.drawable.logo_default)
+                .considerExifParams(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .decodingOptions(resizeOptions)
+                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                .displayer(new FadeInBitmapDisplayer(100))
+                .postProcessor(new BitmapProcessor() {
+                    @Override
+                    public Bitmap process(Bitmap bmp) {
+                        return Bitmap.createScaledBitmap(bmp, 148, 148, false);
+                    }
+                })
+//                .displayer(new RoundedBitmapDisplayer(20))
+                .build();
 	}
 
 	protected void initHomeTitlebar() {
@@ -125,11 +175,26 @@ public abstract class BaseHomeController extends BaseController {
 		titlebar_btn_left.setText(getTitlebarTitle());
 		titlebar_btn_left.setVisibility(View.VISIBLE);
 		titlebar_btn_left.setBackgroundDrawable(null);
+		PackageManager pm = getPackageManager();
+		PackageInfo pinfo = null;
+		try {
+			pinfo = pm.getPackageInfo(getPackageName(), PackageManager.GET_CONFIGURATIONS);
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		String versionCode = pinfo.versionName;
+		titlebar_left_version.setText(versionCode);
+		titlebar_left_version.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void onClickLeftButton(View view) {
-
+		onAbout(view);
+	}
+	@Override
+	public void onAbout(View view){
+		Intent mIntent = new Intent(this, AboutDialog.class);
+		startActivity(mIntent);
 	}
 
 	@Override
@@ -501,7 +566,10 @@ public abstract class BaseHomeController extends BaseController {
 		if (imageName.startsWith("http")) {
 			ImageLoader.getInstance().displayImage(imageName, iv, options);
 		} else {
-			if (imageName.startsWith("logo_ec")) {
+//            ImageLoader.getInstance().displayImage(imageUrl[random.nextInt(10) + 1], iv, options);
+            String imageUrl = APDefine.APPSERVER + imageName;
+            ImageLoader.getInstance().displayImage(imageUrl, iv, options);
+			/*if (imageName.startsWith("logo_ec")) {
 				iv.setImageResource(R.drawable.logo_ec);
 			} else if (imageName.startsWith("logo_cp")) {
 				iv.setImageResource(R.drawable.logo_cp);
@@ -591,7 +659,13 @@ public abstract class BaseHomeController extends BaseController {
 				iv.setImageResource(R.drawable.wing_on);
 			} else if (imageName.startsWith("logo_transfer_fufeitong")) {
                 iv.setImageResource(R.drawable.logo_fufeitong_transfer);
-            }
+            } else if (imageName.startsWith("logo_ctrip")) {
+                iv.setImageResource(R.drawable.logo_ctrip);
+            } else if (imageName.startsWith("logo_helpu")) {
+                iv.setImageResource(R.drawable.logo_helpu);
+            } else if (imageName.startsWith("logo_baidu")) {
+                iv.setImageResource(R.drawable.logo_baidu);
+            }*/
 		}
 	}
 
@@ -617,6 +691,13 @@ public abstract class BaseHomeController extends BaseController {
 				indexNo = tagObj.getString("brhKeyIndex");
 				if (!indexNo.equals("")) {
 					util8583.terminalConfig.setKeyIndex(indexNo);
+
+                    if (indexNo.equals(ConstantUtils.ALLINPAY_INDEX)) {
+                        util8583.terminalConfig.setTPDU(APDefine.TPDU_ALLINPAY);
+                    } else {
+                        util8583.terminalConfig.setTPDU(APDefine.TPDU);
+                    }
+
 					tranType = tagObj.getString(MisposController.KEY_TRAN_TYPE);
 					paymentId = tagObj.getString("paymentId");
 					typeId = tagObj.getString("typeId");

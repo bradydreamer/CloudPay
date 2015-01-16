@@ -1,12 +1,12 @@
 package cn.koolcloud.control;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,12 +25,13 @@ import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ISO8583Engine;
 import cn.koolcloud.pos.MyApplication;
-import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.Utility;
+import cn.koolcloud.pos.entity.ConsumptionRecordBean;
 import cn.koolcloud.pos.external.CardSwiper;
 import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.util.UtilForDataStorage;
-import cn.koolcloud.printer.PrinterException;
+import cn.koolcloud.pos.util.UtilForJSON;
+import cn.koolcloud.printer.exception.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
 import cn.koolcloud.util.ByteUtil;
 import cn.koolcloud.util.DateUtil;
@@ -611,6 +612,48 @@ public class ISO8583Controller implements Constant {
 					ISOField.F64_MAC };
 		}
 		// fix no pin block end
+
+		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
+		return mapAndPack(jsonObject, bitMap);
+	}
+
+	/**
+	 * 交易状态查询
+	 *
+	 * @param iso8583
+	 *            原交易报文记录
+	 * @param jsonObject
+	 *            参数集合
+	 * @return
+	 */
+	public boolean statusQuery(byte[] iso8583, JSONObject jsonObject) {
+		paramer.trans.setTransType(TRAN_STATUS_QUERY);
+		paramer.trans.setApmpTransType(this.APMP_TRANS_STATUS_QUERY);
+//		paramer.trans.setExpiry(jsonObject.optString("validTime"));
+		// fix no pin block original start
+		/*
+		 * int[] bitMap = { ISOField.F02_PAN,
+		 * ISOField.F03_PROC,ISOField.F04_AMOUNT, ISOField.F11_STAN,
+		 * ISOField.F14_EXP, ISOField.F22_POSE, ISOField.F23, ISOField.F25_POCC,
+		 * ISOField.F26_CAPTURE, ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+		 * ISOField.F37_RRN, ISOField.F38_AUTH, ISOField.F40, ISOField.F41_TID,
+		 * ISOField.F42_ACCID, ISOField.F49_CURRENCY, ISOField.F52_PIN,
+		 * ISOField.F53_SCI, ISOField.F55_ICC, ISOField.F60, ISOField.F61,
+		 * ISOField.F64_MAC };
+		 */
+		// fix no pin block original end
+
+		// fix no pin block start
+		int[] bitMap = null;
+		paramer.trans.setPinMode(ConstantUtils.NO_PIN);
+		bitMap = new int[] { ISOField.F02_PAN, ISOField.F03_PROC,
+				ISOField.F04_AMOUNT, ISOField.F11_STAN,
+				ISOField.F22_POSE, ISOField.F25_POCC,
+				ISOField.F35_TRACK2, ISOField.F36_TRACK3,
+				ISOField.F37_RRN, ISOField.F40,
+				ISOField.F41_TID, ISOField.F42_ACCID,
+				ISOField.F49_CURRENCY,
+				ISOField.F60, ISOField.F61, ISOField.F64_MAC };
 
 		jsonObject = updateMapFromOldTrans(iso8583, jsonObject);
 		return mapAndPack(jsonObject, bitMap);
@@ -1641,10 +1684,19 @@ public class ISO8583Controller implements Constant {
 		oldTrans.setPaymentId(paymentId);
         oldTrans.setTxnId(txnId);
 
+        //set from tag
+        String fromTag = jsonObject.optString("from");
+        if (!TextUtils.isEmpty(fromTag) && fromTag.equals("recordList")) {
+            oldTrans.setPrintFromTag(fromTag);
+        }
+
 		if (!TextUtils.isEmpty(printType)
 				&& printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
 			PrinterHelper.getInstance(context).printQRCodeReceipt(oldTrans);
 		} else if (!TextUtils.isEmpty(printType)
+                && printType.equals(ConstantUtils.PRINT_TYPE_WECHAT)) {
+            PrinterHelper.getInstance(context).printWeChatReceipt(oldTrans);
+        } else if (!TextUtils.isEmpty(printType)
                 && printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY_OVER_SEA)) {
             PrinterHelper.getInstance(context).printQRCodeOverSeaReceipt(oldTrans);
         } else if (!TextUtils.isEmpty(printType) && printType.equals(ConstantUtils.PRINT_TYPE_TRANSFER)) {
@@ -1653,6 +1705,28 @@ public class ISO8583Controller implements Constant {
 			PrinterHelper.getInstance(context).printReceipt(oldTrans);
 		}
 	}
+
+    public void printRecord(JSONObject jsonObject, Context context) throws PrinterException {
+
+        // get merchant name
+        Map<String, ?> merchMap = UtilForDataStorage.readPropertyBySharedPreferences(context, "merchant");
+        ConsumptionRecordBean record = new ConsumptionRecordBean();
+        if (null != merchMap) {
+            record.setMerchName(String.valueOf(merchMap.get("merchName")));
+            record.setMerchNo(String.valueOf(merchMap.get("merchId")));
+            record.setTerId(String.valueOf(merchMap.get("tID")));
+            record.setBatchNo(String.valueOf(merchMap.get("batchId")));
+            record.setOperator(jsonObject.optString("ioperator"));
+            record.setPrintTime(DateUtil.formatDate(new Date()));
+        }
+        int totalSize = jsonObject.optInt("totalSize");
+        if (totalSize > 0) {
+            JSONArray itemArray = jsonObject.optJSONArray("recordList");
+            record.setSummaryMap(UtilForJSON.parseRecordSummary(itemArray));
+        }
+
+        PrinterHelper.getInstance(context).printRecord(record, jsonObject);
+    }
 
 	public String getErrorType() {
 		return errorType;
@@ -1711,6 +1785,30 @@ public class ISO8583Controller implements Constant {
 			return null;
 		} else {
 			return paymentId;
+		}
+	}
+
+	public String getOldRrn(){
+		String rrn = null;
+		if(paramer.oldTrans != null) {
+			rrn = paramer.oldTrans.getOldApOrderId();
+			if (TextUtils.isEmpty(rrn)) {
+				rrn = null;
+				return rrn;
+			} else {
+				return rrn;
+			}
+		}else{
+			return rrn;
+		}
+	}
+
+	public String getStatusResCode(){
+		String resCode = paramer.statusQueryRes;
+		if(resCode.equals("")){
+			return null;
+		}else{
+			return resCode;
 		}
 	}
 

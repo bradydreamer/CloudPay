@@ -10,55 +10,45 @@
 	    tools:context=".ConsumptionRecordController"
 	    android:layout_margin="20dp"
 	    android:orientation="vertical" >
-	
-	    <!-- <LinearLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="60dp"
-	        android:background="@drawable/listview_title_background"
-
-	        android:layout_marginLeft="20dp"
-	        android:layout_marginRight="20dp"
-	        android:layout_marginTop="20dp"
-	        android:orientation="horizontal"
-	        >
-	
-	        <TextView 
-	            android:layout_width="@dimen/listview_elements_small_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_transType"
-	            />
-	        <TextView 
-	            android:layout_width="@dimen/listview_elements_large_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_payType"
-	            />
-	         <TextView 
-	            android:layout_width="@dimen/listview_elements_large_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_rrn"
-	            />
-	         <TextView 
-	            android:layout_width="@dimen/listview_elements_small_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_transDate"
-	            /> 
-	        <TextView 
-	            android:layout_width="@dimen/listview_elements_small_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_transTime"
-	            />
-	        <TextView 
-	            android:layout_width="@dimen/listview_elements_large_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_transAmount"
-	            />
-	        <TextView 
-	            android:layout_width="@dimen/listview_elements_small_width"
-	            style="@style/consumption_record_listTitle"
-	            android:text="@string/consumption_record_tv_orderStatus"
-	            />
-	        
-	    </LinearLayout> -->
+        <LinearLayout
+            android:id="@+id/printerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:text="@string/merchant_info_tv_operator"
+                android:gravity="center_vertical"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/merchant_info_cloud_text_size" />
+            <Spinner
+                android:id="@+id/operatorSpinner"
+                android:layout_width="130dp"
+                android:layout_height="45dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="right"
+                android:layout_marginLeft="10dp"
+                style="@android:style/Widget.Holo.Spinner"
+                android:layout_marginRight="10dp"
+                android:textStyle="bold|italic"
+                android:textAlignment="center"
+                android:popupBackground="@color/lv_row_bg_gray_default" />
+            <Button
+                android:id="@+id/btnPrintRecord"
+                android:layout_width="210dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/button_green_background"
+                android:onClick="onPrintRecord"
+                android:text="@string/consumption_record_print"
+                android:textColor="@android:color/white"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp"
+                android:textSize="@dimen/consumption_record_printer_button_text_size" />
+        </LinearLayout>
 		<cn.koolcloud.pos.widget.ContentHeader
 	        android:id="@+id/header"
 	        android:layout_width="match_parent"

@@ -4,6 +4,7 @@ var transType_Consume = 1021;
 
 External.startReverse = function(data) {
 	window.ConsumptionData.resetConsumptionData();
+	window.ConsumptionData.resetExternalData();
 	ConsumptionData.dataForPayment.isExternalOrder = true;
 	window.util.exeActionWithLoginChecked(function() {
 		External.startReverseAfterLogin(data);
@@ -15,26 +16,30 @@ External.startReverseAfterLogin = function(data) {
 			txnId : params.txnId
 		};
 	ConsumptionData.dataForPayment.orderNo = params.orderNo;
-	
+
 	Net.connect("msc/txn/detail/query", req, handleResFromReqRecord);
 	
 	function handleResFromReqRecord(resData) {
-		var recordList = resData.recordList;
-		if (recordList == null || recordList.length == 0) {
-			Scene.alert("101");
-			return;
-		}
+	    if(resData.responseCode == 0){
+            var recordList = resData.recordList;
+            if (recordList == null || recordList.length == 0) {
+                Scene.alert("101");
+                return;
+            }
 
-		var reverseData = recordList[0];
-		var transTime = reverseData.transTime;
-		reverseData.formatedTransDate = transTime.substring(0,4) + "," + transTime.substring(4,6) + "," + transTime.substring(6,8);
-				
-		// window.OrderDetail.onCancel(JSON.stringify(reverseData));
-		handleRecordData(reverseData);
-		// reverseData.confirm = "window.External.goBack";
-		reverseData.confirm = "window.Pay.restart";
-		reverseData.isExternalOrder = ConsumptionData.dataForPayment.isExternalOrder;
-		Scene.showScene("OrderDetail", "", reverseData);
+            var reverseData = recordList[0];
+            var transTime = reverseData.transTime;
+            reverseData.formatedTransDate = transTime.substring(0,4) + "," + transTime.substring(4,6) + "," + transTime.substring(6,8);
+
+            // window.OrderDetail.onCancel(JSON.stringify(reverseData));
+            handleRecordData(reverseData);
+            // reverseData.confirm = "window.External.goBack";
+            reverseData.confirm = "window.Pay.restart";
+            reverseData.isExternalOrder = ConsumptionData.dataForPayment.isExternalOrder;
+            Scene.showScene("OrderDetail", "", reverseData);
+		}else{
+            Scene.alert(resData.errorMsg);
+		}
 	}
 	
 	function handleRecordData(params) {
@@ -149,11 +154,19 @@ External.onLogout = function(data) {
 	return formData;
 };
 
+window.externalData = null;
 External.onPay = function(data) {
+    window.externalData = data;
+    External.nextPay(data);
+}
+
+External.nextPay = function(data){
+
 	window.ConsumptionData.resetConsumptionData();
+	window.ConsumptionData.resetExternalData();
 
 	var params = {};
-	var transAmount, openBrh, paymentId, packageName, orderNo, orderDesc;
+	var transAmount, openBrh, paymentId, packageName, orderNo, orderDesc,actiId,preferential;
 	if (data != null) {
 		params = JSON.parse(data);
 		transAmount = params.transAmount;
@@ -162,6 +175,8 @@ External.onPay = function(data) {
 		packageName = params.packageName;
 		orderNo = params.orderNo;
 		orderDesc = params.orderDesc;
+		actiId = params.actiId;
+		preferential = params.preferential;
 	};
 	ConsumptionData.dataForPayment.isExternalOrder = true;
 	ConsumptionData.dataForPayment.transAmount = transAmount;
@@ -169,6 +184,8 @@ External.onPay = function(data) {
 	ConsumptionData.dataForPayment.packageName = packageName;
 	ConsumptionData.dataForPayment.orderNo = orderNo;
 	ConsumptionData.dataForPayment.orderDesc = orderDesc;
+	ConsumptionData.dataForExternal.actiId = actiId;
+	ConsumptionData.dataForExternal.preferential = preferential;
 	params.isExternalOrder = true;
 
 	if (params.openBrh == null || params.openBrh == "") {
@@ -184,7 +201,8 @@ External.onPay = function(data) {
 	function initTransInfo(data) {
 		var settingString = data.settingString;
 		if (settingString == null || settingString.length == 0) {
-			window.util.showSceneWithLoginChecked("SettingsIndex");
+		    window.user.setDownloadParamsResult(External.nextPay);
+			window.util.showSceneWithLoginChecked("SettingsDownload");
 			return;
 		};
 		var merchSettings = JSON.parse(settingString);
@@ -204,7 +222,11 @@ External.onPay = function(data) {
 			var payKeyIndex = transInfo.brhKeyIndex;
 		
 			if (payKeyIndex === "90") {
-				
+				if (null != transInfo.misc && undefined != transInfo.misc) {
+				    if (transInfo.misc == "MIS_TRANSFER") {
+                        transInfo.typeId = "SALE_TRANSFER";
+				    }
+				}
 				var params = {
 					typeId : transInfo.typeId,
 					payKeyIndex : transInfo.brhKeyIndex,
@@ -230,6 +252,7 @@ External.onPay = function(data) {
 
 External.getBalance = function(data) {
 	window.ConsumptionData.resetConsumptionData();
+	window.ConsumptionData.resetExternalData();
 
 	var params = {};
 	var openBrh, paymentId;
@@ -254,7 +277,7 @@ External.getBalance = function(data) {
 	function initTransInfo(data) {
 		var settingString = data.settingString;
 		if (settingString == null || settingString.length == 0) {
-			window.util.showSceneWithLoginChecked("SettingsIndex");
+			window.util.showSceneWithLoginChecked("SettingsDownload");
 			return;
 		};
 		var merchSettings = JSON.parse(settingString);

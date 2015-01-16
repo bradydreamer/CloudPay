@@ -48,7 +48,7 @@ public class HomeController extends BaseHomeController implements
 
 	private View navSelectedButton = null;
 	private Button homeButton = null;
-	private Button aboutButton; // about button
+//	private Button aboutButton; // about button
 	private boolean removeJSTag = true;
 
 	private MyApplication application;
@@ -90,8 +90,8 @@ public class HomeController extends BaseHomeController implements
 
 		homeButton.setSelected(true);
 
-		aboutButton = (Button) findViewById(R.id.abountBtn);
-		aboutButton.setOnClickListener(this);
+		/*aboutButton = (Button) findViewById(R.id.abountBtn);
+		aboutButton.setOnClickListener(this);*/
 
 		settingViewPager = (ViewPager) findViewById(R.id.setting_viewpager);
 		settingPageIndicator = (ViewPagerIndicator) findViewById(R.id.setting_indicator);
@@ -314,11 +314,11 @@ public class HomeController extends BaseHomeController implements
 			LayoutInflater lIf = getLayoutInflater().from(this);
 			TableLayout tableView_1st = (TableLayout) lIf.inflate(
 					R.layout.home_setting_layout_first, null);
-			TableLayout tableView_2nd = (TableLayout) lIf.inflate(
-					R.layout.home_setting_layout_second, null);
+//			TableLayout tableView_2nd = (TableLayout) lIf.inflate(
+//					R.layout.home_setting_layout_second, null);
 			viewList.add(tableView_1st);
-			viewList.add(tableView_2nd);
-			pages = 2;
+//			viewList.add(tableView_2nd);
+			pages = 1;
 			settingPageIndicator.setViewPager(settingViewPager);
 			settingPageIndicator.setPageSize(pages);
 			settingPageIndicator.setCurrentPage(0);
@@ -338,6 +338,24 @@ public class HomeController extends BaseHomeController implements
 		 * setting button selected state.
 		 */
 		changeSelectedButton(view);
+
+        //start write back apmp mod by Teddy --start on December 26th
+        try {
+            String userInfo = ClientEngine.engineInstance().getSecureService().getUserInfo();
+            if (!TextUtils.isEmpty(userInfo)) {
+                JSONObject userObj = new JSONObject(userInfo);
+                String userStatus = userObj.optString("userStatus");
+                if (!TextUtils.isEmpty(userStatus) && userStatus.equals("0")) {
+                    onCall("Home.startWriteBackAPMP", null);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        //start write back apmp mod by Teddy --end on December 26th
+
 		/*
 		 * change layout.
 		 */
@@ -349,7 +367,7 @@ public class HomeController extends BaseHomeController implements
 			currentLayout = transactionManageIndexController;
 		}
 
-	}
+    }
 
 	public void onClickMultiPay(View view) {
 		// changeSelectedButton(view);
@@ -370,7 +388,7 @@ public class HomeController extends BaseHomeController implements
 	/*
 	 * 交易查询界面
 	 */
-	public void gotoConsumptionRecord(View view) {
+	public void gotoTodayConsumptionRecord(View view) {
 		Date today = new Date();
 		String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
 		String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
@@ -384,15 +402,16 @@ public class HomeController extends BaseHomeController implements
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		onCall("TransactionManageIndex.onConsumptionRecord", msg);
+		onCall("TransactionManageIndex.onTodayConsumptionRecord", msg);
 	}
 
-	public void gotoConsumptionRecordSearch(View view) {
-		onCall("TransactionManageIndex.onConsumptionRecordSearch", null);
+	public void gotoHistoryConsumptionRecordSearch(View view) {
+		onCall("TransactionManageIndex.onHistoryConsumptionRecordSearch", null);
 	}
 
 	public void gotoSingleRecordSearch(View view) {
-		onCall("TransactionManageIndex.onSingleRecordSearch", null);
+        new ClearConsumptionThread().start();
+        onCall("TransactionManageIndex.onSingleRecordSearch", null);
 	}
 
 	public void gotoDelVoucherRecordSearch(View view) {
@@ -400,6 +419,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoSingleRecordSearchByTxnId(View view){
+        new ClearConsumptionThread().start();
 		onCall("TransactionManageIndex.onSingleRecordSearchByTxnId",null);
 	}
 
@@ -488,11 +508,11 @@ public class HomeController extends BaseHomeController implements
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
-		case R.id.abountBtn:
-			Intent mIntent = new Intent(HomeController.this, AboutDialog.class);
-			startActivity(mIntent);
-
-			break;
+//		case R.id.abountBtn:
+//			Intent mIntent = new Intent(HomeController.this, AboutDialog.class);
+//			startActivity(mIntent);
+//
+//			break;
 
 		default:
 			break;
@@ -534,4 +554,12 @@ public class HomeController extends BaseHomeController implements
 		// TODO Auto-generated method stub
 		return removeJSTag;
 	}
+
+    class ClearConsumptionThread extends Thread {
+        @Override
+        public void run() {
+            ConsumptionRecordDB recordDB = ConsumptionRecordDB.getInstance(HomeController.this);
+            recordDB.clearRecordTableData();
+        }
+    }
 }

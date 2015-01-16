@@ -72,11 +72,13 @@ Pay.reverseResult = function(params) {
 			Pay.reverseCallBack = null;
 		};
 	}else{	
-		Scene.alert("158");
-		if (Pay.reverseCallBack) {
+		Scene.alert("158",function(){
+		    Scene.goBack("Home");
+		});//冲正失败的情况下，不能进行下次交易，这样会把当前冲正的数据冲掉。
+		/*if (Pay.reverseCallBack) {
 			Pay.reverseCallBack();
 			Pay.reverseCallBack = null;
-		};
+		};*/
 	}
 	
 	function afterConvertBackup(params){
@@ -111,6 +113,8 @@ var oriData = {};
 Pay.cancelCallBack = function() {	
 };
 Pay.authTransCallBack = function(){
+};
+Pay.statusQueryCallBack = function(data){
 };
 
 Pay.authCancelOrder = function(params,callBack){
@@ -201,6 +205,103 @@ Pay.cancelOrder = function(params, callBack) {
 	} else {
 		Pay.getProductInfo(window.merchSettings);
 	}
+};
+
+Pay.statusQuery = function(params,callBack){
+    Pay.statusQueryCallBack = callBack;
+    ConsumptionData.resetDataForCancellingOrder();
+    ConsumptionData.dataForCancellingOrder.typeOf8583 = "statusQuery";
+    ConsumptionData.dataForPayment.brhKeyIndex = params.payKeyIndex; // for sign in
+    ConsumptionData.dataForCancellingOrder.brhKeyIndex = params.payKeyIndex;
+    ConsumptionData.dataForCancellingOrder.paymentId = params.paymentId;
+    ConsumptionData.dataForCancellingOrder.transAmount = params.transAmount;
+    ConsumptionData.dataForCancellingOrder.transTime = params.transTime;
+    ConsumptionData.dataForCancellingOrder.transDate = params.transTime.substring(4, 8);
+    ConsumptionData.dataForCancellingOrder.transData8583 = params.transData8583;
+    ConsumptionData.dataForCancellingOrder.txnId = params.txnId;
+    window.data8583.get8583(ConsumptionData.dataForCancellingOrder, Pay.statusQueryExe);
+};
+
+Pay.statusQueryExe = function(params){
+    var req = {
+            "data" : params.data8583,
+            "paymentId": params.paymentId,
+            "transType": params.transType,
+            "batchNo": params.batchNo,
+            "traceNo": params.traceNo,
+            "transTime": params.transTime,
+            "cardNo": params.cardNo,
+            "transAmount": params.transAmount,
+            "oriTxnId": ConsumptionData.dataForCancellingOrder.txnId,
+            "oriBatchNo": params.oriBatchNo,
+            "oriTraceNo": params.oriTraceNo,
+            "oriTransTime": params.oriTransTime,
+        };
+    var action = "msc/pay/status/query";
+    ConsumptionData.dataForCancellingOrder.rrn = params.oriOldRrn;
+    Net.connect(action, req, afterStatusQuery, true);
+
+    function afterStatusQuery(data){
+        if (data.responseCode == "0") {
+            var params = {
+                    "data8583" : data.data,
+                };
+            ConsumptionData.dataForCancellingOrder.res8583 = data.data;
+            ConsumptionData.dataForPayment.txnId = data.txnId;
+            window.data8583.convert8583(params, afterConvert8583);
+        }else{
+            Scene.alert("177",function(){
+                Scene.goBack("OrderDetail");
+            });
+        }
+    }
+
+    function afterConvert8583(data){
+        var oriParams = data;
+        params.action = "msc/txn/update";
+		params.txnId = ConsumptionData.dataForCancellingOrder.txnId;
+		params.refNo = ConsumptionData.dataForCancellingOrder.rrn;
+		params.resCode = data.resCode;
+		var data = JSON.stringify(params);
+		ConsumptionData.saveProcessBatchTask(data);
+		ConsumptionData.startSingleBatchTask(data);
+		Pay.statusQueryResult(oriParams);
+    }
+};
+
+Pay.statusQueryResult = function(params){
+    if ("00" == params.resCode) {
+        if(params.queryResCode == "00" || params.queryResCode == "03"){//交易成功
+            setTimeout(function() {
+                window.posPrint.printTrans(ConsumptionData.dataForCancellingOrder.txnId);
+                ConsumptionData.resetDataForCancellingOrder();
+            }, 300);
+            if (Pay.statusQueryCallBack) {
+                Pay.statusQueryCallBack("00");
+                Pay.statusQueryCallBack = null;
+            };
+        }else if(params.queryResCode == "01"){ //失败
+            if (Pay.statusQueryCallBack) {
+                Pay.statusQueryCallBack("failed");
+                Pay.statusQueryCallBack = null;
+            };
+        }else if(params.queryResCode == "02"){ //已冲正
+            if (Pay.statusQueryCallBack) {
+                Pay.statusQueryCallBack("02");
+                Pay.statusQueryCallBack = null;
+            };
+        }else if(params.queryResCode == "03"){ //已撤销
+
+        }else if(params.queryResCode == "08" || params.queryResCode == "09"){ //
+            if (Pay.statusQueryCallBack) {
+                Pay.statusQueryCallBack("08");
+                Pay.statusQueryCallBack = null;
+            };
+        }
+    }else{
+        Scene.alert(params.resMessage);
+    }
+
 };
 
 Pay.getProductInfo = function(data){

@@ -39,9 +39,9 @@
 				"data8583": params.data,
 				"brhKeyIndex": ConsumptionData.dataForPayment.brhKeyIndex
 		};			
-	ConsumptionData.dataForPayment.res8583 = params.data;	
-	ConsumptionData.dataForPayment.txnId = params.txnId;
-	window.data8583.convert8583(convertData, afterConvertMsg);
+        ConsumptionData.dataForPayment.res8583 = params.data;
+        ConsumptionData.dataForPayment.txnId = params.txnId;
+        window.data8583.convert8583(convertData, afterConvertMsg);
 	}else{
 		Scene.alert(params.errorMsg,errOKProcess);
 	}   
@@ -457,12 +457,18 @@
       Net.connect("msc/pay/signout", req, actionAfterSignout);
   }
   
-  function actionAfterSignout(data){
-	var params = {
-			data8583: data.data
+    function actionAfterSignout(data){
+        if(data.responseCode == "0"){
+            var params = {
+                data8583: data.data
+            }
+            window.data8583.convert8583(params, actionAfterConvertSignoutRes);
+        }else{
+            Scene.alert(data.errorMsg,function(){
+                Scene.goBack("Home");
+            });
+        }
     }
-    window.data8583.convert8583(params, actionAfterConvertSignoutRes)		
-	}
 	
 	function actionAfterConvertSignoutRes(data){
 	    if ("00" != data.resCode) {

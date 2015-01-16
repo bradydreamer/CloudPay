@@ -90,6 +90,7 @@
     if (null != data) {
       	data.userName = window.user.userName;
         data.txnId = ConsumptionData.dataForPayment.txnId;
+        data.from = ConsumptionData.dataForPayment.from;
       	if ("" === ConsumptionData.dataForPayment.paymentId ||
       		undefined ===ConsumptionData.dataForPayment.paymentId) {
 			data.paymentId = window.OrderDetail.paymentId;      	
@@ -109,8 +110,13 @@
     Global.callObjcHandler("printTrans", data);
   }
 
+  function printRecord(msg) {
+    Global.callObjcHandler("PrintRecord", msg)
+  }
+
   window.posPrint = {
     "printTrans": printTrans,
+    "printRecord": printRecord
   };
 })();
 
@@ -148,9 +154,12 @@
 					}				
 				}	
 			}else{
-				if(callbackfunc){
+			    Scene.alert(resData.errorMsg,function(){
+                    Scene.goBack("Home");
+                });
+				/*if(callbackfunc){
 					callbackfunc(data8583);
-				}
+				}*/
 			}		
 		}	
   }
@@ -180,10 +189,17 @@
     Global.callObjcHandler("getTransData8583", params, callbackfunc);
   }
 
+  function saveBankData(bankData) {
+    if (null != bankData) {
+        Global.callObjcHandler("saveBankData", bankData);
+    }
+  }
+
   window.Database = {
     "insertTransData8583": insertTransData8583,
     "updateTransData8583": updateTransData8583,
     "getTransData8583": getTransData8583,
     "getAndCheckTransData8583": getAndCheckTransData8583,
+    "saveBankData" : saveBankData
   };
 })();

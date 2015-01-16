@@ -79,6 +79,7 @@ import cn.koolcloud.pos.controller.transaction_manage.consumption_record.SingleR
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordController;
 import cn.koolcloud.pos.controller.transaction_manage.del_voucher.DelVoucherRecordSearchController;
 import cn.koolcloud.pos.controller.transfer.SuperTransferController;
+import cn.koolcloud.pos.database.BankDB;
 import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.net.NetEngine;
@@ -729,7 +730,16 @@ public class ClientEngine implements MisposEventInterface {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		JSONObject response = NetEngine.post(context, body, headerMap);
+		JSONObject response = null;
+		if(headerMap.get("mscbank") != null) {
+			if (headerMap.get("mscbank").equals("1")) {
+				response = NetEngine.post(context, body, headerMap, true);
+			} else {
+				response = NetEngine.post(context, body, headerMap);
+			}
+		}else{
+			response = NetEngine.post(context, body, headerMap);
+		}
 
 		// fix update search record status while refund or reverse operating
 		// --start Teddy on 20th May
@@ -1160,6 +1170,7 @@ public class ClientEngine implements MisposEventInterface {
 		String oriBatchNo;
 		String oriTraceNo;
 		String oriTransTime;
+		String oriOldRrn;
 		Boolean result = false;
 		JSONObject businessJsonObject = new JSONObject();
 		Log.d(TAG, "get8583 jsonObject : " + jsonObject);
@@ -1208,6 +1219,11 @@ public class ClientEngine implements MisposEventInterface {
 				data8583 = jsonObject.optString("transData8583");
 				jsonObject.remove("transData8583");
 				result= iso8583Controller.cheXiao(Utility.hex2byte(data8583),
+						jsonObject);
+			} else if(typeOf8583.equals("statusQuery")){
+				data8583 = jsonObject.optString("transData8583");
+				jsonObject.remove("transData8583");
+				result= iso8583Controller.statusQuery(Utility.hex2byte(data8583),
 						jsonObject);
 			} else if (typeOf8583.equals("refund")) {
 				data8583 = jsonObject.optString("transData8583");
@@ -1276,6 +1292,7 @@ public class ClientEngine implements MisposEventInterface {
 			oriBatchNo = iso8583Controller.getOriBatchNum();
 			oriTraceNo = iso8583Controller.getOriTraceNum();
 			oriTransTime = iso8583Controller.getOriTransTime();
+			oriOldRrn = iso8583Controller.getOldRrn();
 			try {
 				businessJsonObject.put("data8583", data8583);
 				businessJsonObject.put("paymentId", paymentId);
@@ -1289,6 +1306,7 @@ public class ClientEngine implements MisposEventInterface {
 				businessJsonObject.put("oriBatchNo", oriBatchNo);
 				businessJsonObject.put("oriTraceNo", oriTraceNo);
 				businessJsonObject.put("oriTransTime", oriTransTime);
+				businessJsonObject.put("oriOldRrn", oriOldRrn);
 			} catch (JSONException e) {
 				businessJsonObject.put("error", "ERROR");
 				callBack(callBackId, businessJsonObject);
@@ -1441,10 +1459,17 @@ public class ClientEngine implements MisposEventInterface {
 			}
 			String resCode = iso8583Controller.getResCode();
 			Log.d(TAG, "load8583 resCode : " + resCode);
-			String resMessage = HostMessage.getMessage(resCode);
+            String resMessage = "";
+            if (!TextUtils.isEmpty(uf8.getAlipayResMsg())) {
+                resMessage = uf8.getAlipayResMsg();
+            } else {
+                resMessage = HostMessage.getMessage(resCode);
+            }
 			Log.d(TAG, "load8583 resMessage : " + resMessage);
+			String queryResCode = iso8583Controller.getStatusResCode();
 			data8583JsonObject.put("resCode", resCode);
 			data8583JsonObject.put("resMessage", resMessage);
+			data8583JsonObject.put("queryResCode", queryResCode);
 			data8583JsonObject.put("rrn", iso8583Controller.getApOrderId());// 使用机构的参考号
 			data8583JsonObject.put("paramDownloadFlag",
 					iso8583Controller.getParamDownloadFlag());
@@ -1549,6 +1574,35 @@ public class ClientEngine implements MisposEventInterface {
 		});
 		printThread.start();
 	}
+
+    public void printRecord(final JSONObject jsonObjData, final Context context) {
+        Thread printThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                ISO8583Controller iso8583Controller = ISO8583Engine.getInstance().generateISO8583Controller();
+                try {
+                    iso8583Controller.printRecord(jsonObjData, context);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        printThread.start();
+    }
+
+    public void saveBankData(final JSONObject jsonObjData, final Context context) {
+        Thread saveBankDataThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                BankDB bankDB = BankDB.getInstance(context);
+                JSONArray bankArray = jsonObjData.optJSONArray("recordList");
+                bankDB.insertBankData(bankArray);
+            }
+        });
+        saveBankDataThread.start();
+    }
 
 	public void insertTransData8583(final JSONObject jsonObjData,
 			final String callBackId) {

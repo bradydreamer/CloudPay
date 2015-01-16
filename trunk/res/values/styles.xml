@@ -213,6 +213,13 @@
     </style>
 
     <style name="order_detail_mark_style">
+        <item name="android:layout_width">180dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_marginRight">30dp</item>
+    </style>
+
+    <style name="order_detail_text_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:singleLine">true</item>

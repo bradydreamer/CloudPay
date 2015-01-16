@@ -14,8 +14,8 @@
 	    android:layout_marginRight="20dp"
 	    android:background="@drawable/main_page_bg_bitmap"
 	    android:paddingBottom="20dp"
-	    android:paddingLeft="40dp"
-	    android:paddingRight="40dp"
+	    android:paddingLeft="20dp"
+	    android:paddingRight="20dp"
 	    tools:context=".DelVoucherInfoController" >
 	    <LinearLayout 
 	        android:layout_width="match_parent"
@@ -139,8 +139,8 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
 		    android:layout_above="@id/btnsRootLayout"
-        	android:layout_marginLeft="100dp"
-        	android:layout_marginRight="100dp"
+        	android:layout_marginLeft="30dp"
+        	android:layout_marginRight="30dp"
 		    android:orientation="vertical">
 			<LinearLayout 
 			    android:layout_width="fill_parent"
@@ -154,14 +154,13 @@
 			        <TextView
 		                android:id="@+id/order_detail_tv_transAmount_mark"
 		                style="@style/order_detail_mark_style"
-		                android:layout_marginRight="60dp"
 		                android:layout_centerVertical="true"
 		                android:text="@string/order_detail_tv_transAmount"
 		                android:textColor="@color/gray"
 		                android:textSize="@dimen/order_details_content_text_size" />
 			        <TextView
 		                android:id="@+id/order_detail_tv_transAmount"
-		                style="@style/order_detail_mark_style"
+		                style="@style/order_detail_text_style"
 		                android:layout_centerVertical="true"
 		                android:layout_toRightOf="@id/order_detail_tv_transAmount_mark"
 		                android:textColor="@color/black"
@@ -181,14 +180,13 @@
 		                android:id="@+id/order_detail_operator_mark"
 		                style="@style/order_detail_mark_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginRight="90dp"
 		                android:text="@string/order_detail_operator"
 		                android:textColor="@color/gray"
 		                android:textSize="@dimen/order_details_content_text_size" />
 		
 		            <TextView
 		                android:id="@+id/order_detail_tv_operator"
-		                style="@style/order_detail_mark_style"
+		                style="@style/order_detail_text_style"
 		                android:layout_centerVertical="true"
 		                android:layout_toRightOf="@id/order_detail_operator_mark"
 		                android:textColor="@color/black"
@@ -213,7 +211,6 @@
 			        <TextView
 		                android:id="@+id/order_detail_tv_transType_mark"
 		                style="@style/order_detail_mark_style"
-		                android:layout_marginRight="60dp"
 		                android:text="@string/order_detail_tv_transType"
 		                android:layout_centerVertical="true"
 		                android:textColor="@color/gray"
@@ -221,7 +218,7 @@
 		
 		            <TextView
 		                android:id="@+id/order_detail_tv_transType"
-		                style="@style/order_detail_mark_style"
+		                style="@style/order_detail_text_style"
 		                android:layout_toRightOf="@id/order_detail_tv_transType_mark"
 		                android:layout_centerVertical="true"
 		                android:textColor="@color/black"
@@ -241,14 +238,13 @@
 		                android:id="@+id/order_detail_tv_payType_mark"
 		                style="@style/order_detail_mark_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
 		                android:text="@string/order_detail_tv_payType"
 		                android:textColor="@color/gray"
 		                android:textSize="@dimen/order_details_content_text_size" />
 		
 		            <TextView
 		                android:id="@+id/order_detail_tv_payType"
-		                style="@style/order_detail_mark_style"
+		                style="@style/order_detail_text_style"
 		                android:layout_centerVertical="true"
 		                android:layout_toRightOf="@id/order_detail_tv_payType_mark"
 		                android:textColor="@color/black"
@@ -272,16 +268,14 @@
 		                android:id="@+id/order_detail_tv_orderId_mark"
 		                style="@style/order_detail_mark_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
 		                android:text="@string/order_detail_tv_orderId"
 		                android:textColor="@color/gray"
 		                android:textSize="@dimen/order_details_content_text_size" />
 		
 		            <TextView
 		                android:id="@+id/order_detail_tv_orderId"
-		                style="@style/order_detail_mark_style"
+		                style="@style/order_detail_text_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginLeft="30dp"
 		                android:layout_toRightOf="@id/order_detail_tv_orderId_mark"
 		                android:textColor="@color/black"
 		                android:textSize="@dimen/order_details_content_text_size" />
@@ -299,14 +293,13 @@
 		                android:id="@+id/order_detail_tv_authcode_mark"
 		                style="@style/order_detail_mark_style"
 		                android:layout_centerVertical="true"
-		                android:layout_marginRight="60dp"
 		                android:text="@string/order_detail_tv_authCode"
 		                android:textColor="@color/gray"
 		                android:textSize="@dimen/order_details_content_text_size" />
 		
 		            <TextView
 		                android:id="@+id/order_detail_tv_authcode"
-		                style="@style/order_detail_mark_style"
+		                style="@style/order_detail_text_style"
 		                android:layout_centerVertical="true"
 		                android:layout_marginLeft="30dp"
 		                android:layout_toRightOf="@id/order_detail_tv_authcode_mark"
@@ -328,14 +321,13 @@
 	                android:id="@+id/order_detail_tv_transData_mark"
 	                style="@style/order_detail_mark_style"
 	                android:layout_centerVertical="true"
-	                android:layout_marginRight="60dp"
 	                android:text="@string/order_detail_tv_transDate"
 	                android:textColor="@color/gray"
 	                android:textSize="@dimen/order_details_content_text_size" />
 	
 	            <TextView
 	                android:id="@+id/order_detail_tv_transDate"
-	                style="@style/order_detail_mark_style"
+	                style="@style/order_detail_text_style"
 	                android:layout_centerVertical="true"
 	                android:layout_marginRight="60dp"
 	                android:layout_toRightOf="@id/order_detail_tv_transData_mark"
@@ -356,14 +348,13 @@
 	                android:id="@+id/order_detail_tv_orderStatus_mark"
 	                style="@style/order_detail_mark_style"
 	                android:layout_centerVertical="true"
-	                android:layout_marginRight="60dp"
 	                android:text="@string/order_detail_tv_orderStatus"
 	                android:textColor="@color/gray"
 	                android:textSize="@dimen/order_details_content_text_size" />
 	
 	            <TextView
 	                android:id="@+id/order_detail_tv_orderStatus"
-	                style="@style/order_detail_mark_style"
+	                style="@style/order_detail_text_style"
 	                android:layout_centerVertical="true"
 	                android:layout_toRightOf="@id/order_detail_tv_orderStatus_mark"
 	                android:textColor="@color/black"
@@ -374,6 +365,19 @@
 		            android:layout_alignParentBottom="true"
 		            android:background="@color/interval_line_color"
 		            />
+                <Button
+                    android:id="@+id/trans_status_confirm"
+                    android:layout_width="128dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_green_background"
+                    android:text="@string/order_detail_trans_status_confirm"
+                    android:textColor="@android:color/white"
+                    android:layout_marginLeft="80dp"
+                    android:textSize="@dimen/order_details_coupon_text_size"
+                    android:onClick="statusQuery"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/order_detail_tv_orderStatus"
+                    android:visibility="gone"/>
 		        <Button
 			        android:id="@+id/order_detail_btn_coupon"
 			        android:layout_width="128dp"

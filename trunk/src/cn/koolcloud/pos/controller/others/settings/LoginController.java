@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -19,8 +20,9 @@ import cn.koolcloud.pos.R.color;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
 
-public class LoginController extends BaseController {
-	private EditText customerId;
+public class LoginController extends BaseController implements View.OnKeyListener {
+
+    private EditText customerId;
 	private EditText configuration_userName;
 	private EditText configuration_pwd;
 	private String str_customerId = "";
@@ -64,6 +66,7 @@ public class LoginController extends BaseController {
 
 		configuration_userName = (EditText) findViewById(R.id.configuration_userName);
 		configuration_pwd = (EditText) findViewById(R.id.configuration_pwd);
+        configuration_pwd.setOnKeyListener(this);
 		if (!(str_customerId == null) && !(str_customerId.equals(""))) {
 			customerId.setText(str_customerId);
 			customerId.setTextColor(color.gray);
@@ -169,6 +172,14 @@ public class LoginController extends BaseController {
 	protected void onDestroy() {
 		super.onDestroy();
 	}
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            onClickBtnOK(view);
+        }
+        return false;
+    }
 
 	@Override
 	protected void loadRelatedJS() {

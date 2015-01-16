@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:paddingBottom="20dp" >
 
-        <LinearLayout style="@style/module_layout" >
+        <LinearLayout style="@style/module_layout"
+            android:visibility="gone">
 
             <ImageButton
                 style="@style/module_logo"

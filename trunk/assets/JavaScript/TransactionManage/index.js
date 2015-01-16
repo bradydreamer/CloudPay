@@ -5,83 +5,112 @@
 	}
 	var req_loadMore = {};
 	var singleResearchTag = false;
+	var fromTodayTag = false;
 
 	function handleResFromReqRecord(msg) {
-		var recordDisplayedList = msg.recordList;
-		if(recordDisplayedList instanceof Array){
-			for (var i = 0, j = recordDisplayedList.length; i < j; i++) {
-				var recordData = recordDisplayedList[i];
-				handleRecordData(recordData);
-			};
+	    var params = msg;
+	    if(params.responseCode == 0){
+            var recordDisplayedList = msg.recordList;
+            if(recordDisplayedList instanceof Array){
+                for (var i = 0, j = recordDisplayedList.length; i < j; i++) {
+                    var recordData = recordDisplayedList[i];
+                    handleRecordData(recordData);
+                };
+            }else{
+                handleRecordData(recordDisplayedList);
+                recordDisplayedList.confirm = "TransactionManageIndex.gotoIndex";
+                return;
+            }
+            var pageSize = msg.pageSize == null ? 20 : msg.pageSize;
+            var totalSize = msg.totalSize == null ? recordDisplayedList.length : msg.totalSize;
+            var pageNo = req_loadMore.pageNo;
+
+            var totalPages;
+            if (totalSize % pageSize > 0) {
+                totalPages = totalSize / pageSize + 1;
+            } else {
+                totalPages = totalSize / pageSize;
+            }
+
+            req_loadMore.pageNo = req_loadMore.pageNo + 1;
+
+            var hasMore = (parseInt(pageNo) < parseInt("" + totalPages));
+            /*var params = {
+                hasMore : hasMore,
+                recordList : recordDisplayedList,
+                start_date : msg.start_date,
+                end_date : msg.end_date
+            };*/
+            var params = {
+                fromTodayTag : fromTodayTag,
+                hasMore : hasMore,
+                recordList : recordDisplayedList
+            };
+            //pass start date and end date to order details page --start mod by Teddy on 25th July
+            if ((null != window.TransactionManageIndex.params &&
+                undefined != window.TransactionManageIndex.params) &&
+                (null != window.TransactionManageIndex.params.startDate &&
+                    null != window.TransactionManageIndex.params.endDate)) {
+                params.start_date = window.TransactionManageIndex.params.startDate;
+                params.end_date = window.TransactionManageIndex.params.endDate;
+            } else {
+                params.start_date = msg.start_date;
+                params.end_date = msg.end_date;
+            }
+            //pass start date and end date to order details page --end mod by Teddy on 25th July
+            if (window.TransactionManageIndex.refresh !== undefined) {
+                //refresh consumption data ListView with new data --start mod by Teddy on 29th September
+                /*params.shouldRemoveCurCtrl = true;
+                Scene.showScene("ConsumptionRecord", "消费记录", params);*/
+                var propertyList = [{
+                        name : "lv_record",
+                        key : "addList",
+                        value : params
+                    }];
+                Scene.setProperty("ConsumptionRecord", propertyList);
+                window.TransactionManageIndex.refresh = undefined;
+                //refresh consumption data ListView with new data --end mod by Teddy on 29th September
+            } else {
+
+                if (1 == pageNo) {
+                    if (recordDisplayedList.length == 1 && singleResearchTag == true) {
+                        recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
+                        Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
+                    } else {
+                        if (window.TransactionManageIndex.ioperator !== "" && window.TransactionManageIndex.ioperator !== undefined) {
+                            var propertyList = [{
+                                name : "lv_record",
+                                key : "updateList",
+                                value : params
+                            }];
+                            Scene.setProperty("ConsumptionRecord", propertyList);
+                        } else {
+                            Scene.showScene("ConsumptionRecord", "", params);
+                        }
+                    };
+                } else {
+                    var propertyList = [{
+                        name : "lv_record",
+                        key : "addList",
+                        value : params
+                    }];
+                    Scene.setProperty("ConsumptionRecord", propertyList);
+                };
+            }
 		}else{
-			handleRecordData(recordDisplayedList);
-			recordDisplayedList.confirm = "TransactionManageIndex.gotoIndex";
-			return;
-		}
-		var pageSize = msg.pageSize == null ? 20 : msg.pageSize;
-		var totalSize = msg.totalSize == null ? recordDisplayedList.length : msg.totalSize;
-		var pageNo = req_loadMore.pageNo;
+		    if (window.TransactionManageIndex.ioperator === undefined) {
+		        Scene.alert(params.errorMsg,function(){
+                    Scene.goBack("Home");
+                });
+		    } else {
+                var propertyList = [{
+                    name : "lv_record",
+                    key : "updateList",
+                    value : params
+                }];
+                Scene.setProperty("ConsumptionRecord", propertyList);
+		    }
 
-		var totalPages;
-		if (totalSize % pageSize > 0) {
-			totalPages = totalSize / pageSize + 1;
-		} else {
-			totalPages = totalSize / pageSize;
-		}
-
-		req_loadMore.pageNo = req_loadMore.pageNo + 1;
-
-		var hasMore = (parseInt(pageNo) < parseInt("" + totalPages));
-		/*var params = {
-			hasMore : hasMore,
-			recordList : recordDisplayedList,
-			start_date : msg.start_date,
-			end_date : msg.end_date
-		};*/
-		var params = {
-			hasMore : hasMore,
-			recordList : recordDisplayedList
-		};
-		//pass start date and end date to order details page --start mod by Teddy on 25th July
-		if ((null != window.TransactionManageIndex.params &&
-			undefined != window.TransactionManageIndex.params) &&
-			(null != window.TransactionManageIndex.params.startDate && 
-				null != window.TransactionManageIndex.params.endDate)) {
-			params.start_date = window.TransactionManageIndex.params.startDate;
-			params.end_date = window.TransactionManageIndex.params.endDate;
-		} else {
-			params.start_date = msg.start_date;
-			params.end_date = msg.end_date;
-		}
-		//pass start date and end date to order details page --end mod by Teddy on 25th July
-		if (window.TransactionManageIndex.refresh !== undefined) {
-			//refresh consumption data ListView with new data --start mod by Teddy on 29th September
-			/*params.shouldRemoveCurCtrl = true;
-			Scene.showScene("ConsumptionRecord", "消费记录", params);*/
-			var propertyList = [{
-					name : "lv_record",
-					key : "addList",
-					value : params
-				}];
-			Scene.setProperty("ConsumptionRecord", propertyList);
-			//refresh consumption data ListView with new data --end mod by Teddy on 29th September
-		} else {
-
-			if (1 == pageNo) {
-				/*if (recordDisplayedList.length == 1) {
-					recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
-					Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
-				} else {*/
-					Scene.showScene("ConsumptionRecord", "", params);
-				//};
-			} else {
-				var propertyList = [{
-					name : "lv_record",
-					key : "addList",
-					value : params
-				}];
-				Scene.setProperty("ConsumptionRecord", propertyList);
-			};
 		}
 	}
 
@@ -140,6 +169,8 @@
 			transTypeDesc = "109";
 		} else if (transType == "1721") {
             transTypeDesc = "转账";
+        } else if (transType == "1421") {
+            transTypeDesc = "助农取款";
         }
 		;
 		return transTypeDesc;
@@ -193,15 +224,18 @@
 		req_loadMore = req;
 		singleResearchTag = true;
 		ConsumptionData.dataForPayment.rrn = refNo;
-		window.TransactionManageIndex.refresh = undefined;
    		window.TransactionManageIndex.params = undefined;
-		Net.connect("msc/txn/detail/query", req, handleResFromReqRecord);
+   		Pay.checkTransReverse("msc/txn/detail/query",function(){
+                		Net.connect("msc/txn/detail/query", req, handleResFromReqRecord);
+                });
+
 	}
 
 	function gotoConsumptionRecord(searchData) {
 		var req;
 		if (null != searchData && searchData.isReqMore) {
 			req = req_loadMore;
+			fromTodayTag = searchData.fromTodayTag;
 		} else {
 			req = {
 				pageNo : 1,
@@ -210,6 +244,10 @@
 			if (null != searchData) {
 				req.startDate = searchData.startDate;
 				req.endDate = searchData.endDate;
+				fromTodayTag = searchData.fromTodayTag;
+				if (searchData.ioperator !== "" && searchData.ioperator !== undefined && searchData.ioperator !== "All") {
+				    req.ioperator = searchData.ioperator;
+				}
 			}
 		}
 		req_loadMore = req;
@@ -220,7 +258,10 @@
 			Net.connect("merchant/iposCurrentRecordList", req, handleResFromReqRecord);
 		}*/
 		singleResearchTag = false;
-		Net.connect("msc/txn/page/query", req, handleResFromReqRecord);
+		Pay.checkTransReverse("msc/txn/page/query",function(){
+        		Net.connect("msc/txn/page/query", req, handleResFromReqRecord);
+        });
+
 
 	}
 
@@ -251,16 +292,19 @@
 		}		
 	}
 	
-	function onConsumptionRecord(data) {
+	function onTodayConsumptionRecord(data) {
 		//request tag
 		window.TransactionManageIndex.refresh = undefined;
 		//delete global variable date object
 		window.TransactionManageIndex.params = undefined;
 
 		var msg = JSON.parse(data)
+        window.TransactionManageIndex.ioperator = msg.ioperator;
         var params = {
+            fromTodayTag : true,
             startDate : msg.startDate,
-            endDate : msg.endDate
+            endDate : msg.endDate,
+            ioperator : msg.ioperator
         }
 		window.util.exeActionWithLoginChecked(function(){
 		    gotoConsumptionRecord(params);
@@ -268,27 +312,35 @@
 	}
 
 	function onSingleRecordSearch() {
+	    fromTodayTag = false;
+	    window.TransactionManageIndex.ioperator = undefined;
 		window.util.showSceneWithLoginChecked("PaymentMechanism");
 	}
 
 	function onSingleRecordSearchByTxnId(){
+	    fromTodayTag = false;
+	    window.TransactionManageIndex.ioperator = undefined;
 	    window.util.showSceneWithLoginChecked("SingleRecordSearchByTxnId");
 	}
 
-	function onConsumptionRecordSearch() {
+	function onHistoryConsumptionRecordSearch() {
+	    fromTodayTag = false;
+	    window.TransactionManageIndex.ioperator = undefined;
 		window.util.showSceneWithLoginChecked("ConsumptionRecordSearch");
 	}
 
 	function onDelVoucherRecordSearch() {
+	    fromTodayTag = false;
+	    window.TransactionManageIndex.ioperator = undefined;
 		window.util.showSceneWithLoginChecked("DelVoucherRecordSearch");
 	}
 
 	function gotoIndex() {
-		Scene.goBack("TransactionManageIndex");
+		Scene.goBack();
 	}
 
 	function gotoConsumptionSummary(date){
-	    var msg = JSON.stringify(date);
+	    var msg = JSON.parse(date);
 	    var params = {
             startDate : msg.startDate,
             endDate : msg.endDate
@@ -330,8 +382,8 @@
 	}
 
 	window.TransactionManageIndex = {
-		"onConsumptionRecord" : onConsumptionRecord,
-		"onConsumptionRecordSearch" : onConsumptionRecordSearch,
+		"onTodayConsumptionRecord" : onTodayConsumptionRecord,
+		"onHistoryConsumptionRecordSearch" : onHistoryConsumptionRecordSearch,
 		"onDelVoucherRecordSearch" : onDelVoucherRecordSearch,
 		"onSingleRecordSearch" : onSingleRecordSearch,
 		"onSingleRecordSearchByTxnId": onSingleRecordSearchByTxnId,

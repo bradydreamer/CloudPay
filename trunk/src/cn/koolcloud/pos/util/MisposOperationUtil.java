@@ -13,7 +13,7 @@ public class MisposOperationUtil {
 	public static final String TRAN_TYPE_SIGN_IN = "8011";								//sign in
 	public static final String TRAN_TYPE_SIGN_OUT = "8081";								//sign out
 	public static final String TRAN_TYPE_CONSUMPTION = "1021";							//consumption
-	public static final String TRAN_TYPE_CONSUMPTION_TRANSFER = "8872";					//consumption transfer
+	public static final String TRAN_TYPE_CONSUMPTION_TRANSFER = "1421";					//consumption transfer
 	public static final String TRAN_TYPE_CONSUMPTION_REVERSE = "3021";					//consumption reverse
 	public static final String TRAN_TYPE_PRE_AUTHORIZATION = "1011";					//pre authorization	
 	public static final String TRAN_TYPE_PRE_AUTHORIZATION_REVERSE = "1011";			//pre authorization	reverse
@@ -167,7 +167,7 @@ public class MisposOperationUtil {
 		
 		//sign in:0x01, consumption:0x02, consumption reverse:0x03
 		if (bTransType[0] == 0x01 || bTransType[0] == 0x02 
-				|| bTransType[0] == 0x03 || bTransType[0] == 0x12) {
+				|| bTransType[0] == 0x03 || bTransType[0] == 0x12 || bTransType[0] == 0x72) {
 			getTagValue(beanData);
 			
 		}
@@ -341,7 +341,9 @@ public class MisposOperationUtil {
 		case 0x12:
 			tranType = "查询余额";
 			break;
-
+        case 0x72:
+            tranType = "助农取款";
+            break;
 		default:
 			break;
 		}

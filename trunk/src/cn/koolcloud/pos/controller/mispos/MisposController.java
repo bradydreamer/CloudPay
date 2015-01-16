@@ -10,6 +10,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +22,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import cn.koolcloud.jni.MisPosEvent;
@@ -27,7 +29,6 @@ import cn.koolcloud.jni.MisPosInterface;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseHomeController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
-import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
 import cn.koolcloud.pos.database.CacheDB;
 import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.entity.MisposData;
@@ -35,7 +36,7 @@ import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.MisposOperationUtil;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForMoney;
-import cn.koolcloud.printer.PrinterException;
+import cn.koolcloud.printer.exception.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
 import cn.koolcloud.util.AppUtil;
 
@@ -201,7 +202,16 @@ public class MisposController extends BaseHomeController implements
             }
         }
 	}
-
+	@Override
+	protected void setLeftButton(int resourceId) {
+		Drawable leftPic = getResources().getDrawable(resourceId);
+		leftPic.setBounds(0, 0, leftPic.getIntrinsicWidth(),
+				leftPic.getMinimumHeight());
+		titlebar_btn_left.setCompoundDrawables(leftPic, null, null, null);
+		titlebar_btn_left.setText(getTitlebarTitle());
+		titlebar_btn_left.setVisibility(View.VISIBLE);
+		titlebar_btn_left.setBackgroundDrawable(null);
+	}
 	@Override
 	public void onClickLeftButton(View view) {
 		handleExternalOrder(currentBean);
@@ -369,6 +379,16 @@ public class MisposController extends BaseHomeController implements
 							showOrderDetails(beanData);
 //							handleExternalOrder(beanData);
 						}
+
+                        if (beanData.getTransType().equals(
+                                MisposOperationUtil.TRAN_TYPE_CONSUMPTION_TRANSFER)) {
+                            // FIXME: consumption write back to server and print
+                            // receipt
+                            new PrinterThread(beanData).start();
+                            new WriteBackThread(beanData).start();
+                            showOrderDetails(beanData);
+//							handleExternalOrder(beanData);
+                        }
 
 						if (beanData
 								.getTransType()
@@ -801,7 +821,7 @@ public class MisposController extends BaseHomeController implements
 				req.put("transType", beanData.getTransType());// M
 				req.put("paymentId", paymentId);// M
 				req.put("transAmount", beanData.getAmount());
-				req.put("cardNo", beanData.getCardNo());
+				req.put("cardNo", beanData.getCardNo().replace("*", "9"));
 				req.put("resCode", beanData.getResponseCode());
 				req.put("resMsg", beanData.getResponseMsg());
 				req.put("refNo", beanData.getRefNo());

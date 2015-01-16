@@ -19,8 +19,8 @@
 		if(window.user.userStatus == null){
 			Scene.alert("131");
 			return;
-		}		
-		allTransBatch(errorOkprocess);		
+		}
+		allTransBatch(errorOkprocess);
 	}
 	
 	function actionLogout(){
@@ -28,13 +28,14 @@
 		};
 		Net.connect("msc/user/logout", req, actionAfterLogout);
 		function actionAfterLogout(data){
-			
+
 			if(data.responseCode == "0"){
 				window.user.init({});
 				if(!MISTAG){
 					logoutTag = false;
 					window.COMM.stopCheckSession();
-					Scene.alert("170");
+					//Scene.alert("170");
+					Scene.goBack("Home");
 				}else{
 					var formData = {
 						typeId : "LOGOUT",
@@ -50,7 +51,7 @@
 				}
 			}else{
 				logoutTag = false;
-				Scene.alert(data.errorMsg);				
+				Scene.alert(data.errorMsg);
 			}
 		}
 	}
@@ -89,7 +90,7 @@
 			merchSettings = JSON.parse(settingString);
 			if (merchSettings == null || merchSettings.length == 0) {
 				return;
-			};		
+			};
 			parseMerchSettings();
 		}	
 	}
@@ -97,7 +98,7 @@
 	function parseMerchSettings(){			
 		if(currentIndex < merchSettings.length){
 			keyIndex = merchSettings[currentIndex].brhKeyIndex;
-			
+
 			if(transTag[keyIndex] == "" || transTag[keyIndex] == null){
 				transBatch(keyIndex);
 				transTag[keyIndex] = true;
@@ -136,7 +137,8 @@
 		if (logoutTag) {
 			logoutTag = false;
 			window.COMM.stopCheckSession();
-			Scene.alert("170");
+			//Scene.alert("170");
+			Scene.goBack("Home");
 		} else {
 			//Scene.alert("132",afterTransBatchCallback);
 			afterTransBatchCallback();
@@ -181,11 +183,17 @@
   }
 
 	function actionAfterTransBatch(data){
-		g_transBatchRes = data
-		var params = {
-        data8583: data.data
-      }
-      window.data8583.convert8583(params, actionAfterConvertTransBatchRes)		
+	    if(data.responseCode == "0"){
+            g_transBatchRes = data
+            var params = {
+            data8583: data.data
+            }
+            window.data8583.convert8583(params, actionAfterConvertTransBatchRes)
+      	}else{
+      	    Scene.alert(data.errorMsg,function(){
+      	        Scene.goBack("Home");
+      	    });
+      	}
 	}
 	
 	function actionAfterConvertTransBatchRes(data){
@@ -206,7 +214,9 @@
 
 	function afterClearReverseData() {
 		setTimeout(function() {
-			Scene.alert("133")
+			Scene.alert("133",function(){
+			    Scene.goBack("Home");
+			})
 		}, 300)
 	}
 
@@ -305,7 +315,19 @@
 	}
 	
 	function gotoModifyPwd(){
+	    window.util.exeActionWithLoginChecked(function(){
+	    if(window.user.gradeId == "4"){
+            Scene.alert("137",function(){
+                if(ConsumptionData.dataForPayment.isExternalOrder){
+                    Pay.restart();
+                }else{
+                    Scene.goBack("Home");
+                }
+            });
+            return;
+        }
 		window.util.showSceneWithLoginChecked("ModifyPwd", null, null);
+		});
 	}
 
 	function gotoMerchantInfo() {

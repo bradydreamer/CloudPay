@@ -8,6 +8,7 @@
     <dimen name="order_details_coupon_text_size">20px</dimen>
     <dimen name="order_details_content_item_height">80dp</dimen>
     <dimen name="order_detail_interval_margin_right">100dp</dimen>
+    <dimen name="activity_setting_download_margin">128dp</dimen>
     
     <!-- dialog width and height -->
     <dimen name="about_dialog_width">630.0dp</dimen>
@@ -66,6 +67,7 @@
 	<dimen name="merchant_info_cloud_text_size">23px</dimen>
 	<dimen name="merch_info_list_title_margin_left_right">55dp</dimen>
 	<dimen name="merch_info_kool_cloud_margin_left_right">80dp</dimen>
+    <dimen name="merch_info_kool_cloud_margin_top">40dp</dimen>
 	
 	<!-- Login and search button text size -->
 	<dimen name="login_search_btn_text_size">40px</dimen>
@@ -77,6 +79,7 @@
 	<!-- activity consumption record search controller xml -->
 	<dimen name="consumption_record_search_textview_size">30px</dimen>
 	<dimen name="consumption_record_search_edittext_size">30px</dimen>
+    <dimen name="consumption_record_printer_button_text_size">18px</dimen>
 	
 	<!-- activity del voucher info controller xml -->
 	<dimen name="del_voucher_info_button_text_size">40px</dimen>
@@ -143,7 +146,7 @@
 	<dimen name="mispos_order_details_padding_left_right">80px</dimen>
 	
 	<!-- cash -->
-	<dimen name="cash_amount_textsize">23px</dimen>
+	<dimen name="cash_amount_textsize">35px</dimen>
 	<dimen name="cash_btn_width">580dp</dimen>
 	<dimen name="cash_btn_height">80dp</dimen>
 	<dimen name="cash_btn_textsize">40px</dimen>

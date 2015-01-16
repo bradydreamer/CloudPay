@@ -164,6 +164,27 @@ Pay.backupInfo = function(params){
 	var data = JSON.stringify(params);
 	ConsumptionData.saveProcessBatchTask(data);
 	ConsumptionData.startSingleBatchTask(data);
+	//卡通惠专用
+	/*if(ConsumptionData.dataForPayment.isExternalOrder == true &&
+	    ConsumptionData.dataForExternal.preferential == true &&
+	    ConsumptionData.dataForExternal.disResultId != "N0" &&
+	    ConsumptionData.dataForExternal.disResultId != undefined){
+	    var transTime = ConsumptionData.dataForPayment.transTime;
+	    var exParams = {
+            "action": "mscbank/discount/update",
+            "v": "1.0",
+            "merId": ConsumptionData.dataForExternal.merchId,
+            "disResultId":ConsumptionData.dataForExternal.disResultId,
+            "operate": "0",
+            "paidAmount": ConsumptionData.dataForExternal.paidAmount,
+            "txId": params.txnId,
+            "txTime": transTime.substring(0,4) + "-" + transTime.substring(4,6) + "-" + transTime.substring(6,8) + " " +transTime.substring(8,10) + ":" + transTime.substring(10,12) + ":" + transTime.substring(12,14)
+	    }
+	    setTimeout(function(){
+            ConsumptionData.saveProcessBatchTask(JSON.stringify(exParams));
+            ConsumptionData.startSingleBatchTask(JSON.stringify(exParams));
+        },500);
+	}*/
 };
 
 Pay.payResult = function(params) {
@@ -262,6 +283,7 @@ Pay.payResult = function(params) {
 			"payTypeDesc": payTypeDesc,
 			"transAmount": transAmount,
 			"transTime": transTime,
+			"printType": ConsumptionData.dataForPayment.printType,
 			"transTypeDesc": ConsumptionData.dataForPayment.typeName,
 			"openBrh": ConsumptionData.dataForPayment.openBrh,
 			"paymentId": ConsumptionData.dataForPayment.paymentId,
@@ -274,6 +296,7 @@ Pay.payResult = function(params) {
 			"transType": ConsumptionData.dataForPayment.transType,
 			"authNo": ConsumptionData.dataForPayment.authNo,
 			"txnId": ConsumptionData.dataForPayment.txnId,
+			"isExternalOrder": ConsumptionData.dataForPayment.isExternalOrder,
 			"payKeyIndex": ConsumptionData.dataForPayment.brhKeyIndex,
 			"couponAmount": ConsumptionData.dataForPayment.couponAmount
 		};
@@ -502,6 +525,16 @@ Pay.restart = function(params) {
 					"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
 					"orderList" : [order],
 				});
+			}else if(ConsumptionData.dataForExternal.preferential == true){
+			    order.reservedArea1 = ConsumptionData.dataForExternal.disResultId;
+				Scene.goBack("first", {
+					"totalAmount" : ConsumptionData.dataForExternal.transAmount,
+					"paidAmount" : ConsumptionData.dataForPayment.result == "success" ? ConsumptionData.dataForPayment.transAmount : "0",
+					"couponAmount" : ConsumptionData.dataForPayment.couponAmount,
+					"orderNo" : ConsumptionData.dataForPayment.orderNo,
+					"result" : ConsumptionData.dataForPayment.result == "success" ? "2" : "0",
+					"orderList" : [order],
+				});
 			}else {
 				Scene.goBack("first", {
 					"totalAmount" : ConsumptionData.dataForPayment.transAmount,
@@ -512,6 +545,7 @@ Pay.restart = function(params) {
 					"orderList" : [order],
 				});
 			}
+		    ConsumptionData.resetExternalData();
 		} else {
 			ConsumptionData.resetMultiData();
 			Scene.goBack("Home");

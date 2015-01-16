@@ -43,6 +43,10 @@ public class MultiPayRecordAdapter extends LoadMoreAdapter {
 					.findViewById(R.id.lv_multipay_record_tv_transType);
 			recordViewHolder.tv_rrn = (TextView) convertView
 					.findViewById(R.id.lv_multipay_record_tv_rrn);
+			recordViewHolder.tv_transDate = (TextView) convertView
+					.findViewById(R.id.lv_multipay_record_tv_transDate);
+			recordViewHolder.tv_transTime = (TextView) convertView
+					.findViewById(R.id.lv_multipay_record_tv_transTime);
 			recordViewHolder.tv_transAmount = (TextView) convertView
 					.findViewById(R.id.lv_multipay_record_tv_transAmount);
 			recordViewHolder.tv_orderStatus = (TextView) convertView
@@ -63,9 +67,22 @@ public class MultiPayRecordAdapter extends LoadMoreAdapter {
             recordViewHolder.tv_transType.setText(paymentDesc);
         }
 		recordViewHolder.tv_rrn.setText(recordData.optString("refNo"));
-		recordViewHolder.tv_transAmount.setText(formatAmountStr(recordData
+
+        //fix bug SMTPS-262 by Teddy --start on 8th January
+        String transTime = recordData.optString("transTime");
+        if (!TextUtils.isEmpty(transTime)) {
+
+            recordViewHolder.tv_transDate.setText(recordData.optString("transTime").substring(0,8));
+            recordViewHolder.tv_transTime.setText(
+                    recordData.optString("transTime").substring(8,10) + ":" +
+                            recordData.optString("transTime").substring(10,12) + ":" +
+                            recordData.optString("transTime").substring(12,14));
+        }
+        //fix bug SMTPS-262 by Teddy --end on 8th January
+
+        recordViewHolder.tv_transAmount.setText(formatAmountStr(recordData
 				.optString("transAmount")));
-		recordViewHolder.tv_orderStatus.setText(recordData
+        recordViewHolder.tv_orderStatus.setText(recordData
 				.optString("orderStateDesc"));
 
 		// convertView.setBackgroundResource(R.drawable.lv_row_bg_white);
@@ -79,6 +96,8 @@ public class MultiPayRecordAdapter extends LoadMoreAdapter {
 		public TextView tv_transType;
 		public TextView tv_transAmount;
 		public TextView tv_orderStatus;
+		public TextView tv_transDate;
+		public TextView tv_transTime;
 	}
 
 	private String formatAmountStr(String amount) {

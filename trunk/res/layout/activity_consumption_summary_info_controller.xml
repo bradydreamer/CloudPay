@@ -12,7 +12,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="@dimen/merch_info_kool_cloud_margin_left_right"
         android:layout_marginRight="@dimen/merch_info_kool_cloud_margin_left_right"
-        android:layout_marginTop="@dimen/merch_info_list_title_margin_left_right"
+        android:layout_marginTop="@dimen/merch_info_kool_cloud_margin_top"
         android:orientation="vertical" >
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,14 +34,16 @@
                 android:textColor="@color/gray"
                 android:textSize="@dimen/merchant_info_cloud_text_size" />
         </LinearLayout>
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            >
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:id="@+id/koolCloudMerchNumLayout"
                 android:gravity="center_vertical"
@@ -62,12 +64,12 @@
                     android:textSize="@dimen/merchant_info_cloud_text_size" />
             </LinearLayout>
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:id="@+id/koolCloudDeviceNumLayout"
-                android:orientation="horizontal"
-                android:layout_alignParentRight="true" >
+                android:orientation="horizontal" >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -83,7 +85,31 @@
                     android:textColor="@color/gray"
                     android:textSize="@dimen/merchant_info_cloud_text_size" />
             </LinearLayout>
-        </RelativeLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="right|center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/merchant_info_tv_operator"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/merchant_info_cloud_text_size" />
+                <Spinner
+                    android:id="@+id/spinner_operator"
+                    android:layout_width="107dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left|center_vertical"
+                    style="@android:style/Widget.Holo.Spinner"
+                    android:popupBackground="@color/lv_row_bg_gray_default"
+                    android:spinnerMode="dropdown"/>
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -92,7 +118,7 @@
         android:gravity="center_vertical"
         android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
         android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/listview_title_background"
         android:orientation="horizontal">
         <TextView
@@ -131,27 +157,87 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
-        <ListView
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="391dp"
-            android:id="@+id/summaryList"
-            android:background="@android:color/transparent"
-            android:listSelector="@android:color/transparent"
-            android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
-            android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
-            android:scrollbars="none"/>
-        <Button
-            android:layout_width="220dp"
-            android:layout_height="60dp"
-            android:onClick="onPrintSummary"
-            android:layout_marginBottom="25dp"
-            android:background="@drawable/button_print_background"
-            android:text="@string/order_detail_btn_operation_text_print"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/order_details_content_text_size"
-            android:layout_below="@+id/summaryListLayout"
-            android:layout_centerHorizontal="true"/>
+            android:layout_height="397dp"
+            android:gravity="center_horizontal"
+            android:layout_alignParentTop="true">
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="345dp"
+                android:id="@+id/summaryList"
+                android:background="@android:color/transparent"
+                android:listSelector="@android:color/transparent"
+                android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
+                android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
+                android:scrollbars="none"
+                android:layout_alignParentTop="true"/>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/summaryList"
+                android:layout_marginLeft="@dimen/merch_info_list_title_margin_left_right"
+                android:layout_marginRight="@dimen/merch_info_list_title_margin_left_right"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.7"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:id="@+id/today_total_amount"
+                    android:textSize="@dimen/merchant_info_list_title_text_size"
+                    android:textColor="@color/gray"
+                    android:text="@string/consumption_summary_total_amount"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/today_total_amount_content"
+                    android:textSize="@dimen/merchant_info_list_title_text_size"/>
+                <!--<TextView-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/today_total_amount_unit"-->
+                    <!--android:textSize="@dimen/merchant_info_list_title_text_size"-->
+                    <!--android:textColor="@color/gray"-->
+                    <!--android:text="@string/consumption_summary_total_amount_unit"/>-->
+            </LinearLayout>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginBottom="15dp">
+            <Button
+                android:layout_width="220dp"
+                android:layout_height="60dp"
+                android:onClick="onPrintSummary"
+                android:background="@drawable/button_print_background"
+                android:text="@string/order_detail_btn_operation_text_print"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/order_details_content_text_size"
+                android:layout_centerHorizontal="true"/>
+            <Button
+                android:layout_width="220dp"
+                android:layout_height="60dp"
+                android:onClick="onBackClick"
+                android:layout_marginLeft="200dp"
+                android:background="@drawable/button_print_background"
+                android:text="@string/order_detail_btn_operation_text_back"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/order_details_content_text_size"
+                android:layout_centerHorizontal="true"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -40,6 +40,7 @@ public class OldTrans implements Constant {
 	private String realAmount; // real amount
 	private String toAccount; // to account bank card number
 	private String pocc;
+    private String printFromTag; //print from tag for alipay overseas
 
 	private byte oldEntryMode;
 	private byte oldPinMode;
@@ -55,6 +56,14 @@ public class OldTrans implements Constant {
 	private String oper; // 操作员
 
     private String txnId;   //txnId
+
+    public String getPrintFromTag() {
+        return printFromTag;
+    }
+
+    public void setPrintFromTag(String printFromTag) {
+        this.printFromTag = printFromTag;
+    }
 
     public String getTxnId() {
         return txnId;

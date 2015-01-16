@@ -11,11 +11,21 @@
 	var dataForBalance;
 	
 	var dataForMultiPay;
+
+	var dataForExternal;
 	
 	var dataForBatchTask;			//use for caching single batch in memory
 	var dataForBatchArray;			//use for caching local batch tasks in memory
 	
 
+    function resetExternalData(){
+        ConsumptionData.dataForExternal = {
+            "actiId": "00",
+            "preferential": false,
+            "merchId": "0",
+            "disResultId": "N0"
+        };
+    }
 	function resetConsumptionData() {
 		ConsumptionData.dataForPayment = {
 			"typeOf8583": "pay",
@@ -49,6 +59,11 @@
 	function startSingleBatchTask (data) {
 		var msg = JSON.parse(data);
 		var action = msg.action;
+		var account = msg.cardNo;
+		var regExp = /^\d+(\.\d+)?$/;
+		if (!regExp.test(account)) {
+		    account = msg.alipayAccount;
+		}
 		var req = {
 	  		txnId : msg.txnId,
 	  		oriTxnId : msg.oriTxnId,
@@ -60,13 +75,22 @@
 	  		dateExpr: msg.dateExpr,
 	  		stlmDate: msg.stlmDate,
 	  		
-	  		cardNo: msg.cardNo,
+	  		cardNo: account,
 	  		paymentId: msg.paymentId,
 	  		transType: msg.transType,
 	  		batchNo: msg.batchNo,
 	  		traceNo: msg.traceNo,
 	  		transTime: msg.transTime,
-	  		transAmount: msg.transAmount
+	  		transAmount: msg.transAmount,
+	  		/********************/
+	  		v: msg.v,
+	  		txId: msg.txId,
+            merId: msg.merId,
+            disResultId: msg.disResultId,
+            operate: msg.operate,
+            paidAmount: msg.paidAmount,
+            txTime: msg.txTime
+	  		/********************/
 	  	};
 	  	
 	  	//cache processing data in memory
@@ -163,6 +187,7 @@
 		"resetConsumptionData": resetConsumptionData,
 		"dataForCancellingOrder": dataForCancellingOrder,
 		"resetDataForCancellingOrder": resetDataForCancellingOrder,
+		"resetExternalData": resetExternalData,
 		"dataForBalance": dataForBalance,
 		"resetDataForBalance": resetDataForBalance,
 		"dataForMultiPay": dataForMultiPay,
@@ -178,4 +203,5 @@
 	resetDataForCancellingOrder();
 	resetDataForBalance();
 	resetMultiData();
+	resetExternalData();
 })();

@@ -37,12 +37,14 @@ public class EMVICManager {
 	public static final int TRADE_STATUS_7 = 0x37;
 	public static final int TRADE_STATUS_8 = 0x38;
 	public static final int TRADE_STATUS_9 = 0x39;
+	public static final int TRADE_STATUS_10 = 0x50;
 	public static final int TRADE_STATUS_BAN = 0x40;
 	public static final int TRADE_STATUS_ABORT = 0x41;
 	public static final int TRADE_STATUS_APPROVED = 0x42;
 	public static final int TRADE_STATUS_DISABLESERVICE = 0x43;
 	public static final int TRADE_STATUS_ONLINE = 0x44;
 	public static final int TRADE_STATUS_AFGETICDATA = 0x45;
+	public static final int TRADE_STATUS_READICCARDID = 0x46;
 	public static final int SMART_CARD_EVENT_INSERT_CARD = 0x00;
 	public static final int SMART_CARD_EVENT_REMOVE_CARD = 0x01;
 	public static final int SMART_CARD_EVENT_INPUTPASSWORD = 0x04;
@@ -59,6 +61,8 @@ public class EMVICManager {
 	public int cardType = 0;
 	public byte[] bPrintMethod = new byte[1];
 	private Boolean tradeFlag = false;
+	private Boolean readFlag = false;
+	private Boolean readRes = false;
 	private EMVICData mEMVICData = EMVICData.getEMVICInstance();
 	private UtilFor8583 util8583 = UtilFor8583.getInstance();
 
@@ -86,6 +90,17 @@ public class EMVICManager {
 		EmvL2Interface.loadKernel();
 		EmvL2Interface.emvKernelInit(1, keyIndex);
 		EmvL2Interface.openReader(1);
+	}
+
+	public void initForRead(){
+		readFlag = true;
+		readRes = false;
+	}
+
+	public void finishRead(){
+		readFlag = false;
+		readRes = false;
+		onDestroy();
 	}
 
 	public void finish() {
@@ -156,6 +171,10 @@ public class EMVICManager {
 			if (!tradeAbortFlag) {
 				tradeStatusSend(TRADE_STATUS_9);
 			}
+			if(readRes){
+				tradeStatusSend(TRADE_STATUS_10);
+				return;
+			}
 			if (tradeFlag && tradeAbortFlag) {
 				tradeFlag = false;
 				tradeAbortFlag = false;
@@ -220,6 +239,12 @@ public class EMVICManager {
 		ret = EmvL2Interface.readAppData();
 		if (ret < 0) {
 			tradeStatusSend(TRADE_STATUS_ABORT);
+			return;
+		}
+		if(readFlag){ //读取数据，只需要进行到此步骤。
+			tradeAbortFlag = true;
+			readRes = true;
+			tradeStatusSend(TRADE_STATUS_READICCARDID);
 			return;
 		}
 		tradeStatusSend(TRADE_STATUS_3);
@@ -460,7 +485,7 @@ public class EMVICManager {
 		mEMVICData.setF55(f55);
 	}
 
-	private void getPAN() {
+	public void getPAN() {
 		byte ba[] = new byte[255];
 		int pLen = EmvL2Interface.getTagValue((short) 0x5A, ba);
 		String pan = ByteUtil.bcd_2_Str(ba, pLen).substring(4);

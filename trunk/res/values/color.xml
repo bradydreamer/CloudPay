@@ -10,7 +10,7 @@
     <color name="blue">#FF2A77BB</color>
     <color name="dark_blue">#FF5F87BC</color>
     <color name="light_blue">#FF2F81D4</color>
-    
+
     <color name="custom_anim_dialog_bg">#aa000000</color>
     <color name="home_navigation_bg">#FF253341</color>
     
@@ -47,5 +47,9 @@
     <!-- merchant info -->
     <color name="merchant_info_list_title_bg_color">#FFB6BCCC</color>
     <color name="merchant_info_list_bg_color">#FFCDD3E1</color>
+
+    <color name="holo_light_blue">#FF83D1ED</color>
+    <color name="light_green">#FF0EB819</color>
+
     
 </resources>

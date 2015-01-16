@@ -3,17 +3,21 @@ package cn.koolcloud.printer;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import cn.koolcloud.constant.Constant;
 import cn.koolcloud.constant.ConstantUtils;
@@ -21,17 +25,20 @@ import cn.koolcloud.jni.PrinterInterface;
 import cn.koolcloud.parameter.OldTrans;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.R;
+import cn.koolcloud.pos.database.BankDB;
+import cn.koolcloud.pos.entity.ConsumptionRecordBean;
 import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.MisposOperationUtil;
 import cn.koolcloud.printer.command.FormatSettingCommand;
-import cn.koolcloud.printer.control.Align;
-import cn.koolcloud.printer.control.Depth;
-import cn.koolcloud.printer.control.FontType;
-import cn.koolcloud.printer.control.PrinterControl;
-import cn.koolcloud.printer.devices.DeviceManager;
+import cn.koolcloud.printer.command.PrinterCommand;
+import cn.koolcloud.printer.control.SettingConstants.Align;
+import cn.koolcloud.printer.control.BasePrinterInterface;
+import cn.koolcloud.printer.control.SettingConstants.Depth;
+import cn.koolcloud.printer.control.SettingConstants.FontType;
+import cn.koolcloud.printer.control.PrinterImpl;
 import cn.koolcloud.printer.exception.AccessException;
-import cn.koolcloud.printer.util.QRcodeBitmap;
+import cn.koolcloud.printer.exception.PrinterException;
 import cn.koolcloud.util.AppUtil;
 import cn.koolcloud.util.DateUtil;
 import cn.koolcloud.util.StringUtil;
@@ -41,6 +48,10 @@ public class PrinterHelper implements Constant {
 
 	private static PrinterHelper _instance;
 	private static Context ctx;
+    private final static int PRINTER_DELAY_TIME = 4000;
+    private static boolean isPrinting = false;
+    private final static int QRCODE_WIDTH = 300;        //qrcode width
+    private final static int QRCODE_HEIGHT = 300;       //qrcode height
 
 	private PrinterHelper() {
 	}
@@ -56,14 +67,20 @@ public class PrinterHelper implements Constant {
 	/**
 	 * print receipt
 	 * 
-	 * @throws PrinterException
+	 * @throws cn.koolcloud.printer.exception.PrinterException
 	 */
 	synchronized public void printReceipt(OldTrans trans)
 			throws PrinterException {
+        if (isPrinting) {
+            return;
+        }
 		try {
 			PrinterInterface.open();
 			PrinterInterface.set(1);
 			int printerStatus = PrinterInterface.begin();
+
+            isPrinting = true;
+
 			if (printerStatus == -1) {
 				// close printer
 				PrinterInterface.end();
@@ -83,6 +100,10 @@ public class PrinterHelper implements Constant {
 				}
 			}
 
+            BankDB bankDB = BankDB.getInstance(ctx);
+            String bankName = bankDB.getBankNameByIssuerId(trans.getOldIssuerID());
+            bankDB.closeDB();
+
 			for (int i = 0; i < 2; i++) {
 				printerWrite(PrinterCommand.setFontBold(1));
 				printerWrite(PrinterCommand.setAlignMode(1));
@@ -94,6 +115,8 @@ public class PrinterHelper implements Constant {
 				printerWrite(PrinterCommand.setAlignMode(0));
 				printerWrite(PrinterCommand.setFontEnlarge(0));
 
+                //set line space
+                printerWrite(FormatSettingCommand.getESC3n((byte) 3));
 				if (i == 0) {
 					printerWrite(Env.getResourceString(ctx, R.string.printer_merchant_copy).getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
@@ -127,13 +150,7 @@ public class PrinterHelper implements Constant {
 				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_trans_no) + trans.getTxnId()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				String localTime = convertTimeToLocal(trans);
-				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
-						+ "/" + localTime.substring(4, 6)
-						+ "/" + localTime.substring(6, 8)
-						+ " " + localTime.substring(8, 10)
-						+ ":" + localTime.substring(10, 12)
-						+ ":" + localTime.substring(12, 14)).getBytes("GB2312"));
+				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite(Env.getResourceString(ctx, R.string.printer_tag_pay_type).getBytes("GB2312"));
@@ -181,7 +198,13 @@ public class PrinterHelper implements Constant {
 						+ Env.getResourceString(ctx, R.string.printer_auth_no) + trans.getOldAuthCode()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper()).getBytes("GB2312"));
+				String localTime = convertTimeToLocal(trans);
+				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
+						+ "/" + localTime.substring(4, 6)
+						+ "/" + localTime.substring(6, 8)
+						+ " " + localTime.substring(8, 10)
+						+ ":" + localTime.substring(10, 12)
+						+ ":" + localTime.substring(12, 14)).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite("--------------------------------".getBytes("GB2312"));
@@ -189,6 +212,15 @@ public class PrinterHelper implements Constant {
 
 				printerWrite((Env.getResourceString(ctx, R.string.printer_tag_channel) + trans.getPaymentName()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
+
+                //ref no.
+                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId()).getBytes("GB2312"));
+                printerWrite(PrinterCommand.linefeed());
+
+                //Issuer name
+                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_issuer_name)).getBytes("GB2312"));
+                printerWrite(bankName.getBytes("GB2312"));
+                printerWrite(PrinterCommand.linefeed());
 
 				// 增大字体：高度增加1倍，宽度不变
 				printerWrite(PrinterCommand.setFontEnlarge(0x01));
@@ -224,9 +256,6 @@ public class PrinterHelper implements Constant {
 				// 结束增大字体
 				printerWrite(PrinterCommand.setFontEnlarge(0));
 
-                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId()).getBytes("GB2312"));
-                printerWrite(PrinterCommand.linefeed());
-
 				// String ref = "备注/REFERENCE";
 				String ref = Env.getResourceString(ctx, R.string.printer_reference);
 				printerWrite(ref.getBytes("GB2312"));
@@ -253,17 +282,23 @@ public class PrinterHelper implements Constant {
 				if (i == 0) {
 					String sig = Env.getResourceString(ctx, R.string.printer_tag_signature);
 					printerWrite(sig.getBytes("GB2312"));
-					printerWrite(PrinterCommand.feedLine(3));
+                    printerWrite(PrinterCommand.linefeed());
+                    printerWrite(PrinterCommand.linefeed());
+                    printerWrite(PrinterCommand.linefeed());
 					printerWrite("--------------------------------".getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
 				}
 
 				printerWrite(Env.getResourceString(ctx, R.string.printer_msg_acknowledge_card).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(PrinterCommand.feedLine(2));
 				if (i == 0) {
-					Thread.currentThread().sleep(8000);
+					Thread.currentThread().sleep(PRINTER_DELAY_TIME);
 				}
 			}
 
@@ -278,14 +313,19 @@ public class PrinterHelper implements Constant {
 		} finally {
 			PrinterInterface.end();
 			PrinterInterface.close();
+            isPrinting = false;
 		}
 	}
 
     synchronized public void printTransferReceipt(OldTrans trans) throws PrinterException {
+        if (isPrinting) {
+            return;
+        }
         try {
             PrinterInterface.open();
             PrinterInterface.set(1);
 
+            isPrinting = true;
             int printerStatus = PrinterInterface.begin();
             if (printerStatus == -1) {
                 // close printer
@@ -305,6 +345,12 @@ public class PrinterHelper implements Constant {
                 }
             }
 
+            //get issuer name
+            BankDB bankDB = BankDB.getInstance(ctx);
+            String bankName = bankDB.getBankNameByIssuerId(trans.getOldIssuerID());
+            bankDB.closeDB();
+            //set line space
+            printerWrite(FormatSettingCommand.getESC3n((byte) 3));
             for (int i = 0; i < 2; i++) {
                 printerWrite(PrinterCommand.setFontBold(1));
                 printerWrite(PrinterCommand.setAlignMode(1));
@@ -348,14 +394,9 @@ public class PrinterHelper implements Constant {
 
                 printerWrite((Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId()).getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
-	            String localTime = convertTimeToLocal(trans);
-                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
-		                + "/" + localTime.substring(4, 6)
-		                + "/" + localTime.substring(6, 8)
-		                + " " + localTime.substring(8, 10)
-		                + ":" + localTime.substring(10, 12)
-		                + ":" + localTime.substring(12, 14)).getBytes("GB2312"));
-                printerWrite(PrinterCommand.linefeed());
+
+	            printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper()).getBytes("GB2312"));
+	            printerWrite(PrinterCommand.linefeed());
 
                 printerWrite(Env.getResourceString(ctx, R.string.printer_tag_pay_type).getBytes("GB2312"));
                 // printerWrite(PrinterCommand.linefeed());
@@ -381,13 +422,25 @@ public class PrinterHelper implements Constant {
                         + Env.getResourceString(ctx, R.string.printer_auth_no) + trans.getOldAuthCode()).getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
 
-                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper()).getBytes("GB2312"));
-                printerWrite(PrinterCommand.linefeed());
+	            String localTime = convertTimeToLocal(trans);
+	            printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
+			            + "/" + localTime.substring(4, 6)
+			            + "/" + localTime.substring(6, 8)
+			            + " " + localTime.substring(8, 10)
+			            + ":" + localTime.substring(10, 12)
+			            + ":" + localTime.substring(12, 14)).getBytes("GB2312"));
+	            printerWrite(PrinterCommand.linefeed());
 
                 printerWrite("--------------------------------".getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
 
                 printerWrite((Env.getResourceString(ctx, R.string.printer_tag_channel) + trans.getPaymentName()).getBytes("GB2312"));
+                printerWrite(PrinterCommand.linefeed());
+
+                //Issuer name
+                printerWrite((Env.getResourceString(ctx, R.string.printer_tag_issuer_name)).getBytes("GB2312"));
+
+                printerWrite(bankName.getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
 
                 // 增大字体：高度增加1倍，宽度不变
@@ -461,17 +514,23 @@ public class PrinterHelper implements Constant {
                 if (i == 0) {
                     String sig = Env.getResourceString(ctx, R.string.printer_tag_signature);
                     printerWrite(sig.getBytes("GB2312"));
-                    printerWrite(PrinterCommand.feedLine(3));
+                    printerWrite(PrinterCommand.linefeed());
+                    printerWrite(PrinterCommand.linefeed());
+                    printerWrite(PrinterCommand.linefeed());
                     printerWrite("--------------------------------".getBytes("GB2312"));
                     printerWrite(PrinterCommand.linefeed());
                 }
 
                 printerWrite(Env.getResourceString(ctx, R.string.printer_msg_acknowledge_card).getBytes("GB2312"));
                 printerWrite(PrinterCommand.linefeed());
+                printerWrite(PrinterCommand.linefeed());
+                printerWrite(PrinterCommand.linefeed());
+                printerWrite(PrinterCommand.linefeed());
+                printerWrite(PrinterCommand.linefeed());
+                printerWrite(PrinterCommand.linefeed());
 
-                printerWrite(PrinterCommand.feedLine(2));
                 if (i == 0) {
-                    Thread.currentThread().sleep(8000);
+                    Thread.currentThread().sleep(PRINTER_DELAY_TIME);
                 }
             }
 
@@ -486,11 +545,15 @@ public class PrinterHelper implements Constant {
         } finally {
             PrinterInterface.end();
             PrinterInterface.close();
+            isPrinting = false;
         }
     }
 
 	synchronized public void printMisposReceipt(MisposData misposBean)
 			throws PrinterException {
+        if (isPrinting) {
+            return;
+        }
 		try {
 			PrinterInterface.open();
 			PrinterInterface.set(1);
@@ -500,6 +563,11 @@ public class PrinterHelper implements Constant {
 			// printerWrite(PrinterCommand.setHeatTime(180));
 
 			PrinterInterface.begin();
+
+            isPrinting = true;
+
+            //set line space
+            printerWrite(FormatSettingCommand.getESC3n((byte) 3));
 			for (int i = 0; i < 2; i++) {
 				printerWrite(PrinterCommand.setFontBold(1));
 				printerWrite(PrinterCommand.setAlignMode(1));
@@ -551,15 +619,10 @@ public class PrinterHelper implements Constant {
 						.getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(("日期/时间:" + " "
-						+ ("" + misposBean.getTranDate().substring(0, 4)) + "/"
-						+ ("" + misposBean.getTranDate().substring(4, 6)) + "/"
-						+ ("" + misposBean.getTranDate().substring(6, 8)) + " "
-						+ ("" + misposBean.getTranTime().substring(0, 2)) + ":"
-						+ ("" + misposBean.getTranTime().substring(2, 4)) + ":" + ("" + misposBean
-						.getTranTime().substring(4, 6))).getBytes("GB2312"));
-				printerWrite(PrinterCommand.linefeed());
 
+				printerWrite(("操作员:" + misposBean.getOperatorId())
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
 				// printerWrite("交易类型(TRANS TYPE):".getBytes("GB2312"));
 				printerWrite("交易类型:".getBytes("GB2312"));
 				// printerWrite(PrinterCommand.linefeed());
@@ -597,8 +660,13 @@ public class PrinterHelper implements Constant {
 						.getAuthNo()).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(("操作员:" + misposBean.getOperatorId())
-						.getBytes("GB2312"));
+				printerWrite(("日期/时间:" + " "
+						+ ("" + misposBean.getTranDate().substring(0, 4)) + "/"
+						+ ("" + misposBean.getTranDate().substring(4, 6)) + "/"
+						+ ("" + misposBean.getTranDate().substring(6, 8)) + " "
+						+ ("" + misposBean.getTranTime().substring(0, 2)) + ":"
+						+ ("" + misposBean.getTranTime().substring(2, 4)) + ":" + ("" + misposBean
+						.getTranTime().substring(4, 6))).getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
 
 				printerWrite("--------------------------------"
@@ -671,7 +739,9 @@ public class PrinterHelper implements Constant {
 				if (i == 0) {
 					String sig = "持卡人签名";
 					printerWrite(sig.getBytes("GB2312"));
-					printerWrite(PrinterCommand.feedLine(3));
+                    printerWrite(PrinterCommand.linefeed());
+                    printerWrite(PrinterCommand.linefeed());
+                    printerWrite(PrinterCommand.linefeed());
 					printerWrite("--------------------------------"
 							.getBytes("GB2312"));
 					printerWrite(PrinterCommand.linefeed());
@@ -679,10 +749,14 @@ public class PrinterHelper implements Constant {
 
 				printerWrite("本人确认以上交易，同意将其记入本卡账户".getBytes("GB2312"));
 				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite(PrinterCommand.linefeed());
 
-				printerWrite(PrinterCommand.feedLine(2));
 				if (i == 0) {
-					Thread.currentThread().sleep(8000);
+					Thread.currentThread().sleep(PRINTER_DELAY_TIME);
 				}
 			}
 
@@ -697,11 +771,15 @@ public class PrinterHelper implements Constant {
 		} finally {
 			PrinterInterface.end();
 			PrinterInterface.close();
+            isPrinting = false;
 		}
 	}
 
 	synchronized public void printTransSummary(JSONObject printData)
 			throws PrinterException {
+        if (isPrinting) {
+            return;
+        }
 		try {
 			PrinterInterface.open();
 			PrinterInterface.set(1);
@@ -712,107 +790,196 @@ public class PrinterHelper implements Constant {
 
 			PrinterInterface.begin();
 
+            isPrinting = true;
+			printerWrite(FormatSettingCommand.getESC3n((byte) 3));
+            //set line space
+            printerWrite(FormatSettingCommand.getESC3n((byte) 3));
 			printerWrite(PrinterCommand.setFontBold(1));
 			printerWrite(PrinterCommand.setAlignMode(1));
 			printerWrite(PrinterCommand.setFontEnlarge(0x01));
-			printerWrite(("当日消费汇总").getBytes("GB2312"));
+			printerWrite(Env.getResourceString(ctx, R.string.printer_summary_title).getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
 			printerWrite(PrinterCommand.setFontBold(0));
 			printerWrite(PrinterCommand.setAlignMode(0));
 			printerWrite(PrinterCommand.setFontEnlarge(0));
-
+			printerWrite(FormatSettingCommand.getESC3n((byte) 3));
+            //set line space
+            printerWrite(FormatSettingCommand.getESC3n((byte) 3));
 			printerWrite("--------------------------------".getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
-			printerWrite(("商户名称:" + printData
+			printerWrite((Env.getResourceString(ctx, R.string.printer_tag_merchant) + printData
 					.optString(ConstantUtils.FOR_PRINT_MERCHANT_NAME))
 					.getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
-			printerWrite(("酷云客户号:" + printData
+			printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + printData
 					.optString(ConstantUtils.FOR_PRINT_MERCHANT_ID))
 					.getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
-			printerWrite(("酷云设备号:" + printData
+			printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + printData
 					.optString(ConstantUtils.FOR_PRINT_MECHINE_ID))
 					.getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
-			printerWrite(("汇总时间:" + getCurrentTime()).getBytes("GB2312"));
+			printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + printData
+					.optString(ConstantUtils.FOR_PRINT_OPERATOR))
+					.getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+
+			printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time)).getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite(getCurrentTime().getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
 			printerWrite("--------------------------------".getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
-			printerWrite(("交易类型     " + "笔数  " + "金额（元） ").getBytes("GB2312"));
+			String amount = Env.getResourceString(ctx, R.string.printer_summary_amount) + "(" + Env.getCurrencyResource(ctx) + ")";
+			printerWrite((Env.getResourceString(ctx, R.string.printer_summary_transType) + "    " + Env.getResourceString(ctx, R.string.printer_summary_count) + "  " + amount).getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 			printerWrite("--------------------------------".getBytes("GB2312"));
 			printerWrite(PrinterCommand.linefeed());
 
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_CONSUME)
-					+ "            "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_CONSUME) + "  " + getTransAmount(
+			String language = Locale.getDefault().getLanguage();
+			if (!TextUtils.isEmpty(language) && language.equals(ConstantUtils.LANGUAGE_CHINESE)) { //中文的排版
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUME)
+						+ "            "
+						+ getTransCount(printData,
+								ConstantUtils.APMP_TRAN_TYPE_CONSUME) + "  " + getTransAmount(
+							printData, ConstantUtils.APMP_TRAN_TYPE_CONSUME))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
+						+ "        "
+						+ getTransCount(printData,
+								ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
+						+ "  " + getTransAmount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
+						+ "          "
+						+ getTransCount(printData,
+								ConstantUtils.APMP_TRAN_TYPE_PREAUTH) + "  " + getTransAmount(
+							printData, ConstantUtils.APMP_TRAN_TYPE_PREAUTH))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
+						+ "  "
+						+ getTransCount(printData,
+								ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
+						+ "  " + getTransAmount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
+						+ "  "
+						+ getTransCount(printData,
+								ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
+						+ "  " + getTransAmount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
+						+ "      "
+						+ getTransCount(printData,
+								ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
+						+ "  " + getTransAmount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
+						+ "  "
+						+ getTransCount(
+								printData,
+								ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
+						+ "  " + getTransAmount(printData,
+							ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL))
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+			} else { //英文的排版
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUME)
+						+ "             "
+						+ getTransCount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUME) + "  " + getTransAmount(
 						printData, ConstantUtils.APMP_TRAN_TYPE_CONSUME))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
-					+ "        "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
-					+ "  " + getTransAmount(printData,
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
+						+ "             "
+						+ getTransCount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)
+						+ "  " + getTransAmount(printData,
 						ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
-					+ "          "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PREAUTH) + "  " + getTransAmount(
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTH)
+						+ "             "
+						+ getTransCount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTH) + "  " + getTransAmount(
 						printData, ConstantUtils.APMP_TRAN_TYPE_PREAUTH))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
-					+ "  "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
-					+ "  " + getTransAmount(printData,
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
+						+ "  "
+						+ getTransCount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)
+						+ "  " + getTransAmount(printData,
 						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
-					+ "  "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
-					+ "  " + getTransAmount(printData,
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
+						+ " "
+						+ getTransCount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)
+						+ "  " + getTransAmount(printData,
 						ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
-					+ "      "
-					+ getTransCount(printData,
-							ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
-					+ "  " + getTransAmount(printData,
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
+						+ "        "
+						+ getTransCount(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL)
+						+ "  " + getTransAmount(printData,
 						ConstantUtils.APMP_TRAN_TYPE_PRAUTHCANCEL))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
-			printerWrite((getTransType(printData,
-					ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
-					+ "  "
-					+ getTransCount(
-							printData,
-							ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
-					+ "  " + getTransAmount(printData,
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+				printerWrite((getTransType(printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
+						+ "  "
+						+ getTransCount(
+						printData,
+						ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)
+						+ "  " + getTransAmount(printData,
 						ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL))
-					.getBytes("GB2312"));
-			printerWrite(PrinterCommand.linefeed());
+						.getBytes("GB2312"));
+				printerWrite(PrinterCommand.linefeed());
+
+			}
 			printerWrite("--------------------------------".getBytes("GB2312"));
+			printerWrite((Env.getResourceString(ctx, R.string.printer_summary_totalAmount)).getBytes("GB2312"));
+			printerWrite(PrinterCommand.setFontEnlarge(0x01));
+			printerWrite((printData.optString(ConstantUtils.FOR_TYPE_TOTALAMOUNT)).getBytes("GB2312"));
+			printerWrite(PrinterCommand.setFontEnlarge(0));
+			printerWrite(("  (" + Env.getCurrencyResource(ctx) + ")").getBytes("GB2312"));
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite(PrinterCommand.linefeed());
+			printerWrite(PrinterCommand.linefeed());
 			printerWrite(PrinterCommand.linefeed());
 			printerWrite(PrinterCommand.linefeed());
 			printerWrite(PrinterCommand.linefeed());
@@ -825,6 +992,7 @@ public class PrinterHelper implements Constant {
 		} finally {
 			PrinterInterface.end();
 			PrinterInterface.close();
+            isPrinting = false;
 		}
 	}
 
@@ -861,66 +1029,60 @@ public class PrinterHelper implements Constant {
 	}
 
     public void printQRCodeReceipt(OldTrans trans) {
-        PrinterControl control = DeviceManager.getInstance()
-                .getPrinterControlEx();
+        PrinterImpl mPrinterImpl = new PrinterImpl();
+        if (isPrinting) {
+            return;
+        }
         try {
+            mPrinterImpl.open();
+            isPrinting = true;
 
-            control.open();
-
+            //set line space
+            mPrinterImpl.setLineSpacing(20);
             for (int i = 0; i < 2; i++) {
 
-                // control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
-                control.sendESC(PrinterCommand.setAlignMode(1));
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_CENTER);
 
-                Drawable mDrawable = ctx.getResources().getDrawable(
-                        R.drawable.alipay);
+                Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.alipay);
                 Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
-                control.printImage(Bitmap.createScaledBitmap(mBitMap, 250, 80,
-                        false));
+                mPrinterImpl.printerBitmap(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
 
-                // control.printText(TAG_DTITAL + "\n", FontType.DOUBLE_WH,
-                // Align.CENTER);
-
-                control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+                mPrinterImpl.setLineSpacing(20);
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_LEFT);
 
                 if (i == 0) {
-                    control.printText(Env.getResourceString(ctx, R.string.printer_merchant_copy));
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_merchant_copy));
                     printerWrite(PrinterCommand.linefeed());
                 } else if (i == 1) {
-                    control.printText(Env.getResourceString(ctx, R.string.printer_cardhoder_copy));
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_cardhoder_copy));
 
                     printerWrite(PrinterCommand.linefeed());
                 }
 
-                control.printText(TAG_LINE2 + "\n");
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_merchant));
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_merchant));
 
-                control.printText(trans.getOldMertName() + "\n",
-                        FontType.NORMAL, Align.LEFT, Depth.DEEP);
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.printText(trans.getOldMertName() + "\n");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + trans.getKoolCloudMID()
-                        + "\n");
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + trans.getKoolCloudTID()
-                        + "\n");
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + trans.getKoolCloudMID() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + trans.getKoolCloudTID() + "\n");
                 // control.printText(TAG_AP_NAME + trans.getPaymentName() +
                 // "\n");
                 // control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_ref) + trans.getOldApOrderId() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_trans_no) + trans.getTxnId() + "\n");
+
+	            mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper() + "\n");
 
 //				control.printText(TAG_DATE_TIME + Utils.getCurrentDate() + " ");
 
 //				control.printText(/* TAG_TIME + */Utils.getCurrentTime() + "\n");
-	            String localTime = convertTimeToLocal(trans);
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
-		                + "/" + localTime.substring(4, 6)
-		                + "/" + localTime.substring(6, 8)
-		                + " " + localTime.substring(8, 10)
-		                + ":" + localTime.substring(10, 12)
-		                + ":" + localTime.substring(12, 14));
-                control.printText("\n");
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_pay_type));
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_pay_type));
 
                 String transType = "";
                 if (trans.getTransType() == TRAN_VOID) {
@@ -933,27 +1095,34 @@ public class PrinterHelper implements Constant {
                     transType = trans.getTransType() + "";
                 }
 
-                control.printText(transType + "\n", FontType.NORMAL,
-                        Align.LEFT, Depth.DEEP);
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.setAlign(Align.LEFT);
+                mPrinterImpl.printText(transType + "\n");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_trace)
-                        + StringUtil.fillZero(
-                        Integer.toString(trans.getOldTrace()), 6)
-                        + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_trace) + StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6) + "\n");
 
                 //print batch no
-                control.printText(Env.getResourceString(ctx, R.string.printer_batch_no), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(StringUtil.fillZero(Integer.toString(trans.getOldBatch()), 6) + "\n", FontType.NORMAL);
+                mPrinterImpl.setFontSize(FontType.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_batch_no));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(StringUtil.fillZero(Integer.toString(trans.getOldBatch()), 6) + "\n");
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper() + "\n");
+	            String localTime = convertTimeToLocal(trans);
+	            mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
+			            + "/" + localTime.substring(4, 6)
+			            + "/" + localTime.substring(6, 8)
+			            + " " + localTime.substring(8, 10)
+			            + ":" + localTime.substring(10, 12)
+			            + ":" + localTime.substring(12, 14));
+	            mPrinterImpl.printText("\n");
 
-                control.printText(TAG_LINE2 + "\n");
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_channel) + trans.getPaymentName() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_channel) + trans.getPaymentName() + "\n");
 
                 if (trans.getTransType() == TRAN_SALE) {
-                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_account) + trans.getAlipayAccount()
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_account) + trans.getAlipayAccount()
                             + "\n");
                 }
 
@@ -963,49 +1132,44 @@ public class PrinterHelper implements Constant {
                     amt = " - " + amt;
                 }
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_amount));
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_amount));
+                mPrinterImpl.setDoubleFormat(BasePrinterInterface.DOUBLE_WIDTH_HEIGHT);
+                mPrinterImpl.setPrinterMode(FontType.BOLD);
+                mPrinterImpl.printText(amt);
+                mPrinterImpl.setPrinterMode(0);
+                mPrinterImpl.setDoubleFormat(0);
+                mPrinterImpl.printText("\n");
 
-                control.sendESC(PrinterCommand.setFontEnlarge(0x01));
-                control.sendESC(PrinterCommand.setFontBold(1));
-                control.printText(amt);
-                control.sendESC(PrinterCommand.setFontBold(0));
-                control.sendESC(PrinterCommand.setFontEnlarge(0));
-                control.printText("\n", FontType.NORMAL, Align.LEFT);
-
-                control.printText(
-                        Env.getResourceString(ctx, R.string.printer_transaction_id) + "\n" + trans.getAlipayTransactionID()
-                                + "\n", FontType.NORMAL, Align.LEFT);
-                control.printText(Env.getResourceString(ctx, R.string.printer_partner_id) + "\n", FontType.NORMAL,
-                        Align.LEFT);
-                control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_transaction_id) + "\n");
+                mPrinterImpl.printText(trans.getAlipayTransactionID() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_partner_id) + "\n");
+                mPrinterImpl.printText(trans.getAlipayPId() + "\n");
 
                 String number = trans.getOldApOrderId();
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_merchant_receipt_id) + "\n", FontType.NORMAL,
-                        Align.LEFT);
-                control.printText(number + "\n", FontType.NORMAL, Align.LEFT,
-                        Depth.DEEP);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_merchant_receipt_id) + "\n");
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.printText(number + "\n");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
 
                 // not record the setting state, resetting it after finishing
                 // control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
-                control.sendESC(PrinterCommand.setAlignMode(1));
-                Bitmap mQrcode = QRcodeBitmap.create(number, 250, 250);
-                control.printImage(mQrcode);
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_CENTER);
+                mPrinterImpl.printTwoDBarCode(number, QRCODE_WIDTH, QRCODE_HEIGHT);
 
-                control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
-
-                control.printText(TAG_LINE2 + "\n");
+                mPrinterImpl.setAlign(Align.LEFT);
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
 
                 if (i == 0) {
-                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_signature) + "\n\n\n");
-                    control.printText(TAG_LINE2 + "\n");
-                    control.printText(Env.getResourceString(ctx, R.string.printer_msg_acknowledge));
-                    control.printText("\n\n\n\n\n");
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_signature) + "\n\n\n");
+                    mPrinterImpl.printText(TAG_LINE2 + "\n");
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_msg_acknowledge));
+                    mPrinterImpl.printText("\n\n\n\n\n");
 
-                    Thread.currentThread().sleep(8000);
+                    Thread.currentThread().sleep(PRINTER_DELAY_TIME);
                 } else {
-                    control.printText(Env.getResourceString(ctx, R.string.printer_msg_acknowledge));
-                    control.printText("\n\n\n\n\n");
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_msg_acknowledge));
+                    mPrinterImpl.printText("\n\n\n\n\n");
                 }
 
             }
@@ -1018,81 +1182,69 @@ public class PrinterHelper implements Constant {
             e.printStackTrace();
         } finally {
             try {
-                control.close();
+                mPrinterImpl.close();
+                isPrinting = false;
             } catch (AccessException e) {
+                isPrinting = false;
                 e.printStackTrace();
             }
 
         }
     }
-	// QRCode print
 
-	public void printQRCodeOverSeaReceipt(OldTrans trans) {
-		PrinterControl control = DeviceManager.getInstance()
-				.getPrinterControlEx();
-		try {
+    public void printWeChatReceipt(OldTrans trans) {
+        PrinterImpl mPrinterImpl = new PrinterImpl();
+        if (isPrinting) {
+            return;
+        }
+        try {
+            mPrinterImpl.open();
+            isPrinting = true;
 
-			control.open();
+            mPrinterImpl.setLineSpacing(20);
+            for (int i = 0; i < 2; i++) {
 
-			for (int i = 0; i < 2; i++) {
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_CENTER);
 
-				// control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
-				control.sendESC(PrinterCommand.setAlignMode(1));
+                Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.wechat_print_light);
+                Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
+                mPrinterImpl.printerBitmap(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
 
-                Drawable mKingPowerDrawable = ctx.getResources().getDrawable(R.drawable.kingpower);
-                Bitmap mKingPowerBitMap = ((BitmapDrawable) mKingPowerDrawable).getBitmap();
-                control.printImage(Bitmap.createScaledBitmap(mKingPowerBitMap, 250, 80, false));
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_LEFT);
 
-                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.setLineSpacing(20);
+                if (i == 0) {
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_merchant_copy));
+                    printerWrite(PrinterCommand.linefeed());
+                } else if (i == 1) {
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_cardhoder_copy));
 
-				Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.alipay);
-				Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
-				control.printImage(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
+                    printerWrite(PrinterCommand.linefeed());
+                }
 
-				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
 
-				if (i == 0) {
-					control.printText(Env.getResourceString(ctx, R.string.printer_merchant_copy), FontType.NORMAL);
-					printerWrite(PrinterCommand.linefeed());
-				} else if (i == 1) {
-					control.printText(Env.getResourceString(ctx, R.string.printer_cardhoder_copy), FontType.NORMAL);
-					printerWrite(PrinterCommand.linefeed());
-				}
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_merchant));
 
-				control.printText(TAG_LINE2 + "\n", FontType.NORMAL);
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.printText(trans.getOldMertName() + "\n");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_merchant), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(trans.getOldMertName() + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
 
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(trans.getKoolCloudMID()+ "\n", FontType.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + trans.getKoolCloudMID() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + trans.getKoolCloudTID() + "\n");
+                // control.printText(TAG_AP_NAME + trans.getPaymentName() +
+                // "\n");
+                // control.printText(TAG_TERMINAL + trans.getOldTID() + "\n");
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(trans.getKoolCloudTID() + "\n", FontType.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_trans_no) + trans.getTxnId() + "\n");
 
-                //print reference
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_trans_no), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(trans.getTxnId() + "\n", FontType.NORMAL);
+//				control.printText(TAG_DATE_TIME + Utils.getCurrentDate() + " ");
 
-                //print tran date and time
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_date_time), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-				String localTime = convertTimeToLocal(trans);
-                control.printText(localTime.substring(0,4)
-		                + "/" + localTime.substring(4, 6)
-		                + "/" + localTime.substring(6, 8)
-		                + " " + localTime.substring(8, 10)
-		                + ":" + localTime.substring(10, 12)
-		                + ":" + localTime.substring(12, 14), FontType.NORMAL);
-                control.printText("\n");
+//				control.printText(/* TAG_TIME + */Utils.getCurrentTime() + "\n");
+	            mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_operator) + trans.getOper() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_pay_type));
 
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_pay_type), FontType.NORMAL);
-
-                //print tran type
                 String transType = "";
                 if (trans.getTransType() == TRAN_VOID) {
                     transType = Env.getResourceString(ctx, R.string.printer_tran_type_reverse);
@@ -1104,36 +1256,225 @@ public class PrinterHelper implements Constant {
                     transType = trans.getTransType() + "";
                 }
 
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(transType, FontType.DOUBLE_WH, Align.LEFT, Depth.DEEP);
-                control.printText("\n", FontType.NORMAL, Align.LEFT);
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.setAlign(Align.LEFT);
+                mPrinterImpl.printText(transType + "\n");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
 
-                //print trace no.
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_trace), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6) + "\n", FontType.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_trace) + StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6) + "\n");
 
                 //print batch no
-                control.printText(Env.getResourceString(ctx, R.string.printer_batch_no), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(StringUtil.fillZero(Integer.toString(trans.getOldBatch()), 6) + "\n", FontType.NORMAL);
+                mPrinterImpl.setFontSize(FontType.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_batch_no));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(StringUtil.fillZero(Integer.toString(trans.getOldBatch()), 6) + "\n");
 
-                //print operator
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_operator), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(trans.getOper() + "\n", FontType.NORMAL);
+	            String localTime = convertTimeToLocal(trans);
+	            mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_date_time) + " " + localTime.substring(0,4)
+			            + "/" + localTime.substring(4, 6)
+			            + "/" + localTime.substring(6, 8)
+			            + " " + localTime.substring(8, 10)
+			            + ":" + localTime.substring(10, 12)
+			            + ":" + localTime.substring(12, 14));
+	            mPrinterImpl.printText("\n");
 
-				control.printText(TAG_LINE2 + "\n", FontType.NORMAL);
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_channel) + trans.getPaymentName() + "\n");
+
+                String amt = AppUtil.formatAmount(trans.getOldTransAmount());
+                if (trans.getTransType() == TRAN_VOID
+                        || trans.getTransType() == TRAN_REFUND) {
+                    amt = " - " + amt;
+                }
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_amount));
+                mPrinterImpl.setDoubleFormat(BasePrinterInterface.DOUBLE_WIDTH_HEIGHT);
+                mPrinterImpl.setPrinterMode(FontType.BOLD);
+                mPrinterImpl.printText(amt);
+                mPrinterImpl.setPrinterMode(0);
+                mPrinterImpl.setDoubleFormat(0);
+                mPrinterImpl.printText("\n");
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_wechat_transaction_id) + "\n");
+                mPrinterImpl.printText(trans.getAlipayTransactionID() + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_wechat_partner_id) + "\n");
+                mPrinterImpl.printText(trans.getAlipayPId() + "\n");
+
+                String number = trans.getOldApOrderId();
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_merchant_receipt_id) + "\n");
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.printText(number + "\n");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
+
+                mPrinterImpl.setAlign(Align.LEFT);
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
+
+                if (i == 0) {
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_signature) + "\n\n\n");
+                    mPrinterImpl.printText(TAG_LINE2 + "\n");
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_wechat_msg_acknowledge));
+                    mPrinterImpl.printText("\n\n\n\n\n");
+
+                    Thread.currentThread().sleep(PRINTER_DELAY_TIME);
+                } else {
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_wechat_msg_acknowledge));
+                    mPrinterImpl.printText("\n\n\n\n\n");
+                }
+
+            }
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (AccessException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                mPrinterImpl.close();
+                isPrinting = false;
+            } catch (AccessException e) {
+                isPrinting = false;
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+	// QRCode print
+	public void printQRCodeOverSeaReceipt(OldTrans trans) {
+        PrinterImpl mPrinterImpl = new PrinterImpl();
+        if (isPrinting) {
+            return;
+        }
+		try {
+
+            mPrinterImpl.open();
+            isPrinting = true;
+
+			for (int i = 0; i < 2; i++) {
+
+				// control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_CENTER);
+
+                Drawable mKingPowerDrawable = ctx.getResources().getDrawable(R.drawable.kingpower);
+                Bitmap mKingPowerBitMap = ((BitmapDrawable) mKingPowerDrawable).getBitmap();
+                mPrinterImpl.printerBitmap(Bitmap.createScaledBitmap(mKingPowerBitMap, 250, 80, false));
+
+                mPrinterImpl.setFontSize(FontType.NORMAL);
+                mPrinterImpl.setLineSpacing(20);
+                printerWrite(PrinterCommand.linefeed());
+
+//				Drawable mDrawable = ctx.getResources().getDrawable(R.drawable.alipay);
+//				Bitmap mBitMap = ((BitmapDrawable) mDrawable).getBitmap();
+//                mPrinterImpl.printerBitmap(Bitmap.createScaledBitmap(mBitMap, 250, 80, false));
+
+                mPrinterImpl.setAlign(Align.LEFT);
+
+				if (i == 0) {
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_merchant_copy));
+					printerWrite(PrinterCommand.linefeed());
+				} else if (i == 1) {
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_cardhoder_copy));
+					printerWrite(PrinterCommand.linefeed());
+				}
+
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_merchant));
+//                printerWrite(PrinterCommand.linefeed());
+
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.printText(trans.getOldMertName() + "\n");
+
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(trans.getKoolCloudMID()+ "\n");
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(trans.getKoolCloudTID() + "\n");
+
+                //print reference
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_trans_no));
+                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(trans.getTxnId() + "\n");
+
+				//print operator
+				mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_operator));
+				//                printerWrite(PrinterCommand.linefeed());
+				mPrinterImpl.printText(trans.getOper() + "\n");
+
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_pay_type));
+
+                //print tran type
+                String transType = "";
+//                String bakTransType = "";
+                if (trans.getTransType() == TRAN_VOID) {
+                    transType = Env.getResourceString(ctx, R.string.printer_tran_type_reverse);
+//                    bakTransType = Env.getResourceString(ctx, R.string.printer_tran_type_reverse);
+                } else if (trans.getTransType() == TRAN_SALE) {
+                    transType = Env.getResourceString(ctx, R.string.printer_tran_type_sale);
+//                    bakTransType = Env.getResourceString(ctx, R.string.printer_tran_type_sale);
+                } else if (trans.getTransType() == TRAN_REFUND) {
+                    transType = Env.getResourceString(ctx, R.string.printer_tran_type_refund);
+//                    bakTransType = Env.getResourceString(ctx, R.string.printer_tran_type_refund);
+                } else {
+                    transType = trans.getTransType() + "";
+                }
+
+                if (!TextUtils.isEmpty(trans.getPrintFromTag()) && !trans.getPrintFromTag().equals("undefined")) {
+                    transType = Env.getResourceString(ctx, R.string.printer_tran_type_duplicate);
+                }
+
+                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.setFontSize(1);
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.printText(transType);
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
+                mPrinterImpl.setFontSize(0);
+                /*mPrinterImpl.setFontSize(0);
+                if (!TextUtils.isEmpty(trans.getPrintFromTag()) && !trans.getPrintFromTag().equals("undefined")) {
+                    mPrinterImpl.printText("(" + bakTransType + ")");
+                }*/
+                mPrinterImpl.printText("\n");
+
+                //print trace no.
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_trace));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(StringUtil.fillZero(Integer.toString(trans.getOldTrace()), 6) + "\n");
+
+                //print batch no
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_batch_no));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(StringUtil.fillZero(Integer.toString(trans.getOldBatch()), 6) + "\n");
+
+                //print tran date and time
+				mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_date_time));
+				printerWrite(PrinterCommand.linefeed());
+				String localTime = convertTimeToLocal(trans);
+				mPrinterImpl.printText(localTime.substring(0,4)
+						+ "/" + localTime.substring(4, 6)
+						+ "/" + localTime.substring(6, 8)
+						+ " " + localTime.substring(8, 10)
+						+ ":" + localTime.substring(10, 12)
+						+ ":" + localTime.substring(12, 14));
+				mPrinterImpl.printText("\n");
+
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
 
                 //print payment name
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_channel), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
-                control.printText(trans.getPaymentName() + "\n", FontType.NORMAL);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_channel));
+//                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(trans.getPaymentName() + "\n");
 
 				if (trans.getTransType() == TRAN_SALE) {
-					control.printText(Env.getResourceString(ctx, R.string.printer_tag_account), FontType.NORMAL);
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_account));
                     printerWrite(PrinterCommand.linefeed());
-                    control.printText(trans.getAlipayAccount() + "\n", FontType.NORMAL);
+                    mPrinterImpl.printText(trans.getAlipayAccount() + "\n");
                 }
 
 				String amt = AppUtil.formatAmount(trans.getOldTransAmount());
@@ -1144,65 +1485,76 @@ public class PrinterHelper implements Constant {
 
                 //print amount
                 String currency = Env.getCurrencyResource(ctx);
-				control.printText(Env.getResourceString(ctx, R.string.printer_tag_amount), FontType.NORMAL);
-                printerWrite(PrinterCommand.linefeed());
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_amount));
+//                printerWrite(PrinterCommand.linefeed());
 
-                control.sendESC(PrinterCommand.setFontEnlarge(0x01));
-                control.sendESC(PrinterCommand.setFontBold(1));
-                control.printText(amt + "(" + currency + ")", FontType.DOUBLE_WH, Align.LEFT);
-                control.sendESC(PrinterCommand.setFontBold(0));
-                control.sendESC(PrinterCommand.setFontEnlarge(0));
-                control.printText("\n", FontType.NORMAL, Align.LEFT);
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                mPrinterImpl.setFontSize(1);
+                mPrinterImpl.printText(amt);
+                mPrinterImpl.setFontSize(0);
+                mPrinterImpl.printText("(" + currency + ")");
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
+                mPrinterImpl.printText("\n");
 
                 if (trans.getTransType() == TRAN_SALE) {
 
                     //print exchange rate
-                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_exchange_rate), FontType.NORMAL, Align.LEFT);
-                    printerWrite(PrinterCommand.linefeed());
-                    control.printText(trans.getExchangeRate());
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_exchange_rate));
+//                    printerWrite(PrinterCommand.linefeed());
+                    mPrinterImpl.printText(trans.getExchangeRate());
                     printerWrite(PrinterCommand.linefeed());
 
                     //print real amount
-                    control.printText(Env.getResourceString(ctx, R.string.printer_tag_real_amount), FontType.NORMAL, Align.LEFT);
-                    printerWrite(PrinterCommand.linefeed());
-                    control.printText(trans.getRealAmount());
+                    mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_real_amount));
+//                    printerWrite(PrinterCommand.linefeed());
+                    mPrinterImpl.printText(trans.getRealAmount());
                     printerWrite(PrinterCommand.linefeed());
                 }
 
                 //print alipay params
-				control.printText(Env.getResourceString(ctx, R.string.printer_transaction_id) + "\n", FontType.NORMAL, Align.LEFT);
-                control.printText(trans.getAlipayTransactionID() + "\n", FontType.NORMAL);
-				control.printText(Env.getResourceString(ctx, R.string.printer_partner_id) + "\n", FontType.NORMAL, Align.LEFT);
-				control.printText(trans.getAlipayPId() + "\n", FontType.NORMAL, Align.LEFT);
+//                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_transaction_id) + "\n");
+//                mPrinterImpl.printText(trans.getAlipayTransactionID() + "\n");
+//                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_partner_id) + "\n");
+//                mPrinterImpl.printText(trans.getAlipayPId() + "\n");
 
 				String number = trans.getOldApOrderId();
 
-				control.printText(Env.getResourceString(ctx, R.string.printer_merchant_receipt_id) + "\n", FontType.NORMAL, Align.LEFT);
-				control.printText(number + "\n", FontType.NORMAL, Align.LEFT, Depth.DEEP);
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_merchant_receipt_id) + "\n");
+
+                mPrinterImpl.setPrinterMode(Depth.DEEP);
+                if (!TextUtils.isEmpty(number)) {
+                    mPrinterImpl.printText(number.substring(0, number.length() - 5));
+                    mPrinterImpl.setFontSize(1);
+                    mPrinterImpl.printText(number.substring(number.length() - 5));
+                    mPrinterImpl.setFontSize(0);
+                }
+                mPrinterImpl.setPrinterMode(Depth.NORMAL);
 
 				// not record the setting state, resetting it after finishing
-				// control.sendESC(FormatSettingCommand.getESCan(Align.CENTER));
-				control.sendESC(PrinterCommand.setAlignMode(1));
-				Bitmap mQrcode = QRcodeBitmap.create(number, 250, 250);
-				control.printImage(mQrcode);
+                mPrinterImpl.setLineSpacing(20);
+                mPrinterImpl.printText("\n");
+                mPrinterImpl.setLineSpacing(20);
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_CENTER);
+                mPrinterImpl.printTwoDBarCode(number, 250, 250);
 
-				control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
+                mPrinterImpl.setAlign(Align.LEFT);
+                mPrinterImpl.setLineSpacing(20);
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
 
-				control.printText(TAG_LINE2 + "\n", FontType.NORMAL);
-
-                control.printText(Env.getResourceString(ctx, R.string.printer_tag_signature) + "\n\n\n", FontType.NORMAL);
-                control.printText(TAG_LINE2 + "\n", FontType.NORMAL);
-                control.printText(Env.getResourceString(ctx, R.string.printer_msg_acknowledge));
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_tag_signature) + "\n\n");
+                mPrinterImpl.printText(TAG_LINE2 + "\n");
+                mPrinterImpl.printText(Env.getResourceString(ctx, R.string.printer_msg_acknowledge));
 
                 printerWrite(PrinterCommand.linefeed());
-                control.sendESC(PrinterCommand.setAlignMode(1));
-                Drawable mOcgDrawable = ctx.getResources().getDrawable(R.drawable.logo_ocg);
+
+                mPrinterImpl.setAlign(BasePrinterInterface.ALIGN_CENTER);
+                Drawable mOcgDrawable = ctx.getResources().getDrawable(R.drawable.carrotpay);
                 Bitmap mOcgBitMap = ((BitmapDrawable) mOcgDrawable).getBitmap();
-                control.printImage(Bitmap.createScaledBitmap(mOcgBitMap, 250, 80, false));
-                control.sendESC(FormatSettingCommand.getESCan(Align.LEFT));
-                control.printText("\n\n\n");
+                mPrinterImpl.printerBitmap(Bitmap.createScaledBitmap(mOcgBitMap, 255, 80, false));
+                mPrinterImpl.setAlign(Align.LEFT);
+                mPrinterImpl.printText("\n\n");
                 if (i == 0) {
-                    Thread.currentThread().sleep(8000);
+                    Thread.currentThread().sleep(PRINTER_DELAY_TIME);
                 }
 
 			}
@@ -1215,13 +1567,237 @@ public class PrinterHelper implements Constant {
 			e.printStackTrace();
 		} finally {
 			try {
-				control.close();
+                mPrinterImpl.close();
+                isPrinting = false;
 			} catch (AccessException e) {
+                isPrinting = false;
 				e.printStackTrace();
 			}
 
 		}
 	}
+
+    synchronized public void printRecord(ConsumptionRecordBean record, JSONObject printData) throws PrinterException {
+        if (isPrinting) {
+            return;
+        }
+        try {
+            PrinterInterface.open();
+            PrinterInterface.set(1);
+            PrinterInterface.begin();
+            PrinterInterface.end();
+
+            PrinterInterface.begin();
+            isPrinting = true;
+
+            //set line space
+            printerWrite(FormatSettingCommand.getESC3n((byte) 3));
+
+            printerWrite(PrinterCommand.setFontBold(1));
+            printerWrite(PrinterCommand.setAlignMode(1));
+            printerWrite(PrinterCommand.setFontEnlarge(0x01));
+            printerWrite(Env.getResourceString(ctx, R.string.printer_pos_consumption_record).getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+
+            printerWrite(PrinterCommand.setFontBold(0));
+            printerWrite(PrinterCommand.setAlignMode(0));
+            printerWrite(PrinterCommand.setFontEnlarge(0));
+
+            //set line space
+            printerWrite(FormatSettingCommand.getESC3n((byte) 3));
+            printerWrite("--------------------------------".getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+
+            printerWrite((Env.getResourceString(ctx, R.string.printer_tag_merchant) + record.getMerchName()).getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+
+            printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_mid) + record.getMerchNo()).getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+
+            printerWrite((Env.getResourceString(ctx, R.string.printer_tag_kool_cloud_tid) + record.getTermId()).getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+
+//            printerWrite((Env.getResourceString(ctx, R.string.printer_batch_no) + StringUtil.fillZero(record.getBatchNo(), 6)).getBytes("GB2312"));
+//            printerWrite(PrinterCommand.linefeed());
+	        printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + record.getOperator()).getBytes("GB2312"));
+	        printerWrite(PrinterCommand.linefeed());
+            printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time)).getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite((record.getPrintTime() + "\n").getBytes("GB2312"));
+
+            printerWrite("--------------------------------".getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+            JSONArray recordItems = printData.optJSONArray("recordList");
+            String currency = "(" + Env.getCurrencyResource(ctx) + ")";
+            if (recordItems != null && recordItems.length() > 0) {
+                for (int i = 0; i < recordItems.length(); i++) {
+                    JSONObject item = recordItems.optJSONObject(i);
+                    String tranType = item.optString("transType");
+                    String tranTypeDesc = "";
+                    if (!TextUtils.isEmpty(tranType) && tranType.equals(APMP_TRAN_CONSUME)) {
+                        tranTypeDesc = Env.getResourceString(ctx, R.string.printer_tran_type_sale);
+                    } else if (!TextUtils.isEmpty(tranType) && tranType.equals(APMP_TRAN_CONSUMECANCE)) {
+                        tranTypeDesc = Env.getResourceString(ctx, R.string.printer_tran_type_reverse);
+                    } else if (!TextUtils.isEmpty(tranType) && tranType.equals(APMP_TRAN_PRAUTHCOMPLETE)) {
+                        tranTypeDesc = Env.getResourceString(ctx, R.string.printer_tran_type_prepaid_complete);
+                    } else if (!TextUtils.isEmpty(tranType) && tranType.equals(APMP_TRAN_PRAUTHSETTLEMENT)) {
+                        tranTypeDesc = Env.getResourceString(ctx, R.string.printer_tran_type_prepaid_complete_offline);
+                    } else if (!TextUtils.isEmpty(tranType) && tranType.equals(APMP_TRAN_PREAUTHCOMPLETECANCEL)) {
+                        tranTypeDesc = Env.getResourceString(ctx, R.string.printer_tran_type_prepaid_complete_void);
+                    } else {
+                        tranTypeDesc = "type = " + tranType;
+                    }
+                    //set line space
+                    printerWrite(FormatSettingCommand.getESC3n((byte) 3));
+                    printerWrite((item.optString("refNo")).getBytes("GB2312"));
+                    // set bold font
+                    printerWrite(PrinterCommand.setFontBold(1));
+                    //set double height
+                    printerWrite(PrinterCommand.setFontEnlarge(0x01));
+                    printerWrite((" " + tranTypeDesc).getBytes("GB2312"));
+                    printerWrite(PrinterCommand.setFontEnlarge(0));
+                    printerWrite(PrinterCommand.setFontBold(0));
+                    printerWrite(PrinterCommand.linefeed());
+                    String tempPan = item.optString("cardNo");
+                    String cardNo = "";
+                    if (!TextUtils.isEmpty(tempPan) && TextUtils.isDigitsOnly(tempPan) && !tempPan.equals("9999999999999999")) {
+                        cardNo = tempPan.substring(0, 6) + "*" + tempPan.substring(tempPan.length() - 4, tempPan.length());
+                    } else if (!TextUtils.isEmpty(tempPan) && tempPan.equals("9999999999999999")) {
+                        cardNo = "";
+                    } else {
+                        cardNo = tempPan;
+                    }
+
+                    String amt = AppUtil.formatAmount(item.optLong("transAmount"));
+
+                    printerWrite((" " + cardNo).getBytes("GB2312"));
+                    printerWrite(PrinterCommand.setFontBold(1));
+                    printerWrite(PrinterCommand.setFontEnlarge(0x01));
+                    printerWrite((" " + amt).getBytes("GB2312"));
+                    printerWrite(PrinterCommand.setFontEnlarge(0));
+                    printerWrite(PrinterCommand.setFontBold(0));
+                    printerWrite((currency + " " + item.optString("authNo")).getBytes("GB2312"));
+
+                    printerWrite(PrinterCommand.linefeed());
+
+                    //TODO:print tran date and time
+                    String tranDateTime = item.optString("transTime");
+                    String tmpTranTime = "";
+                    if (!TextUtils.isEmpty(tranDateTime)) {
+                        tmpTranTime = tranDateTime.substring(0, 4) + "/" + tranDateTime.substring(4, 6) + "/"
+                                + tranDateTime.substring(6, 8) + " " + tranDateTime.substring(8, 10) + ":"
+                                + tranDateTime.substring(10, 12) + ":" + tranDateTime.substring(12);
+                    }
+                    printerWrite((" " + tmpTranTime + " ").getBytes("GB2312"));
+                    printerWrite(item.optString("paymentName").getBytes("GB2312"));
+                    if (i != recordItems.length()-1) {
+                        printerWrite(PrinterCommand.linefeed());
+                        printerWrite(PrinterCommand.linefeed());
+                    } else {
+                        printerWrite(PrinterCommand.linefeed());
+                    }
+                }
+            }
+
+            printerWrite("--------------------------------".getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+//            printerWrite(PrinterCommand.linefeed());
+//            printerWrite(PrinterCommand.linefeed());
+
+            //TODO print summary
+
+            printerWrite(TAB_CMDS);
+
+            //print title
+            printerWrite(Env.getResourceString(ctx, R.string.printer_summary_transType).getBytes("GB2312"));
+            printerWrite(PrinterCommand.getCmdHt());
+            printerWrite(Env.getResourceString(ctx, R.string.printer_summary_count).getBytes("GB2312"));
+            printerWrite(PrinterCommand.getCmdHt());
+            printerWrite((Env.getResourceString(ctx, R.string.printer_summary_amount) + currency).getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite("--------------------------------".getBytes("GB2312"));
+            printerWrite(PrinterCommand.linefeed());
+
+            Map<String, String> summaryMap = record.getSummaryMap();
+
+            Iterator keys = summaryMap.entrySet().iterator();
+            while (keys.hasNext()) {
+                Map.Entry entry = (Map.Entry) keys.next();
+                String key = (String) entry.getKey();
+                String value = (String) entry.getValue();
+
+                if (key.equals("total")) {
+                    continue;
+                } else {
+                    String[] itemValue = value.split("-");
+                    String tranTypeStr = "";
+                    if (key.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUME)) {
+                        tranTypeStr = Env.getResourceString(ctx, R.string.printer_tran_type_sale);
+                    } else if (key.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)) {
+                        tranTypeStr = Env.getResourceString(ctx, R.string.printer_tran_type_reverse);
+                    } else if (key.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)) {
+                        tranTypeStr = Env.getResourceString(ctx, R.string.printer_tran_type_prepaid_complete);
+                    } else if (key.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)) {
+                        tranTypeStr = Env.getResourceString(ctx, R.string.printer_tran_type_prepaid_complete_offline);
+                    } else if (key.equals(ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)) {
+                        tranTypeStr = Env.getResourceString(ctx, R.string.printer_tran_type_prepaid_complete_void);
+                    }
+                    printerWrite(tranTypeStr.getBytes("GB2312"));
+                    printerWrite(PrinterCommand.getCmdHt());
+                    printerWrite(itemValue[1].getBytes("GB2312"));
+
+                    printerWrite(PrinterCommand.getCmdHt());
+                    printerWrite(FormatSettingCommand.getESCan((byte) 0x50));
+//                    printerWrite(PrinterCommand.setFontEnlarge(0x01));
+                    printerWrite(AppUtil.formatAmount(Long.parseLong(itemValue[2])).getBytes("GB2312"));
+//                    printerWrite(PrinterCommand.setFontEnlarge(0));
+                    printerWrite(FormatSettingCommand.getESCan((byte) 0x48));
+                }
+                printerWrite(PrinterCommand.linefeed());
+
+            }
+            printerWrite("--------------------------------".getBytes("GB2312"));
+            printerWrite(FormatSettingCommand.getESCan((byte) 0x50));
+            if (summaryMap.get("total").equals("0")) {
+                printerWrite((Env.getResourceString(ctx, R.string.printer_total_amount)).getBytes("GB2312"));
+                printerWrite(PrinterCommand.setFontEnlarge(0x01));
+                printerWrite("0.00".getBytes("GB2312"));
+                printerWrite(PrinterCommand.setFontEnlarge(0));
+                printerWrite(currency.getBytes("GB2312"));
+            } else {
+                String totalAmount = Env.getResourceString(ctx, R.string.printer_total_amount);
+                printerWrite(totalAmount.getBytes("GB2312"));
+                printerWrite(PrinterCommand.setFontEnlarge(0x01));
+                Long total = Long.parseLong(summaryMap.get("total"));
+                String printTotal = "";
+                if (total < 0) {
+                    printTotal = "-" + AppUtil.formatAmount(Math.abs(total));
+                } else {
+                    printTotal = AppUtil.formatAmount(total);
+                }
+                printerWrite(printTotal.getBytes("GB2312"));
+                printerWrite(PrinterCommand.setFontEnlarge(0));
+                printerWrite(currency.getBytes("GB2312"));
+            }
+            printerWrite(FormatSettingCommand.getESCan((byte) 0x48));
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite(PrinterCommand.linefeed());
+            printerWrite(PrinterCommand.linefeed());
+        } catch (UnsupportedEncodingException e) {
+            throw new PrinterException("PrinterHelper.printReceipt():"
+                    + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new PrinterException(e.getMessage(), e);
+        } finally {
+            PrinterInterface.end();
+            PrinterInterface.close();
+            isPrinting = false;
+        }
+    }
+
 	private String convertTimeToLocal(OldTrans trans){
 		/*
 			 * 这里是为了适应本地化设置的，所以把time date转成当地时间。

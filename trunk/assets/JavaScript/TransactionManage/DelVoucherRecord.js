@@ -17,12 +17,18 @@
 		Net.connect("merchant/voucherConsumeCancel", req, updateDelVoucherRecord);
 
 		function updateDelVoucherRecord(data) {
-			var propertyList = [{
-				"name": "lv_record",
-				"key": "deleteALine",
-				"value": g_index,
-			}]
-			Scene.setProperty("DelVoucherRecord", propertyList);
+		    if(data.responseCode == "0"){
+                var propertyList = [{
+                    "name": "lv_record",
+                    "key": "deleteALine",
+                    "value": g_index,
+                }]
+                Scene.setProperty("DelVoucherRecord", propertyList);
+			}else{
+			    Scene.alert(data.errorMsg,function(){
+                    Scene.goBack("Home");
+                });
+			}
 		}
 	}
 

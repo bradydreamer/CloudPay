@@ -107,15 +107,15 @@ public class TransAmountController extends BaseController {
 			acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
 //		acquireMerchNameTextView.setTypeface(faceTypeLanTing);
 			//check print type
-			String printType = data.optString("printType");
-			if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+			String misc = data.optString("misc");
+			if (misc.equals(ConstantUtils.MISC_ALIPAY)) {
 				acquireMerchNameTextView.setText(getResources().getString(R.string.bar_acquire_merch_msg_pid));
 			}
 			acquireMerchNumTextView = (TextView) findViewById(R.id.acquireMerchNumTextView);
 //		acquireMerchNumTextView.setTypeface(faceTypeLanTing);
 			acquireMerchNumTextView.setText(data.optString("brhMchtId"));
 			acquireTerminalTextView = (TextView) findViewById(R.id.acquireTerminalTextView);
-			if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+			if (misc.equals(ConstantUtils.MISC_ALIPAY)) {
 				acquireTerminalTextView.setText(getResources().getString(R.string.bar_acquire_terminal_msg_beneficiary_account_no));
 			}
 //		qcquireTerminalTextView.setTypeface(faceTypeLanTing);

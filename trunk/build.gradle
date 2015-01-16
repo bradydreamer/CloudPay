@@ -1,7 +1,7 @@
 buildscript {
     repositories {
 //        mavenLocal()
-//        mavenCentral()
+//        jcenter()
 //        maven { url 'http://repo1.maven.org/maven2' }
         maven { url 'http://maven.oschina.net/content/groups/public/' }
     }
@@ -12,10 +12,15 @@ buildscript {
 
 apply plugin: 'android'
 apply plugin: 'maven'
+apply plugin: 'com.android.application'
 
 repositories {
 //    mavenLocal()
-    mavenCentral()
+    jcenter()
+}
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd_hh_mm", TimeZone.getTimeZone("UTC"))
 }
 
 dependencies {
@@ -37,42 +42,109 @@ tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
         pkgTask.jniFolders.add(new File(buildDir, 'native-libs'))
 }
 android {
-    compileSdkVersion 16
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
 
     /*defaultConfig {
         versionCode 99
         versionName "9.9.9"
-//        packageName "cn.koolcloud.pos.wanwan"
+        applicationId "cn.koolcloud.pos.prepaid"
     }*/
+
+    defaultConfig {
+        applicationId "cn.koolcloud.pos"
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 48
+        versionName "3.1.7"
+
+        // dex out of 65535 limit
+        multiDexEnabled true
+        // umeng is default channel
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "umeng"]
+    }
+
     signingConfigs {
-        flavor1 {
+        release {
             storeFile file("app.ks")
-            storePassword "secret"
-            keyAlias "aliasForFlavor1"
-            keyPassword "secretFlavor1"
+            keyAlias "appstorekey"
+            storePassword "cooltool"
+            keyPassword "cooltool"
         }
 
     }
 
     productFlavors {
-        /*wanda {
-            packageName = 'cn.koolcloud.pos.wanwan'
-        }*/
-
-        /*trunk {
-            packageName = 'cn.koolcloud.pos'
-        }*/
-       /* golo {
-            packageName = 'cn.koolcloud.pos.golo'
-        }*/
+        /*"default" {}
+        google {}
+        "91" {}
+        hiapk {}
+        gfan {}
+        goapk {}
+        appChina {}
+        mumayi {}
+        eoe {}
+        nduo {}
+        feiliu {}
+        crossmo {}
+        huawei {}
+        QQ {}
+        "3G" {}
+        "360" {}
+        baidu {}
+        sohu {}
+        "163" {}
+        UC {}
+        dangle {}
+        samsung {}
+        mmw {}
+        xiaomi {}
+        lenovo {}*/
+        nearme {}
     }
-    /*buildTypes{
+
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+    }
+
+    buildTypes {
         debug {
-            runProguard true
-            proguardFile 'proguard-project.txt'
+            // show Logs
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+
+            versionNameSuffix "-debug"
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
         }
-    }*/
+
+        release {
+            // don't show Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+
+            //run proguard
+            minifyEnabled true
+            zipAlignEnabled true
+
+            // rm useless resource
+            shrinkResources true
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // output apk file name with SmartPos_v1.0_2015-01-15_***.apk
+                        def fileName = "SmartPos_v${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
+        }
+    }
 
     lintOptions {
         abortOnError false

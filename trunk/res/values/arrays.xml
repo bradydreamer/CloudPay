@@ -14,5 +14,6 @@
     <string-array name="user_grade">
         <item>收银员</item>
         <item>主管</item>
+        <item>撤销专员</item>
     </string-array>
 </resources>

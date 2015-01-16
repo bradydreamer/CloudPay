@@ -43,6 +43,7 @@ import android.util.Log;
 public final class HttpConn {
 
 	public static final String TYPE_WIFI = "WIFI";
+	public static final String TYPE_ETHERNET = "ETHERNET";
 	private static final String HTTPS_URL_HEADER = "https://";
 	private static final String DEFAULT_HTTPS_PORT = "443";
 
@@ -56,6 +57,7 @@ public final class HttpConn {
 	public static final byte CMNET_TYPE = 1;
 	public static final byte CMWAP_TYPE = 2;
 	public static final byte WIFI_TYPE = 3;
+	public static final byte ETHERNET_TYPE = 4;
 
 	private static byte connType = CMNET_TYPE;
 
@@ -123,7 +125,7 @@ public final class HttpConn {
 	 */
 	public int excute() {
 		int result = this.connect();
-		if (!this.is_connect && result != -1 && connType != WIFI_TYPE) {
+		if (!this.is_connect && result != -1 && connType != WIFI_TYPE && connType != ETHERNET_TYPE) {
 			if (connType == CMNET_TYPE) {
 				connType = CMWAP_TYPE;
 			} else {
@@ -171,7 +173,7 @@ public final class HttpConn {
 					"application/x-www-form-urlencoded; charset=utf-8");
 			request.setEntity(new StringEntity(parameters.getPostData(),"UTF-8"));
 		
-			Log.d(TAG, "before connect connType : " + connType + "(CMNET_TYPE is 1, CMWAP_TYPE is 2, WIFI_TYPE is 3)");
+			Log.d(TAG, "before connect connType : " + connType + "(CMNET_TYPE is 1, CMWAP_TYPE is 2, WIFI_TYPE is 3, ETHERNET_TYPE is 4)");
 			
 			HttpResponse httpResponse = null;
 			try {
@@ -254,7 +256,7 @@ public final class HttpConn {
 			}
 		}
 		
-		Log.d(TAG, "after connect connType : " + connType + "(CMNET_TYPE is 1, CMWAP_TYPE is 2, WIFI_TYPE is 3)");
+		Log.d(TAG, "after connect connType : " + connType + "(CMNET_TYPE is 1, CMWAP_TYPE is 2, WIFI_TYPE is 3, ETHERNET_TYPE is 4)");
 		return result;
 	}
 
@@ -296,17 +298,19 @@ public final class HttpConn {
 			httpClient.getParams().removeParameter(
 					ConnRoutePNames.DEFAULT_PROXY);
 			return 0;
+		} else if (TYPE_ETHERNET.equals(mobNetInfo.getTypeName())) {
+			connType = ETHERNET_TYPE;
+			httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
+			return 0;
 		} else if (connType == WIFI_TYPE){
 			resetConnType();
 		}
 		
-		httpClient.getParams().removeParameter(
-				ConnRoutePNames.DEFAULT_PROXY);
+		httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
 		
 		if (connType == CMWAP_TYPE) {
 			HttpHost proxy = new HttpHost("10.0.0.172", 80);
-			httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
-					proxy);
+			httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		} else {
 			if (mobNetInfo.getSubtypeName().toLowerCase().contains("cdma")
 					|| (mobNetInfo.getExtraInfo() != null && mobNetInfo.getExtraInfo().contains("wap"))) {
@@ -318,8 +322,7 @@ public final class HttpConn {
 							ConnRoutePNames.DEFAULT_PROXY, proxy);
 				}
 			} else {
-				httpClient.getParams().removeParameter(
-						ConnRoutePNames.DEFAULT_PROXY);
+				httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
 			}
 		}
 		return 0;

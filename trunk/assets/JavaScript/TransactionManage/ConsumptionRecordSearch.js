@@ -4,6 +4,7 @@
   function onConfirm(data) {
 	  	var msg = JSON.parse(data)
 	  	var params = {
+	  	    fromTodayTag : false,
 	  		startDate : msg.startDate,
 	  		endDate : msg.endDate
 	  	}

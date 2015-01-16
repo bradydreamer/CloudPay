@@ -8,6 +8,7 @@ function UserInfo(){
     this.reloginAction = function(){};
     this.merchIdSetResultAction = function(){};
     this.machineIdSetResultAction = function(){};
+    this.downloadParamsResultAction = function(){};
 }
 
 UserInfo.prototype.init =  function(data){
@@ -44,6 +45,14 @@ UserInfo.prototype.setMachineIdResult = function(func){
 
 UserInfo.prototype.setSignInResult = function(func){
     this.afterSignInAction = function(data){
+        if(func){
+            func(data);
+        }
+    };
+};
+
+UserInfo.prototype.setDownloadParamsResult = function(func){
+    this.downloadParamsResultAction = function(data){
         if(func){
             func(data);
         }

@@ -11,8 +11,11 @@
 	        android:layout_height="wrap_content"
 	        android:gravity="center"
 	        android:orientation="vertical">
+            <LinearLayout style="@style/broadside_cell_style">
+
+            </LinearLayout>
 			<!-- main page -->
-	        <LinearLayout style="@style/broadside_cell_style" >
+	        <LinearLayout style="@style/broadside_cell_style">
 	
 	            <Button
 	                android:id="@+id/home_button"
@@ -49,14 +52,14 @@
 	                android:text="@string/home_activity_setting" />
 	        </LinearLayout>
 	        <!-- about -->
-	        <LinearLayout style="@style/broadside_cell_style" >
-	
+	        <!--<LinearLayout style="@style/broadside_cell_style" >
+
 	            <Button
 	                style="@style/broadside_btn_style"
 	                android:id="@+id/abountBtn"
 	                android:drawableTop="@drawable/btn_about_selector"
 	                android:text="@string/str_about_programme" />
-	        </LinearLayout>
+	        </LinearLayout>-->
 	    </LinearLayout>
     </ScrollView>
 

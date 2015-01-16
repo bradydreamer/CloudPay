@@ -1,9 +1,6 @@
 package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
@@ -27,7 +24,6 @@ import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.HostMessage;
-import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.database.CacheDB;
@@ -37,8 +33,7 @@ import cn.koolcloud.pos.entity.MisposData;
 import cn.koolcloud.pos.service.ICouponService;
 import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
-import cn.koolcloud.pos.util.UtilForMoney;
-import cn.koolcloud.printer.PrinterException;
+import cn.koolcloud.printer.exception.PrinterException;
 import cn.koolcloud.printer.PrinterHelper;
 import cn.koolcloud.util.DateUtil;
 
@@ -47,6 +42,11 @@ public class OrderDetailController extends BaseController {
 	public final static int REQUEST_CODE = 11;
 	private final static int PAY_SUCCESS = 1;
 	private final static int ORDER_STATUS_SUCCESS = 0;
+	private final static int ORDER_STATUS_REVERSED = 3;
+	private final static int ORDER_STATUS_INTERRUPT = 5;
+	private final static int ORDER_STATUS_CANCELLING = 6;
+	private final static int ORDER_STATUS_TIMEOUT = 9;
+	private final static int TRAN_TYPE_SALE = 1021;
 	private final static int TRAN_TYPE_REVERSE = 3021;
 	private final static int TRAN_TYPE_REFUND = 3051;
 	private final static int TRAN_TYPE_AUTH = 1011;
@@ -224,6 +224,11 @@ public class OrderDetailController extends BaseController {
 			intent.setAction("com.koolyun.coupon.service.permission.COUPON");
 			bindService(intent, conn, BIND_AUTO_CREATE);
 		}
+
+		Button statusQuery = (Button)findViewById(R.id.trans_status_confirm);
+		if(orderState == ORDER_STATUS_INTERRUPT || orderState == ORDER_STATUS_CANCELLING || orderState == ORDER_STATUS_TIMEOUT){
+			statusQuery.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void initTextView(int resourceId, JSONObject data, String key) {
@@ -255,8 +260,8 @@ public class OrderDetailController extends BaseController {
 		acquireMerchNameTextView = (TextView) findViewById(R.id.acquireMerchNameTextView);
 		// acquireMerchNameTextView.setTypeface(faceTypeLanTing);
 		// check print type
-		String printType = data.optString("printType");
-		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+		String misc = data.optString("misc");
+		if (misc.equals(ConstantUtils.MISC_ALIPAY)) {
 			acquireMerchNameTextView.setText(getResources().getString(
 					R.string.bar_acquire_merch_msg_pid));
 		}
@@ -264,7 +269,7 @@ public class OrderDetailController extends BaseController {
 		// acquireMerchNumTextView.setTypeface(faceTypeLanTing);
 		acquireMerchNumTextView.setText(data.optString("brhMchtId"));
 		acquireTerminalTextView = (TextView) findViewById(R.id.acquireTerminalTextView);
-		if (printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY)) {
+		if (misc.equals(ConstantUtils.MISC_ALIPAY)) {
 			acquireTerminalTextView.setText(getResources().getString(
 					R.string.bar_acquire_terminal_msg_beneficiary_account_no));
 		}
@@ -344,6 +349,7 @@ public class OrderDetailController extends BaseController {
         } else {
             if (resourceId == R.id.order_detail_tv_transType || resourceId == R.id.order_detail_tv_orderStatus) {
                 textView.setText(HostMessage.getJsMsg(data.optString(key, "")));
+                textView.setTag(data.optString(key, ""));
             } else {
                 textView.setText(data.optString(key, ""));
             }
@@ -359,6 +365,12 @@ public class OrderDetailController extends BaseController {
 		Button authCompleteBtn = (Button) findViewById(R.id.order_detail_btn_auth_complete);
 		Button authSettlementBtn = (Button) findViewById(R.id.order_detail_btn_auth_settlement);
 		Button printBtn = (Button) findViewById(R.id.order_detail_btn_print);
+
+        String printFromStr = data.optString("from");
+        if (!TextUtils.isEmpty(printFromStr)) {
+            printBtn.setText(Env.getResourceString(this, R.string.order_detail_reprint_str));
+        }
+
 		RelativeLayout layout_auth_complete = (RelativeLayout) findViewById(R.id.layout_auth_complete);
 		RelativeLayout layout_auth_settlement = (RelativeLayout) findViewById(R.id.layout_auth_settlement);
 		RelativeLayout layout_refund = (RelativeLayout) findViewById(R.id.layout_refund);
@@ -403,6 +415,33 @@ public class OrderDetailController extends BaseController {
 			layout_auth_complete.setVisibility(View.VISIBLE);
 			layout_auth_settlement.setVisibility(View.VISIBLE);
 		}
+
+        if ((orderState != ORDER_STATUS_SUCCESS && orderState != ORDER_STATUS_REVERSED) || (transType == TRAN_TYPE_SALE && orderState == ORDER_STATUS_REVERSED)) {
+            //TODO hidden print button
+            printBtn.setClickable(false);
+            printBtn.setBackgroundResource(R.drawable.button_disable_background_color);
+        }
+	}
+
+	public void statusQuery(View view){
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("ref", rrn);
+			msg.put("transTime", transTime);
+			msg.put("transAmount", transAmount);
+			msg.put("openBrh", openBrh);
+			msg.put("paymentId", paymentId);
+			msg.put("paymentName", paymentName);
+			msg.put("txnId", txnId);
+			msg.put("authNo", authCode);
+			msg.put("transType", transType);
+			msg.put("batchNo", batchNo);
+			msg.put("traceNo", traceNo);
+			msg.put("payKeyIndex", payKeyIndex);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		onCall("OrderDetail.statusQuery", msg);
 	}
 
 	public void onCancel(View view) {
@@ -535,6 +574,7 @@ public class OrderDetailController extends BaseController {
 			msg.put("paymentName", paymentName);
 			msg.put("payKeyIndex", payKeyIndex);
 			msg.put("txnId", txnId);
+            msg.put("from", data.optString("from"));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -604,7 +644,8 @@ public class OrderDetailController extends BaseController {
 	private void handleBackAndConfirmButton() {
 		// call research js
 		TextView orderStatusTextView = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
-		String orderStatus = orderStatusTextView.getText().toString();
+//		String orderStatus = orderStatusTextView.getText().toString();
+		String orderStatus = String.valueOf(orderStatusTextView.getTag());
 
 		// mod for reverse status for 3th start reverse mod by Teddy on 1st
 		// August -- start
@@ -654,6 +695,16 @@ public class OrderDetailController extends BaseController {
 		String orderStatus = "";
 		if (null != item) {
 			orderStatus = item.optString("value");
+            TextView orderStatusTextView = (TextView) findViewById(R.id.order_detail_tv_orderStatus);
+            orderStatusTextView.setTag(orderStatus);
+
+            //show printer button available on transaction succ(0--110) and reverse succ(3--113) --start mod by Teddy on January 2015
+            Button printerButton = (Button) findViewById(R.id.order_detail_btn_print);
+            if (!TextUtils.isEmpty(orderStatus) && (orderStatus.equals("113"))) {
+                printerButton.setClickable(false);
+                printerButton.setBackgroundResource(R.drawable.button_disable_background_color);
+            }
+            //show printer button available on transaction succ(0--110) and reverse succ(3--113) --end mod by Teddy on January 2015
 		}
 		if (!orderStateSet.contains(orderStatus)) {// refresh button status
 			Button refundBtn = (Button) findViewById(R.id.order_detail_btn_refund);

@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import cn.koolcloud.pos.ClientEngine;
@@ -13,7 +14,7 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
 
-public class LoginVerifyController extends BaseController {
+public class LoginVerifyController extends BaseController implements View.OnKeyListener {
 	private EditText et_userName;
 	private EditText et_pwd;
 	private JSONObject data;
@@ -36,6 +37,7 @@ public class LoginVerifyController extends BaseController {
 		et_userName = (EditText) findViewById(R.id.login_et_userName);
 		// setCurrentNumberEditText(et_userName);
 		et_pwd = (EditText) findViewById(R.id.login_et_pwd);
+        et_pwd.setOnKeyListener(this);
 		// initETWithKBHiddenListener(et_userName);
 		// initETWithKBHiddenListener(et_pwd);
 		if (formData != null) {
@@ -87,6 +89,14 @@ public class LoginVerifyController extends BaseController {
 	protected void onDestroy() {
 		super.onDestroy();
 	}
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            onClickBtnOK(view);
+        }
+        return false;
+    }
 
 	// call get merchant info end mod by Teddy on 7 April
 

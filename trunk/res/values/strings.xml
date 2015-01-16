@@ -52,10 +52,10 @@
 
 
     <!-- activity_transaction_manage_controller.xml -->
-    <string name="transaction_manage_module_title_consumption_record_today">今日消费明细</string>
-    <string name="transaction_manage_module_title_consumption_record_old">历史消费明细</string>
+    <string name="transaction_manage_module_title_consumption_record_today">今日交易明细</string>
+    <string name="transaction_manage_module_title_consumption_record_old">历史交易明细</string>
     <string name="transaction_manage_module_title_delivery_voucher_record">提货记录</string>
-    <string name="transaction_manage_module_title_consumption_summary">今日消费汇总</string>
+    <string name="transaction_manage_module_title_consumption_summary">今日交易汇总</string>
     <string name="transaction_manage_module_title_single_record_search">机构参考号查询</string>
     <string name="transaction_manage_module_title_trans_id_search">交易号查询</string>
 
@@ -66,12 +66,12 @@
     <string name="settins_index_module_title_setMerchId">重置客户号</string>
     <string name="settins_index_module_title_setMachineId">设置设备号</string>
     <string name="settins_index_module_title_clearReverseData">清除冲正数据</string>
-    <string name="settins_index_module_title_downloadMerchData">系统初始化</string>
+    <string name="settins_index_module_title_downloadMerchData">参数更新</string>
     <string name="settins_index_module_title_set_trans_id">设置流水号</string>
     <string name="settins_index_module_title_trans_batch">批结算</string>
-    <string name="settins_index_module_title_sign_up">创建收银员</string>
+    <string name="settins_index_module_title_sign_up">创建操作员</string>
     <string name="settins_index_module_title_modify_pwd">修改密码</string>
-    <string name="settins_index_module_title_list_users">账户信息</string>
+    <string name="settins_index_module_title_list_users">操作员列表</string>
     
     <!-- activity_others_index_controller.xml -->
     <string name="others_index_module_title_pre_authorization">预授权</string>
@@ -98,7 +98,7 @@
     <string name="consumption_record_tv_orderStatus">状态</string>
     <string name="consumption_record_tv_paidAmount">已付金额</string>
     <string name="consumption_record_tv_balance">差额</string>
-    <string name="consumption_record_tv_totalAmount">订单总金额</string>
+    <string name="consumption_record_tv_totalAmount">交易总金额</string>
     
     <!-- activity_list_user_info_controller.xml -->
     <string name="users_user_name">用户名</string>
@@ -112,11 +112,13 @@
     <string name="multipay_record_tv_no">编号</string>
     <string name="multipay_record_tv_transType">支付方式</string>
     <string name="multipay_record_tv_rrn">参考号</string>
+    <string name="multipay_record_tv_transDate">日期</string>
+    <string name="multipay_record_tv_transTime">时间</string>
     <string name="multipay_record_tv_transAmount">金额</string>
     <string name="multipay_record_tv_orderStatus">状态</string>
-    <string name="multipay_record_tv_paidAmount">已付金额</string>
-    <string name="multipay_record_tv_balance">差额</string>
-    <string name="multipay_record_tv_totalAmount">订单总金额</string>
+    <string name="multipay_record_tv_paidAmount">已付金额:</string>
+    <string name="multipay_record_tv_balance">差额:</string>
+    <string name="multipay_record_tv_totalAmount">交易总金额:</string>
     <string name="multipay_record_btn_text_confirm">完  成</string>
     <string name="multipay_record_btn_text_pay">继续支付</string>
 
@@ -131,6 +133,7 @@
     <string name="order_detail_btn_operation_text_auth_complete">联机完成</string>
     <string name="order_detail_btn_operation_text_auth_settlement">离线完成</string>
     <string name="order_detail_btn_operation_text_confirm">确定</string>
+    <string name="order_detail_btn_operation_text_back">返回</string>
     <string name="order_detail_btn_operation_text_btn_cancel">关闭</string>
     <string name="order_detail_btn_operation_cancel">取消</string>
     <string name="order_detail_btn_operation_text_coupon">发券</string>
@@ -139,6 +142,8 @@
     <string name="order_detail_tv_orderId">参考号</string>
     <string name="order_detail_tv_orderStatus">支付状态</string>
     <string name="order_detail_tv_authCode">授权码</string>
+    <string name="order_detail_reprint_str">重新打印</string>
+    <string name="order_detail_trans_status_confirm">查询</string>
 
     <!-- activity_login_controller.xml -->
     <string name="login_tv_userName">操作员</string>
@@ -150,7 +155,7 @@
     <string name="msg_mod_pwd_hint_pwd_input_confirm">请确认新密码</string>
     <string name="msg_mod_pwd_hint_error_dialog">密码不一致，请重新输入</string>
     <string name="msg_mod_pwd_hint_diffent_pwd_dialog">请输入不同的密码</string>
-    <string name="msg_account_hint">请输入主管账号</string>
+    <string name="msg_account_hint">请输入高级别账号</string>
     <string name="msg_pwd_hint">请输入密码</string>
     
     <string name="msg_printer_issues">请检查打印机状态及打印纸！</string>
@@ -201,24 +206,40 @@
     <string name="merchant_info_tv_machineId">酷云设备号：</string>
     <string name="merchant_info_tv_merchName">客户名称：</string>
     <string name="merchant_info_tv_merchAccount">客户结算账户：</string>
+    <string name="merchant_info_tv_operator">操作员:</string>
 
     <!-- activity_transAmount_controller.xml -->
     <string name="input_money_et_money_hint">0</string>
 
     <!-- activity_pay_account_controller.xml -->
-    <string name="pay_account_tv_amount">支付金额</string>
+    <string name="pay_account_tv_amount">金额</string>
     <string name="pay_account_btn_qrcode">二维码</string>
     <string name="pay_account_btn_sound" >声波</string>
     <string name="pay_account_btn_swiper">刷卡/插卡</string>
     <string name="pay_account_btn_keyboard">手动输入</string>
-    <string name="pay_account_btn_ic" translatable="false">IC卡</string>
+    <string name="pay_account_btn_ic">IC卡</string>
     <string name="pay_account_tag_qrcode">qrcode</string>
     <string name="pay_account_tag_sound">sound</string>
     <string name="pay_account_tag_swiper">swiper</string>
     <string name="pay_account_tag_keyboard">keyboard</string>
-    <string name="pay_account_tag_ic" translatable="false">ic</string>
-    <string name="pay_account_input_ic_guide" translatable="false">请插入IC卡</string>
-    <string name="pay_account_input_swiper_ic_guide" translatable="false">请刷磁卡或者插入IC卡！</string>
+    <string name="pay_account_tag_ic">ic</string>
+    <string name="pay_account_tag_input_password">请输入密码！</string>
+    <string name="pay_account_input_ic_guide">请插入IC卡</string>
+    <string name="pay_account_input_swiper_ic_guide">请刷磁卡或者插入IC卡！</string>
+    <string name="ic_status_insert_warning_1">IC卡已插入，正在处理，请勿拔卡！</string>
+    <string name="ic_status_insert_warning_2">IC卡已拔出！请点击密码键盘上的取消键！</string>
+    <string name="ic_status_insert_warning_3">IC卡已拔出！</string>
+    <string name="ic_status_insert_warning_4">密码获取中，请勿拔卡！</string>
+    <string name="ic_status_insert_warning_5">交易处理中，请勿拔卡.  </string>
+    <string name="ic_status_insert_warning_6">交易处理中，请勿拔卡.. </string>
+    <string name="ic_status_insert_warning_7">交易处理中，请勿拔卡...</string>
+    <string name="ic_status_insert_warning_8">请先点击密码键盘上的“取消”按键！</string>
+    <string name="ic_status_insert_warning_9">交易拒绝！</string>
+    <string name="ic_status_insert_warning_10">交易中止,请拔卡！</string>
+    <string name="ic_status_insert_warning_11">交易批准！</string>
+    <string name="ic_status_insert_warning_12">不允许服务，交易中止，请取卡！</string>
+    <string name="ic_status_insert_warning_13">正在联机，请勿拔卡！</string>
+    <string name="ic_status_insert_warning_14">IC卡已插入！</string>
 
     <!-- controllerName -->
     <string name="controllerName_Home">Home</string>
@@ -276,6 +297,7 @@
     <string name="controllerJSName_CashConsume" translatable="false">pay/cashConsume</string>
     <string name="controllerJSName_PayMethod">pay/payMethod</string>
     <string name="controllerJSName_MultiPay">pay/multipay</string>
+    <string name="controllerJSName_ConsumptionSummary">Others/Settings/ConsumptionSummary</string>
 
     <!-- title -->
     <string name="title_activity_home_controller">收银通</string>
@@ -283,10 +305,10 @@
     <string name="title_activity_input_money_controller">请输入金额</string>
     <string name="title_activity_login_controller">签 到</string>
     <string name="title_activity_configure_controller">登录</string>
-    <string name="title_activity_consumption_record">消费记录</string>
-    <string name="title_activity_order_detail">消费详情</string>
-    <string name="title_activity_consumption_summary">今日消费汇总</string>
-    <string name="title_activity_consumption_record_search_controller">历史消费记录</string>
+    <string name="title_activity_consumption_record">交易记录</string>
+    <string name="title_activity_order_detail">交易详情</string>
+    <string name="title_activity_consumption_summary">今日交易汇总</string>
+    <string name="title_activity_consumption_record_search_controller">历史交易记录</string>
     <string name="title_activity_transaction_manage_index">交易管理</string>
     <string name="title_activity_trade_statistics_search_controller">历史消费统计</string>
     <string name="title_activity_pin_pad_controller">请输入密码</string>
@@ -294,13 +316,13 @@
     <string name="title_activity_others_index">其他</string>
     <string name="title_activity_set_merch_id_controller">设置客户号</string>
     <string name="title_activity_merchant_info_controller">商户信息</string>
-    <string name="title_activity_settings_download_controller">系统初始化</string>
+    <string name="title_activity_settings_download_controller">参数更新</string>
     <string name="title_activity_input_del_voucher_num_controller">输入提货数量</string>
     <string name="title_activity_del_voucher_way_chosen_controller">方式选择</string>
     <string name="title_activity_input_del_voucher_id_controller">输入提货券号</string>
     <string name="title_activity_set_machine_id_controller">设置设备号</string>
     <string name="title_activity_modify_pwd_controller">修改密码</string>
-    <string name="title_activity_create_user_controller">创建用户</string>
+    <string name="title_activity_create_user_controller">创建操作员</string>
     <string name="title_activity_del_voucher_record_search_controller">提货记录查询</string>
     <string name="title_activity_del_voucher_record_controller">提货记录</string>
     <string name="title_activity_del_voucher_info_controller">提货券信息</string>
@@ -319,17 +341,17 @@
     <string name="title_activity_set_trans_batch_controller">批结算</string>
     <string name="title_activity_sign_in_controller">签到</string>
     <string name="title_activity_pay_mechanism_controller">请选择支付机构</string>
-    <string name="title_activity_list_users_controller">用户详情</string>
+    <string name="title_activity_list_users_controller">操作员列表</string>
     <string name="title_activity_qrcode_controller">请扫码</string>
     <string name="title_activity_my_prepaid_card_controller">我的卡券</string>
     <string name="title_activity_super_transfer_controller" translatable="false">超级转账</string>
-    <string name="title_activity_cash_consume_controller" translatable="false">现金支付</string>
+    <string name="title_activity_cash_consume_controller">现金支付</string>
     
     <!-- for home -->
     <string name="home_activity_home">首页</string>
     <string name="home_activity_setting">设置管理</string>
-    <string name="home_activity_transaction_inquiries">交易查询</string>
-    <string name="home_activity_multi_pay">拆单支付</string>
+    <string name="home_activity_transaction_inquiries">交易管理</string>
+    <string name="home_activity_multi_pay">组合支付</string>
     <string name="home_activity_check_update">检查更新</string>
 
     <!-- for multi pay -->
@@ -372,10 +394,10 @@
     <string name="dialog_device_check_pinpad_usual">密码键盘连接正常。</string>
     <string name="dialog_device_check_mispos_unusual" translatable="false">Mispos连接异常。</string>
     <string name="dialog_device_check_mispos_usual" translatable="false">Mispos连接正常。</string>
-    <string name="dialog_device_check_printer_unusual">打印机未连接好。</string>
+    <string name="dialog_device_check_printer_unusual">打印机连接异常。</string>
     <string name="dialog_device_check_printer_usual">打印机连接正常。</string>
-    <string name="dialog_device_check_network_unusual">网络连接不通。</string>
-    <string name="dialog_device_check_network_usual">网络连接检测正常。</string>
+    <string name="dialog_device_check_network_unusual">网络连接异常。</string>
+    <string name="dialog_device_check_network_usual">网络连接正常。</string>
     <string name="dialog_device_check_self_checking">再次检验</string>
     <string name="dialog_device_check_use_anyway">继续使用</string>
     <string name="dialog_device_check_start_to_use">开始使用</string>
@@ -387,6 +409,7 @@
     <string name="msg_exist_toast">再按一次后退键最小化程序</string>
     <string name="msg_organizing_data">正在组织数据</string>
     <string name="msg_analyzing_data">正在解析数据</string>
+    <string name="msg_trading">交易中...</string>
     
     <!-- device, merchant bar msg -->
     <string name="bar_koolcloud_merch_name_msg">客户号：</string>
@@ -428,7 +451,7 @@
     <string name="mispos_str_reconnected">请检查Mispos连接正常后重试</string>
     <string name="mispos_check_bind_config_msg">该mispos未绑定本主机，请联系支付服务商。</string>
     <string name="mispos_amount_msg">金额：</string>
-    <string name="mispos_revoke_msg" translatable="false">已撤销</string>
+    <string name="mispos_revoke_msg">已撤销</string>
     
     <!-- 现金支付 -->
     <string name="sum_payable_mark">应付金额： </string>
@@ -438,10 +461,12 @@
     <string name="input_amount">请点击输入金额</string>
     <string name="amount_unit">元</string>
     <string name="cash_confirm">确定</string>
-    
+
     <!-- list user info -->
     <string name="user_manager">主管   </string>
     <string name="common_operator">收银员</string>
+    <string name="common_non_operator">非收银员</string>
+    <string name="common_void_operator">撤销专员</string>
     <string name="user_delete">删除</string>
     <string name="menu_title">选项</string>
     
@@ -465,7 +490,10 @@
     <string name="consumption_summary_preAuthCompleteOffline">预授权完成离线</string>
     <string name="consumption_summary_preAuthCancel">预授权撤销</string>
     <string name="consumption_summary_preAuthCompleteCancel">预授权完成撤销</string>
-    
+    <string name="consumption_summary_total_amount">总计（%1$s）：</string>
+    <string name="consumption_summary_total_amount_unit">%1$s</string>
+    <string name="consumption_record_print">打印交易明细</string>
+
     <!-- super transfer msg -->
    	<string name="transfer_msg_from_account_hint" translatable="false">转出账号</string>
    	<string name="transfer_msg_to_account_hint" translatable="false">转入账号</string>
@@ -486,40 +514,58 @@
    	<string name="printer_tag_trace">流水号  ：</string>
    	<string name="printer_tag_operator">操作员  ：</string>
    	<string name="printer_tag_channel">支付渠道：</string>
+   	<string name="printer_tag_issuer_name">发卡行 ：</string>
    	<string name="printer_tag_account">支付账户：</string>
    	<string name="printer_transaction_id">支付宝流水号：</string>
    	<string name="printer_partner_id">支付宝合作身份：</string>
-   	<string name="printer_merchant_receipt_id">商户订单号：</string>
+   	<string name="printer_merchant_receipt_id">商户订单号/参考号：</string>
    	<string name="printer_tag_signature">用户签名：</string>
-   	<string name="printer_tag_amount">支付金额：</string>
+   	<string name="printer_tag_amount">金额：</string>
    	<string name="printer_tag_trans_amount" translatable="false">交易金额：</string>
    	<string name="printer_tag_trans_fee" translatable="false">手续费：</string>
    	<string name="printer_tag_exchange_rate">汇率：</string>
    	<string name="printer_tag_real_amount">人民币：</string>
    	<string name="printer_msg_acknowledge">本人确认以上交易，同意将其记入支付宝账户</string>
 
+    <string name="printer_wechat_transaction_id">微信交易单号：</string>
+    <string name="printer_wechat_partner_id">微信商户号：</string>
+    <string name="printer_wechat_msg_acknowledge">本人确认以上交易，同意将其记入微信账户</string>
+
    	<string name="printer_tran_type_reverse">消费撤销</string>
    	<string name="printer_tran_type_sale">消费</string>
    	<string name="printer_tran_type_refund">退货</string>
+   	<string name="printer_tran_type_duplicate">复本</string>
    	<string name="printer_tran_type_transfer">转账</string>
+   	<string name="printer_tran_type_prepaid_complete">预授权完成</string>
+   	<string name="printer_tran_type_prepaid_complete_offline">预授权完成（离线）</string>
+   	<string name="printer_tran_type_prepaid_complete_void">预授权完成撤销</string>
 
    	<string name="printer_bank_card_voucher">银行卡签购单</string>
    	<string name="printer_bank_card_holder">持卡人存根</string>
    	<string name="printer_bank_holder">银行存根</string>
    	<string name="printer_acquirer_merchant_no">收单商户号：</string>
    	<string name="printer_acquirer_terminal_no">收单终端号：</string>
-   	<string name="printer_batch_no">批次号：</string>
-   	<string name="printer_voucher_no">凭证号：</string>
-   	<string name="printer_auth_no">授权码：</string>
+   	<string name="printer_batch_no">批次号  ：</string>
+   	<string name="printer_voucher_no">凭证号 ：</string>
+   	<string name="printer_auth_no">授权码 ：</string>
    	<string name="printer_bank_card">卡号：</string>
    	<string name="printer_reference">备注</string>
    	<string name="printer_msg_acknowledge_card">本人确认以上交易，同意将其记入本卡账户</string>
+
+    <string name="printer_summary_title">当日消费汇总</string>
+    <string name="printer_summary_amount">金额</string>
+    <string name="printer_summary_count">笔数</string>
+    <string name="printer_summary_transType">交易类型</string>
+    <string name="printer_summary_totalAmount">总计：</string>
 
    	<string name="printer_transfer_voucher" translatable="false">银行卡转账签购单</string>
    	<string name="printer_transfer_from_card_holder" translatable="false">转款人存根</string>
    	<string name="printer_transfer_to_card_holder" translatable="false">收款人存根</string>
    	<string name="printer_transfer_from_bank_card" translatable="false">转出卡号：</string>
    	<string name="printer_transfer_to_bank_card" translatable="false">转入卡号：</string>
+
+   	<string name="printer_pos_consumption_record" >POS交易明细单</string>
+   	<string name="printer_total_amount" >总计：</string>
 
    	<string name="currency_msg_156">人民币</string>
    	<string name="currency_msg_764">泰铢</string>
@@ -577,6 +623,14 @@
     <string name="response_msg_service_not_allowed_remove_card_C2">交易中止，请取卡！</string>
     <string name="response_msg_unknown_error">未知错误</string>
 
+    <string name="msg_swipe_card_error">刷卡错误，请重新刷卡</string>
+    <string name="alert_msg_negative1">数据不完整</string>
+    <string name="alert_msg_negative2">数据错误</string>
+    <string name="alert_msg_negative3">LRC校验错误</string>
+    <string name="alert_msg_negative4">奇偶校验错误</string>
+    <string name="alert_msg_negative5">未知错误</string>
+    <string name="alert_msg_negative6">数据太短</string>
+    <string name="alert_msg_negative7">数据太长</string>
     <string name="alert_msg_100">请输入交易总金额</string>
     <string name="alert_msg_101">原始交易不存在</string>
     <string name="alert_msg_102">消费</string>
@@ -650,4 +704,31 @@
     <string name="alert_msg_170">退出成功</string>
     <string name="alert_msg_171">获取报文失败，确认密码键盘插好后重新操作，或联系客服人员</string>
     <string name="alert_msg_172">撤销中</string>
+    <string name="alert_msg_173">请输入交易金额</string>
+    <string name="alert_msg_174">请出示二维码</string>
+    <string name="alert_msg_175">请刷卡或插卡</string>
+    <string name="alert_msg_176">请稍后查询</string>
+    <string name="alert_msg_177">交易状态查询失败，请重新查询！</string>
+    <string name="alert_msg_178">应付金额:%1$s元</string>
+    <string name="alert_msg_179">实付金额:%1$s元</string>
+    <string name="alert_msg_180">是否继续进行交易？</string>
+    <string name="alert_msg_181">活动不存在！</string>
+    <string name="alert_msg_182">不在活动时间范围内！</string>
+    <string name="alert_msg_183">当前卡片无法参加活动！</string>
+    <string name="alert_msg_184">当前卡片的优惠次数已用完！</string>
+    <string name="alert_msg_185">当前消费不满足优惠条件！</string>
+    <string name="alert_msg_186">优惠记录不存在！</string>
+    <string name="alert_msg_187">非法访问！</string>
+    <string name="alert_msg_188">缺少参数！</string>
+    <string name="alert_msg_189">无效的参数！</string>
+    <string name="alert_msg_190">系统内部错误！</string>
+    <string name="alert_msg_191">转账</string>
+    <string name="alert_msg_192">助农取款</string>
+    <string name="alert_msg_201" translatable="false">活动不存在！\n是否继续进行交易？</string>
+    <string name="alert_msg_202" translatable="false">不在活动时间范围内！\n是否继续进行交易？</string>
+    <string name="alert_msg_203" translatable="false">当前卡片无法参加活动！\n是否继续进行交易？</string>
+    <string name="alert_msg_204" translatable="false">当前卡片的优惠次数已用完！\n是否继续进行交易？</string>
+    <string name="alert_msg_205" translatable="false">当前消费不满足优惠条件！\n是否继续进行交易？</string>
+    <string name="alert_msg_206" translatable="false">优惠记录不存在！\n是否继续进行交易？</string>
+
     </resources>

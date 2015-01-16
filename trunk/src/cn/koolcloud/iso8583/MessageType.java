@@ -8,7 +8,9 @@ public class MessageType implements Constant {
 	public static MessageTypeTable[] messageTypeTable = {
 			new MessageTypeTable(TRAN_BALANCE, "0200", "310000", "00", "01"), // 0
 			new MessageTypeTable(TRAN_SALE, "0200", "000000", "00", "22"), // 1
+			new MessageTypeTable(TRAN_SALE, "0210", "000000", "00", "22"), // 1
 			new MessageTypeTable(TRAN_VOID, "0200", "200000", "00", "23"), // 2
+			new MessageTypeTable(TRAN_VOID, "0210", "200000", "00", "23"), // 2
 			new MessageTypeTable(TRAN_REFUND, "0220", "200000", "00", "25"), // 3
 			new MessageTypeTable(TRAN_AUTH, "0100", "030000", "06", "10"), // 4
 			new MessageTypeTable(TRAN_ADD_AUTH, "0100", "030000", "60", "10"), // 5
@@ -143,7 +145,8 @@ public class MessageType implements Constant {
 					"200000", "06", "21"), // 75
 			
 			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0200", "383003", "82", "00"), // 76 request message
-			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0210", "383003", "82", "00") // 76 response message
+			new MessageTypeTable(TRAN_SUPER_TRANSFER, "0210", "383003", "82", "00"), // 76 response message
+			new MessageTypeTable(TRAN_STATUS_QUERY, "0200", "531000","00", "22")
 	};
 
 	private static int i;

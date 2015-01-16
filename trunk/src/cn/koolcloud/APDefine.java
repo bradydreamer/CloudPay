@@ -5,13 +5,13 @@ public class APDefine {
 	/**
 	 * produce server.
 	 */
-//	 public static final String APPSERVER = "https://aop.koolyun.com:443/apmp/rest/";
+//	public static final String APPSERVER = "https://aop.koolyun.com:443/apmp/rs/";
 
 	// test server
-	public static final String APPSERVER = "http://aop.koolyun.cn:8080/apmp/rest/";
+	public static final String APPSERVER = "http://aop.koolyun.cn:8080/apmp/rs/";
 	
 	//UAT Server
-//	public static final String APPSERVER = "http://aop.koolyun.cn:8090/apmp/rest/";
+//	public static final String APPSERVER = "http://aop.koolyun.cn:8090/apmp/rs/";
 
 	/**
 	 * produce modulus
@@ -24,5 +24,6 @@ public class APDefine {
 
 	// for develop,test
 	public static final String TPDU = "6006140000";
+	public static final String TPDU_ALLINPAY = "6007100000";
 
 }

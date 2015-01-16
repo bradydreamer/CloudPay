@@ -17,54 +17,67 @@
 	function onConfirmMethod(data) {
 		var payType;
 		var params = JSON.parse(data);
-		if(params.error != null || params.error != undefined){
-			Scene.alert(params.error);
-			return;
-		}
-		var product = JSON.parse(params.tag);
-		if (product == null) {
-			Scene.alert(data);
-			return;
-		};
+		window.util.exeActionWithLoginChecked(function(){
+            if(window.user.gradeId == "4"){
+                Scene.alert("137",function(){
+                    if(ConsumptionData.dataForPayment.isExternalOrder){
+                        Pay.restart();
+                    }else{
+                        Scene.goBack("Home");
+                    }
+                });
+                return;
+            }
 
-		if(ConsumptionData.dataForPayment.isExternalOrder != true){			
-			ConsumptionData.resetConsumptionData();
-		}else{
-			var transAmount = ConsumptionData.dataForPayment.transAmount;
-			var couponAmount = ConsumptionData.dataForPayment.couponAmount;
-			//cache couponAmount mod by Teddy on 12th August --start
-			ConsumptionData.resetConsumptionData();
-			ConsumptionData.dataForPayment.isExternalOrder = true;
-			ConsumptionData.dataForPayment.couponAmount = couponAmount;
-			//cache couponAmount mod by Teddy on 12th August --end
-			
-			if(!ConsumptionData.isMultiPay){
-				ConsumptionData.dataForPayment.transAmount = transAmount;
-			}
-		}
-		
-		if(product.typeId == "SALE" || product.typeId == "coupon" ){
-			payType = transType_Consume;
-		}else if(product.typeId == "PREPAID"){
-			payType = transType_PreAuth;
-		} else if (product.typeId == "SUPERTRANSER") {
-			payType = transType_superTransfer;
-		}	
-		
-		if (product[payType] != null && product[payType].length != 0) {
-			if (window.payTemplates == null) {
-				window.RMS.read("templateList", function(data) {
-					window.payTemplates = data;
-					confirmMethod(product, window.payTemplates[product[payType]]);
-				});
+            if(params.error != null || params.error != undefined){
+                Scene.alert(params.error);
+                return;
+            }
+            var product = JSON.parse(params.tag);
+            if (product == null) {
+                Scene.alert(data);
+                return;
+            };
 
-				
-			} else {
-				confirmMethod(product, window.payTemplates[product[payType]]);
-			}
-		}else{
-			confirmMethod(product);
-		}
+            if(ConsumptionData.dataForPayment.isExternalOrder != true){
+                ConsumptionData.resetConsumptionData();
+            }else{
+                var transAmount = ConsumptionData.dataForPayment.transAmount;
+                var couponAmount = ConsumptionData.dataForPayment.couponAmount;
+                //cache couponAmount mod by Teddy on 12th August --start
+                ConsumptionData.resetConsumptionData();
+                ConsumptionData.dataForPayment.isExternalOrder = true;
+                ConsumptionData.dataForPayment.couponAmount = couponAmount;
+                //cache couponAmount mod by Teddy on 12th August --end
+
+                if(!ConsumptionData.isMultiPay){
+                    ConsumptionData.dataForPayment.transAmount = transAmount;
+                }
+            }
+
+            if(product.typeId == "SALE" || product.typeId == "coupon" ){
+                payType = transType_Consume;
+            }else if(product.typeId == "PREPAID"){
+                payType = transType_PreAuth;
+            } else if (product.typeId == "SUPERTRANSER") {
+                payType = transType_superTransfer;
+            }
+
+            if (product[payType] != null && product[payType].length != 0) {
+                if (window.payTemplates == null) {
+                    window.RMS.read("templateList", function(data) {
+                        window.payTemplates = data;
+                        confirmMethod(product, window.payTemplates[product[payType]]);
+                    });
+
+
+                } else {
+                    confirmMethod(product, window.payTemplates[product[payType]]);
+                }
+            }else{
+                confirmMethod(product);
+            }
+		},true);
 
 	}
 
@@ -205,7 +218,9 @@
 				return;
 		}
 		params.actionPurpose = "Balance";
-		Scene.showScene("PinPad", "", params);
+		//Scene.showScene("PinPad", "", params);
+		var datalist = [{"pinpad_data": params}];
+        Scene.setProperty("PayAccount",datalist);
 	}
 
 	function afterGetBalance8583(data) {

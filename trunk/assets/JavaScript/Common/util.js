@@ -111,6 +111,16 @@ Util.prototype.showMisposWithLoginChecked = function(params) {
 	var data = JSON.parse(params);
 	var sceneName = "MisposController";
 	window.util.exeActionWithLoginChecked(function(shouldRmvLogin) {
+        if(window.user.gradeId == "4"){
+            Scene.alert("137",function(){
+                if(ConsumptionData.dataForPayment.isExternalOrder){
+                    Pay.restart();
+                }else{
+                    Scene.goBack("Home");
+                }
+            });
+            return;
+        }
 		if (shouldRmvLogin) {
 			data.shouldRemoveCurCtrl = shouldRmvLogin;
 		}
@@ -149,6 +159,16 @@ Util.prototype.showCouponWithLoginChecked = function(params) {
 	var sceneName = "Coupon";
 	window.util.exeActionWithLoginChecked(
 		function(shouldRmvLogin) {
+			if(window.user.gradeId == "4"){
+                Scene.alert("137",function(){
+                    if(ConsumptionData.dataForPayment.isExternalOrder){
+                        Pay.restart();
+                    }else{
+                        Scene.goBack("Home");
+                    }
+                });
+                return;
+            }
 			if (shouldRmvLogin) {
 				data.shouldRemoveCurCtrl = shouldRmvLogin;
 			}
@@ -181,6 +201,16 @@ Util.prototype.showWanCouponWithLoginChecked = function(params) {
 	var sceneName = "Coupon_Wan";
 	window.util.exeActionWithLoginChecked(
 		function(shouldRmvLogin) {
+			if(window.user.gradeId == "4"){
+                Scene.alert("137",function(){
+                    if(ConsumptionData.dataForPayment.isExternalOrder){
+                        Pay.restart();
+                    }else{
+                        Scene.goBack("Home");
+                    }
+                });
+                return;
+            }
 			if (shouldRmvLogin) {
 				data.shouldRemoveCurCtrl = shouldRmvLogin;
 			}

@@ -41,7 +41,12 @@
 
   function afterConvertBalance8583(data) {
     if ("00" != data.resCode) {
-      Scene.alert(data.resMessage, goBackToOthers)
+        if (ConsumptionData.dataForPayment.isExternalOrder) {
+            ConsumptionData.dataForPayment.transAmount = -1;
+            Pay.restart();
+        } else {
+            Scene.alert(data.resMessage, goBackToOthers)
+        }
     } else {
       window.data8583.getBalance(showBalance)
     }
@@ -56,8 +61,14 @@
       name: "tv_balance",
       key: "text",
       value: window.util.formatAmountStr("" + data.balance)
-    }]
-    Scene.setProperty("BalanceResult", propertyList)
+    }];
+    if (ConsumptionData.dataForPayment.isExternalOrder) {
+        ConsumptionData.dataForPayment.result = "success";
+        ConsumptionData.dataForPayment.transAmount = data.balance;
+        Pay.restart();
+    } else {
+        Scene.setProperty("BalanceResult", propertyList)
+    }
   }
 
   function goBackToOthers() {

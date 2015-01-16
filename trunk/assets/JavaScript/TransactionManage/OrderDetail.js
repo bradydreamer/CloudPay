@@ -13,6 +13,10 @@
   var transType_preAuthCompleteCancel = 3031;
 
   var transCancelTag = false;
+
+   function statusQuery(data){
+     actionTransData8583(data, Pay.statusQuery, updateListQuery);
+   }
   
   function onRefund(data) {
     var params = JSON.parse(data);
@@ -42,7 +46,9 @@
         });
         return;
     }
-
+    //fix SMTPS-244 by Teddy --start on December 29th
+    ConsumptionData.dataForPayment.from = "";
+    //fix SMTPS-244 by Teddy --end on December 29th
 	//check index no, if it is mispos then don't get 8583 go pay flow --start add by Teddy on 3th July
 	//fix SMTPS-171 --start fixed by Teddy on 10th November
   	ConsumptionData.dataForPayment.payKeyIndex = params.payKeyIndex;
@@ -104,6 +110,16 @@
   }
   
   function actionTransData8583 (data, actionFunc, succFunc) {
+    if(window.user.gradeId == "4"){
+          Scene.alert("137",function(){
+              if(ConsumptionData.dataForPayment.isExternalOrder){
+                  Pay.restart();
+              }else{
+                  Scene.goBack("Home");
+              }
+          });
+          return;
+    }
     var params = JSON.parse(data);
     var rrn = params.ref;
     var transTime = params.transTime;
@@ -128,7 +144,7 @@
 			transType = transType_preAuthCompleteCancel;
 		}
 	}
-	
+
 	var transAmount = util.yuan2fenStr(params.transAmount);
 	var data8583;
 	
@@ -147,6 +163,7 @@
         "txnId": txnId,
         "transType": transType,
         "transAmount": transAmount,
+        "payKeyIndex": params.payKeyIndex
       }, succFunc);
     }
   }
@@ -179,7 +196,7 @@
     var propertyList = [{
         name: "orderStatus",
         key: "text",
-        value: "已完成",
+        value: "115",
       }];
       Scene.setProperty("OrderDetail", propertyList);
   }
@@ -188,7 +205,26 @@
     var propertyList = [{
       name: "orderStatus",
       key: "text",
-      value: "已撤销",
+      value: "113",
+    }];
+    Scene.setProperty("OrderDetail", propertyList);
+  }
+
+  function updateListQuery(data){
+    var contentStr = "";
+    if("00" == data){
+        contentStr = "113";
+    }else if("08" == data){
+        contentStr = "176";
+    }else if("failed" == data){
+        contentStr = "111";
+    }else if("02" == data){
+        contentStr = "112";
+    }
+    var propertyList = [{
+      name: "orderStatus",
+      key: "text",
+      value: contentStr
     }];
     Scene.setProperty("OrderDetail", propertyList);
   }
@@ -197,22 +233,25 @@
 	var propertyList = [{
 			name: "orderStatus",
 			key: "text",
-			value: "已撤销",
+			value: "113",
 		}];
 	Scene.setProperty("OrderDetail", propertyList);
 	setTimeout(function() {
 	      Scene.goBack("OrderDetail");
 	    }, 300);
   }
-  
-  
+
+
   function onPrint(data) {
     var params = JSON.parse(data);
     var rrn = params.ref;
 	var txnId = params.txnId;
     //global variable for search pay result
     window.OrderDetail.paymentId = params.paymentId;
+    ConsumptionData.dataForPayment.paymentId = params.paymentId;
     window.OrderDetail.paymentName = params.paymentName;
+    ConsumptionData.dataForPayment.from = params.from;
+    ConsumptionData.dataForPayment.txnId = txnId;
     window.posPrint.printTrans(txnId);
   }
   
@@ -223,13 +262,13 @@
   		txnId : msg.txnId,
   		stat: msg.stat
   	};
-  	
+
   	Net.asynConnect(action, req, afterWriteBackSendCoupon, true);
   	function afterWriteBackSendCoupon(param) {
   		TransactionManageIndex.refreshResearch();
   	}
   }
-  
+
   window.OrderDetail = {
     "onRefund": onRefund,
     "onCancel": onCancel,
@@ -237,7 +276,8 @@
     "onAuthSettlement": onAuthSettlement,
     "onPrint": onPrint,
     "writeBackSendCoupon": writeBackSendCoupon,
-    "showCoupon": showCoupon
+    "showCoupon": showCoupon,
+    "statusQuery": statusQuery
   };
 
 })();

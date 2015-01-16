@@ -2,9 +2,12 @@ package cn.koolcloud.pos.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +15,8 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.text.TextUtils;
+
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.entity.AcquireInstituteBean;
 
@@ -170,5 +175,72 @@ public class UtilForJSON {
 		}
 		return resultArray;
 	}
-	
+
+    public static TreeMap<String, String> parseRecordSummary(JSONArray jsonArray) {
+        TreeMap<String, String> totalMap = new TreeMap<String, String>();
+        int saleCount = 0;
+        int saleAmount = 0;
+        int voidCount = 0;
+        int voidAmount = 0;
+        int preAuthOnlineCompleteCount = 0;
+        int preAuthOnlineCompleteAmount = 0;
+        int preAuthOfflineCompleteCount = 0;
+        int preAuthOfflineCompleteAmount = 0;
+        int preAuthCompleteVoidCount = 0;
+        int preAuthCompleteVoidAmount = 0;
+        if (jsonArray != null && jsonArray.length() > 0) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.optJSONObject(i);
+                if (jsonObject != null) {
+                    String transType = jsonObject.optString("transType");
+                    int transAmount = jsonObject.optInt("transAmount");
+                    if (!TextUtils.isEmpty(transType) && transType.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUME)) {
+                        saleCount++;
+                        saleAmount += transAmount;
+                    } else if (!TextUtils.isEmpty(transType) && transType.equals(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE)) {
+                        voidCount++;
+                        voidAmount += transAmount;
+                    } else if (!TextUtils.isEmpty(transType) && transType.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE)) {
+                        preAuthOnlineCompleteCount++;
+                        preAuthOnlineCompleteAmount += transAmount;
+                    } else if (!TextUtils.isEmpty(transType) && transType.equals(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT)) {
+                        preAuthOfflineCompleteCount++;
+                        preAuthOfflineCompleteAmount += transAmount;
+                    } else if (!TextUtils.isEmpty(transType) && transType.equals(ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL)) {
+                        preAuthCompleteVoidCount++;
+                        preAuthCompleteVoidAmount += transAmount;
+                    }
+                }
+            }
+
+            if (preAuthCompleteVoidCount > 0) {
+                String preAuthCplVoidTrans = ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL + "-" + preAuthCompleteVoidCount + "-" + preAuthCompleteVoidAmount;
+                totalMap.put(ConstantUtils.APMP_TRAN_TYPE_PREAUTHCOMPLETECANCEL, preAuthCplVoidTrans);
+            }
+
+            if (voidCount > 0) {
+                String voidTrans = ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE + "-" + voidCount + "-" + voidAmount;
+                totalMap.put(ConstantUtils.APMP_TRAN_TYPE_CONSUMECANCE, voidTrans);
+            }
+
+            if (preAuthOnlineCompleteCount > 0) {
+                String preAuthOnlineCplTrans = ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE + "-" + preAuthOnlineCompleteCount + "-" + preAuthOnlineCompleteAmount;
+                totalMap.put(ConstantUtils.APMP_TRAN_TYPE_PRAUTHCOMPLETE, preAuthOnlineCplTrans);
+            }
+
+            if (preAuthOfflineCompleteCount > 0) {
+                String preAuthOfflineCplTrans = ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT + "-" + preAuthOfflineCompleteCount + "-" +preAuthOfflineCompleteAmount;
+                totalMap.put(ConstantUtils.APMP_TRAN_TYPE_PRAUTHSETTLEMENT, preAuthOfflineCplTrans);
+            }
+
+            if (saleCount > 0) {
+                String saleTrans = ConstantUtils.APMP_TRAN_TYPE_CONSUME + "-" + saleCount + "-" + saleAmount;
+                totalMap.put(ConstantUtils.APMP_TRAN_TYPE_CONSUME, saleTrans);
+            }
+
+            int totalAmount = saleAmount + preAuthOnlineCompleteAmount + preAuthOfflineCompleteAmount - voidAmount - preAuthCompleteVoidAmount;
+            totalMap.put("total", String.valueOf(totalAmount));
+        }
+        return totalMap;
+    }
 }

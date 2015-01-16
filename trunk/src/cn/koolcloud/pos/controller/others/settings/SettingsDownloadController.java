@@ -97,6 +97,8 @@ public class SettingsDownloadController extends BaseController {
 	protected void onDestroy() {
 		super.onDestroy();
 		new LoadAcquireInstitutesThread().start();
+        //download bank data.
+        onCall("Home.downloadBankData", null);
 	}
 
 	class LoadAcquireInstitutesThread extends Thread {

@@ -44,6 +44,10 @@ public class UsersListAdapter extends LoadMoreAdapter {
 			grade = context.getString(R.string.user_manager);
 		} else if (userInfoItem.optString("gradeId").equals("2")) {
 			grade = context.getString(R.string.common_operator);
+		} else if (userInfoItem.optString("gradeId").equals("3")) {
+			grade = context.getString(R.string.common_non_operator);
+		} else if (userInfoItem.optString("gradeId").equals("4")) {
+			grade = context.getString(R.string.common_void_operator);
 		}
 		holder.gradeId.setText(grade);
 		holder.userName.setText(userInfoItem.optString("operator"));

@@ -46,10 +46,10 @@
 //			return;
 //		  }		
 		if ("0" == g_loginRes.responseCode) {
-			/*if(g_loginRes.gradeId == "1"){
-				Scene.alert("非操作员权限，请重新输入操作员账户！",backLogin);
+			if(g_loginRes.gradeId == "3"){
+				Scene.alert("137",backLogin);
 				return;
-			}*/
+			}
 			g_loginRes.userName = g_loginReq.operator;
 			g_loginRes.userStatus = g_loginRes.responseCode;
 			RMS.read("merchant",getParamsVersion);
@@ -62,6 +62,7 @@
 		}	
 
 		function getParamsVersion(verParams){
+		    var userList = {};
 			if(g_loginReq.remenber_tag){
 				var params = {
 					merchId : g_loginReq.merchId,
@@ -83,21 +84,39 @@
 					remenber_tag: "0"
 				}
 			}
-			RMS.save("merchant",params);
-			
+			RMS.read("userList",getListUserInfo);
+	        RMS.save("merchant",params);
+
 			window.user.init(g_loginRes);
 			window.user.merchId = g_loginReq.merchId;
 			window.user.machineId = g_loginRes.iposId;
 			window.user.userName = g_loginRes.userName;
 			window.user.gradeId = g_loginRes.gradeId;
 			//SettingsIndex.getMerchantInfoAfterLogin();
-			if(g_loginRes.payParamVersion != verParams.payParamVersion){
+			if(g_loginRes.payParamVersion != verParams.payParamVersion || verParams.paramsDownloadOver != true){
 				var mParam = {
 					shouldRemoveCurCtrl: false,
 				};
 				Scene.showScene("SettingsDownload", "", mParam);
 			}else{
 				window.user.reloginAction(g_loginRes);
+			}
+
+			function getListUserInfo(userInfo){
+			    var date = new Date();
+                if(!((userInfo.curMonth != undefined && userInfo.curMonth == (date.getMonth()+1)) && (userInfo.curDate != undefined && userInfo.curDate == date.getDate()))){
+                    RMS.clear("userList",function(){
+                        userList[g_loginRes.userName] = g_loginRes.userName;
+                        userList.curMonth =date.getMonth() + 1;
+                        userList.curDate = date.getDate();
+                        RMS.save("userList",userList);
+                    });
+                }else{
+                    userList[g_loginRes.userName] = g_loginRes.userName;
+                    userList.curMonth =date.getMonth() + 1;
+                    userList.curDate = date.getDate();
+                    RMS.save("userList",userList);
+                }
 			}
 		}
 	}
@@ -141,41 +160,47 @@
 	
 	function afterConfirmLogin(data){
 		/*根据params.gradeId，查看该用户是否有权限，如果有权限，则继续进行相应的流程，如果没有权限，则退回订单详情*/
-		
-		/*
-		gradeId为："1":高权限，"2":低
-	    */
-	    if(data.gradeId == "1"){
-	    	if (ConsumptionData.dataForPayment.payKeyIndex == "90") {
-	    		
-		    	Scene.alert("128",function(){
-			    	var sceneName = "MisposController";
-			    	//rm goBack statement otherwise can't call back to the 3rd part app --start mod by Teddy on 11th November
-//	  				Scene.goBack("Home");
-			    	//rm goBack statement otherwise can't call back to the 3rd part app --end mod by Teddy on 11th November
-	  				Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
-		    	});
-	    	} else if(ConsumptionData.dataForPayment.payKeyIndex == "91"){
-	    		Scene.alert("128",function(){
-	    			Pay.cashCancelOrder(ConsumptionData.dataForPayment.cashdata,Pay.updataListCashCancel);
-	    		});
-	    		
-	    	}else {
-		    	Scene.alert("128",function(){
-		    	currentStep = Pay.cacheData.step;
-				if(currentStep > Pay.cacheData.flowList.length){
-					Scene.alert("120",function(){
-						Scene.goBack("Home");
-					});
-					return;
-				}
-		    	currentTag = Pay.cacheData.flowList[currentStep].packTag;
-		    	Pay.cacheData.step = currentStep + 1;
-		    	Pay.gotoFlow();});
-	    	}
+		if(data.responseCode == "0"){
+            /*
+            gradeId为："1":主管，"2":收银员，"3":非收银员，"4":撤销专员
+            */
+            if(data.gradeId == "4" || data.gradeId == "1"){
+                if (ConsumptionData.dataForPayment.payKeyIndex == "90") {
+
+                    Scene.alert("128",function(){
+                        var sceneName = "MisposController";
+                        //rm goBack statement otherwise can't call back to the 3rd part app --start mod by Teddy on 11th November
+    //	  				Scene.goBack("Home");
+                        //rm goBack statement otherwise can't call back to the 3rd part app --end mod by Teddy on 11th November
+                        Scene.showScene(sceneName, "", ConsumptionData.dataForPayment);
+                    });
+                } else if(ConsumptionData.dataForPayment.payKeyIndex == "91"){
+                    Scene.alert("128",function(){
+                        Pay.cashCancelOrder(ConsumptionData.dataForPayment.cashdata,Pay.updataListCashCancel);
+                    });
+
+                }else {
+                    Scene.alert("128",function(){
+                    currentStep = Pay.cacheData.step;
+                    if(currentStep > Pay.cacheData.flowList.length){
+                        Scene.alert("120",function(){
+                            Scene.goBack("Home");
+                        });
+                        return;
+                    }
+                    currentTag = Pay.cacheData.flowList[currentStep].packTag;
+                    Pay.cacheData.step = currentStep + 1;
+                    Pay.gotoFlow();});
+                }
+            }else{
+                Scene.alert("129",goback);
+
+            }
 	    }else{
-	    	Scene.alert("129",goback);
-	    	
+	        Scene.alert(data.errorMsg,function(){
+//	            Scene.alert("Home");
+                goback();
+	        });
 	    }
 	}
 	

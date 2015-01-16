@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,7 +15,7 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.secure.SecureEngine;
 
-public class CreateUserController extends BaseController {
+public class CreateUserController extends BaseController implements View.OnKeyListener {
 
 	private boolean removeJSTag = true;
 	private EditText userName = null;
@@ -31,6 +32,7 @@ public class CreateUserController extends BaseController {
 		userName = (EditText) findViewById(R.id.text_username);
 		firstPassword = (EditText) findViewById(R.id.text_first_password);
 		secondPassword = (EditText) findViewById(R.id.text_second_password);
+        secondPassword.setOnKeyListener(this);
 		spinner = (Spinner) findViewById(R.id.Spinner01);
         gradeIdName = getResources().getStringArray(R.array.user_grade);
 		adapter = new ArrayAdapter<String>(this,
@@ -47,6 +49,8 @@ public class CreateUserController extends BaseController {
 					spinnerStr = "2";
 				} else if (spinnerStr.equals(gradeIdName[1])) {
 					spinnerStr = "1";
+				}else if (spinnerStr.equals(gradeIdName[2])) {
+					spinnerStr = "4";
 				}
 			}
 
@@ -90,6 +94,14 @@ public class CreateUserController extends BaseController {
 		}
 		onCall("CreateUser.gotoCreate", msg);
 	}
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            onClickBtnOK(view);
+        }
+        return false;
+    }
 
 	@Override
 	protected void setControllerContentView() {

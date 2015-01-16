@@ -30,8 +30,9 @@
 		        android:layout_height="wrap_content" 
 		        android:layout_marginRight="12dp"
 		        android:gravity="left|center_vertical"
-		        android:background="@drawable/dropdown"
-		        android:spinnerMode="dropdown"  />  
+                style="@android:style/Widget.Holo.Spinner"
+                android:popupBackground="@color/lv_row_bg_gray_default"
+                android:spinnerMode="dropdown" />
         </LinearLayout>
         <LinearLayout  
             android:layout_width="540dp"
