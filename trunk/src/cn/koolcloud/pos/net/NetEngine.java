@@ -81,7 +81,6 @@ public class NetEngine {
 	private static final int CONNECT_RESULT_NO_CONNECTION = -1;
 
 	private static final String APPSERVER = APDefine.APPSERVER;
-	private static final String PREFERNTIAL_APPSERVER = "http://aop.koolyun.cn:8080/apmp/rest/";
 
 	private static final String BODY_ACTION = "action";
 	private static final String BODY_TRANS_ACTION_TAG ="txn/";
@@ -244,82 +243,94 @@ public class NetEngine {
 		Log.d(TAG,
 				"request header : " + new JSONObject(requestHeaders).toString());
 		Log.d(TAG, "request body : " + postStr);
-		HttpConn conn = new HttpConn(new ConnParams(url, requestHeaders,
-				postStr));
-		int result = conn.excute();
-		JSONObject resJsonObject = new JSONObject();
-		if (CONNECT_RESULT_SUCCESS == result) {
-			Header[] responseHeaders = conn.getResponseHeaders();
-			Map<String, String> resHeaderMap = new HashMap<String, String>();
-			for (Header header : responseHeaders) {
-				resHeaderMap.put(header.getName(), header.getValue());
+		HttpConn conn = null;
+		JSONObject resJsonObject = null;
+		for(int hc = 0; hc < 2; hc ++) {
+			if(hc == 1) {
+				url = APDefine.APPSERVER_IP;
 			}
+			//Log.d("NetEngine","--------url:" + url);
+			conn = new HttpConn(new ConnParams(url, requestHeaders,
+					postStr));
+			int result = conn.excute();
+			resJsonObject = new JSONObject();
+			if (CONNECT_RESULT_SUCCESS == result) {
+				Header[] responseHeaders = conn.getResponseHeaders();
+				Map<String, String> resHeaderMap = new HashMap<String, String>();
+				for (Header header : responseHeaders) {
+					resHeaderMap.put(header.getName(), header.getValue());
+				}
 
-			Log.d(TAG,
-					"response header : "
-							+ new JSONObject(resHeaderMap).toString());
+				Log.d(TAG,
+						"response header : "
+								+ new JSONObject(resHeaderMap).toString());
 
-			JSONArray resBodyJsonArray = null;
-			byte[] bytesResponseData = conn.getResponseData();
-			String strResponseData = "";
-			if (null != bytesResponseData) {
-				try {
-					strResponseData = new String(bytesResponseData, "UTF-8");
-					strResponseData = Uri.decode(strResponseData);
-				} catch (UnsupportedEncodingException e1) {
-					e1.printStackTrace();
-				}
-				if ("1".equals(resHeaderMap.get(HEADER_CRYPT))) {
-					strResponseData = cryptPamrams(strResponseData,
-							PARAM_DECRYPT);
-				}
-				try {
-					resBodyJsonArray = new JSONArray(strResponseData);
-				} catch (JSONException e) {
-					resBodyJsonArray = null;
-				}
-			}
-			JSONObject resHeaderJsonObject = responseHeaderWithRequest(context,
-					resHeaderMap);
-			try {
-				if (null != resHeaderJsonObject) {
-					String reex = requestHeaders.get(HEADER_KEY_EXCHANGE);
-					if ("".equals(reex)) {
-						resHeaderJsonObject.remove("keyExchange");
-					} else {
-						// if (ClientEngine.engineInstance().secureEngine()
-						// .isOriginSn()) {
-						// String session = "";
-						// resHeaderJsonObject.put("session", session);
-						// updateSession(session);
-						// }
+				JSONArray resBodyJsonArray = null;
+				byte[] bytesResponseData = conn.getResponseData();
+				String strResponseData = "";
+				if (null != bytesResponseData) {
+					try {
+						strResponseData = new String(bytesResponseData, "UTF-8");
+						strResponseData = Uri.decode(strResponseData);
+					} catch (UnsupportedEncodingException e1) {
+						e1.printStackTrace();
 					}
-					resJsonObject.put("header", resHeaderJsonObject);
+					if ("1".equals(resHeaderMap.get(HEADER_CRYPT))) {
+						strResponseData = cryptPamrams(strResponseData,
+								PARAM_DECRYPT);
+					}
+					try {
+						resBodyJsonArray = new JSONArray(strResponseData);
+					} catch (JSONException e) {
+						resBodyJsonArray = null;
+					}
 				}
+				JSONObject resHeaderJsonObject = responseHeaderWithRequest(context,
+						resHeaderMap);
+				try {
+					if (null != resHeaderJsonObject) {
+						String reex = requestHeaders.get(HEADER_KEY_EXCHANGE);
+						if ("".equals(reex)) {
+							resHeaderJsonObject.remove("keyExchange");
+						} else {
+							// if (ClientEngine.engineInstance().secureEngine()
+							// .isOriginSn()) {
+							// String session = "";
+							// resHeaderJsonObject.put("session", session);
+							// updateSession(session);
+							// }
+						}
+						resJsonObject.put("header", resHeaderJsonObject);
+					}
 
-				resJsonObject.put("body", resBodyJsonArray);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		} else {
-			String keyExchange = "0";
-			if (!("".equals(requestHeaders.get(HEADER_KEY_EXCHANGE)))) {
-				keyExchange = "1";
-			}
-			int responseCode = conn.getResponseCode();
-			try {
-				resJsonObject.put("errCode", String.valueOf(responseCode));
-				if (CONNECT_RESULT_NO_CONNECTION == result) {
-					resJsonObject
-							.put("errorMsg",
-									context.getString(R.string.netconnect_result_no_connection));
-				} else {
-					resJsonObject.put("errorMsg",
-							connectErrorDescript(context, responseCode));
+					resJsonObject.put("body", resBodyJsonArray);
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
-				resJsonObject.put("keyExchange", keyExchange);
-			} catch (JSONException e) {
-				e.printStackTrace();
+				break;
+			} else {
+				if(hc == 0){
+					continue;
+				}
+				String keyExchange = "0";
+				if (!("".equals(requestHeaders.get(HEADER_KEY_EXCHANGE)))) {
+					keyExchange = "1";
+				}
+				int responseCode = conn.getResponseCode();
+				try {
+					resJsonObject.put("errCode", String.valueOf(responseCode));
+					if (CONNECT_RESULT_NO_CONNECTION == result) {
+						resJsonObject
+								.put("errorMsg",
+										context.getString(R.string.netconnect_result_no_connection));
+					} else {
+						resJsonObject.put("errorMsg",
+								connectErrorDescript(context, responseCode));
+					}
+					resJsonObject.put("keyExchange", keyExchange);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		Log.d(TAG, "response : " + resJsonObject.toString());
@@ -362,101 +373,113 @@ public class NetEngine {
                 "request header : " + new JSONObject(requestHeaders).toString());
         Log.d(TAG, "request body : " + postStr);
         startTime = System.currentTimeMillis();
-        HttpConn conn = new HttpConn(new ConnParams(url, requestHeaders,
-                postStr));
-        int result = conn.excute();
-        JSONObject resJsonObject = new JSONObject();
-        if (CONNECT_RESULT_SUCCESS == result) {
-            Header[] responseHeaders = conn.getResponseHeaders();
-            Map<String, String> resHeaderMap = new HashMap<String, String>();
-            for (Header header : responseHeaders) {
-                resHeaderMap.put(header.getName(), header.getValue());
-            }
+	    HttpConn conn = null;
+	    JSONObject resJsonObject = null;
+	    for(int hc = 0; hc < 2; hc ++) {
+		    if(hc == 1) {
+			    url = APDefine.APPSERVER_IP;
+		    }
+		    //Log.d("NetEngine","--------url:" + url);
+		    conn = new HttpConn(new ConnParams(url, requestHeaders,
+				    postStr));
+		    int result = conn.excute();
+		    resJsonObject = new JSONObject();
+		    if (CONNECT_RESULT_SUCCESS == result) {
+			    Header[] responseHeaders = conn.getResponseHeaders();
+			    Map<String, String> resHeaderMap = new HashMap<String, String>();
+			    for (Header header : responseHeaders) {
+				    resHeaderMap.put(header.getName(), header.getValue());
+			    }
 
-            Log.d(TAG,
-                    "response header : "
-                            + new JSONObject(resHeaderMap).toString());
+			    Log.d(TAG,
+					    "response header : "
+							    + new JSONObject(resHeaderMap).toString());
 
-            JSONArray resBodyJsonArray = null;
-            byte[] bytesResponseData = conn.getResponseData();
-            String strResponseData = "";
-            if (null != bytesResponseData) {
-                try {
-                    strResponseData = new String(bytesResponseData, "UTF-8");
-                    strResponseData = Uri.decode(strResponseData);
-                } catch (UnsupportedEncodingException e1) {
-                    e1.printStackTrace();
-                }
-                if ("1".equals(resHeaderMap.get(HEADER_CRYPT))) {
-                    strResponseData = cryptPamrams(strResponseData,
-                            PARAM_DECRYPT);
-                }
-                try {
-                    resBodyJsonArray = new JSONArray(strResponseData);
-                } catch (JSONException e) {
-                    resBodyJsonArray = null;
-                }
-            }
-            JSONObject resHeaderJsonObject = responseHeaderWithRequest(context,
-                    resHeaderMap);
-            try {
-                if (null != resHeaderJsonObject) {
-                    String reex = requestHeaders.get(HEADER_KEY_EXCHANGE);
-                    if ("".equals(reex)) {
-                        resHeaderJsonObject.remove("keyExchange");
-                    } else {
-                        // if (ClientEngine.engineInstance().secureEngine()
-                        // .isOriginSn()) {
-                        // String session = "";
-                        // resHeaderJsonObject.put("session", session);
-                        // updateSession(session);
-                        // }
-                    }
-                    resJsonObject.put("header", resHeaderJsonObject);
-                }
+			    JSONArray resBodyJsonArray = null;
+			    byte[] bytesResponseData = conn.getResponseData();
+			    String strResponseData = "";
+			    if (null != bytesResponseData) {
+				    try {
+					    strResponseData = new String(bytesResponseData, "UTF-8");
+					    strResponseData = Uri.decode(strResponseData);
+				    } catch (UnsupportedEncodingException e1) {
+					    e1.printStackTrace();
+				    }
+				    if ("1".equals(resHeaderMap.get(HEADER_CRYPT))) {
+					    strResponseData = cryptPamrams(strResponseData,
+							    PARAM_DECRYPT);
+				    }
+				    try {
+					    resBodyJsonArray = new JSONArray(strResponseData);
+				    } catch (JSONException e) {
+					    resBodyJsonArray = null;
+				    }
+			    }
+			    JSONObject resHeaderJsonObject = responseHeaderWithRequest(context,
+					    resHeaderMap);
+			    try {
+				    if (null != resHeaderJsonObject) {
+					    String reex = requestHeaders.get(HEADER_KEY_EXCHANGE);
+					    if ("".equals(reex)) {
+						    resHeaderJsonObject.remove("keyExchange");
+					    } else {
+						    // if (ClientEngine.engineInstance().secureEngine()
+						    // .isOriginSn()) {
+						    // String session = "";
+						    // resHeaderJsonObject.put("session", session);
+						    // updateSession(session);
+						    // }
+					    }
+					    resJsonObject.put("header", resHeaderJsonObject);
+				    }
 
-                resJsonObject.put("body", resBodyJsonArray);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            String keyExchange = "0";
-            endTime = System.currentTimeMillis();
-            if (!("".equals(requestHeaders.get(HEADER_KEY_EXCHANGE)))) {
-                keyExchange = "1";
-            }
-            int responseCode = conn.getResponseCode();
-            try {
-                resJsonObject.put("errCode", String.valueOf(responseCode));
-                if (CONNECT_RESULT_NO_CONNECTION == result) {
-                    resJsonObject
-                            .put("errorMsg",
-                                    context.getString(R.string.netconnect_result_no_connection));
-                } else {
-                    resJsonObject.put("errorMsg",
-                            connectErrorDescript(context, responseCode));
-                }
-                resJsonObject.put("keyExchange", keyExchange);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if(actionStr.startsWith(BODY_TRANS_ACTION_TAG)) {
-                int RemainingTime = 62000 - (int) (endTime - startTime);
-                while (RemainingTime > 0) {
-                    try {
-                        Thread.sleep(1000);
-                        RemainingTime = RemainingTime - 1000;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        Log.d(TAG, "response : " + resJsonObject.toString());
+				    resJsonObject.put("body", resBodyJsonArray);
+			    } catch (JSONException e) {
+				    e.printStackTrace();
+			    }
+			    break;
+		    } else {
+			    if(hc == 0) {
+				    continue;
+			    }
+			    String keyExchange = "0";
+			    endTime = System.currentTimeMillis();
+			    if (!("".equals(requestHeaders.get(HEADER_KEY_EXCHANGE)))) {
+				    keyExchange = "1";
+			    }
+			    int responseCode = conn.getResponseCode();
+			    try {
+				    resJsonObject.put("errCode", String.valueOf(responseCode));
+				    if (CONNECT_RESULT_NO_CONNECTION == result) {
+					    resJsonObject
+							    .put("errorMsg",
+									    context.getString(R.string.netconnect_result_no_connection));
+				    } else {
+					    resJsonObject.put("errorMsg",
+							    connectErrorDescript(context, responseCode));
+				    }
+				    resJsonObject.put("keyExchange", keyExchange);
+			    } catch (JSONException e) {
+				    e.printStackTrace();
+			    }
+			    if (actionStr.startsWith(BODY_TRANS_ACTION_TAG)) {
+				    int RemainingTime = 62000 - (int) (endTime - startTime);
+				    while (RemainingTime > 0) {
+					    try {
+						    Thread.sleep(1000);
+						    RemainingTime = RemainingTime - 1000;
+					    } catch (InterruptedException e) {
+						    e.printStackTrace();
+					    }
+				    }
+			    }
+		    }
+	    }
+	    Log.d(TAG, "response : " + resJsonObject.toString());
 
-        //invoke gc
-        conn = null;
-        return resJsonObject;
+	    //invoke gc
+	    conn = null;
+	    return resJsonObject;
     }
 
     public static InputStream postForStream(Context context, String body, Map<String, String> headerMap) {

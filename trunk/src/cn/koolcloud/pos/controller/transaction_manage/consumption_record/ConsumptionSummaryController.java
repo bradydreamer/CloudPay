@@ -345,6 +345,9 @@ public class ConsumptionSummaryController extends BaseController {
 				.optString("totalAmount"));
 //		totalAmountStr = NumberUtil.add(totalAmountStr,amount);
 		try {
+            if (curOperator.equals("All")) {
+                curOperator = Env.getResourceString(this, R.string.printer_value_operator);
+            }
 			printData.put("operator", curOperator);
 		} catch (JSONException e) {
 			e.printStackTrace();

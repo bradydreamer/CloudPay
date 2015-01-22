@@ -66,6 +66,18 @@ Util.prototype.showSceneWithLoginChecked = function(sceneName, params, sceneTitl
 			}			
 		}
 		Scene.showScene(sceneName, sceneTitle, data);
+		setTimeout(function() {
+            if(window.user.gradeId == "4"){
+                Scene.alert("137",function(){
+                    if(ConsumptionData.dataForPayment.isExternalOrder){
+                        Pay.restart();
+                    }else{
+                        Scene.goBack("Home");
+                    }
+                });
+                return;
+            }
+        }, 100);
 	}, true);
 
 	function backHome(){

@@ -1,15 +1,15 @@
 /* @(#)CodeUtil.java   
  *
- * Project: TLSecurity
+ * Project: SmartIpos
  *
  * Modify Information:
  * =============================================================================
  *   Author       Date       Description
  *   ------------ ---------- ---------------------------------------------------
- *   zhouyijia    2010-07-15   create
+ *   Gaolou.Liu    2014-07-15   create
  * Copyright Notice:
  * =============================================================================
- *    Copyright © 2008 allinpay. All. Reserver
+ *    Copyright © 2008 Koolyun. All. Reserver
  * Warning:
  * =============================================================================
  * 

@@ -696,4 +696,5 @@
     <string name="printer_summary_totalAmount">TOTAL:</string>
     <string name="common_non_operator">NON CASHIER</string>
     <string name="common_void_operator">SPECIALIST</string>
+    <string name="printer_value_operator">ALL USERS</string>
 </resources>

@@ -530,7 +530,7 @@ Pay.cashCancelOrder = function(params,cashCancelCallback){
 			"paymentId": params.paymentId,
 			"batchNo": params.batchNo,
 			"traceNo": params.traceNo,
-			"transTime": params.oriTransTime,
+			"transTime": params.cashCurrentTime,
 			"transAmount": transAmount,
 			"oriTxnId": params.txnId,
 			"resCode": params.resCode,

@@ -551,6 +551,7 @@
    	<string name="printer_bank_card">卡号：</string>
    	<string name="printer_reference">备注</string>
    	<string name="printer_msg_acknowledge_card">本人确认以上交易，同意将其记入本卡账户</string>
+   	<string name="printer_value_operator">所有用户</string>
 
     <string name="printer_summary_title">当日消费汇总</string>
     <string name="printer_summary_amount">金额</string>
@@ -724,11 +725,11 @@
     <string name="alert_msg_190">系统内部错误！</string>
     <string name="alert_msg_191">转账</string>
     <string name="alert_msg_192">助农取款</string>
-    <string name="alert_msg_201" translatable="false">活动不存在！\n是否继续进行交易？</string>
-    <string name="alert_msg_202" translatable="false">不在活动时间范围内！\n是否继续进行交易？</string>
-    <string name="alert_msg_203" translatable="false">当前卡片无法参加活动！\n是否继续进行交易？</string>
-    <string name="alert_msg_204" translatable="false">当前卡片的优惠次数已用完！\n是否继续进行交易？</string>
-    <string name="alert_msg_205" translatable="false">当前消费不满足优惠条件！\n是否继续进行交易？</string>
-    <string name="alert_msg_206" translatable="false">优惠记录不存在！\n是否继续进行交易？</string>
+    <string name="alert_msg_201">活动不存在！\n是否继续进行交易？</string>
+    <string name="alert_msg_202">不在活动时间范围内！\n是否继续进行交易？</string>
+    <string name="alert_msg_203">当前卡片无法参加活动！\n是否继续进行交易？</string>
+    <string name="alert_msg_204">当前卡片的优惠次数已用完！\n是否继续进行交易？</string>
+    <string name="alert_msg_205">当前消费不满足优惠条件！\n是否继续进行交易？</string>
+    <string name="alert_msg_206">优惠记录不存在！\n是否继续进行交易？</string>
 
     </resources>

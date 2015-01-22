@@ -474,6 +474,7 @@ public class OrderDetailController extends BaseController {
 			// for cash
 			msg.put("resCode", "00");
 			msg.put("oriTransTime", oriTransTime);
+			msg.put("cashCurrentTime",currentTime);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

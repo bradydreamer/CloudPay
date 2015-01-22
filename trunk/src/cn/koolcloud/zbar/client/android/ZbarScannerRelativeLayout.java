@@ -7,9 +7,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import cn.koolcloud.zbar.client.android.InterfaceBarCode;
+import cn.koolcloud.zbar.client.android.camera.CameraSettings;
 
 public class ZbarScannerRelativeLayout extends RelativeLayout implements InterfaceBarCode,SurfaceHolder.Callback{
 	private static final String TAG = "ScannerRelativeLayout";
@@ -26,6 +29,7 @@ public class ZbarScannerRelativeLayout extends RelativeLayout implements Interfa
 	{
 		super(paramContext);
 		this.context = paramContext;
+		initCamera();
 	}
 
 	public ZbarScannerRelativeLayout(Context paramContext, AttributeSet attrs, int paramInt)
@@ -54,7 +58,18 @@ public class ZbarScannerRelativeLayout extends RelativeLayout implements Interfa
 		  this.BarcodeInterface = BarcodeInterface;
 	  }
 	  
-	  
+	private void initCamera(){
+		CameraSettings.setCAMERA_FACING(CameraSettings.FACING_FRONT);
+		CameraSettings.setAUTO_FOCUS(false);
+		CameraSettings.setBEEP(true);
+		//true： can distinguish continuously ，false：distinguish one time,then you should call startScan
+		CameraSettings.setBULKMODE(true);
+	}
+	public void setCameraView(FrameLayout flayout){
+		if(isInited)
+			return;
+		flayout.addView(this, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+	}
 	public void startScan()
 	{
 		if(isInited)

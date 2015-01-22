@@ -102,9 +102,8 @@ public class MultiPayRecord extends BaseController {
 		}
 
 		float balance = (float) (totalAmount - paidAmount);
-		String balanceStr = formatAmountStr(Long.toString(totalAmount
-				- paidAmount));
-		if (balance == (float) 0.0) {
+		String balanceStr = formatAmountStr(Long.toString(totalAmount - paidAmount));
+		if (balance < 0 || balance == (float) 0.0) {
 			nextPay.setBackgroundResource(R.drawable.button_nextpay_unused_background);
 			payFinish = true;
 		}

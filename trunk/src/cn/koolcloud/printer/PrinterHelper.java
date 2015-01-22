@@ -1619,7 +1619,12 @@ public class PrinterHelper implements Constant {
 
 //            printerWrite((Env.getResourceString(ctx, R.string.printer_batch_no) + StringUtil.fillZero(record.getBatchNo(), 6)).getBytes("GB2312"));
 //            printerWrite(PrinterCommand.linefeed());
-	        printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator) + record.getOperator()).getBytes("GB2312"));
+	        printerWrite((Env.getResourceString(ctx, R.string.printer_tag_operator)).getBytes("GB2312"));
+            String operatorStr = record.getOperator();
+            if (TextUtils.isEmpty(operatorStr)) {
+                operatorStr = Env.getResourceString(ctx, R.string.printer_value_operator);
+            }
+            printerWrite(operatorStr.getBytes("GB2312"));
 	        printerWrite(PrinterCommand.linefeed());
             printerWrite((Env.getResourceString(ctx, R.string.printer_tag_date_time)).getBytes("GB2312"));
             printerWrite(PrinterCommand.linefeed());

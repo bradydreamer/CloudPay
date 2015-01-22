@@ -70,6 +70,7 @@
 		ConsumptionData.dataForPayment.brhKeyIndex = product.brhKeyIndex;
 		var formData = {
 			"paymentId": product.paymentId,
+			"misc": product.misc
 		}
 		window.util.showSceneWithLoginChecked("SingleRecordSearch", formData,null);	
 	}

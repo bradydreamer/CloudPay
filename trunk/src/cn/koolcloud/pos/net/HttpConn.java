@@ -59,7 +59,7 @@ public final class HttpConn {
 	public static final byte WIFI_TYPE = 3;
 	public static final byte ETHERNET_TYPE = 4;
 
-	private static byte connType = CMNET_TYPE;
+	private static byte connType = WIFI_TYPE;
 
 	private boolean is_connect;
 	private boolean uploadFile;
@@ -88,11 +88,11 @@ public final class HttpConn {
 		this.parameters = parameters;
 		if (httpClient == null) {
 			HttpParams params = new BasicHttpParams();
-			ConnManagerParams.setMaxTotalConnections(params, 20);
+			ConnManagerParams.setMaxTotalConnections(params, 30);
 			HttpConnectionParams.setConnectionTimeout(params,
 					CONNECTION_TIMEOUT);
 			HttpConnectionParams.setSoTimeout(params, WAIT_DATA_TIMEOUT);
-			HttpConnectionParams.setSocketBufferSize(params, 8192);
+			HttpConnectionParams.setSocketBufferSize(params, 20480);
 //			HttpClientParams.setRedirecting(params, true);
 
 			SchemeRegistry schemeRegistry = new SchemeRegistry();
@@ -154,8 +154,11 @@ public final class HttpConn {
 		DataInputStream dis = null;
 		ByteArrayOutputStream baos = null;
 
+        HttpPost request = null;
+        HttpResponse httpResponse = null;
+
 		try {
-			HttpPost request = new HttpPost(parameters.getUrl());
+            request = new HttpPost(parameters.getUrl());
 
 			request.setHeader("Connection", "Keep-Alive");
 
@@ -175,7 +178,7 @@ public final class HttpConn {
 		
 			Log.d(TAG, "before connect connType : " + connType + "(CMNET_TYPE is 1, CMWAP_TYPE is 2, WIFI_TYPE is 3, ETHERNET_TYPE is 4)");
 			
-			HttpResponse httpResponse = null;
+
 			try {
 				httpResponse = httpClient.execute(request);
 			} catch (NullPointerException e) {
@@ -241,6 +244,9 @@ public final class HttpConn {
 				this.responseCode = RESPONSECODE_EXCEPTION_DEFAULT;
 			}
 		} finally {
+
+			request=null;
+			httpResponse=null;
 			try {
 				if (baos != null) {
 					baos.close();
@@ -280,7 +286,7 @@ public final class HttpConn {
 	}
 
 	private void resetConnType(){
-		connType = CMNET_TYPE;
+		connType = WIFI_TYPE;
 	}
 	/**
 	 * Test connection cmnet/cmwap, set proxy
@@ -295,16 +301,16 @@ public final class HttpConn {
 			return -1;
 		} else if (TYPE_WIFI.equals(mobNetInfo.getTypeName())) {
 			connType = WIFI_TYPE;
-			httpClient.getParams().removeParameter(
-					ConnRoutePNames.DEFAULT_PROXY);
+			httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
 			return 0;
 		} else if (TYPE_ETHERNET.equals(mobNetInfo.getTypeName())) {
 			connType = ETHERNET_TYPE;
 			httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
 			return 0;
-		} else if (connType == WIFI_TYPE){
-			resetConnType();
-		}
+		} 
+		//else if (connType == WIFI_TYPE){
+		//	resetConnType();
+		//}
 		
 		httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
 		
@@ -321,7 +327,7 @@ public final class HttpConn {
 					httpClient.getParams().setParameter(
 							ConnRoutePNames.DEFAULT_PROXY, proxy);
 				}
-			} else {
+			} else {//cmnet
 				httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
 			}
 		}

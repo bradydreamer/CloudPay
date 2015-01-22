@@ -233,23 +233,13 @@ public class PayAccountController extends BaseController implements
 		// faceTypeLanTing = Typeface.createFromAsset(getAssets(),
 		// "font/fzltxhk.ttf");
 		findViews();
-        initCameraSettings();
-        initZbarLib();
+	    initZbarLib();
 		setTitle(HostMessage.getJsMsg(formData.optString(getString(R.string.formData_key_title))));
 	}
-
-    private void initCameraSettings() {
-        CameraSettings.setCAMERA_FACING(CameraSettings.FACING_FRONT);
-        CameraSettings.setAUTO_FOCUS(false);
-        CameraSettings.setBEEP(true);
-        //true： can distinguish continuously ，false：distinguish one time,then you should call startScan
-        CameraSettings.setBULKMODE(true);
-    }
 
     private void initZbarLib() {
         zBarScannerLayout = new ZbarScannerRelativeLayout(PayAccountController.this);
         zBarScannerLayout.setBarCodeCallBack(PayAccountController.this);
-        previewFrameLayout.addView(zBarScannerLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
 	private void findViews() {
@@ -444,28 +434,13 @@ public class PayAccountController extends BaseController implements
 		String actionTag = getString(R.string.pay_account_tag_qrcode);
 		if (tag.equalsIgnoreCase(actionTag)) {
 			layout_qrcode.setVisibility(View.VISIBLE);
-			if (misc != null && misc.equals(ZBTAG)) {
-				// scanner.startScanner();
-				scanerStarted = true;
-				mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER,
-						OPEN_CAMERA_DELAY_TIME);
-				UtilFor8583.getInstance().trans
-						.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
-			} else if (misc != null && misc.equals(PREPAID_QRCODE)) {
-				// for prepaid card then set entry mode
-				UtilFor8583.getInstance().trans
-						.setEntryMode(ConstantUtils.ENTRY_PREPAID_CARD_QRCODE_MODE);
-				onStartQRScanner();
-			}
+			zscanner.setVisibility(View.GONE);
+			previewFrameLayout.setVisibility(View.VISIBLE);
+
+			scanerStarted = true;
+			mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER,OPEN_CAMERA_DELAY_TIME);
 		} else if (preTag.equalsIgnoreCase(actionTag)) {
-			if (misc != null && misc.equals(ZBTAG)) {
-                if (zBarScannerLayout != null) {
-                    zBarScannerLayout.stopScan();
-                }
-				scanerStarted = false;
-			} else {
-				onStopQRScanner();
-			}
+			//DO NOTHING
 		}
 		actionTag = getString(R.string.pay_account_tag_sound);
 		if (tag.equalsIgnoreCase(actionTag)) {
@@ -507,12 +482,24 @@ public class PayAccountController extends BaseController implements
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case HANDLE_INIT_QRSCANNER:
-                previewFrameLayout.setVisibility(View.VISIBLE);
-				ScannerRelativeLayout zscanner = (ScannerRelativeLayout) findViewById(R.id.scanner);
-				zscanner.setVisibility(View.GONE);
-
-                zBarScannerLayout.startScan();
-				scanerStarted = false;
+				if (misc != null && misc.equals(ZBTAG)) {
+					UtilFor8583.getInstance().trans
+							.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
+					startZbarScaner();
+				} else if (misc != null && misc.equals(PREPAID_QRCODE)) {
+					// for prepaid card then set entry mode
+					UtilFor8583.getInstance().trans
+							.setEntryMode(ConstantUtils.ENTRY_PREPAID_CARD_QRCODE_MODE);
+					previewFrameLayout.setVisibility(View.GONE);
+					zscanner.setVisibility(View.VISIBLE);
+					onStartQRScanner();
+				}else {
+					UtilFor8583.getInstance().trans
+							.setEntryMode(ConstantUtils.ENTRY_QRCODE_MODE);
+					previewFrameLayout.setVisibility(View.GONE);
+					zscanner.setVisibility(View.VISIBLE);
+					onStartQRScanner();
+				}
 				break;
 			case EMVICManager.STATUS_VALUE_0: {
 				ic_swiper_guide_text.setTextColor(getResources().getColor(
@@ -717,6 +704,21 @@ public class PayAccountController extends BaseController implements
 
 	};
 
+	private void startZbarScaner(){
+		zscanner.setVisibility(View.GONE);
+		previewFrameLayout.setVisibility(View.VISIBLE);
+		zBarScannerLayout.setCameraView(previewFrameLayout);
+		zBarScannerLayout.startScan();
+		scanerStarted = false;
+	}
+
+	private void stopZbarScaner(){
+		if (zBarScannerLayout != null) {
+			zBarScannerLayout.stopScan();
+			previewFrameLayout.removeAllViews();
+		}
+	}
+
 	private void onStartSwiper() {
 		if (ex_cardSwiper == null) {
 			ex_cardSwiper = new CardSwiper();
@@ -735,18 +737,11 @@ public class PayAccountController extends BaseController implements
 	private void onStartQRScanner() {
 		if (ex_codeScanner == null) {
 			ex_codeScanner = new CodeScanner();
-			ex_codeScanner.onCreate(PayAccountController.this,
-					PayAccountController.this);
-
-			mainHandler.post(new Runnable() {
-
-				@Override
-				public void run() {
-				}
-			});
+			ex_codeScanner.onCreate(this,this);
 		} else {
 			ex_codeScanner.onResume();
 		}
+		scanerStarted = false;
 	}
 
 	private void onStopQRScanner() {
@@ -878,13 +873,9 @@ public class PayAccountController extends BaseController implements
 		onStopSound();
 		if (misc != null && !misc.equals("")) {
 			if (misc.equals(ZBTAG)) {
-				if (previewFrameLayout != null) {
-					//scanner.destroyedScanner();
-				}
+				stopZbarScaner();
 			} else {
-				if (ex_codeScanner != null) {
-					ex_codeScanner.onPause();
-				}
+				onStopQRScanner();
 			}
 		}
 		super.onPause();
@@ -907,16 +898,9 @@ public class PayAccountController extends BaseController implements
 		if (ex_soundWave != null) {
 			ex_soundWave.onStart();
 		}
-		if (misc != null && !misc.equals("")){
-			if(misc.equals(ZBTAG)) {
-				if (zBarScannerLayout != null) {
-                    zBarScannerLayout.startScan();
-				}
-			} else {
-				if (ex_codeScanner != null) {
-					ex_codeScanner.onResume();
-				}
-			}
+		if(selectedBtn.getTag().toString().equalsIgnoreCase(getString(R.string.pay_account_tag_qrcode))){
+			scanerStarted = true;
+			mHandler.sendEmptyMessageDelayed(HANDLE_INIT_QRSCANNER,OPEN_CAMERA_DELAY_TIME);
 		}
 		super.onResume();
 	}
@@ -932,6 +916,7 @@ public class PayAccountController extends BaseController implements
 			if (misc.equals(ZBTAG)) {
 				if (zBarScannerLayout != null) {
                     zBarScannerLayout.stopScan();
+					previewFrameLayout.removeAllViews();
 				}
 			} else {
 				if (ex_codeScanner != null) {
@@ -1096,6 +1081,7 @@ public class PayAccountController extends BaseController implements
             e.printStackTrace();
         }
         zBarScannerLayout.stopScan();
+	    previewFrameLayout.removeAllViews();
         Log.d(TAG, "processReceivedData : " + transData.toString());
         onCall(func_nearfieldAccount, transData);
     }

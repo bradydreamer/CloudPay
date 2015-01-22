@@ -5,7 +5,7 @@
 	}
 	var req_loadMore = {};
 	var singleResearchTag = false;
-	var fromTodayTag = false;
+	var fromTag = "";
 
 	function handleResFromReqRecord(msg) {
 	    var params = msg;
@@ -42,7 +42,7 @@
                 end_date : msg.end_date
             };*/
             var params = {
-                fromTodayTag : fromTodayTag,
+                fromTag : fromTag,
                 hasMore : hasMore,
                 recordList : recordDisplayedList
             };
@@ -235,7 +235,7 @@
 		var req;
 		if (null != searchData && searchData.isReqMore) {
 			req = req_loadMore;
-			fromTodayTag = searchData.fromTodayTag;
+			fromTag = searchData.fromTag;
 		} else {
 			req = {
 				pageNo : 1,
@@ -244,7 +244,7 @@
 			if (null != searchData) {
 				req.startDate = searchData.startDate;
 				req.endDate = searchData.endDate;
-				fromTodayTag = searchData.fromTodayTag;
+				fromTag = searchData.fromTag;
 				if (searchData.ioperator !== "" && searchData.ioperator !== undefined && searchData.ioperator !== "All") {
 				    req.ioperator = searchData.ioperator;
 				}
@@ -301,7 +301,7 @@
 		var msg = JSON.parse(data)
         window.TransactionManageIndex.ioperator = msg.ioperator;
         var params = {
-            fromTodayTag : true,
+            fromTag : "TODAY",
             startDate : msg.startDate,
             endDate : msg.endDate,
             ioperator : msg.ioperator
@@ -312,25 +312,25 @@
 	}
 
 	function onSingleRecordSearch() {
-	    fromTodayTag = false;
+	    fromTag = "";
 	    window.TransactionManageIndex.ioperator = undefined;
 		window.util.showSceneWithLoginChecked("PaymentMechanism");
 	}
 
 	function onSingleRecordSearchByTxnId(){
-	    fromTodayTag = false;
+	    fromTag = "";
 	    window.TransactionManageIndex.ioperator = undefined;
 	    window.util.showSceneWithLoginChecked("SingleRecordSearchByTxnId");
 	}
 
 	function onHistoryConsumptionRecordSearch() {
-	    fromTodayTag = false;
+	    fromTag = "";
 	    window.TransactionManageIndex.ioperator = undefined;
 		window.util.showSceneWithLoginChecked("ConsumptionRecordSearch");
 	}
 
 	function onDelVoucherRecordSearch() {
-	    fromTodayTag = false;
+	    fromTag = "";
 	    window.TransactionManageIndex.ioperator = undefined;
 		window.util.showSceneWithLoginChecked("DelVoucherRecordSearch");
 	}

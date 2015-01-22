@@ -43,9 +43,11 @@ public class ConsumptionRecordController extends BaseController implements Order
 	private ConsumptionRecordAdapter adapter;
 	private List<JSONObject> recordDataList;
 	private boolean removeJSTag = true;
-	
-	private String startDate;
-	private String endDate;
+    private final String FROM_TODAY_TAG = "TODAY";
+    private final String FROM_HISTORY_TAG = "HISTORY";
+
+	private String mStartDate;
+	private String mEndDate;
 	private boolean hasMore;
 	
 	private ConsumptionRecordDB consumptionDB;
@@ -78,8 +80,8 @@ public class ConsumptionRecordController extends BaseController implements Order
 		lv_record.setAdapter(adapter);
 		
 		//init startDate and endDate
-		startDate = data.optString("start_date");
-		endDate = data.optString("end_date");
+		mStartDate = data.optString("start_date");
+		mEndDate = data.optString("end_date");
 		
 		lv_record.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -118,9 +120,17 @@ public class ConsumptionRecordController extends BaseController implements Order
         currencyTextView.setText(String.format(formattingCurrency, currencyResource));
 
         LinearLayout printerLayout = (LinearLayout) findViewById(R.id.printerLayout);
-        Boolean fromTodayTag = data.optBoolean("fromTodayTag");
-        if (fromTodayTag) {
+        String fromTag = data.optString("fromTag");
+        if (!TextUtils.isEmpty(fromTag) && fromTag.equals(FROM_TODAY_TAG)) {
             printerLayout.setVisibility(View.VISIBLE);
+        } else if (!TextUtils.isEmpty(fromTag) && fromTag.equals(FROM_HISTORY_TAG)) {
+            printerLayout.setVisibility(View.VISIBLE);
+            Spinner mSpinner = (Spinner) findViewById(R.id.operatorSpinner);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mSpinner.getLayoutParams();
+            params.setMargins(0, 0, 20, 0);
+            mSpinner.setLayoutParams(params);
+
+            findViewById(R.id.btnPrintRecord).setVisibility(View.GONE);
         } else {
             printerLayout.setVisibility(View.GONE);
         }
@@ -228,12 +238,22 @@ public class ConsumptionRecordController extends BaseController implements Order
 
                         JSONObject msg = new JSONObject();
                         try {
-                            Date today = new Date();
-                            String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
-                            String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
-                            startDate = DateUtil.formatDate(DateUtil.parseDate(startDate),"yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的起始时间
-                            String endDate = todayStr + " 23:59:59"; //获取当的日期+最终时间
-                            endDate = DateUtil.formatDate(DateUtil.parseDate(endDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的最终时间
+                            String startDate = "";
+                            String endDate = "";
+
+                            if (!TextUtils.isEmpty(mStartDate) && !TextUtils.isEmpty(mEndDate)) {
+                                startDate = mStartDate;
+                                endDate = mEndDate;
+                            } else {
+
+                                Date today = new Date();
+                                String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
+                                startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
+                                startDate = DateUtil.formatDate(DateUtil.parseDate(startDate),"yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的起始时间
+
+                                endDate = todayStr + " 23:59:59"; //获取当的日期+最终时间
+                                endDate = DateUtil.formatDate(DateUtil.parseDate(endDate),"yyyyMMddHHmmss",TimeZone.getTimeZone("GMT+08:00")); //转换成G8时区的最终时间
+                            }
 
                             msg.put("startDate", startDate);
                             msg.put("endDate", endDate);
@@ -364,9 +384,9 @@ public class ConsumptionRecordController extends BaseController implements Order
 		}
 		String tmpStartDate = "";
 		String tmpEndDate = "";
-		if (!TextUtils.isEmpty(startDate) || !TextUtils.isEmpty(endDate)) {
-			tmpStartDate = startDate.substring(0, 8);
-			tmpEndDate = endDate.substring(0, 8);
+		if (!TextUtils.isEmpty(mStartDate) || !TextUtils.isEmpty(mEndDate)) {
+			tmpStartDate = mStartDate.substring(0, 8);
+			tmpEndDate = mEndDate.substring(0, 8);
 		}
 		
 		sortedList = consumptionDB.getSortedRecords(tmpStartDate, tmpEndDate, sortColumn, isDesc);
