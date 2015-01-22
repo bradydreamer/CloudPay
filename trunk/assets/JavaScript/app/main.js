@@ -69,6 +69,7 @@ require.config({
 require(['Moo', 'Global', 'Scene'], 
 	function(Moo, Global, Scene) {
 		console.error('1');
+		console.log("init start");
 		var scene = new Scene();
 		new Global();
 	}
