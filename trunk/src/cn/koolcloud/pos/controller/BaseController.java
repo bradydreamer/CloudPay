@@ -37,6 +37,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.JavaScriptEngine;
@@ -48,6 +51,7 @@ import cn.koolcloud.pos.controller.others.settings.SetMachineIdController;
 import cn.koolcloud.pos.controller.others.settings.SetMerchIdController;
 import cn.koolcloud.pos.controller.pay.TransAmountController;
 import cn.koolcloud.pos.controller.transaction_manage.consumption_record.OrderDetailController;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForMoney;
 
@@ -123,6 +127,7 @@ public abstract class BaseController extends Activity {
 		hasControllerResumed = false;
 		setRemoveJSTag(true);
 		super.onPause();
+        MobclickAgent.onPause(this);
 	}
 
 	@Override
@@ -232,13 +237,13 @@ public abstract class BaseController extends Activity {
 				.readPropertyBySharedPreferences(MyApplication.getContext(),
 						"merchant");
 		if (null == map.get("transId")) {
-			traceNo = "0";
+			traceNo = "000000";
 		} else {
 			traceId = ((Integer) map.get("transId")).intValue();
 			traceNo = dataFormat.format(traceId);
 		}
 		if (null == map.get("batchId")) {
-			batchNo = "0";
+			batchNo = "000000";
 		} else {
 			batchNo = dataFormat.format(((Integer) map.get("batchId"))
 					.intValue());
@@ -360,6 +365,7 @@ public abstract class BaseController extends Activity {
                 public void onClick(View widget) {
 //                    Intent intent = new Intent(BaseController.this, LoginController.class);
 //                    startActivity(intent);
+                    MobclickAgent.onEvent(widget.getContext(), Env.getResourceString(widget.getContext(), R.string.event_id_smartpos_title_login));
                     onCall("SettingsIndex.gotoLogin", null);
                 }
             }, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -387,6 +393,7 @@ public abstract class BaseController extends Activity {
 		loadRelatedJS();
 		super.onResume();
 		hasControllerResumed = true;
+        MobclickAgent.onResume(this);
 	}
 
 	public void notifyWillshow() {

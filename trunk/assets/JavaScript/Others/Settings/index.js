@@ -68,7 +68,7 @@
 	}
 	
 	
-	function allTransBatch(callBack){	
+	function allTransBatch(callBack){
 		afterTransBatchCallback = callBack;
 		merchSettings = {};
 		transTag = {};
@@ -133,7 +133,6 @@
 	}	
 	
 	function batchCallBack() {
-		Scene.alert("JSLOG batchCallBack logoutTag:" + logoutTag);
 		if (logoutTag) {
 			logoutTag = false;
 			window.COMM.stopCheckSession();
@@ -226,6 +225,7 @@
 			return;
 		}else{
 			window.util.exeActionWithLoginChecked(function() {
+			    Scene.goBack("Home");
 			});
 		}
 		
@@ -234,6 +234,7 @@
 				window.user.init({});
 				window.COMM.stopCheckSession();
 				window.util.exeActionWithLoginChecked(function() {
+				    Scene.goBack("Home");
 				});
 			}
 		}		

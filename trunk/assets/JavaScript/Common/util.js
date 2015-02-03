@@ -66,18 +66,7 @@ Util.prototype.showSceneWithLoginChecked = function(sceneName, params, sceneTitl
 			}			
 		}
 		Scene.showScene(sceneName, sceneTitle, data);
-		setTimeout(function() {
-            if(window.user.gradeId == "4"){
-                Scene.alert("137",function(){
-                    if(ConsumptionData.dataForPayment.isExternalOrder){
-                        Pay.restart();
-                    }else{
-                        Scene.goBack("Home");
-                    }
-                });
-                return;
-            }
-        }, 100);
+
 	}, true);
 
 	function backHome(){
@@ -257,8 +246,21 @@ Util.prototype.showSceneWithSigninChecked = function(sceneName, params, sceneTit
 	window.util.exeActionWithSigninChecked(function(shouldRmvLogin) {
 		if (shouldRmvLogin) {
 			data.shouldRemoveCurCtrl = shouldRmvLogin;
-		};		
-		window.util.showSceneWithLoginChecked(sceneName, data,sceneTitle);
+		};
+		//window.util.showSceneWithLoginChecked(sceneName, data,sceneTitle);
+		Scene.showScene(sceneName, sceneTitle, data);
+		setTimeout(function() {
+            if(window.user.gradeId == "4"){
+                Scene.alert("137",function(){
+                    if(ConsumptionData.dataForPayment.isExternalOrder){
+                        Pay.restart();
+                    }else{
+                        Scene.goBack("Home");
+                    }
+                });
+                return;
+            }
+        }, 500);
 	}, true)
 }
 
@@ -286,7 +288,7 @@ Util.prototype.exeActionWithLoginChecked = function(actionWithLoginNeeded, needN
 		if ("0" != window.user.userStatus) {
 			var callback = function() {
 				if (!needNotGoBack) {
-					Scene.goBack();
+					//Scene.goBack();
 				}
 				setTimeout(function() {
 					actionWithLoginNeeded(true);
@@ -313,7 +315,9 @@ Util.prototype.exeActionWithSigninChecked = function(actionWithLoginNeeded, need
 	if(ConsumptionData.dataForPayment.brhKeyIndex == null || ConsumptionData.dataForPayment.brhKeyIndex == ""){
 		if(ConsumptionData.isMultiPay)
 		{
-			actionWithLoginNeeded();
+			window.util.exeActionWithLoginChecked(function(){
+                		    actionWithLoginNeeded();
+                		});
 		}else{
 			Scene.alert("Error! brhKeyIndex is null!");
 			return;
@@ -327,7 +331,9 @@ Util.prototype.exeActionWithSigninChecked = function(actionWithLoginNeeded, need
 		if((params.signature == "false"||params.signature == false)&& ConsumptionData.dataForPayment.brhKeyIndex != "91") {
 			signInAction(false);
 		} else {
-			actionWithLoginNeeded();
+			window.util.exeActionWithLoginChecked(function(){
+                            		    actionWithLoginNeeded();
+                            		});
 		}
 	}
 
@@ -335,7 +341,7 @@ Util.prototype.exeActionWithSigninChecked = function(actionWithLoginNeeded, need
 
 		var callback = function() {
 			if (!needNotGoBack) {
-				Scene.goBack()
+				//Scene.goBack()
 			}
 			setTimeout(function() {
 				actionWithLoginNeeded(true);

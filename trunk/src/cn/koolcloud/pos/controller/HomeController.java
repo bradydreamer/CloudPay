@@ -21,6 +21,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.Toast;
+
+import com.umeng.analytics.MobclickAgent;
+
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.ClientEngine;
 import cn.koolcloud.pos.JavaScriptEngine;
@@ -33,6 +36,7 @@ import cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog;
 import cn.koolcloud.pos.database.ConsumptionRecordDB;
 import cn.koolcloud.pos.service.MerchInfo;
 import cn.koolcloud.pos.service.local.LocalService;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
 import cn.koolcloud.util.DateUtil;
@@ -294,9 +298,12 @@ public class HomeController extends BaseHomeController implements
 			home_layout.setVisibility(View.VISIBLE);
 			currentLayout = home_layout;
 		}
+
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_home));
 	}
 
 	public void onClickSetting(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage));
 		int index = 0;
 		int pages = 0;
 		/*
@@ -334,6 +341,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void onClickTransactionInquiries(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage));
 		/*
 		 * setting button selected state.
 		 */
@@ -372,6 +380,7 @@ public class HomeController extends BaseHomeController implements
 	public void onClickMultiPay(View view) {
 		// changeSelectedButton(view);
 		onCall("Home.onClickMultiPay", null);
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_multi));
 	}
 
 	private void changeSelectedButton(View view) {
@@ -389,6 +398,8 @@ public class HomeController extends BaseHomeController implements
 	 * 交易查询界面
 	 */
 	public void gotoTodayConsumptionRecord(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_today));
+
 		Date today = new Date();
 		String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
 		String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
@@ -399,6 +410,7 @@ public class HomeController extends BaseHomeController implements
 		try {
 			msg.put("startDate", startDate);
 			msg.put("endDate", endDate);
+			msg.put("from", "home");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -406,10 +418,12 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoHistoryConsumptionRecordSearch(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_history));
 		onCall("TransactionManageIndex.onHistoryConsumptionRecordSearch", null);
 	}
 
 	public void gotoSingleRecordSearch(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_merch_refno));
         new ClearConsumptionThread().start();
         onCall("TransactionManageIndex.onSingleRecordSearch", null);
 	}
@@ -419,11 +433,13 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoSingleRecordSearchByTxnId(View view){
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_txnid));
         new ClearConsumptionThread().start();
 		onCall("TransactionManageIndex.onSingleRecordSearchByTxnId",null);
 	}
 
 	public void gotoConsumptionSummary(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_today_summary));
 		Date today = new Date();
 		String todayStr = DateUtil.formatDate(today, "yyyy-MM-dd"); //获取当地日期（默认）
 		String startDate = todayStr + " 00:00:00"; //获取当的日期+起始时间
@@ -444,6 +460,7 @@ public class HomeController extends BaseHomeController implements
 	 * 设置界面
 	 */
 	public void gotoLogin(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_login));
 		onCall("SettingsIndex.gotoLogin", null);
 	}
 
@@ -454,22 +471,27 @@ public class HomeController extends BaseHomeController implements
 		 * jsObj.put("existMispos", existMispos); } catch (JSONException e) {
 		 * e.printStackTrace(); } onCall("SettingsIndex.gotoLogout", jsObj);
 		 */
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_logout));
 		onCall("SettingsIndex.gotoLogout", null);
 	}
 
 	public void gotoCreateUser(View view) {
 		onCall("SettingsIndex.gotoCreateUser", null);
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_create_user));
 	}
 
 	public void gotoModifyPwd(View view) {
 		onCall("SettingsIndex.gotoModifyPwd", null);
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_mod_pwd));
 	}
 
 	public void gotoMerchantInfo(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_merch_info));
 		onCall("SettingsIndex.gotoMerchantInfo", null);
 	}
 
 	public void clearReverseData(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_clear_data));
 		// onCall("SettingsIndex.clearReverseData", null);
 		onCall("window.util.clearReverseDataWithLoginChecked", null);
 
@@ -480,6 +502,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void downloadMerchData(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_init_data));
 		onCall("SettingsIndex.downloadMerchData", null);
 	}
 
@@ -502,6 +525,7 @@ public class HomeController extends BaseHomeController implements
 	}
 
 	public void gotoListUsers(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_setting_manage_user_list));
 		onCall("SettingsIndex.gotoListUsers", null);
 	}
 

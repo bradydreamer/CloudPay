@@ -7,13 +7,16 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Hashtable;
+import java.util.Locale;
 
+import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.jni.MsrInterface;
 import cn.koolcloud.jni.PinPadInterface;
 import cn.koolcloud.parameter.UtilFor8583;
@@ -53,7 +56,7 @@ public class PinPadManager {
 	}
 
 	public void start(){
-		brhKeyIndex = transData.optString("brhKeyIndex");
+		brhKeyIndex = transData.optString("brhKeyIndex","00");
 		if (brhKeyIndex != null && !brhKeyIndex.equals("")) {
 			util8583.terminalConfig.setKeyIndex(brhKeyIndex);
 		}
@@ -89,19 +92,49 @@ public class PinPadManager {
 					String amount = transData.optString("transAmount");
 					if (!amount.isEmpty()) {
 						String text = amount;
-						byte[] btyes_text = text.getBytes();
-						// clean line
-						PinPadInterface.showText(0, null, 0, 1);
-						PinPadInterface.showText(0, btyes_text,
-								btyes_text.length, 1);
+						String language = Locale.getDefault().getLanguage();
+						if (!TextUtils.isEmpty(language) && language.equals(ConstantUtils.LANGUAGE_CHINESE)) { //中文的排版
+							byte[] bytes_text_1 = new byte[]{(byte) 0x8B, (byte) 0x86};
+							byte[] btyes_text_2 = (":" + text).getBytes();
+							byte[] bytes_text_line_1 = new byte[bytes_text_1.length + btyes_text_2.length];
+							System.arraycopy(bytes_text_1, 0, bytes_text_line_1, 0, bytes_text_1.length);
+							System.arraycopy(btyes_text_2, 0, bytes_text_line_1, bytes_text_1.length, btyes_text_2.length);
+							byte[] bytes_text_line_2 = new byte[]{(byte) 0x80,
+									(byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
+							// clean line
+							PinPadInterface.showText(0, null, 0, 1);
+							PinPadInterface.showText(0, bytes_text_line_1,
+									bytes_text_line_1.length, 1);
+							PinPadInterface.showText(1, bytes_text_line_2,
+									bytes_text_line_2.length, 1);
+						}else{
+							byte[] bytes_text_line_1 = ("AMT:" + text).getBytes();
+							byte[] bytes_text_line_2 = "PLS INPUT PWD".getBytes();
+							// clean line
+							PinPadInterface.showText(0, null, 0, 1);
+							PinPadInterface.showText(0, bytes_text_line_1,
+									bytes_text_line_1.length, 1);
+							PinPadInterface.showText(1, bytes_text_line_2,
+									bytes_text_line_2.length, 1);
+						}
+
 					}
 				} else {// input pwd character on pinpad line 1
-					byte[] btyes_text_1 = new byte[] { (byte) 0x80,
-							(byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84 };
-					// clean line
-					PinPadInterface.showText(1, null, 0, 1);
-					PinPadInterface.showText(1, btyes_text_1,
-							btyes_text_1.length, 1);
+					String language = Locale.getDefault().getLanguage();
+					if (!TextUtils.isEmpty(language) && language.equals(ConstantUtils.LANGUAGE_CHINESE)) { //中文的排版
+						byte[] btyes_text_1 = new byte[]{(byte) 0x80,
+								(byte) 0x81, (byte) 0x82, (byte) 0x83, (byte) 0x84};
+						// clean line
+						PinPadInterface.showText(1, null, 0, 1);
+						PinPadInterface.showText(1, btyes_text_1,
+								btyes_text_1.length, 1);
+					}else{
+						byte[] btyes_text_1 = "PLS INPUT PWD".getBytes();
+						// clean line
+						PinPadInterface.showText(1, null, 0, 1);
+						PinPadInterface.showText(1, btyes_text_1,
+								btyes_text_1.length, 1);
+					}
 				}
 				PinPadInterface.setPinLength(6, 1);
 				int pwdInputResult = PinPadInterface.calculatePinBlock(

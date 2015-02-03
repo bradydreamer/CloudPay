@@ -65,8 +65,8 @@
 		  if(params.paramDownloadFlag == true){			  
 			  paramType = "CAPK";
 			  posUpStatus(downloadCAPK);
-		  }else{		  
-			  actionAfterSet();		  
+		  }else{
+			  actionAfterSet();
 		  }
 	  }else{
 		  Scene.alert(params.resMessage,errOKProcess);
@@ -385,6 +385,7 @@
   	keyIndex = -1;
   	signTag = {};
   	merchSettings = {};
+  	Scene.alert("Toast:正在签退，请稍后重新操作！");
 	if (window.merchSettings == null) {
 		window.RMS.read("merchSettings", afterGetTransInfo);
 	} else {

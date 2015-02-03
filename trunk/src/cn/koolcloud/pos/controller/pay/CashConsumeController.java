@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import cn.koolcloud.jni.PrinterInterface;
@@ -39,6 +40,7 @@ public class CashConsumeController extends BaseController {
 	private EditText sumPayable = null;
 	private EditText paidAmount = null;
 	private TextView cashChange = null;
+	private Button cashOKbtn = null;
 	private String paidHint = null;
 	private String sumPayableHint = null;
 	private String cashAmount = null;
@@ -59,6 +61,7 @@ public class CashConsumeController extends BaseController {
 		sumPayable = (EditText) findViewById(R.id.cash_sum_payable);
 		paidAmount = (EditText) findViewById(R.id.cash_paid_amount);
 		cashChange = (TextView) findViewById(R.id.cash_change_amount);
+		cashOKbtn = (Button) findViewById(R.id.cashOKbtn);
 		paidHint = paidAmount.getHint().toString();
 		sumPayableHint = sumPayable.getHint().toString();
 
@@ -171,7 +174,9 @@ public class CashConsumeController extends BaseController {
 				String change = "0.00";
 				String paidAmountStr = paidAmount.getText().toString();
 				String sumPayableStr = sumPayable.getText().toString();
-
+				if(paidAmountStr.equals("")){
+					return;
+				}
 				paidAmount.setSelection(paidAmountStr.length());
 				Boolean needGoOn = checkAmount(paidAmountStr, paidAmount,EDITTYPE_PAIDAMOUNT);
 				if (!needGoOn) {
@@ -334,13 +339,13 @@ public class CashConsumeController extends BaseController {
 				.readPropertyBySharedPreferences(MyApplication.getContext(),
 						"merchant");
 		if (null == map.get("transId")) {
-			traceNo = "0";
+			traceNo = "000000";
 		} else {
 			traceId = ((Integer) map.get("transId")).intValue();
 			traceNo = dataFormat.format(traceId);
 		}
 		if (null == map.get("batchId")) {
-			batchNo = "0";
+			batchNo = "000000";
 		} else {
 			batchNo = dataFormat.format(((Integer) map.get("batchId"))
 					.intValue());
@@ -379,8 +384,16 @@ public class CashConsumeController extends BaseController {
 		}
 		paidAmount.setText("");
 		paidAmount.setHint(paidHint);
-		paidAmount.setCursorVisible(false);
+		sumPayable.requestFocus();
+		cashChange.setText("0.00");
+		cashOKbtn.setEnabled(false);
 		onCall("CashConsume.cashExePay", msg);
+	}
+
+	@Override
+	public void onResume(){
+		super.onResume();
+		cashOKbtn.setEnabled(true);
 	}
 
 	@Override

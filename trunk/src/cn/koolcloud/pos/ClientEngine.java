@@ -27,7 +27,9 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
@@ -45,6 +47,7 @@ import cn.koolcloud.pos.controller.PinPadController;
 import cn.koolcloud.pos.controller.delivery_voucher.DelVoucherIdController;
 import cn.koolcloud.pos.controller.delivery_voucher.DelVoucherInfoController;
 import cn.koolcloud.pos.controller.delivery_voucher.InputDelVoucherNumController;
+import cn.koolcloud.pos.controller.dialogs.AlertAppExistDialog;
 import cn.koolcloud.pos.controller.dialogs.AlertCommonDialog;
 import cn.koolcloud.pos.controller.mispos.MisposController;
 import cn.koolcloud.pos.controller.multipay.MultiPayIndex;
@@ -123,6 +126,8 @@ public class ClientEngine implements MisposEventInterface {
 
 	// cache mispos data
 	private JSONObject misposJsonObj;
+
+	private Toast msgToast = null;
 
 	private ClientEngine() {
 		controllerStack = new Stack<Map<String, BaseController>>();
@@ -505,11 +510,28 @@ public class ClientEngine implements MisposEventInterface {
 	}
 
 	public void showAlert(final JSONObject data, final String identifier) {
-		String msg = data.optString("msg");
+		final String msg = data.optString("msg");
 		if (msg.startsWith("JSLOG")) {
 			Log.i(TAG, msg);
 			// Logger.i(msg);
-		} else {
+		} else if(msg.startsWith("Toast")){
+			HandlerThread jsToastThread = new HandlerThread("jsToast");
+			jsToastThread.start();
+			Looper jsToastLooper = jsToastThread.getLooper();
+			Handler handler = new Handler(jsToastLooper);
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(msgToast == null) {
+						msgToast = Toast.makeText(context, msg.substring(6), Toast.LENGTH_SHORT);
+					}else {
+						msgToast.setText(msg.substring(6));
+					}
+					msgToast.show();
+				}
+			});
+
+		}else {
 			if (UtilForThread.isCurrentInMainThread(Thread.currentThread())) {
 				showAlertInMainThread(data, identifier);
 			} else {
@@ -527,6 +549,7 @@ public class ClientEngine implements MisposEventInterface {
 	private void showAlertInMainThread(final JSONObject data,
 			final String identifier) {
 		String msg = data.optString("msg");
+        String packageName = data.optString("packageName");
 		String positiveText = data.optString("positiveButtonText", null);
 		if (null == positiveText || 0 == positiveText.length()) {
 			positiveText = context.getString(R.string.alert_btn_positive);
@@ -534,7 +557,13 @@ public class ClientEngine implements MisposEventInterface {
 		String negativeText = data.optString("negativeButtonText", null);
 
 		// use styled alert dialog start on 16th June
-		Intent mIntent = new Intent(context, AlertCommonDialog.class);
+		Intent mIntent = null;
+        if (!TextUtils.isEmpty(packageName) && data.optBoolean("checking_app", false)) {
+            mIntent = new Intent(context, AlertAppExistDialog.class);
+            mIntent.putExtra("packageName", packageName);
+        } else {
+            mIntent = new Intent(context, AlertCommonDialog.class);
+        }
 		mIntent.putExtra(ConstantUtils.POSITIVE_BTN_KEY, positiveText);
 		mIntent.putExtra(ConstantUtils.NEGATIVE_BTN_KEY, negativeText);
 		mIntent.putExtra(ConstantUtils.MSG_KEY, msg);
@@ -867,29 +896,43 @@ public class ClientEngine implements MisposEventInterface {
 						currentController.finish();
 					}
 				} else if ("Coupon".equals(name)) {
-					if (Env.checkApkExist(context,
-							ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
-						JSONObject couponData = data.optJSONObject("data");
-						String couponDataType = couponData
-								.optString("coupon_type");
-						String transAmount = couponData
-								.optString("transAmount");
+                    JSONObject couponData = formData.optJSONObject("miscJsObj");
+                    String packageName = couponData.optString("package_name");
+                    String transAmount = formData.optString("transAmount");
+                    int requestCode = HomeController.REQUEST_CODE;
+
+                    if (!TextUtils.isEmpty(packageName) && Env.checkApkExist(context, packageName)) {
+
+                        String couponDataType = couponData.optString("action_type");
+                        String serviceType = couponData.optString("service_for");
 						String couponType = "";
-						int requestCode;
-						if (!TextUtils.isEmpty(couponDataType)
-								&& couponDataType.equals("rm_coupon")) {
+
+						if (!TextUtils.isEmpty(couponDataType) && couponDataType.equals("rm_coupon")) {
 							couponType = "1";
 							requestCode = HomeController.REQUEST_CODE;
-						} else {
-							couponType = "0";
-							requestCode = OrderDetailController.REQUEST_CODE;
-						}
+						} else if (!TextUtils.isEmpty(couponDataType) && couponDataType.equals("send_coupon")) {
+                            couponType = "0";
+                            requestCode = OrderDetailController.REQUEST_CODE;
+                        } else {
+                            //TODO launch other application
+                            /*if (!TextUtils.isEmpty(transAmount)) {
+                                Env.startAppWithPackageName(context, packageName);
+                            }*/
+                            Env.startAppWithPackageName(context, packageName);
+                        }
 
-						if (!TextUtils.isEmpty(transAmount)) {
+						if (!TextUtils.isEmpty(serviceType)) {
 							Intent mIntent = new Intent(Intent.ACTION_MAIN);
-							mIntent.setComponent(new ComponentName(
-									"com.koolyun.coupon",
-									"com.koolyun.coupon.LoginActivity"));
+                            if (packageName.equals(ConstantUtils.COUPON_APP_PACKAGE_NAME)) {
+
+                                mIntent.setComponent(new ComponentName(
+                                        "com.koolyun.coupon",
+                                        "com.koolyun.coupon.LoginActivity"));
+                            } else if (packageName.equals(ConstantUtils.COUPON_WAN_APP_PACKAGE_NAME)) {
+                                mIntent.setComponent(new ComponentName(
+                                        "com.wjl.whrxh",
+                                        "com.wjl.whrxh.activities.AppStartActivity"));
+                            }
 							mIntent.putExtra("transAmount", transAmount);
 							mIntent.putExtra("packagename",
 									Env.getPackageName(context));
@@ -899,90 +942,31 @@ public class ClientEngine implements MisposEventInterface {
 							mIntent.putExtra("orderDesc", "");
 							mIntent.putExtra("actionType", couponType);
 							// startActivity(intent);
-							getCurrentController().startActivityForResult(
-									mIntent, requestCode);
+							getCurrentController().startActivityForResult(mIntent, requestCode);
 
-						} else {
+						}/* else if (TextUtils.isEmpty(transAmount)) {
 							Toast.makeText(
-									context,
-									context.getResources().getString(
-											R.string.str_coupon_amount_null),
-									Toast.LENGTH_LONG).show();
-						}
+									context, context.getResources().getString(R.string.str_coupon_amount_null), Toast.LENGTH_LONG).show();
+						}*/
 					} else {
 						try {
-							JSONObject jsObj = new JSONObject();
-							jsObj.put(
-									"msg",
-									context.getResources()
-											.getString(
-													R.string.str_coupon_app_not_installed));
-							showAlert(jsObj, "");
+                            JSONObject jsObj = new JSONObject();
+                            if (Env.checkApkExist(context, ConstantUtils.APP_STORE_PACKAGE_NAME)) {
+
+                                jsObj.put("packageName", packageName);
+                                jsObj.put("checking_app", true);
+                            } else {
+                                jsObj.put("msg", Env.getResourceString(context, R.string.str_coupon_app_not_installed));
+                                jsObj.put("onCall", true);
+                            }
+							showAlert(jsObj, "window.util.goBackHome");
 						} catch (NotFoundException e) {
 							e.printStackTrace();
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
 					}
-				} else if ("Coupon_Wan".equals(name)) {
-                    if (Env.checkApkExist(context,
-                            ConstantUtils.COUPON_WAN_APP_PACKAGE_NAME)) {
-                        JSONObject couponData = data.optJSONObject("data");
-                        String couponDataType = couponData
-                                .optString("coupon_type");
-                        String transAmount = couponData
-                                .optString("transAmount");
-                        String couponType = "";
-                        int requestCode;
-                        if (!TextUtils.isEmpty(couponDataType)
-                                && couponDataType.equals("rm_coupon_wan")) {
-                            couponType = "1";
-                            requestCode = HomeController.REQUEST_CODE;
-                        } else {
-                            couponType = "0";
-                            requestCode = OrderDetailController.REQUEST_CODE;
-                        }
-
-                        if (!TextUtils.isEmpty(transAmount)) {
-                            Intent mIntent = new Intent(Intent.ACTION_MAIN);
-                            mIntent.setComponent(new ComponentName(
-                                    "com.wjl.whrxh",
-                                    "com.wjl.whrxh.activities.AppStartActivity"));
-                            mIntent.putExtra("transAmount", transAmount);
-                            mIntent.putExtra("packagename",
-                                    Env.getPackageName(context));
-                            mIntent.putExtra("orderNo", "");
-                            mIntent.putExtra("txnId",
-                                    couponData.optString("txnId"));
-                            mIntent.putExtra("orderDesc", "");
-                            mIntent.putExtra("actionType", couponType);
-                            // startActivity(intent);
-                            getCurrentController().startActivityForResult(
-                                    mIntent, requestCode);
-
-                        } else {
-                            Toast.makeText(
-                                    context,
-                                    context.getResources().getString(
-                                            R.string.str_coupon_amount_null),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        try {
-                            JSONObject jsObj = new JSONObject();
-                            jsObj.put(
-                                    "msg",
-                                    context.getResources()
-                                            .getString(
-                                                    R.string.str_coupon_app_not_installed));
-                            showAlert(jsObj, "");
-                        } catch (NotFoundException e) {
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else if ("MisposController".equals(name)
+				} else if ("MisposController".equals(name)
 						&& formData.optString("actionType").equals("mispos")) {
 					misposJsonObj = data;
 					misposCheckingThread = new MisposCheckingThread(
@@ -1019,6 +1003,12 @@ public class ClientEngine implements MisposEventInterface {
 						formData.put("data", data);
 					} catch (JSONException e) {
 						e.printStackTrace();
+					}
+				}
+				if(currentController != null) {
+					if (LoginController.class.getName().equals(currentController.getClass().getName())
+							|| SigninController.class.getName().equals(currentController.getClass().getName())) {
+						shouldRemoveCurCtrl = true;
 					}
 				}
 			}
@@ -1354,13 +1344,13 @@ public class ClientEngine implements MisposEventInterface {
 			int cAuthCode_len = 0;
 			byte[] cAuthCode = null;
 			int trade_ret = -1;
-			if (uf8.trans.getEntryMode() == ConstantUtils.ENTRY_IC_MODE) {
+			if (uf8.trans.getEntryMode() == ConstantUtils.ENTRY_IC_MODE && (!uf8.trans.getApmpTransType().equals(iso8583Controller.APMP_TRAN_OFFSET))) {
 				// TODO:后续可能再加上类型。
-				if (uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_CONSUMECANCE
-						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PRAUTHCANCEL
-						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PRAUTHCOMPLETE
-						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PRAUTHSETTLEMENT
-						|| uf8.trans.getApmpTransType() == iso8583Controller.APMP_TRAN_PREAUTHCOMPLETECANCEL) {
+				if (uf8.trans.getApmpTransType().equals(iso8583Controller.APMP_TRAN_CONSUMECANCE)
+						|| uf8.trans.getApmpTransType().equals(iso8583Controller.APMP_TRAN_PRAUTHCANCEL)
+						|| uf8.trans.getApmpTransType().equals(iso8583Controller.APMP_TRAN_PRAUTHCOMPLETE)
+						|| uf8.trans.getApmpTransType().equals(iso8583Controller.APMP_TRAN_PRAUTHSETTLEMENT)
+						|| uf8.trans.getApmpTransType().equals(iso8583Controller.APMP_TRAN_PREAUTHCOMPLETECANCEL)) {
 					if (uf8.trans.getAuthCode() == null
 							|| uf8.trans.getAuthCode().equals("")) {
 						cAuthCode = null;

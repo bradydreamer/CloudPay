@@ -61,7 +61,7 @@ public class LocalService extends Service implements MisposEventInterface {
 	private final static int SEND_MESSAGE_DELAYED_TIME = 50;
 	private final static int NETWORK_CHECKING_WAITING_TIME = 5000;
 
-	private final static int START_CHECKING_THREAD_TIME = 14400000; //start checking every four hour (4h*60m*60s*1000ms=14400000ms)
+	private final static int START_CHECKING_THREAD_TIME = 7200000; //start checking every four hour (2h*60m*60s*1000ms=7200000ms)
 	
 	private Context context;
 	

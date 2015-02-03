@@ -23,6 +23,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
+
 import cn.koolcloud.interfaces.OrderHeaderInterface;
 import cn.koolcloud.pos.MyApplication;
 import cn.koolcloud.pos.R;
@@ -56,6 +58,7 @@ public class ConsumptionRecordController extends BaseController implements Order
     private ArrayAdapter<String> spinnerAdapter;
     private String operator = "";
     private int spinnerSelectCount = 0;
+    private int spinnerCurrentPos = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -211,7 +214,7 @@ public class ConsumptionRecordController extends BaseController implements Order
         if(map.size() > 0) {
             JSONObject operatorObj = new JSONObject(map);
             Iterator<String> keys = operatorObj.keys();
-            spinnerData.add("All");
+            spinnerData.add(Env.getResourceString(this, R.string.printer_value_operator));
             while (keys.hasNext()) {
                 String str = keys.next();
                 if (!str.equals("curMonth") && !str.equals("curDate")) {
@@ -230,8 +233,9 @@ public class ConsumptionRecordController extends BaseController implements Order
             operatorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
                 @Override
-                public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long arg3) {
                     // TODO Auto-generated method stub
+                    spinnerCurrentPos = pos;
                     operator = arg0.getSelectedItem().toString();
                     spinnerSelectCount++;
                     if (spinnerSelectCount > 1) {
@@ -257,7 +261,9 @@ public class ConsumptionRecordController extends BaseController implements Order
 
                             msg.put("startDate", startDate);
                             msg.put("endDate", endDate);
-                            msg.put("ioperator", operator);
+                            if (pos != 0) {
+                                msg.put("ioperator", operator);
+                            }
                             onCall("TransactionManageIndex.onTodayConsumptionRecord", msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -289,11 +295,12 @@ public class ConsumptionRecordController extends BaseController implements Order
 	}
 
     public void onPrintRecord(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_today_print));
         JSONObject msg = new JSONObject();
         try {
 //            Map<String, ?> map = UtilForDataStorage.readPropertyBySharedPreferences(MyApplication.getContext(), "merchant");
 //            String operator = (String) map.get("operator");
-            if (!TextUtils.isEmpty(operator) && !operator.equals("All")) {
+            if (spinnerCurrentPos != 0) {
                 msg.put("ioperator", operator);
             }
             onCall("ConsumptionRecord.printOperatorTodayRecord", msg);

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 
@@ -45,7 +47,7 @@ public class PrepaidCardSearchResultController extends BaseController {
 	private void initTextView(int resourceId, JSONObject data, String key,
 			boolean removeIfNull) {
 		TextView textView = (TextView) findViewById(resourceId);
-		textView.setText(data.optString(key, ""));
+		textView.setText(HostMessage.getJsMsg(data.optString(key, "")));
 		if (removeIfNull && textView.getText().equals("")) {
 			((ViewGroup) textView.getParent()).setVisibility(View.GONE);
 		}

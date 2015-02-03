@@ -8,6 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+
+import com.umeng.analytics.AnalyticsConfig;
+import com.umeng.analytics.MobclickAgent;
+
+import cn.koolcloud.BuildingConfig;
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.pos.controller.HomeController;
 import cn.koolcloud.pos.controller.dialogs.PushMessageController;
@@ -26,7 +31,11 @@ public class WelcomeScreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        MobclickAgent.setDebugMode(BuildingConfig.DEBUG);
+        AnalyticsConfig.enableEncrypt(true);
+        MobclickAgent.updateOnlineConfig(this);
+
         Log.d(TAG, this.toString() + "onCreate");
         context = this;
         mainHandler = new Handler();

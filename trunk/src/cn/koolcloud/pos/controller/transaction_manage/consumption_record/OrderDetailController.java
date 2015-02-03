@@ -20,6 +20,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+
 import cn.koolcloud.constant.ConstantUtils;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.ClientEngine;
@@ -212,7 +215,7 @@ public class OrderDetailController extends BaseController {
 		// set default value
 		batchNo = data.optString("batchNo");
 		traceNo = data.optString("traceNo");
-		payKeyIndex = data.optString("payKeyIndex");
+		payKeyIndex = data.optString("payKeyIndex","00");
 		util8583.terminalConfig.setKeyIndex(payKeyIndex);
 		findViews();
 		initButtons();
@@ -493,6 +496,12 @@ public class OrderDetailController extends BaseController {
 				msg.put("alipayTag", true);
 			}
 			msg.put("txnId", txnId);
+            JSONObject miscJsObj = new JSONObject();
+            miscJsObj.put("package_name", ConstantUtils.COUPON_APP_PACKAGE_NAME);
+            miscJsObj.put("action_type", "send_coupon");
+            miscJsObj.put("prod_type", "coupon");
+            miscJsObj.put("service_for", "koolyun");
+            msg.put("miscJsObj", miscJsObj);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -568,6 +577,7 @@ public class OrderDetailController extends BaseController {
 	}
 
 	public void onPrint(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_trans_manage_order_details_print));
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("ref", rrn);

@@ -495,23 +495,18 @@ public class ISO8583Controller implements Constant {
 		System.arraycopy(iso8583, 2, data, 0, data.length - 2);
 		if (name.equals(CHEXIAOCHONGZHENG)) {
 			paramer.trans.setTransType(TRAN_REVOCATION_REVERSAL);
-			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		} else if (name.equals(ZHIFUCHONGZHENG)) {
 			paramer.trans.setTransType(TRAN_SALE_REVERSAL);
-			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		} else if (name.equals(PREAUTHREVERSE)) {
 			paramer.trans.setTransType(TRAN_AUTH_REVERSAL);
-			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		} else if (name.equals(PREAUTHCOMPLETEREVERSE)) {
 			paramer.trans.setTransType(TRAN_AUTH_COMPLETE_REVERSAL);
-			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		} else if (name.equals(PREAUTHCANCELREVERSE)) {
 			paramer.trans.setTransType(TRAN_AUTH_CANCEL_REVERSAL);
-			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		} else if (name.equals(PREAUTHCOMPLETECANCELREVERSE)) {
 			paramer.trans.setTransType(TRAN_AUTH_COMPLETE_CANCEL_REVERSAL);
-			paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 		}
+		paramer.trans.setApmpTransType(this.APMP_TRAN_OFFSET);
 
 		OldTrans oldTrans = new OldTrans();
 		try {
@@ -526,7 +521,6 @@ public class ISO8583Controller implements Constant {
 		paramer.oldTrans.setOldTransDate(oldTransDate);
 		paramer.trans.setPAN(oldTrans.getOldPan());
 		paramer.trans.setTransAmount(oldTrans.getOldTransAmount());
-		paramer.trans.setEntryMode(oldTrans.getOldEntryMode());
 		paramer.trans.setPinMode(oldTrans.getOldPinMode());
 		// (40域)
 		paramer.apOrderId = oldTrans.getOldApOrderId();
@@ -1125,7 +1119,7 @@ public class ISO8583Controller implements Constant {
 			case ISOField.F36_TRACK3:
 				// 磁道3 F36
 				String track3 = jsonObject.optString("F36", null);
-				if (track3 != null) {
+				if (track3 != null && !track3.equals("")) {
 					paramer.trans.setTrack3Data(track3);
 				} else {
 					save = false;
@@ -1696,6 +1690,9 @@ public class ISO8583Controller implements Constant {
 		} else if (!TextUtils.isEmpty(printType)
                 && printType.equals(ConstantUtils.PRINT_TYPE_WECHAT)) {
             PrinterHelper.getInstance(context).printWeChatReceipt(oldTrans);
+        } else if (!TextUtils.isEmpty(printType)
+                && printType.equals(ConstantUtils.PRINT_TYPE_BAIDU)) {
+            PrinterHelper.getInstance(context).printBaiduReceipt(oldTrans);
         } else if (!TextUtils.isEmpty(printType)
                 && printType.equals(ConstantUtils.PRINT_TYPE_ALIPAY_OVER_SEA)) {
             PrinterHelper.getInstance(context).printQRCodeOverSeaReceipt(oldTrans);

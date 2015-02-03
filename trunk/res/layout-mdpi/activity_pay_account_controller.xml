@@ -185,6 +185,7 @@
 	            android:layout_marginRight="20dp"
 	            android:orientation="vertical"
 	            android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
 	            android:gravity="center"
 	            android:background="@drawable/calculator_num_key_bg"
 	            android:visibility="gone" >

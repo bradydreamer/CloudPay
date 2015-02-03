@@ -263,6 +263,28 @@
     <string name="controllerName_MultiPayIndex">MultiPayIndex</string>
     <string name="controllerName_MultiPayRecord">MultiPayRecord</string>
 
+    <string name="event_id_smartpos_home" translatable="false">SmartPos_Home</string>
+    <string name="event_id_smartpos_multi" translatable="false">SmartPos_Multi</string>
+    <string name="event_id_smartpos_setting_manage" translatable="false">SmartPos_Setting_Manage</string>
+    <string name="event_id_smartpos_setting_manage_clear_data" translatable="false">SmartPos_Setting_Manage_Clear_Data</string>
+    <string name="event_id_smartpos_setting_manage_create_user" translatable="false">SmartPos_Setting_Manage_Create_User</string>
+    <string name="event_id_smartpos_setting_manage_init_data" translatable="false">SmartPos_Setting_Manage_Init_Data</string>
+    <string name="event_id_smartpos_setting_manage_login" translatable="false">SmartPos_Setting_Manage_Login</string>
+    <string name="event_id_smartpos_setting_manage_logout" translatable="false">SmartPos_Setting_Manage_Logout</string>
+    <string name="event_id_smartpos_setting_manage_merch_info" translatable="false">SmartPos_Setting_Manage_Merch_Info</string>
+    <string name="event_id_smartpos_setting_manage_mod_pwd" translatable="false">SmartPos_Setting_Manage_Mod_Pwd</string>
+    <string name="event_id_smartpos_setting_manage_user_list" translatable="false">SmartPos_Setting_Manage_User_List</string>
+    <string name="event_id_smartpos_trans_manage" translatable="false">SmartPos_Trans_Manage</string>
+    <string name="event_id_smartpos_trans_manage_history" translatable="false">SmartPos_Trans_Manage_History</string>
+    <string name="event_id_smartpos_trans_manage_merch_refno" translatable="false">SmartPos_Trans_Manage_Merch_RefNo</string>
+    <string name="event_id_smartpos_trans_manage_today" translatable="false">SmartPos_Trans_Manage_Today</string>
+    <string name="event_id_smartpos_trans_manage_today_summary" translatable="false">SmartPos_Trans_Manage_Today_Summary</string>
+    <string name="event_id_smartpos_trans_manage_txnid" translatable="false">SmartPos_Trans_Manage_TxnId</string>
+    <string name="event_id_smartpos_title_about" translatable="false">SmartPos_Title_About</string>
+    <string name="event_id_smartpos_title_login" translatable="false">SmartPos_Title_Login</string>
+    <string name="event_id_smartpos_trans_manage_today_print" translatable="false">SmartPos_Trans_Manage_Today_Print</string>
+    <string name="event_id_smartpos_trans_manage_order_details_print" translatable="false">SmartPos_Trans_Manage_Order_Details_Print</string>
+
     <!-- controllerJSName -->
     <!-- if modified,modify android.html together -->
     <string name="controllerJSName_External">Common/external</string>
@@ -378,8 +400,9 @@
     <string name="about_info">收银通作为崭新的支付平台，集合了传统收单支付和移动互联网创新的支付方式，同时通过叠加，可以支持各种电子钱包和电子优惠券。</string>
     
     <!-- coupon msg -->
-    <string name="str_coupon_app_not_installed">酷券应用尚未安装，请先安装！</string>
-    <string name="str_coupon_amount_null">总金额为0，无券可以核销！</string>
+    <string name="str_coupon_app_not_installed">应用尚未安装，请先安装！</string>
+    <string name="str_coupon_app_exist_install">应用尚未安装，是否从应用中心进行安装？</string>
+    <string name="str_coupon_amount_null">总金额为0，无法核销券！</string>
     <string name="str_coupon_service_binding">请先启动酷券应用开启服务！</string>
     
     <!-- for trans batch -->
@@ -530,6 +553,9 @@
     <string name="printer_wechat_transaction_id">微信交易单号：</string>
     <string name="printer_wechat_partner_id">微信商户号：</string>
     <string name="printer_wechat_msg_acknowledge">本人确认以上交易，同意将其记入微信账户</string>
+    <string name="printer_baidu_transaction_id">百度交易单号：</string>
+    <string name="printer_baidu_partner_id">百度商户号：</string>
+    <string name="printer_baidu_msg_acknowledge">本人确认以上交易，同意将其记入百度账户</string>
 
    	<string name="printer_tran_type_reverse">消费撤销</string>
    	<string name="printer_tran_type_sale">消费</string>
@@ -551,7 +577,7 @@
    	<string name="printer_bank_card">卡号：</string>
    	<string name="printer_reference">备注</string>
    	<string name="printer_msg_acknowledge_card">本人确认以上交易，同意将其记入本卡账户</string>
-   	<string name="printer_value_operator">所有用户</string>
+   	<string name="printer_value_operator">所有人</string>
 
     <string name="printer_summary_title">当日消费汇总</string>
     <string name="printer_summary_amount">金额</string>

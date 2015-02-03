@@ -145,6 +145,9 @@
             msg = String(msg);
             Scene.alert(msg,errorNextAction,"确定","136");
         }else if(type == "1"){
+            if(isICPreferential == true){
+                isICPreferential = false;
+            }
             Scene.alert(msg,function(){
                 if(ConsumptionData.dataForPayment.isExternalOrder){
                     Pay.restart();
@@ -171,6 +174,9 @@
                 Pay.gotoFlow();
             }
         }else{
+            if(isICPreferential == true){
+                isICPreferential = false;
+            }
             if(ConsumptionData.dataForPayment.isExternalOrder){
                 Pay.restart();
             }else{
@@ -196,6 +202,9 @@
                 Pay.gotoFlow();
             }
         }else{
+            if(isICPreferential == true){
+                isICPreferential = false;
+            }
             if(ConsumptionData.dataForPayment.isExternalOrder){
                 Pay.restart();
             }else{

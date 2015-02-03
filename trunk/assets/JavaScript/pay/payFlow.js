@@ -211,8 +211,14 @@ Pay.gotoFlow = function() {
 	}
 	//window.util.showSceneWithLoginChecked(sceneName, formData, flow.desc);
 	if(sceneName == "PinPad"){
-        var datalist = [{"pinpad_data": formData}];
-        Scene.setProperty("PayAccount",datalist);
+	    Scene.alert("JSLOG, FLOW:" + formData.transType);
+	    if (formData.transType == "1721") {
+	        window.util.showSceneWithSigninChecked(sceneName, formData, flow.desc);
+            cacheData.preScene = sceneName;
+	    } else {
+            var datalist = [{"pinpad_data": formData}];
+            Scene.setProperty("PayAccount",datalist);
+	    }
 	}else{
         window.util.showSceneWithSigninChecked(sceneName, formData, flow.desc);
         cacheData.preScene = sceneName;

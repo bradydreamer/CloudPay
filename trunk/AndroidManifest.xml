@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.koolcloud.pos"
-    android:versionCode="48"
-    android:versionName="3.1.7" >
+    android:versionCode="51"
+    android:versionName="3.2.0" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -390,6 +390,8 @@
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.AboutDialog" android:theme="@style/dialog"/>
         <activity
+			android:name="cn.koolcloud.pos.controller.dialogs.AlertAppExistDialog" android:theme="@style/dialog"/>
+        <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.DevicesCheckingDialog" android:theme="@style/dialog"/>
         <activity
 			android:name="cn.koolcloud.pos.controller.dialogs.ServiceCheckingDevicesDialog" android:theme="@style/dialog"/>
@@ -480,7 +482,9 @@
 		<!-- Baidu Push API Key -->
         <meta-data android:name="api_key" android:value="sKzujsGvU6zmXS9fHGsE4ymO" />
 
-        <meta-data android:name="UMENG_CHANNEL" android:value="${UMENG_CHANNEL_VALUE}" />
+        <!-- UMeng support -->
+        <meta-data android:value="54c1a1acfd98c5b04a000039" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="AppStore" android:name="UMENG_CHANNEL"/>
     </application>
 
 </manifest>

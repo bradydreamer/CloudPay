@@ -268,6 +268,7 @@ Pay.payResult = function(params) {
 	}
 	
 	function batchErroProcess(){
+	    Scene.alert("Toast:正在批结，请稍后重新操作！");
 		SettingsIndex.allTransBatch(SignIn.gotoSignOut);
 	}	
 
@@ -405,7 +406,7 @@ Pay.cashSuccRestart = function(params){
 			"resCode": cashData.resCode,
 			"resMsg": cashData.resMsg
 		}
-		Net.asynConnect("txn/"+ConsumptionData.dataForPayment.brhKeyIndex,req,afterUpdateInfo);	
+		Net.connect("txn/"+ConsumptionData.dataForPayment.brhKeyIndex,req,afterUpdateInfo,true);
 
 
 	function afterUpdateInfo(data){

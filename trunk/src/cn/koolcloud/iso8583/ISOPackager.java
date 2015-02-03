@@ -1848,7 +1848,9 @@ public class ISOPackager implements Constant {
 				if (appState.trans.getTransType() == TRAN_RESERV_SALE
 						|| appState.trans.getTransType() == TRAN_RESERV_VOID_SALE) {
 					F22_Pose[0] = (byte) 0x92;
-				} else {
+				} else if(appState.trans.getApmpTransType() == APMP_TRAN_OFFSET){
+					F22_Pose[0] = appState.oldTrans.getOldEntryMode();
+				}else{
 					F22_Pose[0] = appState.trans.getEntryMode();
 				}
 				F22_Pose[1] = appState.trans.getPinMode();

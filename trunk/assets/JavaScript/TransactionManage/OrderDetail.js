@@ -30,6 +30,16 @@
         });
         return;
     }
+    if(window.user.gradeId == "4"){
+          Scene.alert("137",function(){
+              if(ConsumptionData.dataForPayment.isExternalOrder){
+                  Pay.restart();
+              }else{
+                  Scene.goBack("Home");
+              }
+          });
+          return;
+    }
     actionTransData8583(data, Pay.refundOrder, updateListRefund);
   }
 
@@ -45,6 +55,16 @@
             }
         });
         return;
+    }
+    if(window.user.gradeId == "4"){
+          Scene.alert("137",function(){
+              if(ConsumptionData.dataForPayment.isExternalOrder){
+                  Pay.restart();
+              }else{
+                  Scene.goBack("Home");
+              }
+          });
+          return;
     }
     //fix SMTPS-244 by Teddy --start on December 29th
     ConsumptionData.dataForPayment.from = "";
@@ -110,16 +130,6 @@
   }
   
   function actionTransData8583 (data, actionFunc, succFunc) {
-    if(window.user.gradeId == "4"){
-          Scene.alert("137",function(){
-              if(ConsumptionData.dataForPayment.isExternalOrder){
-                  Pay.restart();
-              }else{
-                  Scene.goBack("Home");
-              }
-          });
-          return;
-    }
     var params = JSON.parse(data);
     var rrn = params.ref;
     var transTime = params.transTime;
@@ -250,6 +260,7 @@
     window.OrderDetail.paymentId = params.paymentId;
     ConsumptionData.dataForPayment.paymentId = params.paymentId;
     window.OrderDetail.paymentName = params.paymentName;
+    ConsumptionData.dataForPayment.paymentName = params.paymentName;
     ConsumptionData.dataForPayment.from = params.from;
     ConsumptionData.dataForPayment.txnId = txnId;
     window.posPrint.printTrans(txnId);

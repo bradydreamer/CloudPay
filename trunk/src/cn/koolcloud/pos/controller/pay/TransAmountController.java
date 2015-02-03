@@ -152,8 +152,11 @@ public class TransAmountController extends BaseController {
 				numberInputString.replace(0, 1, text);
 			} else if (numberInputString.toString().equals("00")) {
 				numberInputString.replace(0, 2, text);
-			} else {
+			}else{
 				numberInputString.append(text);
+			}
+			if(numberInputString.toString().length() > 12){
+				numberInputString = numberInputString.delete(12,numberInputString.toString().length());
 			}
 			if ((maxAmount > 0 && Long.parseLong(numberInputString.toString()) > maxAmount)) {
 				numberInputString.delete(0, numberInputString.toString()

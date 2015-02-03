@@ -6,6 +6,7 @@ public class ConstantUtils {
 	public static final String PRINT_TYPE_ALIPAY = "02"; // Alipay print type
     public static final String PRINT_TYPE_MISPOS = "03"; // mispos print type
     public static final String PRINT_TYPE_WECHAT = "04"; // wechat print type
+    public static final String PRINT_TYPE_BAIDU = "05"; // baidu print type
     public static final String PRINT_TYPE_ALIPAY_OVER_SEA = "12"; // Alipay over sea print type
     public static final String PRINT_TYPE_TRANSFER = "11"; // transfer print type
     public static final String STR_NULL_PIN = "0000000000000000"; // null pin

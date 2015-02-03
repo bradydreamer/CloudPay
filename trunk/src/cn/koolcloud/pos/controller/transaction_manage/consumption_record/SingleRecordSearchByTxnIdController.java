@@ -2,18 +2,24 @@ package cn.koolcloud.pos.controller.transaction_manage.consumption_record;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.koolcloud.pos.R;
-import cn.koolcloud.pos.controller.BaseController;
 
 public class SingleRecordSearchByTxnIdController extends SingleRecordSearchController {
 
 	private boolean removeJSTag = true;
+	private RelativeLayout method_rl;
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		method_rl = (RelativeLayout)findViewById(R.id.pay_method_view);
+		method_rl.setVisibility(View.GONE);
+	}
 
 	@Override
 	public void onClickBtnOK(View view) {

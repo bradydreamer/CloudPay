@@ -71,7 +71,7 @@ public class NetEngine {
 	private static final String HEADER_KEY_CONTENTTYPE = "Content-Type";
 	private static final String HEADER_KEY_APSIGNVERION = "X-APSignV";
 	private static final String HEADER_KEY_APFORMAT = "X-APFormat";
-	private static final String SPECIAL_KEY = "9B42A9661BF9BE92975C8A07CF4E7410";//"E8988E9CE30954C72CF20BF771DBAD22";
+	private static final String SPECIAL_KEY = APDefine.SPECIAL_KEY;//"9B42A9661BF9BE92975C8A07CF4E7410";//"E8988E9CE30954C72CF20BF771DBAD22";
 
     private static final int PARAM_ENCRYPT = 0;
 
@@ -170,6 +170,7 @@ public class NetEngine {
 		requestHeaders.put(HEADER_SIGNATURE, "");
 		requestHeaders.put(HEADER_KEY_APSIGNVERION, "1.0");
 		requestHeaders.put(HEADER_KEY_APFORMAT, "json");
+		requestHeaders.put(HEADER_KEY_ACCEPT, "application/json");
 
 		return requestHeaders;
 	}

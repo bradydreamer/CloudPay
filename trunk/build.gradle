@@ -1,9 +1,6 @@
 buildscript {
     repositories {
-//        mavenLocal()
-//        jcenter()
-//        maven { url 'http://repo1.maven.org/maven2' }
-        maven { url 'http://maven.oschina.net/content/groups/public/' }
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
@@ -12,15 +9,10 @@ buildscript {
 
 apply plugin: 'android'
 apply plugin: 'maven'
-apply plugin: 'com.android.application'
 
 repositories {
-//    mavenLocal()
-    jcenter()
-}
-
-def releaseTime() {
-    return new Date().format("yyyy-MM-dd_hh_mm", TimeZone.getTimeZone("UTC"))
+    mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -37,8 +29,7 @@ tasks.withType(JavaCompile) { compileTask -> compileTask.dependsOn copyNativeLib
 clean.dependsOn 'cleanCopyNativeLibs'
 
 tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
-    pkgTask ->
-        pkgTask.jniFolders = new HashSet<File>()
+    pkgTask ->pkgTask.jniFolders = new HashSet<File>()
         pkgTask.jniFolders.add(new File(buildDir, 'native-libs'))
 }
 android {
@@ -48,108 +39,22 @@ android {
     /*defaultConfig {
         versionCode 99
         versionName "9.9.9"
-        applicationId "cn.koolcloud.pos.prepaid"
+//        packageName "cn.koolcloud.pos.wanwan"
     }*/
 
-    defaultConfig {
-        applicationId "cn.koolcloud.pos"
-        minSdkVersion 14
-        targetSdkVersion 21
-        versionCode 48
-        versionName "3.1.7"
-
-        // dex out of 65535 limit
-        multiDexEnabled true
-        // umeng is default channel
-        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "umeng"]
-    }
-
-    signingConfigs {
-        release {
-            storeFile file("app.ks")
-            keyAlias "appstorekey"
-            storePassword "cooltool"
-            keyPassword "cooltool"
+    /*productFlavors {
+        
+        trunk {
+            packageName = 'cn.koolcloud.pos'
         }
-
-    }
-
-    productFlavors {
-        /*"default" {}
-        google {}
-        "91" {}
-        hiapk {}
-        gfan {}
-        goapk {}
-        appChina {}
-        mumayi {}
-        eoe {}
-        nduo {}
-        feiliu {}
-        crossmo {}
-        huawei {}
-        QQ {}
-        "3G" {}
-        "360" {}
-        baidu {}
-        sohu {}
-        "163" {}
-        UC {}
-        dangle {}
-        samsung {}
-        mmw {}
-        xiaomi {}
-        lenovo {}*/
-        nearme {}
-    }
-
-    productFlavors.all {
-        flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
-    }
-
-    buildTypes {
+        
+    }*/
+    /*buildTypes{
         debug {
-            // show Logs
-            buildConfigField "boolean", "LOG_DEBUG", "true"
-
-            versionNameSuffix "-debug"
-            minifyEnabled false
-            zipAlignEnabled false
-            shrinkResources false
-            signingConfig signingConfigs.debug
+            runProguard true
+            proguardFile 'proguard-project.txt'
         }
-
-        release {
-            // don't show Log
-            buildConfigField "boolean", "LOG_DEBUG", "false"
-
-            //run proguard
-            minifyEnabled true
-            zipAlignEnabled true
-
-            // rm useless resource
-            shrinkResources true
-
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-
-            applicationVariants.all { variant ->
-                variant.outputs.each { output ->
-                    def outputFile = output.outputFile
-                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                        // output apk file name with SmartPos_v1.0_2015-01-15_***.apk
-                        def fileName = "SmartPos_v${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
-                        output.outputFile = new File(outputFile.parent, fileName)
-                    }
-                }
-            }
-        }
-    }
-
-    lintOptions {
-        abortOnError false
-    }
-
+    }*/
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'

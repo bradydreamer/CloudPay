@@ -49,6 +49,7 @@ import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.adapter.HomePagerAdapter;
 import cn.koolcloud.pos.controller.dialogs.AboutDialog;
 import cn.koolcloud.pos.controller.mispos.MisposController;
+import cn.koolcloud.pos.util.Env;
 import cn.koolcloud.pos.util.UtilForDataStorage;
 import cn.koolcloud.pos.util.UtilForMoney;
 import cn.koolcloud.pos.widget.ViewPagerIndicator;
@@ -61,6 +62,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
+import com.umeng.analytics.MobclickAgent;
 
 public abstract class BaseHomeController extends BaseController {
 
@@ -189,6 +191,7 @@ public abstract class BaseHomeController extends BaseController {
 
 	@Override
 	public void onClickLeftButton(View view) {
+        MobclickAgent.onEvent(this, Env.getResourceString(this, R.string.event_id_smartpos_title_about));
 		onAbout(view);
 	}
 	@Override
@@ -683,6 +686,8 @@ public abstract class BaseHomeController extends BaseController {
 			String typeId = "";
 			String misc = "";
 			JSONObject msg = new JSONObject();
+			JSONObject miscJsObj = null;
+            String miscProdType = "";
 			JSONObject tagObj = null;
 			UtilFor8583 util8583 = UtilFor8583.getInstance();
 			try {
@@ -703,11 +708,15 @@ public abstract class BaseHomeController extends BaseController {
 					typeId = tagObj.getString("typeId");
 					misc = tagObj.optString("misc");
 					msg.put("tag", tag);
+
+                    miscJsObj = new JSONObject(misc);
+                    miscProdType = miscJsObj.optString("prod_type");
 				} else {
 					msg.put("error", "167");
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
+                miscJsObj = null;
 			}
 			if (!TextUtils.isEmpty(indexNo)
 					&& indexNo.equals(ConstantUtils.MISPOS_INDEX)) {
@@ -739,22 +748,22 @@ public abstract class BaseHomeController extends BaseController {
 					e.printStackTrace();
 				}
 
-			} else if (!TextUtils.isEmpty(misc)
-					&& misc.equalsIgnoreCase("rm_coupon")) {
+			} else if (miscJsObj != null && miscProdType.equalsIgnoreCase("coupon")) {
 				JSONObject paramObj = null;
 				try {
 					paramObj = new JSONObject();
 					paramObj.put("typeId", tranType);
 					paramObj.put("payKeyIndex", indexNo);
 					paramObj.put("paymentId", paymentId);
-					paramObj.put("coupon_type", "rm_coupon");
+					paramObj.put("miscJsObj", miscJsObj);
+//					paramObj.put("coupon_type", "rm_coupon");
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 				onCall("window.util.showCouponWithLoginChecked", paramObj);
-			}  else if (!TextUtils.isEmpty(misc)
+			}/*  else if (!TextUtils.isEmpty(misc)
                     && misc.equalsIgnoreCase("rm_coupon_wan")) {
                 JSONObject paramObj = null;
                 try {
@@ -769,7 +778,7 @@ public abstract class BaseHomeController extends BaseController {
                 }
 
                 onCall("window.util.showWanCouponWithLoginChecked", paramObj);
-            } else {
+            }*/ else {
 				if (!isPaymentClicked) {
 					onCall("PayMethod.onConfirmMethod", msg);
 					isPaymentClicked = true;
@@ -800,13 +809,13 @@ public abstract class BaseHomeController extends BaseController {
 				.readPropertyBySharedPreferences(MyApplication.getContext(),
 						"merchant");
 		if (null == map.get("transId")) {
-			traceNo = "0";
+			traceNo = "000000";
 		} else {
 			traceId = ((Integer) map.get("transId")).intValue();
 			traceNo = dataFormat.format(traceId);
 		}
 		if (null == map.get("batchId")) {
-			batchNo = "0";
+			batchNo = "000000";
 		} else {
 			batchNo = dataFormat.format(((Integer) map.get("batchId"))
 					.intValue());

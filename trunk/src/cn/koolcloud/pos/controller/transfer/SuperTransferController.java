@@ -26,12 +26,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import cn.koolcloud.constant.ConstantUtils;
+import cn.koolcloud.parameter.EMVICData;
 import cn.koolcloud.parameter.UtilFor8583;
 import cn.koolcloud.pos.HostMessage;
 import cn.koolcloud.pos.R;
 import cn.koolcloud.pos.controller.BaseController;
 import cn.koolcloud.pos.external.CardSwiper;
 import cn.koolcloud.pos.external.CardSwiper.CardSwiperListener;
+import cn.koolcloud.pos.external.EMVICManager;
 import cn.koolcloud.pos.util.UtilForMoney;
 
 public class SuperTransferController extends BaseController implements View.OnClickListener, OnTouchListener, CardSwiperListener {
@@ -57,11 +59,15 @@ public class SuperTransferController extends BaseController implements View.OnCl
 
     private String track2 = "";
     private String track3 = "";
+
+    //add IC support
+    private EMVICManager emvManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		findViews();
+        getIcCardData();
 	}
 
 	private void findViews() {
@@ -148,6 +154,84 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		}
 		
 	};
+
+    Handler mIcHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case EMVICManager.STATUS_VALUE_0:
+                    Toast.makeText(SuperTransferController.this, "获取数据中，请稍后！", Toast.LENGTH_SHORT).show();
+//                    showText.setText("获取数据中，请稍后！");
+                    break;
+                case EMVICManager.STATUS_VALUE_1:
+//                    showText.setText("获取数据中，请稍后！");
+                    emvManager.initForRead();
+                    Toast.makeText(SuperTransferController.this, "卡已拔出！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.STATUS_VALUE_2:
+//                    showText.setText("获取数据中，请稍后！");
+                    Toast.makeText(SuperTransferController.this, "获取数据中，请稍后！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.STATUS_VALUE_3:
+//                    showText.setText("获取数据中，请稍后！");
+                    Toast.makeText(SuperTransferController.this, "获取数据中，请稍后！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.TRADE_STATUS_0:
+//                    showText.setText("获取数据中，请稍后！");
+                    Toast.makeText(SuperTransferController.this, "获取数据中，请稍后！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.TRADE_STATUS_1:
+//                    showText.setText("获取数据中，请稍后！");
+                    Toast.makeText(SuperTransferController.this, "获取数据中，请稍后！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.TRADE_STATUS_2:
+//                    showText.setText("获取数据中，请稍后！");
+                    Toast.makeText(SuperTransferController.this, "获取数据中，请稍后！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.TRADE_STATUS_ABORT:
+//                    showText.setText("获取数据失败，请重试！");
+                    emvManager.initForRead();
+                    Toast.makeText(SuperTransferController.this, "获取数据失败，请重试！", Toast.LENGTH_SHORT).show();
+                    break;
+                case EMVICManager.TRADE_STATUS_READICCARDID:
+                    EMVICData mEMVICData = EMVICData.getEMVICInstance();
+                    emvManager.getPAN();
+                    emvManager.getTrack2();
+                    String pan = mEMVICData.getICPan();
+                    String trace2 = mEMVICData.getTrack2();
+//                    emvManager.getICF55();
+//                    emvManager.getCardSeqNo();
+//                    showText.setText("卡号：" + pan + "\n" + "二磁：" + trace2);
+//                    Toast.makeText(SuperTransferController.this, "pan:" + pan + "-> trace2:" + trace2, Toast.LENGTH_LONG).show();
+                    if (position == 0) {
+                        fromAccountEditText.setText(pan);
+                        track2 = trace2;
+                        setAccountEditText(fromAccountEditText);
+//                        UtilFor8583.getInstance().trans.setEntryMode(ConstantUtils.ENTRY_IC_MODE);
+                    } else if (position == 1) {
+                        toAccountEditText.setText(pan);
+                        setAccountEditText(toAccountEditText);
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    protected void setAccountEditText(EditText mEditText) {
+
+//        clearInputNumber();
+        btnXImageView.setClickable(false);
+//        keyboardScreenEditText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(13)});
+
+        keyboardScreenEditText.setText(mEditText.getText());
+        if (!TextUtils.isEmpty(mEditText.getText())) {
+
+            keyboardScreenEditText.setSelection(mEditText.getText().length(), mEditText.getText().length());
+        }
+    }
 
 	@Override
 	protected void setControllerContentView() {
@@ -325,7 +409,7 @@ public class SuperTransferController extends BaseController implements View.OnCl
 				msg.put("idCard", idCardStr);
 				msg.put("track2", track2);
 				msg.put("track3", track3);
-
+                UtilFor8583.getInstance().trans.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
 				onCall("window.SuperTransfer.onCompleteInput", msg);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -444,6 +528,7 @@ public class SuperTransferController extends BaseController implements View.OnCl
 			mCardSwiper.onDestroy();
 			mCardSwiper = null;
 		}
+        emvManager.finishRead();
 		super.onDestroy();
 	}
 
@@ -473,7 +558,9 @@ public class SuperTransferController extends BaseController implements View.OnCl
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-        UtilFor8583.getInstance().trans.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
+        /*if (position == 0) {
+            UtilFor8583.getInstance().trans.setEntryMode(ConstantUtils.ENTRY_SWIPER_MODE);
+        }*/
 		Message msg = mHandler.obtainMessage();
 		msg.obj = jsObj;
 		msg.what = HANDLE_TRACK_DATA;
@@ -484,5 +571,12 @@ public class SuperTransferController extends BaseController implements View.OnCl
     public void onRecvTrackDataError(int resCode, int trackIndex) {
         String reSwiptCardStr = getResources().getString(R.string.msg_swipe_card_error);
         Toast.makeText(this, reSwiptCardStr, Toast.LENGTH_SHORT).show();
+    }
+
+    private void getIcCardData(){
+        emvManager = EMVICManager.getEMVICManagerInstance();
+        emvManager.onCreate(this, mIcHandler);
+        emvManager.initForRead();
+        emvManager.onStart();
     }
 }

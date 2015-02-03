@@ -110,7 +110,8 @@
             android:textSize="@dimen/cash_amount_textsize"/>
     </LinearLayout>
     
-    <Button 
+    <Button
+        android:id="@+id/cashOKbtn"
         android:layout_marginTop="100dp"
 		android:layout_width="@dimen/cash_btn_width"
 		android:layout_height="@dimen/cash_btn_height"

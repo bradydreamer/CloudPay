@@ -513,7 +513,7 @@ public class EMVICManager {
 		mEMVICData.setCardSeqNo(cardSeqNo);
 	}
 
-	private String getTrack2() {
+	public String getTrack2() {
 		byte ba[] = new byte[255];
 		int pLen = EmvL2Interface.getTagValue((short) 0x57, ba);
 		Log.i("tag len", String.valueOf(pLen));

@@ -908,7 +908,10 @@ public class PayAccountController extends BaseController implements
 	@Override
 	protected void onDestroy() {
 		Log.d(TAG, this + "onDestroy");
-
+		// 停止IC卡读取功能
+		if(isPreferential) {
+			onStopReadICCardId();
+		}
 		onStopReadICData();
 		onStopSwiper();
 		onDestroySound();

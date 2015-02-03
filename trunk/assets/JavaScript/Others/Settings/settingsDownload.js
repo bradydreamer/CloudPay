@@ -256,18 +256,19 @@
 				Scene.goBack("Home");
 			}
 		});*/
+		setTimeout(function(){
+            if (ConsumptionData.dataForPayment.isExternalOrder) {
+                //Pay.restart();
+                window.user.downloadParamsResultAction(window.externalData);
+            } else {
+                Scene.goBack("Home");
+            }
+        },100);
 		//这里设置paramsDownloadOver的目的是为了在登录的时候检测参数是否完全下载成功。
 		var params = {
             paramsDownloadOver : true
         };
         RMS.save("merchant", params);
-
-		if (ConsumptionData.dataForPayment.isExternalOrder) {
-			//Pay.restart();
-			window.user.downloadParamsResultAction(window.externalData);
-		} else {
-			Scene.goBack("Home");
-		}
 	}
 
 	function objLength(o) {

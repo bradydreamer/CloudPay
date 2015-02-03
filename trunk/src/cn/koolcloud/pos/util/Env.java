@@ -209,6 +209,16 @@ public class Env {
 				installedPackage.get(packageName).packageName);
 	}
 
+    public static void startAppWithPackageName(Context ctx, String packageName) {
+        PackageManager  pmi = ctx.getPackageManager();
+        Intent intent = null;
+
+        intent = pmi.getLaunchIntentForPackage(packageName);
+        if (intent != null){
+            ctx.startActivity(intent);
+        }
+    }
+
 	public static String getResourceString(Context context, int strId) {
 		return context.getResources().getString(strId);
 	}

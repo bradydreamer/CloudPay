@@ -12,6 +12,7 @@
     var fromAccount = params.fromAccount;
     var toAccount = params.toAccount;
     var idCard = params.idCard;
+    var transType = "1721";
 
     currentStep = Pay.cacheData.step;
 	if(currentStep >= Pay.cacheData.flowList.length){
@@ -35,6 +36,7 @@
     Pay.cacheData.track2 = params.track2;
     Pay.cacheData.track3 = params.track3;
     Pay.cacheData[currentTag] = fromAccount;
+    Pay.cacheData.transType = transType;
     Pay.cacheData.step = currentStep + 1;
     Pay.gotoTransferFlow();
   };

@@ -71,13 +71,15 @@
                 window.TransactionManageIndex.refresh = undefined;
                 //refresh consumption data ListView with new data --end mod by Teddy on 29th September
             } else {
-
+                Scene.alert("JSLOG 1");
                 if (1 == pageNo) {
                     if (recordDisplayedList.length == 1 && singleResearchTag == true) {
+                        Scene.alert("JSLOG 2");
                         recordDisplayedList[0].confirm = "TransactionManageIndex.gotoIndex";
                         Scene.showScene("OrderDetail", "", recordDisplayedList[0]);
                     } else {
                         if (window.TransactionManageIndex.ioperator !== "" && window.TransactionManageIndex.ioperator !== undefined) {
+                            Scene.alert("JSLOG 3");
                             var propertyList = [{
                                 name : "lv_record",
                                 key : "updateList",
@@ -85,6 +87,7 @@
                             }];
                             Scene.setProperty("ConsumptionRecord", propertyList);
                         } else {
+                            Scene.alert("JSLOG 4");
                             Scene.showScene("ConsumptionRecord", "", params);
                         }
                     };
@@ -94,23 +97,14 @@
                         key : "addList",
                         value : params
                     }];
+                    Scene.alert("JSLOG 5");
                     Scene.setProperty("ConsumptionRecord", propertyList);
                 };
             }
 		}else{
-		    if (window.TransactionManageIndex.ioperator === undefined) {
-		        Scene.alert(params.errorMsg,function(){
-                    Scene.goBack("Home");
-                });
-		    } else {
-                var propertyList = [{
-                    name : "lv_record",
-                    key : "updateList",
-                    value : params
-                }];
-                Scene.setProperty("ConsumptionRecord", propertyList);
-		    }
-
+            Scene.alert(params.errorMsg,function(){
+                Scene.goBack("Home");
+            });
 		}
 	}
 
@@ -299,7 +293,15 @@
 		window.TransactionManageIndex.params = undefined;
 
 		var msg = JSON.parse(data)
-        window.TransactionManageIndex.ioperator = msg.ioperator;
+		if (msg.from == "home") {
+		    window.TransactionManageIndex.ioperator = "";
+		} else {
+		    if ("" == msg.ioperator || undefined == msg.ioperator) {
+                window.TransactionManageIndex.ioperator = "All";
+		    } else {
+                window.TransactionManageIndex.ioperator = msg.ioperator;
+		    }
+		}
         var params = {
             fromTag : "TODAY",
             startDate : msg.startDate,

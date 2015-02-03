@@ -134,6 +134,12 @@
 	      	<artifactId>android-async-http</artifactId>
 	      	<version>1.4.6</version>
 	    </dependency>
+
+        <dependency>
+            <groupId>com.umeng.analytics</groupId>
+            <artifactId>analytics</artifactId>
+            <version>5.4.1</version>
+        </dependency>
 	
 	    <!-- dependency>
             <groupId>com.baidu.android.pushservice</groupId>

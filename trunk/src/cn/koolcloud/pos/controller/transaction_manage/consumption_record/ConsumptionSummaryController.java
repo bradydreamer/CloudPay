@@ -56,6 +56,7 @@ public class ConsumptionSummaryController extends BaseController {
 			"{\"transType\":\"1091\",\"totalSize\":\"0\",\" totalAmount\":\"0\"}," +
 			"{\"transType\":\"3011\",\"totalSize\":\"0\",\" totalAmount\":\"0\"}," +
 			"{\"transType\":\"3031\",\"totalSize\":\"0\",\" totalAmount\":\"0\"}]";
+	private final String ALL_USERS = "ALL USERS";
 
 	private boolean removeJSTag = true;
 	private JSONObject data, printData;
@@ -71,10 +72,9 @@ public class ConsumptionSummaryController extends BaseController {
 	private Spinner operator_sp;
 	private List<String> sp_content = new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
-	private String curOperator = "All";
+	private String curOperator = ALL_USERS;
 	private Map<String, Object> sumMap;
 	private String totalAmountStr = "0.00";
-	private Boolean isFirst = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +83,6 @@ public class ConsumptionSummaryController extends BaseController {
 			finish();
 			return;
 		}
-		isFirst = true;
 		CONSUME_ORIVALUE = getString(R.string.consumption_summary_consume) + "-0-0.00";
 		CONSUMECANCE_ORIVALUE = getString(R.string.consumption_summary_consumeCancel) + "-0-0.00";
 		PREAUTH_ORIVALUE = getString(R.string.consumption_summary_preAuth) + "-0-0.00";
@@ -112,7 +111,7 @@ public class ConsumptionSummaryController extends BaseController {
 			mechineID.setText(mechineIDStr);
 		}
 
-		cacheAllData("All");
+		cacheAllData(ALL_USERS);
 		updateData();
 		summaryListAdapter = new SummaryListAdapter(this);
 		summaryListAdapter.setList(summaryDataList);
@@ -187,8 +186,9 @@ public class ConsumptionSummaryController extends BaseController {
 	}
 
 	private void initSpinner(){
+		String all_str = Env.getResourceString(ConsumptionSummaryController.this, R.string.printer_value_operator);
 		operator_sp = (Spinner)findViewById(R.id.spinner_operator);
-		sp_content.add("All");
+		sp_content.add(all_str);
 		Map<String, ?> map = UtilForDataStorage
 				.readPropertyBySharedPreferences(this, "userList");
 		if(map.size() > 0) {
@@ -216,9 +216,10 @@ public class ConsumptionSummaryController extends BaseController {
 			public void onItemSelected(AdapterView<?> parent, View view,
 			                           int position, long id) {
 				curOperator = parent.getItemAtPosition(position).toString();
-				if(isFirst && curOperator.equals("All")){
-					isFirst = false;
-					return;
+				String str = Env.getResourceString(ConsumptionSummaryController.this, R.string.printer_value_operator);
+
+				if(curOperator.equals(str)){
+					curOperator = ALL_USERS;
 				}
 				if(checkCacheDate(curOperator)){
 					Map<String, ?> cacheMp = UtilForDataStorage
@@ -248,7 +249,7 @@ public class ConsumptionSummaryController extends BaseController {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				if(curOperator.equals("All")){
+				if(curOperator.equals(ALL_USERS)){
 					msg.remove("operator");
 				}
 				onCall("ConsumptionSummary.gotoRefreshConsumptionSummary", msg);
@@ -345,7 +346,7 @@ public class ConsumptionSummaryController extends BaseController {
 				.optString("totalAmount"));
 //		totalAmountStr = NumberUtil.add(totalAmountStr,amount);
 		try {
-            if (curOperator.equals("All")) {
+            if (curOperator.equals(ALL_USERS)) {
                 curOperator = Env.getResourceString(this, R.string.printer_value_operator);
             }
 			printData.put("operator", curOperator);

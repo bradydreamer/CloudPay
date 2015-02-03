@@ -363,7 +363,8 @@
     <string name="about_info">Smartpos as bland-new payment platform, integrates all traditional and mobile internet creative multiple payments, supports e-coupon and e-wallet as well.</string>
     
     <!-- coupon msg -->
-    <string name="str_coupon_app_not_installed">COUPON APP HASN\'T INSTALLED,PLEASE INSTALL FIRST.</string>
+    <string name="str_coupon_app_not_installed">APPLICATION HASN\'T INSTALLED,PLEASE INSTALL FIRST.</string>
+    <string name="str_coupon_app_exist_install">APPLICATION HASN\'T INSTALLED, INSTALL IT FROM APP STORE?</string>
     <string name="str_coupon_amount_null">COUPON AMOUNT NULL</string>
     <string name="str_coupon_service_binding">PLEASE START COUPON APP TO INITIATE SERVICE.</string>
     
@@ -501,12 +502,12 @@
     <string name="printer_bank_card_voucher">BANK CARD VOUCHER</string>
     <string name="printer_bank_card_holder">CONSUMER COPY</string>
     <string name="printer_bank_holder">BANK COPY</string>
-    <string name="printer_acquirer_merchant_no">ACQUIRER MID:</string>
-    <string name="printer_acquirer_terminal_no">ACQUIRER TID:</string>
+    <string name="printer_acquirer_merchant_no">ACQU MID(商户号):</string>
+    <string name="printer_acquirer_terminal_no">ACQU TID(终端号):</string>
     <string name="printer_batch_no">BATCH NO.(批次号):</string>
-    <string name="printer_voucher_no">VOUCHER NO.:</string>
-    <string name="printer_auth_no">  AUTH NO.:</string>
-    <string name="printer_bank_card">CARD NO.:</string>
+    <string name="printer_voucher_no">MBFE NO.(流水号):</string>
+    <string name="printer_auth_no">AUTH NO.(授权码):</string>
+    <string name="printer_bank_card">CARD NO.(卡号):</string>
     <string name="printer_reference">REFERENCE</string>
     <string name="printer_tag_exchange_rate">RATE(汇率):</string>
     <string name="printer_tag_real_amount">CNY(人民币):</string>
@@ -661,7 +662,7 @@
     <string name="title_activity_single_record_search_txnid_controller">PLEASE INPUT TRANS ID</string>
     <string name="alert_msg_177">TRANSACTION STATUS QUERY FAILED, PLEASE TRY AGAIN!</string>
     <string name="alert_msg_176">PLEASE QUERY LATER</string>
-    <string name="printer_tag_issuer_name">ISSUER NAME(发卡行):</string>
+    <string name="printer_tag_issuer_name">ISSUER(发卡行):</string>
     <string name="alert_msg_178">AMOUNT PAYABLE:%1$s</string>
     <string name="alert_msg_179">PAID AMOUNT:%1$s</string>
     <string name="alert_msg_180">CONTINUE?</string>
@@ -685,6 +686,9 @@
     <string name="printer_wechat_partner_id">WECHAT TRACE NO.(微信交易单号):</string>
     <string name="printer_wechat_transaction_id">WECHAT MCHT ID.(微信商户号):</string>
     <string name="printer_wechat_msg_acknowledge">I ACKNOWLEDGE SATISFACTORY RECEIPT OF RELATIVE GOODS/SERVICES.</string>
+    <string name="printer_baidu_partner_id">BAIDU MCHT ID.(百度商户号):</string>
+    <string name="printer_baidu_transaction_id">BAIDU MCHT ID.(百度商户号):</string>
+    <string name="printer_baidu_msg_acknowledge">I ACKNOWLEDGE SATISFACTORY RECEIPT OF RELATIVE GOODS/SERVICES.</string>
     <string name="mispos_revoke_msg" translatable="false">CANCELED</string>
     <string name="pay_account_btn_ic" translatable="false">IC CARD</string>
     <string name="multipay_record_tv_transDate">DATE</string>
